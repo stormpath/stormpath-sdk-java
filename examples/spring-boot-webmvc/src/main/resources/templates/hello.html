@@ -31,6 +31,8 @@
                 <a th:href="@{/login}" class="btn btn-primary">Login</a>
             </div>
             <div th:if="${account}">
+                <h4 th:text="'Account Store: ' + ${account.Directory.Name}"></h4>
+                <h4 th:text="'Provider: ' + ${account.ProviderData.ProviderId}"></h4>
                 <form id="logoutForm" th:action="@{/logout}" method="post">
                     <input type="submit" class="btn btn-danger" value="Logout"/>
                 </form>

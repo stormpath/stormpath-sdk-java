@@ -25,6 +25,8 @@
             <h1>${message}</h1>
             <c:choose>
                 <c:when test="${account != null}">
+                    <h4>Account Store: ${account.directory.name}</h4>
+                    <h4>Provider: ${account.providerData.providerId}</h4>
                     <form action="/logout" method="post">
                         <input type="submit" class="btn btn-danger" value="Logout"/>
                     </form>

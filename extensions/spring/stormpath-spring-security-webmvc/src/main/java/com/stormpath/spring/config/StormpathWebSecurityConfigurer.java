@@ -18,8 +18,8 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
+import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -149,6 +149,18 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/samlResult' }")
     protected String samlResultUri;
 
+    @Value("#{ @environment['stormpath.web.social.google.uri'] ?: '/callbacks/google' }")
+    protected String googleCallbackUri;
+
+    @Value("#{ @environment['stormpath.web.social.facebook.uri'] ?: '/callbacks/facebook' }")
+    protected String facebookCallbackUri;
+
+    @Value("#{ @environment['stormpath.web.social.linkedin.uri'] ?: '/callbacks/linkedin' }")
+    protected String linkedinCallbackUri;
+
+    @Value("#{ @environment['stormpath.web.social.github.uri'] ?: '/callbacks/github' }")
+    protected String githubCallbackUri;
+
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
      * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
@@ -222,7 +234,11 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .usernameParameter("login")
                     .passwordParameter("password")
                     .and().authorizeRequests()
-                    .antMatchers(loginUriMatch).permitAll();
+                    .antMatchers(loginUriMatch).permitAll()
+                    .antMatchers(googleCallbackUri).permitAll()
+                    .antMatchers(githubCallbackUri).permitAll()
+                    .antMatchers(facebookCallbackUri).permitAll()
+                    .antMatchers(linkedinCallbackUri).permitAll();
             }
 
             http.authorizeRequests()

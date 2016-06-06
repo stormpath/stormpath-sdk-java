@@ -1,6 +1,7 @@
 package com.stormpath.sdk.servlet.filter.account
 
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.servlet.config.CookieConfig
 import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver
@@ -30,7 +31,6 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
         HttpServletRequest request = createMock(HttpServletRequest.class)
         CookieConfig accessTokenConfig = createMock(CookieConfig.class)
         CookieConfig refreshTokenConfig = createMock(CookieConfig.class)
-        Application application = createMock(Application.class)
         def localhost = createMock(Resolver.class)
 
         def resolver = new SecureRequiredExceptForLocalhostResolver(localhost) {
@@ -44,7 +44,7 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
 
         replay request, accessTokenConfig, refreshTokenConfig, localhost
 
-        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver, application)
+        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver)
 
         assertFalse saver.isCookieSecure(request, accessTokenConfig)
 

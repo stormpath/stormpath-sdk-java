@@ -15,9 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter.account.config;
 
-import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
@@ -41,12 +39,10 @@ public class CookieAuthenticationResultSaverFactory extends ConfigSingletonFacto
         CookieConfig accessTokenCookieConfig = config.getAccessTokenCookieConfig();
         CookieConfig refreshTokenCookieConfig = config.getRefreshTokenCookieConfig();
         Resolver<Boolean> secureCookieRequired = config.getInstance(COOKIE_SECURE_RESOLVER);
-        Application application = ApplicationResolver.INSTANCE.getApplication(servletContext);
         return new CookieAuthenticationResultSaver(
                 accessTokenCookieConfig,
                 refreshTokenCookieConfig,
-                secureCookieRequired,
-                application
+                secureCookieRequired
         );
     }
 }

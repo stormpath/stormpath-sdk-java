@@ -356,16 +356,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
     protected String produces;
 
-    @Value("${stormpath.web.social.google.uri:/callbacks/google}")
+    @Value("#{ @environment['stormpath.web.social.google.uri'] ?: '/callbacks/google' }")
     protected String googleCallbackUri;
 
-    @Value("${stormpath.web.social.facebook.uri:/callbacks/facebook}")
+    @Value("#{ @environment['stormpath.web.social.facebook.uri'] ?: '/callbacks/facebook' }")
     protected String facebookCallbackUri;
 
-    @Value("${stormpath.web.social.linkedin.uri:/callbacks/linkedin}")
+    @Value("#{ @environment['stormpath.web.social.linkedin.uri'] ?: '/callbacks/linkedin' }")
     protected String linkedinCallbackUri;
 
-    @Value("${stormpath.web.social.github.uri:/callbacks/github}")
+    @Value("#{ @environment['stormpath.web.social.github.uri'] ?: '/callbacks/github' }")
     protected String githubCallbackUri;
 
     @Value("#{ @environment['stormpath.web.application.domain'] }")
@@ -623,8 +623,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             return new CookieAuthenticationResultSaver(
                     stormpathAccessTokenCookieConfig(),
                     stormpathRefreshTokenCookieConfig(),
-                    stormpathSecureResolver(),
-                    application
+                    stormpathSecureResolver()
             );
         }
 
