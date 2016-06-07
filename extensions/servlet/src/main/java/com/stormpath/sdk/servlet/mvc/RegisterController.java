@@ -60,6 +60,8 @@ public class RegisterController extends FormController {
     private String loginUri;
     private String verifyViewName;
 
+    public static final List<String> ACCOUNT_PROPERTIES = Collections.unmodifiableList(Arrays.asList("email", "username", "password", "givenName", "middleName", "surname"));
+
     public RegisterController() {
         super();
     }
@@ -193,7 +195,7 @@ public class RegisterController extends FormController {
 
         for (Field field : form.getFields()) {
             //Field is not part of the default account properties then is a custom field
-            if (DefaultAccount.PROPERTY_DESCRIPTORS.get(field.getName()) == null && !field.getName().equals(csrfTokenManager.getTokenName())) {
+            if (!field.getName().equals(csrfTokenManager.getTokenName()) && !ACCOUNT_PROPERTIES.contains(field.getName())) {
                 result.put(field.getName(), field.getValue());
             }
         }

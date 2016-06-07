@@ -29,6 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.security.Key;
 
 /**
+ * Sine 1.0.0 we are restricting this resolver to only function for Access Tokens but not for Refresh Tokens.
+ * This change provides the fix for: https://github.com/stormpath/stormpath-sdk-java/issues/674
+ *
  * @since 1.0.RC3
  */
 public class DefaultJwtAccountResolver implements JwtAccountResolver {
@@ -58,6 +61,12 @@ public class DefaultJwtAccountResolver implements JwtAccountResolver {
         };
 
         Claims claims = Jwts.parser().setSigningKeyResolver(signingKeyResolver).parseClaimsJws(jwt).getBody();
+
+        if (!claims.containsKey("rti")) {
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/674
+            //This is a refresh token, let's not allow the account to be obtained from it
+            return null;
+        }
 
         String accountHref = claims.getSubject();
 

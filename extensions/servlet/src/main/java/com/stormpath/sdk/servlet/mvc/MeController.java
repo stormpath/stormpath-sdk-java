@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * 1.0.RC8
+ * @since 1.0.0
  */
 public class MeController extends AbstractController {
 
@@ -47,6 +47,12 @@ public class MeController extends AbstractController {
         response.setHeader("Cache-Control", "no-store, no-cache");
         response.setHeader("Pragma", "no-cache");
 
-        return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
+        if(account != null) {
+            return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
+        }
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        return new DefaultViewModel("stormpathJsonView", null);
     }
 }
