@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * @since 1.0.RC8
+ * @since 1.0.0
  */
 public class MeController extends AbstractController {
 
