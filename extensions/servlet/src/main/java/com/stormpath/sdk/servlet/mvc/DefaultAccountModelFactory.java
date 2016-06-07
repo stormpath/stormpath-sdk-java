@@ -7,6 +7,7 @@ import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.CollectionResource;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ public class DefaultAccountModelFactory implements AccountModelFactory {
 
     @Override
     public Map<String, Object> toMap(Account account, List<String> expands) {
+        Assert.notNull(account, "account cannot be null");
         DefaultAccount defaultAccount = (DefaultAccount) account;
 
         Map<String, Object> accountMap = getResourceProperties(defaultAccount);

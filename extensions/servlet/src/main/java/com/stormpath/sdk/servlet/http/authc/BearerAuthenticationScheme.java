@@ -103,7 +103,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             return result;
 
         } catch (OAuthException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/674
             response.setContentType("application/json;charset=UTF-8");
             response.setHeader("Cache-Control", "no-store");
             response.setHeader("Pragma", "no-cache");
