@@ -203,7 +203,7 @@ public class AccessTokenController extends AbstractController {
                     .authenticate(passwordGrantRequest);
         } catch (ResourceException e) {
             log.debug("Unable to authenticate access token request: {}", e.getMessage(), e);
-            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate access token request: ", e.getDeveloperMessage());
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate access token request", e);
         }
 
         return createAccessTokenResult(request, response, authenticationResult);
@@ -225,7 +225,7 @@ public class AccessTokenController extends AbstractController {
                     .authenticate(refreshGrantRequest);
         } catch (ResourceException e) {
             log.debug("Unable to authenticate refresh token request: {}", e.getMessage(), e);
-            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate refresh token request: ", e.getDeveloperMessage());
+            throw new OAuthException(OAuthErrorCode.INVALID_GRANT, "Unable to authenticate refresh token request");
         }
 
         return createRefreshTokenResult(request, response, authenticationResult);

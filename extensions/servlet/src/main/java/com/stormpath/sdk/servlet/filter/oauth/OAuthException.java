@@ -24,53 +24,41 @@ import com.stormpath.sdk.lang.Strings;
 public class OAuthException extends RuntimeException {
 
     private final OAuthErrorCode errorCode;
-    private final String description;
-    private final String uri;
+    private final String message;
 
     public OAuthException(OAuthErrorCode code) {
         this(code, null, null);
     }
 
-    public OAuthException(OAuthErrorCode code, String description, String uri) {
-        super(description != null ? description : (code != null ? code.getValue() : ""));
+    public OAuthException(OAuthErrorCode code, String message) {
+        super(message != null ? message : (code != null ? code.getValue() : ""));
         Assert.notNull(code, "OAuthErrorCode cannot be null.");
         this.errorCode = code;
-        this.description = description;
-        this.uri = uri;
+        this.message = message;
     }
 
-    public OAuthException(OAuthErrorCode code, String description, String uri, Exception cause) {
-        super(description != null ? description : (code != null ? code.getValue() : ""), cause);
+    public OAuthException(OAuthErrorCode code, String message, Exception cause) {
+        super(message != null ? message : (code != null ? code.getValue() : ""), cause);
         Assert.notNull(code, "OAuthErrorCode cannot be null.");
         this.errorCode = code;
-        this.description = description;
-        this.uri = uri;
+        this.message = message;
     }
 
     public OAuthErrorCode getErrorCode() {
         return errorCode;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getUri() {
-        return uri;
+    public String getMessage() {
+        return message;
     }
 
     public String toJson() {
 
         String json = "{" + toJson("error", getErrorCode());
 
-        String val = getDescription();
+        String val = getMessage();
         if (Strings.hasText(val)) {
-            json += "," + toJson("error_description", val);
-        }
-
-        val = getUri();
-        if (Strings.hasText(val)) {
-            json += "," + toJson("error_uri", val);
+            json += "," + toJson("message", val);
         }
 
         json += "}";

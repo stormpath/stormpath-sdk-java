@@ -139,12 +139,12 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             return createAuthenticationResult(request, response, jwtResult.getAccount());
 
         } catch (ExpiredJwtException e) {
-            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is expired.", null, e);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is expired.", e);
         } catch (OAuthException e) {
             throw e;
         } catch (Exception e) {
             log.debug("JWT verification failed.", e);
-            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is invalid.", null, e);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is invalid.", e);
         }
     }
 
@@ -221,7 +221,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
         } catch (ResourceException e) {
             OAuthErrorCode err = OAuthErrorCode.INVALID_CLIENT;
             String msg = e.getStormpathError().getDeveloperMessage();
-            throw new OAuthException(err, msg, null, e);
+            throw new OAuthException(err, msg, e);
         }
     }
 }
