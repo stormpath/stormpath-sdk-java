@@ -44,6 +44,7 @@ public class AccountResolverFilter extends HttpFilter {
     public static final String ACCOUNT_RESOLVER_PROPERTY_PREFIX = ACCOUNT_RESOLVER_LOCATIONS + ".";
 
     private List<Resolver<Account>> resolvers;
+    private String oauthEndpointUri;
 
     public List<Resolver<Account>> getResolvers() {
         return resolvers;
@@ -51,6 +52,10 @@ public class AccountResolverFilter extends HttpFilter {
 
     public void setResolvers(List<Resolver<Account>> resolvers) {
         this.resolvers = resolvers;
+    }
+
+    public void setOauthEndpointUri(String oauthEndpointUri) {
+        this.oauthEndpointUri = oauthEndpointUri;
     }
 
     @SuppressWarnings("unchecked")
@@ -76,50 +81,57 @@ public class AccountResolverFilter extends HttpFilter {
         Assert.notEmpty(locations, "At least one " + ACCOUNT_RESOLVER_LOCATIONS + " must be specified.");
         assert locations != null;
 
-        Map<String,Resolver> resolverMap = config.getInstances(ACCOUNT_RESOLVER_PROPERTY_PREFIX, Resolver.class);
+        Map<String, Resolver> resolverMap = config.getInstances(ACCOUNT_RESOLVER_PROPERTY_PREFIX, Resolver.class);
 
         List<Resolver<Account>> resolvers = new ArrayList<Resolver<Account>>(resolverMap.size());
 
-        for(String location : locations) {
+        for (String location : locations) {
 
             Resolver resolver = resolverMap.get(location);
             Assert.notNull(resolver, "There is no configured Account Resolver named " + location);
 
-            Resolver<Account> accountResolver = (Resolver<Account>)resolver;
+            Resolver<Account> accountResolver = (Resolver<Account>) resolver;
             resolvers.add(accountResolver);
         }
 
         resolvers = java.util.Collections.unmodifiableList(resolvers);
         setResolvers(resolvers);
+
+        oauthEndpointUri = config.getAccessTokenUrl();
     }
 
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws Exception {
+            throws Exception {
 
-        for(Resolver<Account> resolver : getResolvers()) {
+        //since 1.0.0
+        //https://github.com/stormpath/stormpath-sdk-java/issues/685 the oauth endpoint should be ignore in this filter
+        //to properly handle errors in the client_credentials grant type scenario
+        if (!request.getServletPath().contains(oauthEndpointUri)) {
+            for (Resolver<Account> resolver : getResolvers()) {
 
-            Account account = resolver.get(request, response);
+                Account account = resolver.get(request, response);
 
-            if (response.isCommitted()) {
-                //authentication problem - challenge response rendered, do not let the request continue:
-                return;
-            }
+                if (response.isCommitted()) {
+                    //authentication problem - challenge response rendered, do not let the request continue:
+                    return;
+                }
 
-            if (account != null && AccountStatus.ENABLED.equals(account.getStatus())) {
+                if (account != null && AccountStatus.ENABLED.equals(account.getStatus())) {
 
-                //store under both names - can be convenient depending on how it is accessed:
-                request.setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
-                request.setAttribute("account", account);
+                    //store under both names - can be convenient depending on how it is accessed:
+                    request.setAttribute(DefaultAccountResolver.REQUEST_ATTR_NAME, account);
+                    request.setAttribute("account", account);
 
-                //NOTE: the next two lines *must* execute after the above two request.setAttribute* calls
-                //this is because the request.getAuthType() implementation relies on the attribute being set:
+                    //NOTE: the next two lines *must* execute after the above two request.setAttribute* calls
+                    //this is because the request.getAuthType() implementation relies on the attribute being set:
 
-                //assert authType value is available as required by the Servlet API:
-                String authType = request.getAuthType();
-                Assert.hasText(authType, "Account Resolver must set a request authType value.");
+                    //assert authType value is available as required by the Servlet API:
+                    String authType = request.getAuthType();
+                    Assert.hasText(authType, "Account Resolver must set a request authType value.");
 
-                break;
+                    break;
+                }
             }
         }
 

@@ -1142,6 +1142,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setRefreshTokenResultFactory(stormpathRefreshTokenResultFactory());
         c.setAccountSaver(stormpathAuthenticationResultSaver());
         c.setRequestAuthorizer(stormpathAccessTokenRequestAuthorizer());
+        c.setBasicAuthenticationScheme(stormpathBasicAuthenticationScheme());
         c.init();
 
         return createSpringController(c);
@@ -1480,6 +1481,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         AccountResolverFilter filter = new AccountResolverFilter();
         filter.setEnabled(stormpathFilterEnabled);
         filter.setResolvers(resolvers);
+        filter.setOauthEndpointUri(accessTokenUri);
 
         return filter;
     }

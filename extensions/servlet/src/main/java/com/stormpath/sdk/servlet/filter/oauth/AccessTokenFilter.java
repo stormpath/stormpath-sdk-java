@@ -22,6 +22,7 @@ import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
 
 import javax.servlet.ServletException;
@@ -40,6 +41,7 @@ public class AccessTokenFilter extends ControllerFilter {
     protected static final String REQUEST_AUTHORIZER = "stormpath.web.oauth2.authorizer";
     protected static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
     protected static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+    protected static final String BASIC_AUTHENTICATION_REQUEST_FACTORY = "stormpath.web.http.authc.schemes.basic";
 
     @Override
     protected void onInit() throws ServletException {
@@ -54,6 +56,7 @@ public class AccessTokenFilter extends ControllerFilter {
         RefreshTokenResultFactory refreshTokenResultFactory = config.getInstance(REFRESH_TOKEN_RESULT_FACTORY);
         Saver<AuthenticationResult> accountSaver = config.getInstance(ACCOUNT_SAVER);
         Publisher<RequestEvent> eventPublisher = config.getInstance(EVENT_PUBLISHER);
+        BasicAuthenticationScheme basicAuthenticationScheme = config.getInstance(BASIC_AUTHENTICATION_REQUEST_FACTORY);
 
         AccessTokenController c = new AccessTokenController();
         c.setEventPublisher(eventPublisher);
@@ -63,6 +66,7 @@ public class AccessTokenFilter extends ControllerFilter {
         c.setRefreshTokenResultFactory(refreshTokenResultFactory);
         c.setAccountSaver(accountSaver);
         c.setRequestAuthorizer(requestAuthorizer);
+        c.setBasicAuthenticationScheme(basicAuthenticationScheme);
         c.init();
 
         setController(c);

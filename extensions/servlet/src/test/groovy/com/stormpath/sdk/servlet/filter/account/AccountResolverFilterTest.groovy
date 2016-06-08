@@ -4,10 +4,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver
 import com.stormpath.sdk.servlet.http.Resolver
-import org.easymock.EasyMockSupport
-
 import org.testng.annotations.BeforeMethod
-import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 
 import javax.servlet.FilterChain
@@ -41,12 +38,14 @@ class AccountResolverFilterTest {
 
         accountResolverFilter = new AccountResolverFilter()
         accountResolverFilter.resolvers = [mockAccountResolver]
+        accountResolverFilter.oauthEndpointUri = "/oauth/token"
     }
 
     @Test
     void testAccountResolved() {
         Account mockAccount = createStrictMock(Account)
 
+        expect(mockRequest.getServletPath()).andReturn "/somePath"
         expect(mockAccountResolver.get(mockRequest, mockResponse)).andReturn mockAccount
         expect(mockResponse.isCommitted()).andReturn false
         expect(mockAccount.getStatus()).andReturn AccountStatus.ENABLED
@@ -54,6 +53,7 @@ class AccountResolverFilterTest {
         expect(mockRequest.setAttribute("account", mockAccount))
         expect(mockRequest.getAuthType()).andReturn "form"
         expect(mockFilterChain.doFilter(mockRequest, mockResponse))
+
 
         replay mockRequest, mockResponse, mockFilterChain, mockAccountResolver, mockAccount
 
@@ -70,6 +70,7 @@ class AccountResolverFilterTest {
         expect(mockResponse.isCommitted()).andReturn false
         expect(mockAccount.getStatus()).andReturn AccountStatus.DISABLED
         expect(mockFilterChain.doFilter(mockRequest, mockResponse))
+        expect(mockRequest.getServletPath()).andReturn "/somePath"
 
         replay mockRequest, mockResponse, mockFilterChain, mockAccountResolver, mockAccount
 
@@ -83,6 +84,7 @@ class AccountResolverFilterTest {
         expect(mockAccountResolver.get(mockRequest, mockResponse)).andReturn null
         expect(mockResponse.isCommitted()).andReturn false
         expect(mockFilterChain.doFilter(mockRequest, mockResponse))
+        expect(mockRequest.getServletPath()).andReturn "/somePath"
 
         replay mockRequest, mockResponse, mockFilterChain, mockAccountResolver
 
