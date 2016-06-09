@@ -26,7 +26,7 @@ import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
-import com.stormpath.spring.filter.JsonAuthenticationFilter;
+import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
@@ -145,16 +145,16 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         return new SpringSecurityResolvedAccountFilter();
     }
 
-    public JsonAuthenticationFilter jsonAuthenticationFilter() {
-        JsonAuthenticationFilter jsonAuthenticationFilter = new JsonAuthenticationFilter();
+    public ContentNegotiationAuthenticationFilter contentNegotiationAuthenticationFilter() {
+        ContentNegotiationAuthenticationFilter contentNegotiationAuthenticationFilter = new ContentNegotiationAuthenticationFilter();
 
-        jsonAuthenticationFilter.setAuthenticationManager(stormpathAuthenticationManager);
-        jsonAuthenticationFilter.setUsernameParameter("login");
-        jsonAuthenticationFilter.setPasswordParameter("password");
-        jsonAuthenticationFilter.setAuthenticationSuccessHandler(stormpathAuthenticationSuccessHandler());
-        jsonAuthenticationFilter.setAuthenticationFailureHandler(stormpathAuthenticationFailureHandler());
+        contentNegotiationAuthenticationFilter.setAuthenticationManager(stormpathAuthenticationManager);
+        contentNegotiationAuthenticationFilter.setUsernameParameter("login");
+        contentNegotiationAuthenticationFilter.setPasswordParameter("password");
+        contentNegotiationAuthenticationFilter.setAuthenticationSuccessHandler(stormpathAuthenticationSuccessHandler());
+        contentNegotiationAuthenticationFilter.setAuthenticationFailureHandler(stormpathAuthenticationFailureHandler());
 
-        return jsonAuthenticationFilter;
+        return contentNegotiationAuthenticationFilter;
     }
 
 }

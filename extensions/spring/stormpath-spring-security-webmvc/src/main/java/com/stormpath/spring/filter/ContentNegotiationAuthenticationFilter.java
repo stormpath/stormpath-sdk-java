@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JsonAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(JsonAuthenticationFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(ContentNegotiationAuthenticationFilter.class);
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
     protected String produces;

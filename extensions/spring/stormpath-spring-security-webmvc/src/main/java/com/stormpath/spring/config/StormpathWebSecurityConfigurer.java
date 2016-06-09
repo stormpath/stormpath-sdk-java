@@ -18,7 +18,7 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.spring.filter.JsonAuthenticationFilter;
+import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
 
     @Autowired
-    JsonAuthenticationFilter jsonAuthenticationFilter;
+    ContentNegotiationAuthenticationFilter contentNegotiationAuthenticationFilter;
 
     @Autowired
     protected Client client;
@@ -212,20 +212,19 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
             http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
-            http.addFilterBefore(jsonAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+            // This filter replaces http.formLogin() so that we can properly handle content negotiation
+            // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
+            // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
+            http.addFilterBefore(contentNegotiationAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
-            http
-                .formLogin()
-                .loginPage(loginUri).and()
-                .authorizeRequests()
-                .antMatchers(loginUri).permitAll();
-
             String permittedResultPath = (idSiteEnabled) ? idSiteResultUri : samlResultUri;
 
             http
                 .authorizeRequests()
+                .antMatchers(loginUri).permitAll()
                 .antMatchers(permittedResultPath).permitAll();
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
@@ -233,13 +232,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
 
                 http
-                    .formLogin()
-                    .loginPage(loginUri)
-                    .successHandler(successHandler) // success handler will pickup the configured loginNextUri
-                    .failureHandler(failureHandler)
-                    .usernameParameter("login")
-                    .passwordParameter("password")
-                    .and().authorizeRequests()
+                    .authorizeRequests()
                     .antMatchers(loginUriMatch).permitAll()
                     .antMatchers(googleCallbackUri).permitAll()
                     .antMatchers(githubCallbackUri).permitAll()
