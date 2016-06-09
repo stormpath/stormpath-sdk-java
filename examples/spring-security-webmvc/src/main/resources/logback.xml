@@ -29,6 +29,6 @@
     </root>
 
     <logger name="org.springframework" level="INFO"/>
-    <logger name="com.stormpath" level="INFO"/>
+    <logger name="com.stormpath" level="TRACE"/>
 
 </configuration>

@@ -124,9 +124,4 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
         return super.springSecurityResolvedAccountFilter();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(name="contentNegotiationAuthenticationFilter")
-    public ContentNegotiationAuthenticationFilter contentNegotiationAuthenticationFilter() {
-        return super.contentNegotiationAuthenticationFilter();
-    }
 }

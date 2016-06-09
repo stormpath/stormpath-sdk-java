@@ -92,10 +92,4 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
         return super.springSecurityResolvedAccountFilter();
     }
 
-    @Bean
-    @Override
-    public ContentNegotiationAuthenticationFilter contentNegotiationAuthenticationFilter() {
-        return super.contentNegotiationAuthenticationFilter();
-    }
-
 }

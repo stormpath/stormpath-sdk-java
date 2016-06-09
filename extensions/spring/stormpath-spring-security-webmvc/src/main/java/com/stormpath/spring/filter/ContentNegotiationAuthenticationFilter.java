@@ -6,7 +6,6 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,16 +17,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final Logger log = LoggerFactory.getLogger(ContentNegotiationAuthenticationFilter.class);
 
-    @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
-    protected String produces;
-
     private boolean postOnly = true;
+    private List<MediaType> supportedMediaTypes;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -35,9 +33,13 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
 
+        if (supportedMediaTypes == null) {
+            throw new AuthenticationServiceException("A list of supported media types must be set.");
+        }
+
         MediaType mediaType;
         try {
-            mediaType = ContentNegotiationResolver.INSTANCE.getContentType(request, response, MediaType.parseMediaTypes(produces));
+            mediaType = ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
         } catch (UnresolvedMediaTypeException umt) {
             throw new AuthenticationServiceException("Unresolved media type: " + umt.getMessage(), umt);
         }
@@ -52,6 +54,10 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
         setDetails(request, authRequest);
 
         return getAuthenticationManager().authenticate(authRequest);
+    }
+
+    public void setSupportedMediaTypes(List<MediaType> supportedMediaTypes) {
+        this.supportedMediaTypes = supportedMediaTypes;
     }
 
     @SuppressWarnings("unchecked")

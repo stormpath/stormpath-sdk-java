@@ -86,13 +86,6 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
         return super.stormpathAuthenticationProvider();
     }
 
-    @Bean
-    @Override
-    @ConditionalOnMissingBean(name = "stormpathAuthenticationManager")
-    public AuthenticationManager stormpathAuthenticationManager() {
-        return super.stormpathAuthenticationManager();
-    }
-
     // This is only working as an inner static class
     // Need to find out if this is best practice
     @Order(99)

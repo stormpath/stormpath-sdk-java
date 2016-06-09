@@ -17,6 +17,7 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -52,9 +54,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
 
     @Autowired
-    ContentNegotiationAuthenticationFilter contentNegotiationAuthenticationFilter;
-
-    @Autowired
     protected Client client;
 
     @Autowired
@@ -73,9 +72,16 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Qualifier("stormpathAuthenticationFailureHandler")
     protected AuthenticationFailureHandler failureHandler;
 
+    @Autowired
+    @Qualifier("stormpathAuthenticationManager")
+    AuthenticationManager stormpathAuthenticationManager; // provided by stormpath-spring-security
+
     @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
+
+    @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
+    protected String produces;
 
     @Value("#{ @environment['stormpath.spring.security.enabled'] ?: true }")
     protected boolean stormpathSecuritybEnabled;
@@ -216,7 +222,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // This filter replaces http.formLogin() so that we can properly handle content negotiation
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
-            http.addFilterBefore(contentNegotiationAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
@@ -298,6 +304,21 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             }
 
         }
+    }
+
+    // This sets up the Content Negotiation aware filter and replaces the calls to http.formLogin()
+    // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
+    private ContentNegotiationAuthenticationFilter setupContentNegotiationAuthenticationFilter() {
+        ContentNegotiationAuthenticationFilter filter = new ContentNegotiationAuthenticationFilter();
+
+        filter.setSupportedMediaTypes(MediaType.parseMediaTypes(produces));
+        filter.setAuthenticationManager(stormpathAuthenticationManager);
+        filter.setUsernameParameter("login");
+        filter.setPasswordParameter("password");
+        filter.setAuthenticationSuccessHandler(successHandler);
+        filter.setAuthenticationFailureHandler(failureHandler);
+
+        return filter;
     }
 
     /**

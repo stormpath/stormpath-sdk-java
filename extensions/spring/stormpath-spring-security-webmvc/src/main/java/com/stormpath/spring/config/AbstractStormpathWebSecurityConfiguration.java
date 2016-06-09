@@ -59,10 +59,6 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     protected AuthenticationProvider stormpathAuthenticationProvider; //provided by stormpath-spring-security
 
     @Autowired
-    @Qualifier("stormpathAuthenticationManager")
-    AuthenticationManager stormpathAuthenticationManager; // provided by stormpath-spring-security
-
-    @Autowired
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
 
@@ -143,18 +139,6 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
         return new SpringSecurityResolvedAccountFilter();
-    }
-
-    public ContentNegotiationAuthenticationFilter contentNegotiationAuthenticationFilter() {
-        ContentNegotiationAuthenticationFilter contentNegotiationAuthenticationFilter = new ContentNegotiationAuthenticationFilter();
-
-        contentNegotiationAuthenticationFilter.setAuthenticationManager(stormpathAuthenticationManager);
-        contentNegotiationAuthenticationFilter.setUsernameParameter("login");
-        contentNegotiationAuthenticationFilter.setPasswordParameter("password");
-        contentNegotiationAuthenticationFilter.setAuthenticationSuccessHandler(stormpathAuthenticationSuccessHandler());
-        contentNegotiationAuthenticationFilter.setAuthenticationFailureHandler(stormpathAuthenticationFailureHandler());
-
-        return contentNegotiationAuthenticationFilter;
     }
 
 }
