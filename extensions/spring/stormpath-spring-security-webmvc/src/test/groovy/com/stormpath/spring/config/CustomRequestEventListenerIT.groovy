@@ -16,21 +16,28 @@
 package com.stormpath.spring.config
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
+import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.RequestBuilder
+import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin
+import javax.servlet.ServletContext
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.0.RC9
@@ -62,8 +69,42 @@ class CustomRequestEventListenerIT extends AbstractTestNGSpringContextTests {
 
         assertFalse listener.failedInvoked
 
-        mvc.perform(formLogin().password("invalid")).andExpect(unauthenticated())
+        // Note: not using the default
+        // org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin
+        // from spring as it does not set an accept header and fouls up content negotiation as we default to
+        // application/json, which doesn't make sense for a form
+        // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
+        mvc.perform(SecurityMockMvcLoginRequestBuilder.formLogin().password("invalid")).andExpect(unauthenticated())
 
         assertTrue listener.failedInvoked
     }
+
+    final class SecurityMockMvcLoginRequestBuilder {
+
+        public static FormLoginRequestBuilder formLogin() {
+            return new FormLoginRequestBuilder();
+        }
+
+        public static final class FormLoginRequestBuilder implements RequestBuilder {
+            private String password = "password";
+            private RequestPostProcessor postProcessor = csrf();
+
+            public MockHttpServletRequest buildRequest(ServletContext servletContext) {
+                MockHttpServletRequest request = post("/login")
+                    .param("username", "user").param("password", password)
+                    .accept(MediaType.APPLICATION_FORM_URLENCODED)
+                    .buildRequest(servletContext);
+                return postProcessor.postProcessRequest(request);
+            }
+
+            public FormLoginRequestBuilder password(String password) {
+                this.password = password;
+                return this;
+            }
+
+            private FormLoginRequestBuilder() {
+            }
+        }
+    }
+
 }
