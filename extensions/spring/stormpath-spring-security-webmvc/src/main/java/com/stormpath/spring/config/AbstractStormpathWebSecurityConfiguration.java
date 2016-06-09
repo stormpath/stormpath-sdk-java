@@ -26,6 +26,7 @@ import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
+import com.stormpath.spring.filter.JsonAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -55,6 +57,10 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Autowired
     @Qualifier("stormpathAuthenticationProvider")
     protected AuthenticationProvider stormpathAuthenticationProvider; //provided by stormpath-spring-security
+
+    @Autowired
+    @Qualifier("stormpathAuthenticationManager")
+    AuthenticationManager stormpathAuthenticationManager; // provided by stormpath-spring-security
 
     @Autowired
     @Qualifier("stormpathAuthenticationResultSaver")
@@ -137,6 +143,18 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
         return new SpringSecurityResolvedAccountFilter();
+    }
+
+    public JsonAuthenticationFilter jsonAuthenticationFilter() {
+        JsonAuthenticationFilter jsonAuthenticationFilter = new JsonAuthenticationFilter();
+
+        jsonAuthenticationFilter.setAuthenticationManager(stormpathAuthenticationManager);
+        jsonAuthenticationFilter.setUsernameParameter("login");
+        jsonAuthenticationFilter.setPasswordParameter("password");
+        jsonAuthenticationFilter.setAuthenticationSuccessHandler(stormpathAuthenticationSuccessHandler());
+        jsonAuthenticationFilter.setAuthenticationFailureHandler(stormpathAuthenticationFailureHandler());
+
+        return jsonAuthenticationFilter;
     }
 
 }

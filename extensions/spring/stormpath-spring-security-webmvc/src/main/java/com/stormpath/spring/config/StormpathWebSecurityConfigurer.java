@@ -18,6 +18,7 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.spring.filter.JsonAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
@@ -48,6 +50,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
+
+    @Autowired
+    JsonAuthenticationFilter jsonAuthenticationFilter;
 
     @Autowired
     protected Client client;
@@ -207,6 +212,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
             http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
+            http.addFilterBefore(jsonAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {

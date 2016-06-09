@@ -21,6 +21,7 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
+import com.stormpath.spring.filter.JsonAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -121,5 +122,11 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnMissingBean(name="springSecurityResolvedAccountFilter")
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
         return super.springSecurityResolvedAccountFilter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="jsonAuthenticationFilter")
+    public JsonAuthenticationFilter jsonAuthenticationFilter() {
+        return super.jsonAuthenticationFilter();
     }
 }

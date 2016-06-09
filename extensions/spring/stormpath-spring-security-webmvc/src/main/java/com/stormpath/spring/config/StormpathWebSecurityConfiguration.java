@@ -18,6 +18,7 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.spring.filter.JsonAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.springframework.context.annotation.Bean;
@@ -89,6 +90,12 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     @Override
     public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
         return super.springSecurityResolvedAccountFilter();
+    }
+
+    @Bean
+    @Override
+    public JsonAuthenticationFilter jsonAuthenticationFilter() {
+        return super.jsonAuthenticationFilter();
     }
 
 }
