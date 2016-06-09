@@ -79,32 +79,4 @@ class CustomRequestEventListenerIT extends AbstractTestNGSpringContextTests {
         assertTrue listener.failedInvoked
     }
 
-    final class SecurityMockMvcLoginRequestBuilder {
-
-        public static FormLoginRequestBuilder formLogin() {
-            return new FormLoginRequestBuilder();
-        }
-
-        public static final class FormLoginRequestBuilder implements RequestBuilder {
-            private String password = "password";
-            private RequestPostProcessor postProcessor = csrf();
-
-            public MockHttpServletRequest buildRequest(ServletContext servletContext) {
-                MockHttpServletRequest request = post("/login")
-                    .param("username", "user").param("password", password)
-                    .accept(MediaType.APPLICATION_FORM_URLENCODED)
-                    .buildRequest(servletContext);
-                return postProcessor.postProcessRequest(request);
-            }
-
-            public FormLoginRequestBuilder password(String password) {
-                this.password = password;
-                return this;
-            }
-
-            private FormLoginRequestBuilder() {
-            }
-        }
-    }
-
 }
