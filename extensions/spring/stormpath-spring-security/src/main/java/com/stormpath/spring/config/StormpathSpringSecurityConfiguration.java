@@ -57,7 +57,8 @@ public class StormpathSpringSecurityConfiguration extends AbstractStormpathSprin
     }
 
     @Bean
+    @Override
     public AuthenticationManager stormpathAuthenticationManager() {
-        return new ProviderManager(Arrays.asList(stormpathAuthenticationProvider()));
+        return super.stormpathAuthenticationManager();
     }
 }

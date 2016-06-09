@@ -29,9 +29,11 @@ import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 
 /**
  * @since 1.0.RC5
@@ -82,6 +84,13 @@ public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathS
     @ConditionalOnMissingBean
     public AuthenticationProvider stormpathAuthenticationProvider() {
         return super.stormpathAuthenticationProvider();
+    }
+
+    @Bean
+    @Override
+    @ConditionalOnMissingBean(name = "stormpathAuthenticationManager")
+    public AuthenticationManager stormpathAuthenticationManager() {
+        return super.stormpathAuthenticationManager();
     }
 
     // This is only working as an inner static class
