@@ -42,15 +42,12 @@ public class SpringSpaController extends AbstractController {
     private final List<MediaType> producesMediaTypes;
 
     public SpringSpaController(Controller delegate,
-                               //Controller spaViewController,
                                String jsonView,
                                List<MediaType> producesMediaTypes) {
         Assert.notNull(delegate, "Delegate controller cannot be null.");
-        //Assert.notNull(spaViewController, "SPA view controller cannot be null.");
         Assert.notEmpty(producesMediaTypes, "produced media types cannot be null or empty.");
         Assert.hasText(jsonView, "jsonView cannot be null or empty.");
         this.delegate = delegate;
-        //this.spaViewController = spaViewController;
         this.jsonView = jsonView;
         this.producesMediaTypes = producesMediaTypes;
     }
