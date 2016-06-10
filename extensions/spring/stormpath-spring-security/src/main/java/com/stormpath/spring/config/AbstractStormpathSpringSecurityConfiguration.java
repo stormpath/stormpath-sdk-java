@@ -74,4 +74,7 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
         return provider;
     }
 
+    public AuthenticationManager stormpathAuthenticationManager() {
+        return new ProviderManager(Arrays.asList(stormpathAuthenticationProvider()));
+    }
 }
