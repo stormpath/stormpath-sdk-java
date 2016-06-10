@@ -81,12 +81,16 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.oauth2.enabled'] ?: true }")
     protected boolean accessTokenEnabled;
 
+    @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
+    protected String produces;
+
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
     }
 
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
-        StormpathLoginSuccessHandler loginSuccessHandler = new StormpathLoginSuccessHandler(client, authenticationResultSaver);
+        StormpathLoginSuccessHandler loginSuccessHandler =
+            new StormpathLoginSuccessHandler(client, authenticationResultSaver, produces);
         loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
         loginSuccessHandler.setTargetUrlParameter("next");
         return loginSuccessHandler;
