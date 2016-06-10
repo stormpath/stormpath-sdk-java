@@ -119,7 +119,7 @@
                         <containerId>tomcat7x</containerId>
                         <zipUrlInstaller>
                             <url>
-                                https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.69/bin/apache-tomcat-7.0.69.zip
+                                http://repo1.maven.org/maven2/org/apache/tomcat/tomcat/7.0.69/tomcat-7.0.69.zip
                             </url>
                         </zipUrlInstaller>
                     </container>
