@@ -126,7 +126,7 @@ public class LoginController extends FormController {
         }
 
         //otherwise HTML view:
-        return new DefaultViewModel(nextUri).setRedirect(true);
+        return new DefaultViewModel(getNextUri(req)).setRedirect(true);
     }
 
     protected void saveResult(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {

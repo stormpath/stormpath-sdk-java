@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
@@ -44,6 +45,8 @@ import java.util.Map;
 public abstract class AbstractController implements Controller {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractController.class);
+
+    private static final String NEXT_QUERY_PARAM = "next";
 
     private static final HttpServlet DEFAULT_HANDLER = new HttpServlet() {
     };
@@ -157,6 +160,16 @@ public abstract class AbstractController implements Controller {
 
     protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return service(request, response);
+    }
+
+    protected String getNextUri(HttpServletRequest request) {
+        String nextQueryParam = request.getParameter("next");
+
+        if (Strings.hasText(nextQueryParam)) {
+            return nextQueryParam;
+        }
+
+        return nextUri;
     }
 
     protected void publishRequestEvent(RequestEvent e) throws ServletException {

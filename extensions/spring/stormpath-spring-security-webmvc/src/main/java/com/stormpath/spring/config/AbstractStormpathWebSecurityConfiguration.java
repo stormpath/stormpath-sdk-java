@@ -86,6 +86,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
         StormpathLoginSuccessHandler loginSuccessHandler = new StormpathLoginSuccessHandler(client, authenticationResultSaver);
         loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
+        loginSuccessHandler.setTargetUrlParameter("next");
         return loginSuccessHandler;
     }
 

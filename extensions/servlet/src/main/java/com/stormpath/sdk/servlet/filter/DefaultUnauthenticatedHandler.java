@@ -42,7 +42,7 @@ public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler {
         response.setHeader("Pragma", "no-cache");
 
         if (isHtmlPreferred(request)) {
-            LoginPageRedirector.INSTANCE.redirectToLoginPage(request, response, "authcReqd");
+            LoginPageRedirector.INSTANCE.redirectToLoginPage(request, response);
         } else {
             this.httpAuthenticator.sendChallenge(request, response);
         }
