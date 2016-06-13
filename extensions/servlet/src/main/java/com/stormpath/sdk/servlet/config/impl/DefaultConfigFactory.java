@@ -153,6 +153,14 @@ public class DefaultConfigFactory implements ConfigFactory {
                         propertiesSource = new OptionalPropertiesSource(propertiesSource);
                     }
                     sources.add(propertiesSource);
+
+                    yamlFile = line.replace(".properties", ".yml");
+                    resource = resourceFactory.createResource(yamlFile);
+                    propertiesSource = new YAMLPropertiesSource(resource);
+                    if (!required) {
+                        propertiesSource = new OptionalPropertiesSource(propertiesSource);
+                    }
+                    sources.add(propertiesSource);
                 }
             }
         }
