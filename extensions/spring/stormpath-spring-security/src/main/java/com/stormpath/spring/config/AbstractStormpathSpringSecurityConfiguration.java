@@ -28,7 +28,11 @@ import com.stormpath.spring.security.provider.GroupPermissionResolver;
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider;
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+
+import java.util.Arrays;
 
 /**
  * @since 1.0.RC5
@@ -70,4 +74,7 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
         return provider;
     }
 
+    public AuthenticationManager stormpathAuthenticationManager() {
+        return new ProviderManager(Arrays.asList(stormpathAuthenticationProvider()));
+    }
 }

@@ -69,16 +69,26 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
         Assert.hasText(headViewName, "headViewName must be specified.");
     }
 
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-                           ModelAndView modelAndView) throws Exception {
+    protected boolean shouldExecute(HttpServletRequest request, HttpServletResponse response,
+                                    Object handler, ModelAndView modelAndView) {
 
-        if (modelAndView == null || !modelAndView.isReference()) {
-            return;
+        if (modelAndView == null || !modelAndView.isReference() || "stormpathJsonView".equals(modelAndView.getViewName())) {
+            return false;
         }
 
         String viewName = modelAndView.getViewName();
         if (isRedirectOrForward(viewName)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) throws Exception {
+
+        if (!shouldExecute(request, response, handler, modelAndView)) {
             return;
         }
 

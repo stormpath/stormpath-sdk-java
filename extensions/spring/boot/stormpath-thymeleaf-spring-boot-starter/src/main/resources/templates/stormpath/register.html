@@ -34,24 +34,25 @@
                              th:if="${errors != null and not #lists.isEmpty(errors)}">
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
                             <!--/*/ <th-block data-th-each="error : ${errors}"> /*/-->
-                            <p th:text="${error}">|Error message here.|</p>
+                            <p th:text="${error.message}">|Error message here.|</p>
                             <!--/*/ </th-block> /*/-->
                         </div>
 
-                        <form method="post" th:action="@{${form.action}}" role="form" class="registration-form form-horizontal sp-form">
-
-                            <input th:each="field : ${form.hiddenFields}" th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
-
-                            <div th:each="field : ${form.visibleFields}" form-group="true"
+                        <form method="post" role="form" class="registration-form form-horizontal sp-form">
+                            <div th:each="field : ${form.fields}" form-group="true"
                                  th:class="'form-group group-' + ${field.name}">
-                                <label class="col-sm-4" th:text="#{${field.label}}">|Field label|</label>
+                                <th:block th:if="${field.type == 'hidden'}">
+                                    <input th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
+                                </th:block>
+                                <th:block th:if="${field.type != 'hidden'}">
+                                    <label class="col-sm-4" th:text="${field.label}">|Field label|</label>
 
-                                <div class="col-sm-8">
-                                    <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
-                                           th:placeholder="#{${field.placeholder}}"
-                                           th:autofocus="${field.autofocus}"
-                                           th:required="${field.required}" class="form-control"/>
-                                </div>
+                                    <div class="col-sm-8">
+                                        <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
+                                               th:placeholder="${field.placeholder}"
+                                               th:required="${field.required}" class="form-control"/>
+                                    </div>
+                                </th:block>
                             </div>
 
                             <div>

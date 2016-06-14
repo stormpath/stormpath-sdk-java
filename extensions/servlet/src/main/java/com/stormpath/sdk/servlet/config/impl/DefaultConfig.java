@@ -15,47 +15,45 @@
  */
 package com.stormpath.sdk.servlet.config.impl;
 
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
+import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC3
  */
 public class DefaultConfig implements Config {
-
-    public static final String LOGIN_URL = "stormpath.web.login.uri";
-    public static final String LOGIN_NEXT_URL = "stormpath.web.login.nextUri";
-    public static final String LOGOUT_URL = "stormpath.web.logout.uri";
-    public static final String LOGOUT_NEXT_URL = "stormpath.web.logout.nextUri";
-    public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
-    public static final String FORGOT_PASSWORD_URL = "stormpath.web.forgotPassword.uri";
-    public static final String FORGOT_PASSWORD_NEXT_URL = "stormpath.web.forgotPassword.nextUri";
-    public static final String CHANGE_PASSWORD_URL = "stormpath.web.changePassword.uri";
-    public static final String CHANGE_PASSWORD_NEXT_URL = "stormpath.web.changePassword.nextUri";
-    public static final String REGISTER_URL = "stormpath.web.register.uri";
-    public static final String REGISTER_NEXT_URL = "stormpath.web.register.nextUri";
-    public static final String VERIFY_URL = "stormpath.web.verifyEmail.uri";
-    public static final String VERIFY_NEXT_URL = "stormpath.web.verifyEmail.nextUri";
-    public static final String SEND_VERIFICATION_EMAIL_URL = "stormpath.web.sendVerificationEmail.uri";
-    public static final String VERIFY_ENABLED = "stormpath.web.verifyEmail.enabled";
-
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
-
+    public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
     public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.validationStrategy";
+
+    public static final String PRODUCES_MEDIA_TYPES = "stormpath.web.produces";
+
+    public static final String ME_ENABLED = "stormpath.web.me.enabled";
+    public static final String ME_URL = "stormpath.web.me.uri";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -79,78 +77,77 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public String getLoginUrl() {
-        return CFG.getString(LOGIN_URL);
+    public ControllerConfigResolver getLoginControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "login");
     }
 
     @Override
-    public String getLoginNextUrl() {
-        return CFG.getString(LOGIN_NEXT_URL);
+    public ControllerConfigResolver getLogoutControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "logout");
     }
 
     @Override
-    public String getLogoutUrl() {
-        return CFG.getString(LOGOUT_URL);
+    public ControllerConfigResolver getRegisterControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "register");
     }
 
     @Override
-    public String getLogoutNextUrl() {
-        return CFG.getString(LOGOUT_NEXT_URL);
+    public ControllerConfigResolver getForgotPasswordControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "forgotPassword");
+    }
+
+    @Override
+    public ControllerConfigResolver getVerifyControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "verifyEmail");
+    }
+
+    @Override
+    public ControllerConfigResolver getSendVerificationEmailControllerConfig() {
+        //TODO hack since verify and send verify should be single config and controller but now is not
+        return new ServletControllerConfigResolver(this, CFG, "sendVerificationEmail") {
+            @Override
+            public String getNextUri() {
+                return getVerifyControllerConfig().getNextUri();
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return getVerifyControllerConfig().isEnabled();
+            }
+        };
+    }
+
+    @Override
+    public ControllerConfigResolver getChangePasswordControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "changePassword");
+    }
+
+    @Override
+    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
+        try {
+            return getInstance("stormpath.web.authc.saver");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate the default authentication result saver", e);
+        }
+    }
+
+    @Override
+    public AccountStoreResolver getAccountStoreResolver() {
+        try {
+            return getInstance("stormpath.web.accountStoreResolver");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate " + AccountStoreResolver.class.getName(), e);
+        }
+    }
+
+    @Override
+    public boolean isRegisterAutoLoginEnabled() {
+        return CFG.getBoolean("stormpath.web.register.autoLogin");
     }
 
     @Override
     public boolean isLogoutInvalidateHttpSession() {
         return CFG.getBoolean(LOGOUT_INVALIDATE_HTTP_SESSION);
-    }
-
-    @Override
-    public String getForgotPasswordUrl() {
-        return CFG.getString(FORGOT_PASSWORD_URL);
-    }
-
-    @Override
-    public String getForgotPasswordNextUrl() {
-        return CFG.getString(FORGOT_PASSWORD_NEXT_URL);
-    }
-
-    @Override
-    public String getChangePasswordUrl() {
-        return CFG.getString(CHANGE_PASSWORD_URL);
-    }
-
-    @Override
-    public String getChangePasswordNextUrl() {
-        return CFG.getString(CHANGE_PASSWORD_NEXT_URL);
-    }
-
-    @Override
-    public String getRegisterUrl() {
-        return CFG.getString(REGISTER_URL);
-    }
-
-    @Override
-    public String getRegisterNextUrl() {
-        return CFG.getString(REGISTER_NEXT_URL);
-    }
-
-    @Override
-    public String getVerifyUrl() {
-        return CFG.getString(VERIFY_URL);
-    }
-
-    @Override
-    public String getVerifyNextUrl() {
-        return CFG.getString(VERIFY_NEXT_URL);
-    }
-
-    @Override
-    public String getSendVerificationEmailUrl() {
-        return CFG.getString(SEND_VERIFICATION_EMAIL_URL);
-    }
-
-    @Override
-    public boolean isVerifyEnabled() {
-        return CFG.getBoolean(VERIFY_ENABLED);
     }
 
     @Override
@@ -161,6 +158,33 @@ public class DefaultConfig implements Config {
     @Override
     public String getUnauthorizedUrl() {
         return CFG.getString(UNAUTHORIZED_URL);
+    }
+
+    @Override
+    public boolean isMeEnabled() {
+        return CFG.getBoolean(ME_ENABLED);
+    }
+
+    @Override
+    public String getMeUrl() {
+        return CFG.getString(ME_URL);
+    }
+
+    @Override
+    public List<String> getMeExpandedProperties() {
+        List<String> results = new ArrayList<String>();
+
+        Pattern pattern = Pattern.compile("^stormpath\\.web\\.me\\.expand\\.(\\w+)$");
+
+        for (String key : keySet()) {
+            Matcher matcher = pattern.matcher(key);
+            if (matcher.find()) {
+                if (CFG.getBoolean(key)) {
+                    results.add(matcher.group(1));
+                }
+            }
+        }
+        return results;
     }
 
     @Override
@@ -202,7 +226,7 @@ public class DefaultConfig implements Config {
 
         if (!expectedType.isInstance(instance)) {
             String msg = "Configured " + classPropertyName + " class name must be an instance of " +
-                    expectedType.getName();
+                                 expectedType.getName();
             throw new ServletException(msg);
         }
 
@@ -229,6 +253,16 @@ public class DefaultConfig implements Config {
         return instances;
     }
 
+    /**
+     * @since 1.0.0
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public String getProducesMediaTypes() {
+        List<String> mediaTypes = CFG.getList(PRODUCES_MEDIA_TYPES);
+        return Strings.collectionToCommaDelimitedString(mediaTypes);
+    }
+
     @SuppressWarnings("unchecked")
     protected <T> T newInstance(String classPropertyName) throws ServletException {
 
@@ -246,7 +280,7 @@ public class DefaultConfig implements Config {
             instance = Classes.newInstance(val);
         } catch (Exception e) {
             String msg = "Unable to instantiate " + classPropertyName + " class name " +
-                    val + ": " + e.getMessage();
+                                 val + ": " + e.getMessage();
             throw new ServletException(msg, e);
         }
 
@@ -255,7 +289,7 @@ public class DefaultConfig implements Config {
                 ((ServletContextInitializable) instance).init(this.servletContext);
             } catch (Exception e) {
                 String msg = "Unable to initialize " + classPropertyName + " instance of type " +
-                        val + ": " + e.getMessage();
+                                     val + ": " + e.getMessage();
                 throw new ServletException(msg, e);
             }
         }

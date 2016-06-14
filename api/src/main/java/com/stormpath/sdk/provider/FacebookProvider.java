@@ -20,20 +20,5 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.0.beta
  */
-public interface FacebookProvider extends Provider {
-
-    /**
-     * Getter for the App ID of the Facebook application.
-     *
-     * @return the App ID of the Facebook application.
-     */
-    String getClientId();
-
-    /**
-     * Getter for the App Secret of the Facebook application.
-     *
-     * @return the App Secret of the Facebook application.
-     */
-    String getClientSecret();
-
+public interface FacebookProvider extends OAuthProvider {
 }

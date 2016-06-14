@@ -39,22 +39,33 @@
 <body>
     <div class="container">
         <div class="header">
-            <ul class="nav nav-pills pull-right">
-                <c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}"/>
-                <li<c:if test="${fn:endsWith(uri,'/')}"> class="active"</c:if>><a href="${pageContext.request.contextPath}/">Home</a></li>
-                <c:choose>
-                    <c:when test="${!empty account}">
-                        <li<c:if test="${fn:endsWith(uri,'dashboard')}"> class="active"</c:if>><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
-                        <li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
-                    </c:when>
-                    <c:otherwise>
-                        <li<c:if test="${fn:endsWith(uri,'login')}"> class="active"</c:if>><a href="${pageContext.request.contextPath}/login">Login</a></li>
-                    </c:otherwise>
-                </c:choose>
-            </ul>
+            <form id="logoutForm" action="${pageContext.request.contextPath}/logout" method="post">
+                <ul class="nav nav-pills pull-right">
+                    <c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}"/>
+                    <li<c:if test="${fn:endsWith(uri,'/')}"> class="active"</c:if>><a
+                            href="${pageContext.request.contextPath}/">Home</a></li>
+                    <c:choose>
+                        <c:when test="${!empty account}">
+                            <li<c:if test="${fn:endsWith(uri,'dashboard')}"> class="active"</c:if>><a
+                                    href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
+                            <li><a id="logout" href="">Logout</a></li>
+                        </c:when>
+                        <c:otherwise>
+                            <li<c:if test="${fn:endsWith(uri,'login')}"> class="active"</c:if>><a
+                                    href="${pageContext.request.contextPath}/login">Login</a></li>
+                        </c:otherwise>
+                    </c:choose>
+                </ul>
+            </form>
             <h3 class="text-muted">Stormpath Servlet Plugin</h3>
         </div>
         <jsp:doBody/>
     </div>
+    <script type="application/javascript">
+        $('#logout').click(function (event) {
+            event.preventDefault();
+            $('#logoutForm').submit();
+        })
+    </script>
 </body>
 </html>

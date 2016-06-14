@@ -26,6 +26,7 @@ import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
+import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -79,13 +81,18 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.oauth2.enabled'] ?: true }")
     protected boolean accessTokenEnabled;
 
+    @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
+    protected String produces;
+
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
     }
 
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
-        StormpathLoginSuccessHandler loginSuccessHandler = new StormpathLoginSuccessHandler(client, authenticationResultSaver);
+        StormpathLoginSuccessHandler loginSuccessHandler =
+            new StormpathLoginSuccessHandler(client, authenticationResultSaver, produces);
         loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
+        loginSuccessHandler.setTargetUrlParameter("next");
         return loginSuccessHandler;
     }
 
@@ -93,7 +100,10 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         String loginFailureUri = loginUri + "?error";
         SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler(loginFailureUri);
         handler.setAllowSessionCreation(false); //not necessary
-        return new StormpathAuthenticationFailureHandler(handler, stormpathRequestEventPublisher);
+        return new StormpathAuthenticationFailureHandler(
+            handler, stormpathRequestEventPublisher,
+            stormpathLoginErrorModelFactory(), produces
+        );
     }
 
     public ErrorModelFactory stormpathLoginErrorModelFactory() {

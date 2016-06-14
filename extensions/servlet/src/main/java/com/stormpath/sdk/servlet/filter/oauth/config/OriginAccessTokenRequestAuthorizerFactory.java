@@ -20,12 +20,14 @@ import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.oauth.OriginAccessTokenRequestAuthorizer;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.ServletContext;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @since 1.0.RC3
@@ -35,6 +37,7 @@ public class OriginAccessTokenRequestAuthorizerFactory extends ConfigSingletonFa
     public static final String LOCALHOST_RESOLVER = "stormpath.web.localhost.resolver";
     public static final String SERVER_URI_RESOLVER = "stormpath.web.oauth2.origin.authorizer.serverUriResolver";
     public static final String ORIGIN_URIS = "stormpath.web.oauth2.origin.authorizer.originUris";
+    public static final String PRODUCES_MIME_TYPES = "stormpath.web.produces";
 
     @Override
     protected RequestAuthorizer createInstance(ServletContext servletContext) throws Exception {
@@ -42,6 +45,7 @@ public class OriginAccessTokenRequestAuthorizerFactory extends ConfigSingletonFa
         ServerUriResolver resolver = getConfig().getInstance(SERVER_URI_RESOLVER);
         Resolver<Boolean> localhost = getConfig().getInstance(LOCALHOST_RESOLVER);
         String uris = getConfig().get(ORIGIN_URIS);
+        String produces = getConfig().get(PRODUCES_MIME_TYPES);
 
         Collection<String> additionalOriginUris = Collections.emptyList();
 
@@ -50,6 +54,8 @@ public class OriginAccessTokenRequestAuthorizerFactory extends ConfigSingletonFa
             additionalOriginUris = Arrays.asList(values);
         }
 
-        return new OriginAccessTokenRequestAuthorizer(resolver, localhost, additionalOriginUris);
+        List<MediaType> producesMimeTypes = MediaType.parseMediaTypes(produces);
+
+        return new OriginAccessTokenRequestAuthorizer(resolver, localhost, additionalOriginUris, producesMimeTypes);
     }
 }

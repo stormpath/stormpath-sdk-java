@@ -22,14 +22,13 @@ import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
 import com.stormpath.sdk.servlet.client.ClientLoader
 import com.stormpath.sdk.servlet.config.CookieConfig
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
-import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
@@ -39,6 +38,7 @@ import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
 import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
+import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
@@ -189,7 +189,7 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
 
     @Test
     void testCsrfTokenManager() {
-        assertTrue (csrfTokenManager instanceof DisabledCsrfTokenManager)
+        assertTrue (csrfTokenManager instanceof SpringSecurityCsrfTokenManager)
         assertEquals csrfTokenManager.tokenName, '_csrf'
     }
 

@@ -18,36 +18,44 @@ package com.stormpath.spring.boot.examples;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @since 1.0.RC4.4
  */
-@RestController
+@Controller
 public class HelloController {
 
     @Autowired
     private HelloService helloService;
 
     @RequestMapping("/")
-    String home(HttpServletRequest request) {
+    public String home(HttpServletRequest request, Model model) {
 
         String name = "World";
 
         Account account = AccountResolver.INSTANCE.getAccount(request);
         if (account != null) {
             name = account.getGivenName();
+            model.addAttribute(account);
         }
 
-        return "Hello " + name + "!";
+        model.addAttribute("name", name);
+
+        return "hello";
     }
 
     @RequestMapping("/restricted")
-    String restricted(HttpServletRequest request) {
-        return helloService.sayHello(AccountResolver.INSTANCE.getAccount(request));
+    String restricted(HttpServletRequest request, Model model) {
+        Account account = AccountResolver.INSTANCE.getAccount(request);
+        String msg = helloService.sayHello(account);
+        model.addAttribute("msg", msg);
+
+        return "restricted";
     }
 
 }

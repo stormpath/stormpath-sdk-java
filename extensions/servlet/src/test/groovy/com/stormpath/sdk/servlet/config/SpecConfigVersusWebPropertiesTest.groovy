@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.servlet.config
 
 import com.stormpath.sdk.impl.config.ResourcePropertiesSource
@@ -63,12 +78,12 @@ class SpecConfigVersusWebPropertiesTest {
             specProperties.containsKey(k) ? null : k
         }
 
-        if (diff.size != 64) {
+        if (diff.size != 59) {
             println "It looks like a new property was added to the Framework Spec or to web.stormpath.properties."
             println "Please examine this method to see the mismatch and commented code for debugging what's changed."
         }
 
-        assertEquals diff.size(), 64, "Missing keys in spec config: ${diff}"
+        assertEquals diff.size(), 59, "Missing keys in spec config: ${diff}"
 
         // to see the keys missing in spec, uncomment the following
         /*if (diff.size > 0) {

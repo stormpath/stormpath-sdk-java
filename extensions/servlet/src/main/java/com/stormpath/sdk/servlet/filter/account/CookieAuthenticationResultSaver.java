@@ -15,12 +15,21 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthPolicy;
+import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.impl.AccessTokenCookieConfig;
 import com.stormpath.sdk.servlet.config.impl.RefreshTokenCookieConfig;
@@ -28,12 +37,18 @@ import com.stormpath.sdk.servlet.http.CookieSaver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 /**
  * @since 1.0.RC3
@@ -50,20 +65,16 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
     private final CookieConfig accessTokenCookieConfig;
     private final CookieConfig refreshTokenCookieConfig;
-    private final Application application;
 
     public CookieAuthenticationResultSaver(CookieConfig accessTokenCookieConfig,
                                            CookieConfig refreshTokenCookieConfig,
-                                           Resolver<Boolean> secureCookieRequired,
-                                           Application application) {
+                                           Resolver<Boolean> secureCookieRequired) {
         Assert.notNull(accessTokenCookieConfig, "accessTokenCookieConfig cannot be null.");
         Assert.notNull(refreshTokenCookieConfig, "refreshTokenCookieConfig cannot be null.");
         Assert.notNull(secureCookieRequired, "secureCookieRequired cannot be null.");
-        Assert.notNull(application, "application cannot be null.");
         this.accessTokenCookieConfig = accessTokenCookieConfig;
         this.refreshTokenCookieConfig = refreshTokenCookieConfig;
         this.secureCookieRequired = secureCookieRequired;
-        this.application = application;
     }
 
     @Override
@@ -79,6 +90,34 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
             getAccessTokenCookieSaver(request).set(request, response, accessTokenResult.getTokenResponse().getAccessToken());
             getRefreshTokenCookieSaver(request).set(request, response, accessTokenResult.getTokenResponse().getRefreshToken());
+        }
+        if (value instanceof TransientAuthenticationResult) {
+            Account account = value.getAccount();
+
+            Client client = ClientResolver.INSTANCE.getClient(request);
+            Application application = ApplicationResolver.INSTANCE.getApplication(request);
+
+            //Since we only have the account we need to exchange it for an OAuth2 token
+            try {
+                //code copied from AccessTokenController#clientCredentialsAuthenticationRequest
+                String jwt = Jwts.builder()
+                        .setHeaderParam(JwsHeader.KEY_ID, client.getApiKey().getId())
+                        .setSubject(account.getHref())
+                        .setIssuedAt(new Date())
+                        .setIssuer(application.getHref())
+                        .setAudience(client.getApiKey().getId())
+                        .setExpiration(DateTime.now().plusMinutes(1).toDate())
+                        .claim("status", "AUTHENTICATED").signWith(SignatureAlgorithm.HS256, client.getApiKey().getSecret().getBytes("UTF-8")).compact();
+
+                OAuthRequestAuthentication authenticationRequest = OAuthRequests.IDSITE_AUTHENTICATION_REQUEST.builder().setToken(jwt).build();
+                OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.ID_SITE_AUTHENTICATOR.forApplication(application).authenticate(authenticationRequest);
+
+                getAccessTokenCookieSaver(request).set(request, response, authenticationResult.getAccessTokenString());
+                getRefreshTokenCookieSaver(request).set(request, response, authenticationResult.getRefreshTokenString());
+            } catch (UnsupportedEncodingException e) {
+                //Should not happen since UTF-8 should always be a supported encoding, but we logged just in case
+                log.error("Error get the client API Secret", e);
+            }
         }
     }
 
@@ -161,7 +200,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
             @Override
             public int getMaxAge() {
-                return getCookieMaxAge(cookieConfig);
+                return getCookieMaxAge(cookieConfig, ApplicationResolver.INSTANCE.getApplication(request));
             }
 
             @Override
@@ -181,7 +220,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
         });
     }
 
-    private int getCookieMaxAge(CookieConfig cookieConfig) {
+    private int getCookieMaxAge(CookieConfig cookieConfig, Application application) {
         OAuthPolicy oauthPolicy = application.getOAuthPolicy();
 
         if (cookieConfig instanceof AccessTokenCookieConfig) {

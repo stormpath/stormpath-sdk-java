@@ -19,61 +19,83 @@
     <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
 </head>
 <body class="login">
-    <div class="container custom-container">
-        <div class="va-wrapper">
-            <div class="view login-view container">
+<div class="container custom-container">
+    <div class="va-wrapper">
+        <div class="view login-view container">
 
-                <div class="box row">
+            <div class="box row">
 
-                    <div th:class="'email-password-area col-xs-12 ' + ${social? 'small col-sm-8' : 'large col-sm-12'}">
+                <div th:class="'email-password-area col-xs-12 ' + ${#lists.isEmpty(accountStores) ? 'large col-sm-12' : 'small col-sm-8'}">
 
-                        <div class="header" th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
-                                <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Login|</span>
-                        </div>
+                    <div class="header"
+                         th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
+                        <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Register|</span>
+                    </div>
 
-                        <div class="alert alert-dismissable alert-success" th:if="${not #strings.isEmpty(status)}">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <p th:text="#{'stormpath.web.login.status.' + ${status}}">|Login Status|</p>
-                        </div>
+                    <div class="alert alert-dismissable alert-success" th:if="${not #strings.isEmpty(status)}">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <p th:text="${status}">|Login Status|</p>
+                    </div>
 
-                        <div class="alert alert-dismissable alert-danger bad-login" th:if="${errors != null and not #lists.isEmpty(errors)}">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <!--/*/ <th-block data-th-each="error : ${errors}"> /*/-->
-                            <p th:text="${error}">|Error message here.|</p>
-                            <!--/*/ </th-block> /*/-->
-                        </div>
+                    <div class="alert alert-dismissable alert-danger bad-login"
+                         th:if="${errors != null and not #lists.isEmpty(errors)}">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <!--/*/ <th:block data-th-each="error : ${errors}"> /*/-->
+                        <p th:text="${error.message}">|Error message here.|</p>
+                        <!--/*/ </th:block> /*/-->
+                    </div>
 
-                        <form method="post" th:action="@{${form.action}}" role="form" class="login-form form-horizontal">
-                            <input name="next" type="hidden" th:value="${form.next}" th:if="${not #strings.isEmpty(form.next)}"/>
+                    <form method="post" role="form" class="login-form form-horizontal">
+                        <div th:each="field : ${form.fields}" form-group="true"
+                             th:class="'form-group group-' + ${field.name}">
+                            <th:block th:if="${field.type == 'hidden'}">
+                                <input th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
+                            </th:block>
+                            <th:block th:if="${field.type != 'hidden'}">
+                                <label th:class="${#lists.isEmpty(accountStores) ? 'col-sm-4' : 'col-sm-12'}"
+                                       th:text="${field.label}">|Field label|</label>
 
-                            <input th:each="field : ${form.hiddenFields}" th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
-
-                            <div th:each="field : ${form.visibleFields}" form-group="true" th:class="'form-group group-' + ${field.name}">
-                                <label th:class="${social ? 'col-sm-12' : 'col-sm-4'}" th:text="#{${field.label}}">|Field label|</label>
-
-                                <div class="col-sm-8">
+                                <div th:class="${#lists.isEmpty(accountStores) ? 'col-sm-8' : 'col-sm-12'}">
                                     <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
-                                           th:placeholder="#{${field.placeholder}}"
-                                           th:autofocus="${field.autofocus}"
+                                           th:placeholder="${field.placeholder}"
                                            th:required="${field.required}" class="form-control"/>
                                 </div>
-                            </div>
+                            </th:block>
+                        </div>
 
-                            <div>
-                                <button type="submit" class="login btn btn-login btn-sp-green"
-                                        th:text="#{stormpath.web.login.form.button.value}">|Login|</button>
-                            </div>
-                        </form>
-
-                    </div>
+                        <div>
+                            <button type="submit" class="login btn btn-login btn-sp-green"
+                                    th:text="#{stormpath.web.login.form.button.value}">|Login|
+                            </button>
+                        </div>
+                    </form>
 
                 </div>
 
-                <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify" th:text="#{stormpath.web.login.form.sendVerificationEmail.text}">|Resend Email Verification|</a>
-                <a th:href="@{${forgotLoginUri}}" class="to-login" th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot Password?|</a>
-
+                <div th:if="${not #lists.isEmpty(accountStores)}" class="provider-area  col-xs-12 col-sm-4">
+                    <div class="header">&nbsp;</div>
+                    <label>Easy 1-click login:</label>
+                    <button th:each="accountStore : ${accountStores}" class="btn btn-social"
+                            th:classappend="${'btn-'+accountStore.provider.providerId}"
+                            th:text="${accountStore.provider.providerId}"
+                            th:id="${accountStore.provider.providerId == 'saml' ? 'saml' : accountStore.provider.clientId}">
+                        |Provider|
+                    </button>
+                </div>
             </div>
+
+            <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify"
+               th:text="#{stormpath.web.login.form.sendVerificationEmail.text}">|Resend Email Verification|</a>
+            <a th:href="@{${forgotLoginUri}}" class="to-login" th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot
+                Password?|</a>
+
         </div>
+        <input type="hidden" id="baseUrl"
+               th:value="${#httpServletRequest.scheme + '://' + #httpServletRequest.serverName + ':'+#httpServletRequest.serverPort+#httpServletRequest.contextPath}"/>
     </div>
+</div>
+
+<script th:src="${#httpServletRequest.contextPath + '/assets/js/stormpath.js'}"></script>
+
 </body>
 </html>

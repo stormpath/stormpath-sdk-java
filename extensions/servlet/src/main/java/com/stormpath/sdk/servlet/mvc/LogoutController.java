@@ -16,9 +16,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +29,16 @@ public class LogoutController extends AbstractController {
 
     private boolean invalidateHttpSession = true;
 
+    public LogoutController(ControllerConfigResolver logoutControllerConfigResolver, String produces) {
+        super(logoutControllerConfigResolver, produces);
+    }
+
+    //If sub-classess override this method they MUST CALL super.init() at some point insider their custom implementation.
+    public void init() {
+        Assert.hasText(nextUri, "nextUri must be configured.");
+        Assert.notNull(produces, "produces cannot be null.");
+    }
+
     public boolean isInvalidateHttpSession() {
         return invalidateHttpSession;
     }
@@ -39,17 +47,35 @@ public class LogoutController extends AbstractController {
         this.invalidateHttpSession = invalidateHttpSession;
     }
 
-    public void init() {
-        Assert.hasText(nextUri, "nextUri property cannot be null or empty.");
+    /**
+     * @since 1.0.0
+     */
+    public LogoutController setLogoutNextUri(String logoutNextUri) {
+        this.nextUri = logoutNextUri;
+        return this;
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public LogoutController setLogoutInvalidateHttpSession(boolean invalidateHttpSession) {
+        this.invalidateHttpSession = invalidateHttpSession;
+        return this;
     }
 
     @Override
-    public boolean isNotAllowIfAuthenticated() {
+    public boolean isNotAllowedIfAuthenticated() {
         return false;
     }
 
     @Override
-    public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        return null;
+    }
+
+    @Override
+    public ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         //clear out any authentication/account state:
         request.logout();
@@ -60,27 +86,12 @@ public class LogoutController extends AbstractController {
             session.invalidate();
         }
 
-        String next = request.getParameter("next");
-
-        if (!Strings.hasText(next)) {
-            next = getNextUri();
-        }
-
-        if (isHtmlPreferred(request)) {
-            return new DefaultViewModel(next).setRedirect(true);
+        if (isHtmlPreferred(request, response)) {
+            return new DefaultViewModel(nextUri).setRedirect(true);
         } else {
             //probably an ajax or non-browser client - return 200 ok:
             response.setStatus(HttpServletResponse.SC_OK);
             return null;
         }
-    }
-
-    protected boolean isHtmlPreferred(HttpServletRequest request) {
-        UserAgent ua = getUserAgent(request);
-        return ua.isHtmlPreferred();
-    }
-
-    protected UserAgent getUserAgent(HttpServletRequest request) {
-        return new DefaultUserAgent(request);
     }
 }

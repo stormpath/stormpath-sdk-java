@@ -103,7 +103,9 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             return result;
 
         } catch (OAuthException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            //updated from SC_BAD_REQUEST to SC_UNAUTHORIZED per https://github.com/stormpath/stormpath-sdk-java/issues/681
+            // and https://github.com/stormpath/stormpath-sdk-java/issues/674
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.setHeader("Cache-Control", "no-store");
             response.setHeader("Pragma", "no-cache");
@@ -137,12 +139,12 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             return createAuthenticationResult(request, response, jwtResult.getAccount());
 
         } catch (ExpiredJwtException e) {
-            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is expired.", null, e);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is expired.", e);
         } catch (OAuthException e) {
             throw e;
         } catch (Exception e) {
             log.debug("JWT verification failed.", e);
-            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is invalid.", null, e);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "access_token is invalid.", e);
         }
     }
 
@@ -219,7 +221,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
         } catch (ResourceException e) {
             OAuthErrorCode err = OAuthErrorCode.INVALID_CLIENT;
             String msg = e.getStormpathError().getDeveloperMessage();
-            throw new OAuthException(err, msg, null, e);
+            throw new OAuthException(err, msg, e);
         }
     }
 }

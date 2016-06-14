@@ -15,18 +15,22 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
+import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,89 +39,101 @@ import java.util.Map;
  */
 public abstract class FormController extends AbstractController {
 
-    private CsrfTokenManager csrfTokenManager;
-    private String view;
-    private String uri;
+    protected CsrfTokenManager csrfTokenManager;
+    protected RequestFieldValueResolver fieldValueResolver;
+    protected List<Field> formFields;
 
-    public void init() {
-        Assert.hasText(this.view, "view cannot be null or empty.");
-        Assert.hasText(this.uri, "uri cannot be null or empty.");
+    public final static String SPRING_SECURITY_AUTHENTICATION_FAILED_KEY = "SPRING_SECURITY_AUTHENTICATION_FAILED_MESSAGE";
+
+    public FormController() {
+
+    }
+
+    public FormController(ControllerConfigResolver configResolver, String produces) {
+        super(configResolver, produces);
+        this.csrfTokenManager = configResolver.getCsrfTokenManager();
+        this.formFields = configResolver.getFormFields();
+
+        this.fieldValueResolver = new ContentNegotiatingFieldValueResolver();
+
         Assert.notNull(this.csrfTokenManager, "csrfTokenManager cannot be null.");
+        Assert.notNull(this.fieldValueResolver, "fieldValueResolver cannot be null.");
     }
 
-    public String getView() {
-        return view;
-    }
-
-    public void setView(String view) {
-        this.view = view;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public CsrfTokenManager getCsrfTokenManager() {
-        return csrfTokenManager;
-    }
-
-    public void setCsrfTokenManager(CsrfTokenManager csrfTokenManager) {
-        this.csrfTokenManager = csrfTokenManager;
-    }
-
-    protected boolean isCsrfProtectionEnabled() {
+    private boolean isCsrfProtectionEnabled() {
         return csrfTokenManager != null && !(csrfTokenManager instanceof DisabledCsrfTokenManager);
     }
 
-    protected void setNewCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
-        Assert.isInstanceOf(DefaultForm.class, form, "Form implementation class must equal or extend DefaultForm");
-        ((DefaultForm)form).setCsrfToken(getCsrfTokenManager().createCsrfToken(request, response));
+    protected Field createCsrfTokenField(String value) {
+        return DefaultField.builder()
+                .setName(csrfTokenManager.getTokenName())
+                .setValue(value)
+                .setType("hidden")
+                .build();
     }
 
-    protected void validateCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
-        if (isCsrfProtectionEnabled()) {
-            String csrfToken = form.getCsrfToken();
-            Assert.isTrue(getCsrfTokenManager().isValidCsrfToken(request, response, csrfToken), "Invalid CSRF token");
+    protected void setCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
+        if (!isJsonPreferred(request, response)) {
+            Assert.isInstanceOf(DefaultForm.class, form, "Form implementation class must equal or extend DefaultForm");
+
+            String val = fieldValueResolver.getValue(request, csrfTokenManager.getTokenName());
+            if (HttpMethod.POST.name().equalsIgnoreCase(request.getMethod())) {
+                //This is a POST so we need to set the submitted CSRF token in the form
+                form.addField(createCsrfTokenField(val));
+            } else if (HttpMethod.GET.name().equalsIgnoreCase(request.getMethod())) {
+                //This is a GET so we need to generate a new CSRF token for the form
+                form.addField(createCsrfTokenField(csrfTokenManager.createCsrfToken(request, response)));
+            }
         }
     }
 
-    protected void setForm(Map<String,Object> model, Form form) {
+    void validateCsrfToken(HttpServletRequest request, HttpServletResponse response, Form form) throws IllegalArgumentException {
+        if (isCsrfProtectionEnabled() && !isJsonPreferred(request, response)) {
+            String csrfToken = form.getFieldValue(csrfTokenManager.getTokenName());
+            Assert.isTrue(csrfTokenManager.isValidCsrfToken(request, response, csrfToken), "Invalid CSRF token");
+            form.getField(csrfTokenManager.getTokenName()).setValue(csrfTokenManager.createCsrfToken(request, response));
+        }
+    }
+
+    private void setForm(Map<String, Object> model, Form form) {
         model.put("form", form);
     }
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String view = getView();
-        Map<String,?> model = createModel(request, response);
+        Map<String, ?> model = createModel(request, response);
         return new DefaultViewModel(view, model);
     }
 
+    @SuppressWarnings("unchecked")
     protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response) {
-        return createModel(request, response, null, null);
+        List<ErrorModel> errors = null;
+        if (request.getParameter("error") != null) {
+            //The login page is being re-rendered after an unsuccessful authentication attempt from Spring Security
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+            //See StormpathAuthenticationFailureHandler
+            errors = new ArrayList<>();
+            ErrorModel error = (ErrorModel) request.getSession(false).getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
+            if (error != null) {
+                errors.add(error);
+            }
+        }
+        return createModel(request, response, null, errors);
     }
 
-    protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response,
-                                        Form form, List<String> errors) {
+    protected Map<String, ?> createModel(HttpServletRequest request, HttpServletResponse response,
+                                         Form form, List<ErrorModel> errors) {
 
-        Map<String,Object> model = newModel();
-
-        model.put("social", false); //until social login is enabled
+        Map<String, Object> model = newModel();
 
         if (!Collections.isEmpty(errors)) {
             model.put("errors", errors);
         }
 
         if (form == null) {
-            form = createForm(request);
+            form = createForm(request, response);
         }
 
-        if (isCsrfProtectionEnabled()) {
-            setNewCsrfToken(request, response, form);
-        }
         setForm(model, form);
 
         String status = Strings.clean(request.getParameter("status"));
@@ -130,48 +146,51 @@ public abstract class FormController extends AbstractController {
         return model;
     }
 
-    protected Form createForm(HttpServletRequest request) {
-        return createForm(request, false);
+    protected Form createForm(HttpServletRequest request, HttpServletResponse response) {
+        return createForm(request, response, false);
     }
 
-    protected Form createForm(HttpServletRequest request, boolean retainPassword) {
-
-        DefaultForm form = new DefaultForm();
-
-        form.setAction(getUri());
+    protected Form createForm(HttpServletRequest request, HttpServletResponse response, boolean retainPassword) {
+        DefaultForm form = DefaultForm.builder().setFields(createFields(request, retainPassword)).build();
 
         if (isCsrfProtectionEnabled()) {
-            String csrfTokenName = csrfTokenManager.getTokenName();
-            form.setCsrfTokenName(csrfTokenName);
-            String value = Strings.clean(request.getParameter(csrfTokenName));
-            form.setCsrfToken(value);
+            setCsrfToken(request, response, form);
         }
-
-        String value = Strings.clean(request.getParameter("next"));
-        if (value != null) {
-            form.setNext(value);
-        }
-
-        List<Field> fields = createFields(request, retainPassword);
-        for(Field field : fields) {
-            form.addField(field);
-        }
-
-        form.autofocus();
 
         return form;
     }
 
-    protected abstract List<Field> createFields(HttpServletRequest request, boolean retainPassword);
+    protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
+        List<Field> fields = new ArrayList<>();
 
+        for (Field templateField : formFields) {
+            Field clone = templateField.copy();
+
+            if (clone.isEnabled()) {
+                String val = fieldValueResolver.getValue(request, clone.getName());
+                if (retainPassword && "password".equals(clone.getName())) {
+                    clone.setValue(val);
+                } else {
+                    clone.setValue(val);
+                }
+                // #645: Allow unresolved i18n keys to pass through for labels and placeholders
+                ((DefaultField) clone).setLabel(i18n(request, clone.getLabel(), clone.getLabel()));
+                ((DefaultField) clone).setPlaceholder(i18n(request, clone.getPlaceholder(), clone.getPlaceholder()));
+
+                fields.add(clone);
+            }
+        }
+
+        return fields;
+    }
 
     protected void appendModel(HttpServletRequest request, HttpServletResponse response,
-                               Form form, List<String> errors, Map<String,Object> model) {
+                               Form form, List<ErrorModel> errors, Map<String, Object> model) {
     }
 
     protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        Form form = createForm(request, true);
+        Form form = createForm(request, response, true);
 
         try {
             validate(request, response, form);
@@ -183,42 +202,62 @@ public abstract class FormController extends AbstractController {
 
     protected ViewModel onErrorSubmit(HttpServletRequest request, HttpServletResponse response,
                                       Form form, Exception e) {
+        sanitizeForm(form);
 
-        List<String> errors = toErrors(request, form, e);
+        List<ErrorModel> errors = toErrors(request, form, e);
 
+        if (UserAgents.get(request).isJsonPreferred()) {
+            //TODO according to the spec if multiple errors only the most relevant should be return in case of JSON response, we don't have way to know that for now
+            response.setStatus(errors.get(0).getStatus());
+            return new DefaultViewModel("stormpathJsonView", errors.get(0).toMap());
+        } else {
+            Map<String, ?> model = createModel(request, response, form, errors);
+            return new DefaultViewModel(view, model);
+        }
+    }
+
+    private void sanitizeForm(Form form) {
         //do not retain submitted password (not safe to have in the DOM text):
         Field field = form.getField("password");
         if (field != null) {
-            ((DefaultField)field).setValue("");
+            field.setValue("");
         }
         field = form.getField("confirmPassword");
         if (field != null) {
-            ((DefaultField)field).setValue("");
+            field.setValue("");
         }
-
-        String view = getView();
-        Map<String,?> model = createModel(request, response, form, errors);
-        return new DefaultViewModel(view, model);
     }
 
-    protected abstract List<String> toErrors(HttpServletRequest request, Form form, Exception e);
+    protected abstract List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e);
 
-    protected abstract ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form)
-        throws Exception;
+    protected abstract ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form) throws Exception;
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
 
-        //validate CSRF
         validateCsrfToken(request, response, form);
 
         //ensure required fields are present:
         List<Field> fields = form.getFields();
         for (Field field : fields) {
-            if (field.isRequired()) {
-                String value = Strings.clean(field.getValue());
+            if (field.isRequired() || field.isEnabled()) {
+                String value = form.getFieldValue(field.getName());
                 if (value == null) {
-                    //TODO: i18n
-                    throw new IllegalArgumentException(Strings.capitalize(field.getName()) + " is required.");
+                    String key = "stormpath.web." + controllerKey + ".form.fields." + field.getName() + ".required";
+                    String msg = i18n(request, key);
+                    throw new ValidationException(msg);
+                }
+            }
+        }
+
+        //If JSON ensure we are not posting undeclared fields according to the spec
+        if (isJsonPreferred(request, response)) {
+            Map<String, Object> postedJsonFields = fieldValueResolver.getAllFields(request);
+
+            for (String fieldName : postedJsonFields.keySet()) {
+                if (form.getField(fieldName) == null && !"customData".equals(fieldName)) {
+                    String key = "stormpath.web.form.fields.unknown";
+                    String msg = i18n(request, key, fieldName);
+                    throw new ValidationException(msg);
                 }
             }
         }

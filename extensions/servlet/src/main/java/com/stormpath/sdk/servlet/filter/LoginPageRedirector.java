@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface LoginPageRedirector {
 
-    public static final LoginPageRedirector INSTANCE = new DefaultLoginPageRedirector();
+    LoginPageRedirector INSTANCE = new DefaultLoginPageRedirector();
 
-    void redirectToLoginPage(HttpServletRequest request, HttpServletResponse response, String status) throws Exception;
+    void redirectToLoginPage(HttpServletRequest request, HttpServletResponse response) throws Exception;
 }

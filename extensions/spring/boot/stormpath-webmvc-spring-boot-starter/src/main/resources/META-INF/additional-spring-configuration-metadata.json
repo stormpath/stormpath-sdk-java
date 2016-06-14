@@ -328,7 +328,7 @@
       "name": "stormpath.web.logout.nextUri",
       "type": "java.lang.String",
       "description": "The context-relative path where the user will be redirected after logout if a 'next' request parameter is missing. The default value is '/login?status=logout'. The default login view will recognize the query parameter and show the user a message confirming that he has successfully been logged out",
-      "defaultValue": "/login?status=logout"
+      "defaultValue": "/"
     },
     {
       "name": "stormpath.web.logout.invalidateHttpSession",

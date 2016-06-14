@@ -1,6 +1,7 @@
 package com.stormpath.sdk.servlet.filter.account
 
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.servlet.config.CookieConfig
 import com.stormpath.sdk.servlet.http.Resolver
 import org.powermock.core.classloader.annotations.PrepareForTest
@@ -42,7 +43,7 @@ class CookieAuthenticationResultSaverHttpsWarningTest extends PowerMockTestCase 
         HttpServletRequest request = createMock(HttpServletRequest.class)
         CookieConfig accessTokenConfig = createMock(CookieConfig.class)
         CookieConfig refreshTokenConfig = createMock(CookieConfig.class)
-        Application application = createMock(Application.class)
+
         def resolver = createMock(Resolver.class)
 
         expect(accessTokenConfig.isSecure()).andReturn(true)
@@ -52,7 +53,7 @@ class CookieAuthenticationResultSaverHttpsWarningTest extends PowerMockTestCase 
         replay LoggerFactory.class
         replay log, request, accessTokenConfig, refreshTokenConfig, resolver
 
-        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver, application)
+        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver)
         assertFalse saver.isCookieSecure(request, accessTokenConfig)
 
         verify LoggerFactory.class

@@ -24,6 +24,9 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import javax.servlet.ServletContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -142,9 +145,26 @@ public class ExpressionConfigReader implements ConfigReader {
         }
     }
 
+    @Override
+    public List<String> getList(String name) {
+        String val = PROPS.get(name);
+        if (val == null) {
+            //noinspection unchecked
+            return Collections.EMPTY_LIST;
+        }
+
+        String[] items = val.split(",");
+        //Let's trim the values
+        List<String> list = new ArrayList<>(items.length);
+        for (String item : items) {
+            list.add(item.trim());
+        }
+        return list;
+    }
+
     private boolean isExpression(String val) {
         return val != null &&
-               val.contains(PARSER_CONTEXT.getExpressionPrefix()) &&
-               val.contains(PARSER_CONTEXT.getExpressionSuffix());
+                val.contains(PARSER_CONTEXT.getExpressionPrefix()) &&
+                val.contains(PARSER_CONTEXT.getExpressionSuffix());
     }
 }

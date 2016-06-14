@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright 2015 Stormpath, Inc.
+  ~ Copyright 2016 Stormpath, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -25,11 +25,16 @@
 <t:page>
     <jsp:attribute name="title">Restricted</jsp:attribute>
     <jsp:body>
-        <sec:authorize access="hasAuthority('${MY_GROUP}')">
-            ${message}
-        </sec:authorize>
-        <sec:authorize access="!hasAuthority('${MY_GROUP}')">
-            You do not have the proper permissions to view this page.
-        </sec:authorize>
+        <div class="container">
+            <sec:authorize access="hasAuthority('${MY_GROUP}')">
+                <h1>${message}</h1>
+            </sec:authorize>
+            <sec:authorize access="!hasAuthority('${MY_GROUP}')">
+                <h1>You do not have the proper permissions to view this page.</h1>
+            </sec:authorize>
+            <form action="/logout" method="post">
+                <input type="submit" class="btn btn-danger" value="Logout"/>
+            </form>
+        </div>
     </jsp:body>
 </t:page>

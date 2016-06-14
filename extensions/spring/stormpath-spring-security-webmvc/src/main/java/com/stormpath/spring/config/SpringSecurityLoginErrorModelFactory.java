@@ -1,37 +1,44 @@
 package com.stormpath.spring.config;
 
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
-import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.AbstractErrorModelFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @since 1.0.RC7
  */
-public class SpringSecurityLoginErrorModelFactory implements ErrorModelFactory {
+public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFactory {
 
-    private static final String  INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
+    private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
+
+    private static final String UNSUCCESSFUL_LOGIN_BACKEND_ERROR = "Login attempt failed";
 
     @Autowired
-    MessageSource messageSource;
-
-    @Override
-    public List<String> toErrors(HttpServletRequest request, Form form, Exception exception) {
-
-        String query = Strings.clean(request.getQueryString());
-        if (query != null && query.contains("error")) {
-            return Collections.singletonList(getInvalidLoginMessage(request));
-        }
-
-        return null;
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
-    private String getInvalidLoginMessage(HttpServletRequest request) {
-        return messageSource.getMessage(INVALID_LOGIN_MESSAGE, request.getLocale());
+    @Override
+    protected String getDefaultMessageKey() {
+        return INVALID_LOGIN_MESSAGE;
+    }
+
+    @Override
+    protected Object[] getMessageParams() {
+        return new Object[0];
+    }
+
+    @Override
+    protected boolean hasError(HttpServletRequest request, Exception e) {
+        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+        if (e instanceof AuthenticationServiceException) {
+            if (e.getMessage() != null && e.getMessage().contains(UNSUCCESSFUL_LOGIN_BACKEND_ERROR)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

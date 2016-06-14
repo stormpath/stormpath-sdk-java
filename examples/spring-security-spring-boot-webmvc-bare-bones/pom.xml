@@ -36,12 +36,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-
         <!-- Compile-time dependencies: -->
         <dependency>
             <groupId>com.stormpath.spring</groupId>
@@ -50,12 +44,6 @@
         </dependency>
 
         <!-- Runtime-only dependencies: -->
-        <dependency>
-            <groupId>com.stormpath.sdk</groupId>
-            <artifactId>stormpath-sdk-httpclient</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>

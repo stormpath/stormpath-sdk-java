@@ -32,8 +32,8 @@ import java.util.Map;
 public interface ViewModel {
 
     /**
-     * If {@link #isRedirect()} is true, this method returns the logical name of the view (e.g. page template) to be
-     * rendered. If {@link #isRedirect()} is false, the return value is a context-relative URI to where the user will be
+     * If {@link #isRedirect()} is false, this method returns the logical name of the view (e.g. page template) to be
+     * rendered. If {@link #isRedirect()} is true, the return value is a context-relative URI to where the user will be
      * redirected.
      *
      * @return A logical name of the view to be rendered, or, if {@link #isRedirect()}, the context-relative URI to
@@ -51,6 +51,25 @@ public interface ViewModel {
      * {@link #getModel() model}.
      */
     boolean isRedirect();
+
+    /**
+     * Returns {@code true} if the {@link #getViewName() viewName} is a named internal resource that should not be
+     * rendered by the handler, but instead the handler must dispatch the request and forward it to the
+     * internal resource instead.  That is, a {@code true} value mostly enables to the following behavior:
+     *
+     * <pre><code>
+     * String viewName = getViewName();
+     * request.getRequestDispatcher(viewName).forward(request, response);
+     * </code></pre>
+     *
+     * {@code false} is returned if the view is either a {@link #isRedirect() redirect} or should be rendered by the
+     * handler.
+     *
+     * @return {@code true} if the {@link #getViewName() viewName} is a named internal resource that should not be
+     * rendered by the handler, but instead the handler must dispatch the request and forward it to the
+     * internal resource instead.
+     */
+    boolean isForward();
 
     /**
      * Returns the model used when rendering the view page template or {@code null} if there is no model to render.
