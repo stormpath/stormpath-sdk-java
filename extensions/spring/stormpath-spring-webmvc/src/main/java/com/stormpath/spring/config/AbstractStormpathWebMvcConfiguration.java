@@ -754,7 +754,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Resolver<Account> stormpathCookieAccountResolver() {
-        return new CookieAccountResolver(stormpathAccessTokenCookieConfig(), stormpathJwtAccountResolver());
+        return new CookieAccountResolver(
+                stormpathAccessTokenCookieConfig(),
+                stormpathRefreshTokenCookieConfig(),
+                stormpathJwtAccountResolver(),
+                stormpathCookieAuthenticationResultSaver(),
+                stormpathAccessTokenResultFactory());
     }
 
     public Resolver<Account> stormpathSessionAccountResolver() {
