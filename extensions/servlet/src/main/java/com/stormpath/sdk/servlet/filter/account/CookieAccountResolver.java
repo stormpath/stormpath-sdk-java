@@ -76,13 +76,23 @@ public class CookieAccountResolver implements Resolver<Account> {
 
     @Override
     public Account get(HttpServletRequest request, HttpServletResponse response) {
-        Account account;
-        account = tryAccessToken(request, response);
-        if (account == null) {
-            account = tryRefreshToken(request, response);
+        Cookie cookie = accessTokenCookieResolver.get(request, response);
+        if (cookie == null) {
+            return null;
         }
 
-        return account;
+        String val = cookie.getValue();
+        if (!Strings.hasText(val)) {
+            return null;
+        }
+
+        try {
+            return getAccount(request, response, val);
+        } catch (Exception e) {
+            String msg = "Encountered invalid JWT in access_token cookie. It might have expired, let's try with the refresh token now.";
+            log.debug(msg, e);
+            return tryRefreshToken(request, response);
+        }
     }
 
     protected Account getAccount(HttpServletRequest request, HttpServletResponse response, String jwt) {
@@ -102,26 +112,6 @@ public class CookieAccountResolver implements Resolver<Account> {
             cookie.setValue("");
             cookie.setMaxAge(0);
             response.addCookie(cookie);
-        }
-    }
-
-    protected Account tryAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = accessTokenCookieResolver.get(request, response);
-        if (cookie == null) {
-            return null;
-        }
-
-        String val = cookie.getValue();
-        if (!Strings.hasText(val)) {
-            return null;
-        }
-
-        try {
-            return getAccount(request, response, val);
-        } catch (Exception e) {
-            String msg = "Encountered invalid JWT in access_token cookie. It might have expired, let's try with the refresh token now.";
-            log.debug(msg, e);
-            return tryRefreshToken(request, response);
         }
     }
 
