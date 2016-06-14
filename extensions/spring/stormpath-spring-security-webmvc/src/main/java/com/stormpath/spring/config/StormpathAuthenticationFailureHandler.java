@@ -28,6 +28,7 @@ import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.FormController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -46,6 +47,9 @@ import java.util.List;
  * @since 1.0.RC9
  */
 public class StormpathAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+    @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
+    protected String meUri;
 
     private static final Logger log = LoggerFactory.getLogger(StormpathAuthenticationFailureHandler.class);
 
@@ -80,7 +84,7 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
                 ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
 
             if (MediaType.APPLICATION_JSON.equals(mediaType)) {
-                request.getRequestDispatcher("/me").forward(request, response);
+                request.getRequestDispatcher(meUri).forward(request, response);
             } else {
                 //We are saving the error message in the session (rather than in the request itself) since a redirect is taking place
                 //along the line and that causes the saved attributes to be lost.

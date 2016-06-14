@@ -31,6 +31,7 @@ import com.stormpath.spring.security.provider.StormpathUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
@@ -44,6 +45,9 @@ import java.util.List;
  * @since 1.0.RC5
  */
 public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+    @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
+    protected String meUri;
 
     private static final Logger log = LoggerFactory.getLogger(StormpathLoginSuccessHandler.class);
 
@@ -74,7 +78,7 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
             MediaType mediaType =
                 ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
             if (MediaType.APPLICATION_JSON.equals(mediaType)) {
-                request.getRequestDispatcher("/me").forward(request, response);
+                request.getRequestDispatcher(meUri).forward(request, response);
             } else {
                 super.onAuthenticationSuccess(request, response, authentication);
             }

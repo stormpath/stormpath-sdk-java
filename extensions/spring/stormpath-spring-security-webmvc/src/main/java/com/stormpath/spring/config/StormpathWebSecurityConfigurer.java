@@ -17,11 +17,15 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +43,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @since 1.0.RC5
@@ -46,6 +53,8 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @Configuration
 @EnableStormpathWebSecurity
 public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+
+    private static final Logger log = LoggerFactory.getLogger(StormpathWebSecurityConfigurer.class);
 
     @Autowired
     OAuthAuthenticationSpringSecurityProcessingFilter oauthAuthenticationSpringSecurityProcessingFilter;
@@ -301,6 +310,27 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 if (logoutEnabled) {
                     http.csrf().ignoringAntMatchers(logoutUri);
                 }
+
+                http.csrf().requireCsrfProtectionMatcher(new RequestMatcher() {
+
+                    @Override
+                    public boolean matches(HttpServletRequest request) {
+                        if ("GET".equals(request.getMethod())) {
+                            return false;
+                        }
+                        try {
+                            MediaType mediaType = ContentNegotiationResolver.INSTANCE.getContentType(
+                                request, null, MediaType.parseMediaTypes(produces)
+                            );
+                            // if it's a JSON request, disable csrf
+                            return !MediaType.APPLICATION_JSON.equals(mediaType);
+                        } catch (UnresolvedMediaTypeException e) {
+                            log.error("Couldn't resolve media type: {}", e.getMessage(), e);
+                            // default to requiring CSRF
+                            return true;
+                        }
+                    }
+                });
             }
 
         }
