@@ -77,22 +77,20 @@ public class CookieAccountResolver implements Resolver<Account> {
     @Override
     public Account get(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = accessTokenCookieResolver.get(request, response);
-        if (cookie == null) {
-            return null;
+
+        if (cookie != null) {
+            String val = cookie.getValue();
+            if (Strings.hasText(val)) {
+                try {
+                    return getAccount(request, response, val);
+                } catch (Exception e) {
+                    String msg = "Encountered invalid JWT in access_token cookie. It might have expired, let's try with the refresh token now.";
+                    log.debug(msg, e);
+                }
+            }
         }
 
-        String val = cookie.getValue();
-        if (!Strings.hasText(val)) {
-            return null;
-        }
-
-        try {
-            return getAccount(request, response, val);
-        } catch (Exception e) {
-            String msg = "Encountered invalid JWT in access_token cookie. It might have expired, let's try with the refresh token now.";
-            log.debug(msg, e);
-            return tryRefreshToken(request, response);
-        }
+        return tryRefreshToken(request, response);
     }
 
     protected Account getAccount(HttpServletRequest request, HttpServletResponse response, String jwt) {
