@@ -65,6 +65,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import static com.stormpath.sdk.impl.http.HttpHeaders.STORMPATH_AGENT;
+
 /**
  * @since 0.1
  */
@@ -571,8 +573,14 @@ public class DefaultDataStore implements InternalDataStore {
 
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(java.util.Collections.singletonList(MediaType.APPLICATION_JSON));
-        request.getHeaders().set("User-Agent", USER_AGENT_STRING);
-        if (request.getHeaders().getContentType() == null){
+        List<String> stormpathAgents = request.getHeaders().get(STORMPATH_AGENT);
+        if (stormpathAgents != null && stormpathAgents.size() > 0) {
+            String stormpathAgent = Strings.arrayToDelimitedString(stormpathAgents.toArray(), " ");
+            request.getHeaders().set("User-Agent", stormpathAgent + " " + USER_AGENT_STRING);
+        } else {
+            request.getHeaders().set("User-Agent", USER_AGENT_STRING);
+        }
+        if (request.getHeaders().getContentType() == null) {
             if (request.getBody() != null) {
                 // We only add the default content type (application/json) if a content type is not already in the request
                 request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
