@@ -17,14 +17,21 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,8 +40,12 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @since 1.0.RC5
@@ -42,6 +53,8 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @Configuration
 @EnableStormpathWebSecurity
 public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+
+    private static final Logger log = LoggerFactory.getLogger(StormpathWebSecurityConfigurer.class);
 
     @Autowired
     OAuthAuthenticationSpringSecurityProcessingFilter oauthAuthenticationSpringSecurityProcessingFilter;
@@ -68,9 +81,16 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Qualifier("stormpathAuthenticationFailureHandler")
     protected AuthenticationFailureHandler failureHandler;
 
+    @Autowired
+    @Qualifier("stormpathAuthenticationManager")
+    AuthenticationManager stormpathAuthenticationManager; // provided by stormpath-spring-security
+
     @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
+
+    @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
+    protected String produces;
 
     @Value("#{ @environment['stormpath.spring.security.enabled'] ?: true }")
     protected boolean stormpathSecuritybEnabled;
@@ -207,19 +227,19 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
             http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
+
+            // This filter replaces http.formLogin() so that we can properly handle content negotiation
+            // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
+            // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
+            http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
-            http
-                .formLogin()
-                .loginPage(loginUri).and()
-                .authorizeRequests()
-                .antMatchers(loginUri).permitAll();
-
             String permittedResultPath = (idSiteEnabled) ? idSiteResultUri : samlResultUri;
 
             http
                 .authorizeRequests()
+                .antMatchers(loginUri).permitAll()
                 .antMatchers(permittedResultPath).permitAll();
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
@@ -227,13 +247,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
 
                 http
-                    .formLogin()
-                    .loginPage(loginUri)
-                    .successHandler(successHandler) // success handler will pickup the configured loginNextUri
-                    .failureHandler(failureHandler)
-                    .usernameParameter("login")
-                    .passwordParameter("password")
-                    .and().authorizeRequests()
+                    .authorizeRequests()
                     .antMatchers(loginUriMatch).permitAll()
                     .antMatchers(googleCallbackUri).permitAll()
                     .antMatchers(githubCallbackUri).permitAll()
@@ -296,9 +310,47 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 if (logoutEnabled) {
                     http.csrf().ignoringAntMatchers(logoutUri);
                 }
+
+                // @since 1.0.0
+                // Refer to: https://github.com/stormpath/stormpath-sdk-java/pull/701
+                http.csrf().requireCsrfProtectionMatcher(new RequestMatcher() {
+
+                    @Override
+                    public boolean matches(HttpServletRequest request) {
+                        if ("GET".equals(request.getMethod())) {
+                            return false;
+                        }
+                        try {
+                            MediaType mediaType = ContentNegotiationResolver.INSTANCE.getContentType(
+                                request, null, MediaType.parseMediaTypes(produces)
+                            );
+                            // if it's a JSON request, disable csrf
+                            return !MediaType.APPLICATION_JSON.equals(mediaType);
+                        } catch (UnresolvedMediaTypeException e) {
+                            log.error("Couldn't resolve media type: {}", e.getMessage(), e);
+                            // default to requiring CSRF
+                            return true;
+                        }
+                    }
+                });
             }
 
         }
+    }
+
+    // This sets up the Content Negotiation aware filter and replaces the calls to http.formLogin()
+    // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
+    private ContentNegotiationAuthenticationFilter setupContentNegotiationAuthenticationFilter() {
+        ContentNegotiationAuthenticationFilter filter = new ContentNegotiationAuthenticationFilter();
+
+        filter.setSupportedMediaTypes(MediaType.parseMediaTypes(produces));
+        filter.setAuthenticationManager(stormpathAuthenticationManager);
+        filter.setUsernameParameter("login");
+        filter.setPasswordParameter("password");
+        filter.setAuthenticationSuccessHandler(successHandler);
+        filter.setAuthenticationFailureHandler(failureHandler);
+
+        return filter;
     }
 
     /**

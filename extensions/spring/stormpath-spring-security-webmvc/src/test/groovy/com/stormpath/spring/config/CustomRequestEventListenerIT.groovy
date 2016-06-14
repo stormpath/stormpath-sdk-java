@@ -26,11 +26,10 @@ import org.springframework.web.context.WebApplicationContext
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity
 import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.0.RC9
@@ -62,8 +61,14 @@ class CustomRequestEventListenerIT extends AbstractTestNGSpringContextTests {
 
         assertFalse listener.failedInvoked
 
-        mvc.perform(formLogin().password("invalid")).andExpect(unauthenticated())
+        // Note: not using the default
+        // org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin
+        // from spring as it does not set an accept header and fouls up content negotiation as we default to
+        // application/json, which doesn't make sense for a form
+        // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
+        mvc.perform(SecurityMockMvcLoginRequestBuilder.formLogin().password("invalid")).andExpect(unauthenticated())
 
         assertTrue listener.failedInvoked
     }
+
 }

@@ -40,6 +40,18 @@ public class MeController extends AbstractController {
         return false;
     }
 
+    /**
+     * Successful JSON login will forward here as a POST so that the account model is returned.
+     *
+     * See: https://github.com/stormpath/stormpath-sdk-java/issues/682
+     *
+     * @since 1.0.0
+     */
+    @Override
+    protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return doGet(request, response);
+    }
+
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Account account = AccountResolver.INSTANCE.getAccount(request);
