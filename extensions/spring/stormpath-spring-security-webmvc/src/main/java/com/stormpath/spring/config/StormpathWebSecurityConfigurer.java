@@ -311,6 +311,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     http.csrf().ignoringAntMatchers(logoutUri);
                 }
 
+                // @since 1.0.0
+                // Refer to: https://github.com/stormpath/stormpath-sdk-java/pull/701
                 http.csrf().requireCsrfProtectionMatcher(new RequestMatcher() {
 
                     @Override
