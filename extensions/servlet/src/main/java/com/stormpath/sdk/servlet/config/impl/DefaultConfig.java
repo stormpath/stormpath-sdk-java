@@ -23,6 +23,8 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -118,8 +120,8 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public ControllerConfigResolver getChangePasswordControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "changePassword");
+    public ChangePasswordConfigResolver getChangePasswordControllerConfig() {
+        return new ChangePasswordServletControllerConfigResolver(this, CFG, "changePassword");
     }
 
     @Override

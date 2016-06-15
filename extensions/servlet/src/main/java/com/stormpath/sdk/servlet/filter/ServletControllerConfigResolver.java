@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 public class ServletControllerConfigResolver implements ControllerConfigResolver {
     private static final Logger log = LoggerFactory.getLogger(ServletControllerConfigResolver.class);
 
-    private ConfigReader configReader;
+    protected ConfigReader configReader;
     private Config config;
     private String controllerKey;
 

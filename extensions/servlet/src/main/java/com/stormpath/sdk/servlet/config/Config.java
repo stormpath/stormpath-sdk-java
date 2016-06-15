@@ -16,6 +16,8 @@
 package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
@@ -41,7 +43,7 @@ public interface Config extends Map<String, String> {
 
     ControllerConfigResolver getSendVerificationEmailControllerConfig();
 
-    ControllerConfigResolver getChangePasswordControllerConfig();
+    ChangePasswordConfigResolver getChangePasswordControllerConfig();
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();
 

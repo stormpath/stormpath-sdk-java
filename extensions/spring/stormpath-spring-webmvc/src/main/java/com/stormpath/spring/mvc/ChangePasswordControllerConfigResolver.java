@@ -15,12 +15,13 @@
  */
 package com.stormpath.spring.mvc;
 
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @since 1.0.0
  */
-public class ChangePasswordControllerConfigResolver extends  AbstractSpringControllerConfigResolver {
+public class ChangePasswordControllerConfigResolver extends  AbstractSpringControllerConfigResolver implements ChangePasswordConfigResolver {
 
     @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
     protected boolean changePasswordEnabled;
@@ -28,10 +29,13 @@ public class ChangePasswordControllerConfigResolver extends  AbstractSpringContr
     @Value("#{ @environment['stormpath.web.changePassword.uri'] ?: '/change' }")
     protected String changePasswordUri;
 
-    @Value("#{ @environment['stormpath.web.changePassword.nextUri'] ?: '/login?status=changed' }")
+    @Value("#{ @environment['stormpath.web.changePassword.errorUri'] ?: '/forgot?status=invalid_sptoken' }")
+    protected String changePasswordErrorUri;
+
+    @Value("#{ @environment['stormpath.web.changePassword.nextUri'] ?: '/login?status=reset' }")
     protected String changePasswordNextUri;
 
-    @Value("#{ @environment['stormpath.web.changePassword.view'] ?: 'stormpath/change' }")
+    @Value("#{ @environment['stormpath.web.changePassword.view'] ?: 'stormpath/change-password' }")
     protected String changePasswordView;
 
     @Override
@@ -42,6 +46,10 @@ public class ChangePasswordControllerConfigResolver extends  AbstractSpringContr
     @Override
     public String getUri() {
         return changePasswordUri;
+    }
+
+    public String getErrorUri() {
+        return changePasswordErrorUri;
     }
 
     @Override
