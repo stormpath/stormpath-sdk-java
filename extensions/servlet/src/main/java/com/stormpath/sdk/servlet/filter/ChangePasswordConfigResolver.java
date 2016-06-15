@@ -21,5 +21,6 @@ package com.stormpath.sdk.servlet.filter;
 public interface ChangePasswordConfigResolver extends ControllerConfigResolver{
 
     String getErrorUri();
+    boolean isAutoLogin();
 
 }

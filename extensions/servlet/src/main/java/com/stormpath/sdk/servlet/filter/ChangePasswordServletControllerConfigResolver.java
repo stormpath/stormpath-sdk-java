@@ -31,4 +31,7 @@ public class ChangePasswordServletControllerConfigResolver extends ServletContro
         return configReader.getString("stormpath.web." + getControllerKey() + ".errorUri");
     }
 
+    public boolean isAutoLogin() {
+        return configReader.getBoolean("stormpath.web." + getControllerKey() + ".autoLogin");
+    }
 }

@@ -52,7 +52,7 @@ public class ChangePasswordController extends FormController {
         this.loginUri = config.getLoginControllerConfig().getUri();
         this.loginNextUri = config.getLoginControllerConfig().getNextUri();
         this.errorUri = config.getChangePasswordControllerConfig().getErrorUri();
-        this.autoLogin = config.isRegisterAutoLoginEnabled();
+        this.autoLogin = config.getChangePasswordControllerConfig().isAutoLogin();
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.errorMap = new DefaultErrorMapModelFactory();
 

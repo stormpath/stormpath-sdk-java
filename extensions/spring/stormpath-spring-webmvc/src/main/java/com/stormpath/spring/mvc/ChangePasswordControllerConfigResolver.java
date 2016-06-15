@@ -38,6 +38,9 @@ public class ChangePasswordControllerConfigResolver extends  AbstractSpringContr
     @Value("#{ @environment['stormpath.web.changePassword.view'] ?: 'stormpath/change-password' }")
     protected String changePasswordView;
 
+    @Value("#{ @environment['stormpath.web.changePassword.autoLogin'] ?: false }")
+    protected boolean autoLogin;
+
     @Override
     public String getView() {
         return changePasswordView;
@@ -60,6 +63,10 @@ public class ChangePasswordControllerConfigResolver extends  AbstractSpringContr
     @Override
     public boolean isEnabled() {
         return changePasswordEnabled;
+    }
+
+    public boolean isAutoLogin() {
+        return autoLogin;
     }
 
     @Override
