@@ -28,6 +28,7 @@ import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.impl.http.HttpHeadersHolder;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.QueryStringFactory;
@@ -573,10 +574,16 @@ public class DefaultDataStore implements InternalDataStore {
 
     protected void applyDefaultRequestHeaders(Request request) {
         request.getHeaders().setAccept(java.util.Collections.singletonList(MediaType.APPLICATION_JSON));
-        List<String> stormpathAgents = request.getHeaders().get(STORMPATH_AGENT);
-        if (stormpathAgents != null && stormpathAgents.size() > 0) {
-            String stormpathAgent = Strings.arrayToDelimitedString(stormpathAgents.toArray(), " ");
-            request.getHeaders().set("User-Agent", stormpathAgent + " " + USER_AGENT_STRING);
+
+        // Get runtime headers from http client
+        Map<String, List<String>> headerMap = HttpHeadersHolder.get();
+        String stormpathAgentHeaderName = STORMPATH_AGENT.toLowerCase();
+        if (headerMap != null && headerMap.get(stormpathAgentHeaderName) != null) {
+            List<String> stormpathAgents = headerMap.get(stormpathAgentHeaderName);
+            if (stormpathAgents != null && stormpathAgents.size() > 0) {
+                String stormpathAgent = Strings.arrayToDelimitedString(stormpathAgents.toArray(), " ");
+                request.getHeaders().set("User-Agent", stormpathAgent + " " + USER_AGENT_STRING);
+            }
         } else {
             request.getHeaders().set("User-Agent", USER_AGENT_STRING);
         }
