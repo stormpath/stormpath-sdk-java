@@ -86,6 +86,12 @@ public class DefaultSamlIdpUrlBuilder implements SamlIdpUrlBuilder {
     }
 
     @Override
+    public SamlIdpUrlBuilder setAccountStoreHref(String accountStoreHref) {
+        claims.setAccountStoreHref(accountStoreHref);
+        return this;
+    }
+
+    @Override
     public SamlIdpUrlBuilder addProperty(String name, Object value) {
         claims.put(name, value);
         return this;

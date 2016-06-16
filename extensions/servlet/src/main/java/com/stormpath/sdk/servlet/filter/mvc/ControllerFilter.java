@@ -82,7 +82,7 @@ public class ControllerFilter extends HttpFilter {
         InternalResourceViewResolver irvr = new InternalResourceViewResolver();
         irvr.setPrefix(getPrefix());
         irvr.setSuffix(getSuffix());
-        this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), prroducesMediaTypes());
+        this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), producesMediaTypes());
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ControllerFilter extends HttpFilter {
     }
 
     /** @since 1.0.0 */
-    protected List<MediaType> prroducesMediaTypes() {
+    protected List<MediaType> producesMediaTypes() {
         String mediaTypes = Strings.clean(getConfig().getProducesMediaTypes());
         Assert.notNull(mediaTypes, "stormpath.web.produces property value cannot be null or empty.");
 

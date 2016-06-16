@@ -32,6 +32,7 @@ public class IdSiteClaims extends DefaultClaims {
     public static final String SHOW_ORGANIZATION_FIELD = "sof";
     public static final String USE_SUBDOMAIN = "usd";
     public static final String SP_TOKEN = "sp_token";
+    public static final String ACCOUNT_STORE_HREF = "ash";
 
     public static final String ACCESS_TOKEN = "accessToken";
     public static final String JWT_REQUEST = "jwtRequest";
@@ -109,6 +110,15 @@ public class IdSiteClaims extends DefaultClaims {
 
     public IdSiteClaims setSpToken(String spToken) {
         setValue(SP_TOKEN, spToken);
+        return this;
+    }
+
+    public String getAccountStoreHref() {
+        return getString(ACCOUNT_STORE_HREF);
+    }
+
+    public IdSiteClaims setAccountStoreHref(String accountStoreHref) {
+        setValue(ACCOUNT_STORE_HREF, accountStoreHref);
         return this;
     }
 

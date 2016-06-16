@@ -126,6 +126,12 @@ public class SamlController extends AbstractController {
 
         SamlIdpUrlBuilder builder = application.newSamlIdpUrlBuilder().setCallbackUri(callbackUri);
 
+        String ash = request.getParameter("href");
+        // if href is passed in as a parameter, set it as a claim in the JWT
+        if (ash != null) {
+            builder.setAccountStoreHref(ash);
+        }
+
         SamlOrganizationContext orgCtx = samlOrganizationResolver.get(request, null);
 
         if (orgCtx != null) {

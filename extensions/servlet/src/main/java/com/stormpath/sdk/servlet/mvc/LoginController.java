@@ -48,6 +48,7 @@ public class LoginController extends FormController {
     private LoginFormStatusResolver loginFormStatusResolver;
     private AccountStoreModelFactory accountStoreModelFactory;
     private AccountModelFactory accountModelFactory;
+    private boolean samlLoginEnabled;
 
     public LoginController() {
         super();
@@ -68,6 +69,7 @@ public class LoginController extends FormController {
         this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
         this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
         this.accountModelFactory = new DefaultAccountModelFactory();
+        this.samlLoginEnabled = config.isSamlLoginEnabled();
 
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new LoginErrorModelFactory(this.messageSource);
@@ -89,7 +91,9 @@ public class LoginController extends FormController {
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-        model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
+        if (samlLoginEnabled) {
+            model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
+        }
 
         if (isHtmlPreferred(request, response)) {
             model.put("forgotLoginUri", forgotLoginUri);

@@ -129,6 +129,10 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
         boolean unauthorizedChainSpecified = false;
 
+        String samlUrl = "/saml";
+        String samlUrlPattern = cleanUri(samlUrl);
+        boolean samlChainSpecified = false;
+
         String meUrl = config.getMeUrl();
         String meUrlPattern = cleanUri(meUrl);
         boolean meChainSpecified = false;
@@ -259,6 +263,12 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
+                } else if (uriPattern.startsWith(samlUrlPattern)) {
+                    samlChainSpecified = true;
+                    String filterName = DefaultFilter.saml.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
                 } else if (uriPattern.startsWith(meUrlPattern)) {
                     meChainSpecified = true;
 
@@ -301,6 +311,9 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         }
         if (!accessTokenChainSpecified) {
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
+        }
+        if (!samlChainSpecified) {
+            fcManager.createChain(samlUrlPattern, DefaultFilter.saml.name());
         }
         if (!meChainSpecified) {
             fcManager.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
