@@ -22,6 +22,7 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
+import com.stormpath.spring.filter.RequestCacheAwareRemovalFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
@@ -44,9 +46,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @since 1.0.RC5
@@ -236,6 +241,11 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
             http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/718
+            http.addFilterBefore(new RequestCacheAwareRemovalFilter(
+                    Arrays.asList(loginUri, "/assets/css/stormpath.css", "/assets/css/custom.stormpath.css", "/assets/js/stormpath.js"))
+                    , RequestCacheAwareFilter.class);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
@@ -355,7 +365,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         filter.setPasswordParameter("password");
         filter.setAuthenticationSuccessHandler(successHandler);
         filter.setAuthenticationFailureHandler(failureHandler);
-
         return filter;
     }
 
