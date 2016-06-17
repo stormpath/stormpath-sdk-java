@@ -22,6 +22,7 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
+import com.stormpath.spring.filter.CsrfHeaderFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -236,6 +238,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
             http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            http.addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
