@@ -25,7 +25,6 @@ import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
-import com.stormpath.spring.adapter.StormpathAuthenticationEntryPoint;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
