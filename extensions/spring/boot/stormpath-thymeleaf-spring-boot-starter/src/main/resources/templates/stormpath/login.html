@@ -29,7 +29,8 @@
 
                     <div class="header"
                          th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
-                        <span th:utext="#{stormpath.web.login.form.title(${registerLink})}">|Register|</span>
+                        <span th:if="${!registerEnabled}" th:utext="#{stormpath.web.login.form.title}">|Register|</span>
+                        <span th:if="${registerEnabled}" th:utext="#{stormpath.web.login.form.titleWithRegister(${registerLink})}">|Register|</span>
                     </div>
 
                     <div class="alert alert-dismissable alert-success" th:if="${not #strings.isEmpty(status)}">
@@ -54,7 +55,7 @@
                             <th:block th:if="${field.type != 'hidden'}">
                                 <label th:class="${#lists.isEmpty(accountStores) ? 'col-sm-4' : 'col-sm-12'}"
                                        th:text="${field.label}">|Field label|</label>
-
+`
                                 <div th:class="${#lists.isEmpty(accountStores) ? 'col-sm-8' : 'col-sm-12'}">
                                     <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
                                            th:placeholder="${field.placeholder}"
@@ -86,8 +87,7 @@
 
             <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify"
                th:text="#{stormpath.web.login.form.sendVerificationEmail.text}">|Resend Email Verification|</a>
-            <a th:href="@{${forgotLoginUri}}" class="to-login" th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot
-                Password?|</a>
+            <a th:if="${forgotPasswordEnabled}" th:href="@{${forgotLoginUri}}" class="to-login" th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot Password?|</a>
 
         </div>
         <input type="hidden" id="baseUrl"
