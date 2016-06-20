@@ -1,5 +1,5 @@
 <!--/*
-~ Copyright 2015 Stormpath, Inc.
+~ Copyright 2016 Stormpath, Inc.
 ~
 ~ Licensed under the Apache License, Version 2.0 (the "License");
 ~ you may not use this file except in compliance with the License.
@@ -15,39 +15,67 @@
 */-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{stormpath.web.verifyEmail.title}">|Verify Email|</title>
+    <title th:text="#{stormpath.web.sendVerificationEmail.title}">|Forgot Login?|</title>
     <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
 </head>
 <body class="login">
+    <div class="container custom-container">
+        <div class="va-wrapper">
+            <div class="view login-view container">
 
-        <div class="container custom-container">
+                <div class="box row">
 
-            <div class="va-wrapper">
+                    <div class="email-password-area col-xs-12 large col-sm-12">
 
-                <div class="view login-view container">
+                        <div class="header">
+                            <span th:text="#{stormpath.web.sendVerificationEmail.form.title}">|Forgot your password?|</span>
 
-                    <div class="box row">
+                            <p th:text="#{stormpath.web.sendVerificationEmail.form.instructions}">|Enter your email address below to
+                                reset your password.|</p>
+                        </div>
 
-                        <div class="email-password-area col-xs-12 large col-sm-12">
+                        <div class="alert alert-dismissable alert-danger bad-login"
+                             th:if="${errors != null and not #lists.isEmpty(errors)}">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <!--/*/ <th-block data-th-each="error : ${errors}"> /*/-->
+                            <p th:text="${error.message}">|Error message here.|</p>
+                            <!--/*/ </th-block> /*/-->
+                        </div>
 
-                            <div class="header">
-                                <span th:text="#{stormpath.web.verifyEmail.body.title}">|Almost done! We just sent you a verification email.|</span>
-                                <p th:text="#{stormpath.web.verifyEmail.body.instructions}">|Before you can login to your account, you need to active your account \
-                                    by clicking the link in the email we sent to your email address.|</p>
-                                <p th:text="#{stormpath.web.verifyEmail.body.instructions2}">|Please check your email Inbox to continue.|</p>
+                        <form method="post" role="form" class="form-horizontal sp-form">
+                            <div th:each="field : ${form.fields}" form-group="true"
+                                 th:class="'form-group group-' + ${field.name}">
+                                <th:block th:if="${field.type == 'hidden'}">
+                                    <input th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
+                                </th:block>
+                                <th:block th:if="${field.type != 'hidden'}">
+                                    <label class="col-sm-4" th:text="#{${field.label}}">|Field label|</label>
+
+                                    <div class="col-sm-8">
+                                        <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
+                                               th:placeholder="#{${field.placeholder}}"
+                                               th:required="${field.required}" class="form-control"/>
+                                    </div>
+                                </th:block>
                             </div>
 
-                        </div>
+                            <div>
+                                <button type="submit" class="login btn btn-login btn-sp-green"
+                                        th:text="#{stormpath.web.sendVerificationEmail.form.button.value}">|Login|
+                                </button>
+                            </div>
+
+                        </form>
 
                     </div>
 
                 </div>
 
+                <a th:href="@{${loginUri}}" class="to-login" th:text="#{stormpath.web.sendVerificationEmail.form.loginLink.text}">|Back
+                    to Login|</a>
             </div>
 
         </div>
+    </div>
 </body>
 </html>
-
-
-

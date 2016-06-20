@@ -454,7 +454,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (stormpathVerifyControllerConfigResolver().isEnabled()) {
             mappings.put(stormpathVerifyControllerConfigResolver().getUri(), stormpathVerifyController());
-            mappings.put(stormpathSendVerificationEmailControllerConfigResolver().getUri(), stormpathSendVerificationEmailController());
         }
         if (stormpathForgotPasswordControllerConfigResolver().isEnabled()) {
             mappings.put(stormpathForgotPasswordControllerConfigResolver().getUri(), stormpathForgotPasswordController());
@@ -1106,10 +1105,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         VerifyController controller = new VerifyController(
                 stormpathVerifyControllerConfigResolver(),
+                stormpathLoginControllerConfigResolver().getUri(),
                 stormpathLogoutControllerConfigResolver().getUri(),
-                stormpathSendVerificationEmailControllerConfigResolver().getUri(),
                 client,
-                produces
+                produces,
+                stormpathInternalConfig().isRegisterAutoLoginEnabled(),
+                stormpathInternalConfig().getAuthenticationResultSaver(),
+                stormpathInternalConfig().getAccountStoreResolver()
         );
 
         return createSpringController(controller);
