@@ -55,6 +55,10 @@ public class DefaultConfig implements Config {
     public static final String ME_ENABLED = "stormpath.web.me.enabled";
     public static final String ME_URL = "stormpath.web.me.uri";
 
+    public static final String OAUTH_ENABLED = "stormpath.web.oauth2.enabled";
+    public static final String ID_SITE_ENABLED = "stormpath.web.idSite.enabled";
+    public static final String CALLBACK_ENABLED = "stormpath.web.callback.enabled";
+
     private final ServletContext servletContext;
     private final ConfigReader CFG;
     private final Map<String, String> props;
@@ -70,7 +74,7 @@ public class DefaultConfig implements Config {
         this.servletContext = servletContext;
         this.props = Collections.unmodifiableMap(configProps);
         this.CFG = new ExpressionConfigReader(servletContext, this.props);
-        this.SINGLETONS = new LinkedHashMap<String, Object>();
+        this.SINGLETONS = new LinkedHashMap<>();
 
         this.ACCESS_TOKEN_COOKIE_CONFIG = new AccessTokenCookieConfig(CFG);
         this.REFRESH_TOKEN_COOKIE_CONFIG = new RefreshTokenCookieConfig(CFG);
@@ -261,6 +265,21 @@ public class DefaultConfig implements Config {
     public String getProducesMediaTypes() {
         List<String> mediaTypes = CFG.getList(PRODUCES_MEDIA_TYPES);
         return Strings.collectionToCommaDelimitedString(mediaTypes);
+    }
+
+    @Override
+    public boolean isOAuthEnabled() {
+        return CFG.getBoolean(OAUTH_ENABLED);
+    }
+
+    @Override
+    public boolean isIdSiteEnabled() {
+        return CFG.getBoolean(ID_SITE_ENABLED);
+    }
+
+    @Override
+    public boolean isSamlEnabled() {
+        return CFG.getBoolean(CALLBACK_ENABLED);
     }
 
     @SuppressWarnings("unchecked")

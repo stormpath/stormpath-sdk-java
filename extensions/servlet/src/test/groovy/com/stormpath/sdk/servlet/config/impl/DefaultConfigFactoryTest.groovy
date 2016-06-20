@@ -25,9 +25,7 @@ import org.yaml.snakeyaml.Yaml
 
 import java.lang.reflect.Field
 
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertNotNull
-
+import static org.testng.Assert.*
 /**
  * @since 1.0.RC9
  */
@@ -76,6 +74,62 @@ class DefaultConfigFactoryTest {
     @Test
     public void assertYAMLDependencyIsPresent() {
         assertNotNull(Classes.forName(Yaml.class.getName()))
+    }
+
+    @Test
+    public void verifyAllEndpointsCanBeDisabled() {
+        /* This test verifies the following properties are read properly from stormpath.properties
+            stormpath.web.oauth2.enabled=true
+            stormpath.web.register.enabled=true
+            stormpath.web.verifyEmail.enabled=true
+            stormpath.web.login.enabled=true
+            stormpath.web.logout.enabled=true
+            stormpath.web.forgotPassword.enabled=null
+            stormpath.web.changePassword.enabled=null
+            stormpath.web.idSite.enabled=false
+            stormpath.web.callback.enabled=true
+            stormpath.web.me.enabled=true
+         */
+
+        assertFalse config.isOAuthEnabled()
+        assertFalse config.getRegisterControllerConfig().isEnabled()
+        assertFalse config.getSendVerificationEmailControllerConfig().isEnabled()
+        assertFalse config.getLoginControllerConfig().isEnabled()
+        assertFalse config.getLogoutControllerConfig().isEnabled()
+        assertFalse config.getForgotPasswordControllerConfig().isEnabled()
+        assertFalse config.getChangePasswordControllerConfig().isEnabled()
+        assertFalse config.isIdSiteEnabled()
+        assertFalse config.isSamlEnabled()
+        assertFalse config.isMeEnabled()
+    }
+
+    @Test
+    public void verifyAllEndpointsCanBeEnabled() {
+        // Enable all endpoints with environment overrides since stormpath.properties has false for all
+        Map<String, String> env = new HashMap<>()
+        env.put('STORMPATH_WEB_OAUTH2_ENABLED', "true")
+        env.put('STORMPATH_WEB_REGISTER_ENABLED', "true")
+        env.put('STORMPATH_WEB_VERIFYEMAIL_ENABLED', "true")
+        env.put('STORMPATH_WEB_LOGIN_ENABLED', "true")
+        env.put('STORMPATH_WEB_LOGOUT_ENABLED', "true")
+        env.put('STORMPATH_WEB_FORGOTPASSWORD_ENABLED', "true")
+        env.put('STORMPATH_WEB_CHANGEPASSWORD_ENABLED', "true")
+        env.put('STORMPATH_WEB_IDSITE_ENABLED', "true")
+        env.put('STORMPATH_WEB_CALLBACK_ENABLED', "true")
+        env.put('STORMPATH_WEB_ME_ENABLED', "true")
+        setEnv(env)
+        config = new ConfigLoader().createConfig(new MockServletContext())
+
+        assertTrue config.isOAuthEnabled()
+        assertTrue config.getRegisterControllerConfig().isEnabled()
+        assertTrue config.getVerifyControllerConfig().isEnabled()
+        assertTrue config.getLoginControllerConfig().isEnabled()
+        assertTrue config.getLogoutControllerConfig().isEnabled()
+        assertTrue config.getForgotPasswordControllerConfig().isEnabled()
+        assertTrue config.getChangePasswordControllerConfig().isEnabled()
+        assertTrue config.isIdSiteEnabled()
+        assertTrue config.isSamlEnabled()
+        assertTrue config.isMeEnabled()
     }
 
     // From http://stackoverflow.com/a/496849

@@ -1392,6 +1392,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
+            public boolean isOAuthEnabled() {
+                return accessTokenEnabled;
+            }
+
+            @Override
+            public boolean isIdSiteEnabled() {
+                return idSiteEnabled;
+            }
+
+            @Override
+            public boolean isSamlEnabled() {
+                return samlEnabled;
+            }
+
+            @Override
             public int size() {
                 throw new UnsupportedOperationException("Not supported for spring environments.");
             }

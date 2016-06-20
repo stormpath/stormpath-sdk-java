@@ -73,6 +73,14 @@ class SpecConfigVersusWebPropertiesTest {
     }
 
     @Test
+    void listEnabledProperties() {
+        defaultProperties.each {
+            if (it.toString().contains('enabled')) {
+                println it
+            }
+        }
+    }
+    @Test
     void verifyPropertiesInDefaultAreInSpec() {
         def diff = defaultProperties.findResults { k,v ->
             specProperties.containsKey(k) ? null : k
