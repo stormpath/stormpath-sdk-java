@@ -77,9 +77,9 @@ function facebookLogin(appId) {
         if (response.status === 'connected') {
             var queryStr = window.location.search.replace('?', '');
             if (queryStr) {
-                window.location.replace('/callbacks/facebook?queryStr&accessToken=' + FB.getAuthResponse()['accessToken']);
+                window.location.replace(baseUrl() + '/callbacks/facebook?queryStr&accessToken=' + FB.getAuthResponse()['accessToken']);
             } else {
-                window.location.replace('/callbacks/facebook?accessToken=' + FB.getAuthResponse()['accessToken']);
+                window.location.replace(baseUrl() + '/callbacks/facebook?accessToken=' + FB.getAuthResponse()['accessToken']);
             }
         }
     }, {scope: 'email'});
