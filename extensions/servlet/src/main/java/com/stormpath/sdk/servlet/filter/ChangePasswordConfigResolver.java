@@ -16,7 +16,7 @@
 package com.stormpath.sdk.servlet.filter;
 
 /**
- * Created by mzumbado on 6/15/16.
+ * @since 1.0.0
  */
 public interface ChangePasswordConfigResolver extends ControllerConfigResolver{
 

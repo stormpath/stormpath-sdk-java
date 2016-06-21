@@ -28,8 +28,11 @@ import com.stormpath.sdk.servlet.form.Form;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * @since 1.0.RC4
  */
@@ -39,7 +42,7 @@ public class ChangePasswordController extends FormController {
     private String loginNextUri;
     private String errorUri;
     private boolean autoLogin;
-    private ErrorMapModelFactory errorMap;
+    private ErrorMapModelFactory errorMapModelFactory;
     private AccountModelFactory accountModelFactory;
 
     public ChangePasswordController() {
@@ -54,7 +57,7 @@ public class ChangePasswordController extends FormController {
         this.errorUri = config.getChangePasswordControllerConfig().getErrorUri();
         this.autoLogin = config.getChangePasswordControllerConfig().isAutoLogin();
         this.accountModelFactory = new DefaultAccountModelFactory();
-        this.errorMap = new DefaultErrorMapModelFactory();
+        this.errorMapModelFactory = new DefaultErrorMapModelFactory();
 
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
@@ -82,11 +85,10 @@ public class ChangePasswordController extends FormController {
                 try {
                     Application application = (Application) request.getAttribute(Application.class.getName());
                     application.verifyPasswordResetToken(sptoken);
-                    model.put("status", "200");
-                    model.put("message", "OK");
+                    return new DefaultViewModel("stormpathJsonView");
                 }
                 catch (ResourceException re) {
-                    model = errorMap.toErrorMap(re.getStormpathError());
+                    model = errorMapModelFactory.toErrorMap(re.getStormpathError());
                 }
             }
             return new DefaultViewModel("stormpathJsonView", model);
@@ -183,22 +185,20 @@ public class ChangePasswordController extends FormController {
             try {
                 Account account = application.resetPassword(sptoken, password);
                 if (autoLogin){
-                    model.put("status", "200");
                     model.put("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST));                }
                 else {
-                    model.put("status", "200");
-                    model.put("message", "OK");
+                    return new DefaultViewModel("stormpathJsonView");
                 }
             }
             catch (ResourceException re) {
-                model = errorMap.toErrorMap(re.getStormpathError());
+                model = errorMapModelFactory.toErrorMap(re.getStormpathError());
             }
             catch (Exception e) {
                 Map<String, Object> exceptionErrorMap = new HashMap<String, Object>();
                 exceptionErrorMap.put("message", e.getMessage());
                 exceptionErrorMap.put("status", 400);
                 DefaultError error = new DefaultError(exceptionErrorMap);
-                model = errorMap.toErrorMap(error);
+                model = errorMapModelFactory.toErrorMap(error);
             }
 
             return new DefaultViewModel("stormpathJsonView", model);

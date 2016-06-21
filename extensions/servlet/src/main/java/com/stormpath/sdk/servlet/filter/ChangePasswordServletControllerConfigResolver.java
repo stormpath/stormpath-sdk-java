@@ -19,7 +19,7 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.impl.ConfigReader;
 
 /**
- * Created by mzumbado on 6/14/16.
+ * @since 1.0.0
  */
 public class ChangePasswordServletControllerConfigResolver extends ServletControllerConfigResolver implements ChangePasswordConfigResolver {
 
