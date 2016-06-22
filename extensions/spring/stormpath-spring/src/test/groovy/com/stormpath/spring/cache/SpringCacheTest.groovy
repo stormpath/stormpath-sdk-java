@@ -85,11 +85,11 @@ class SpringCacheTest {
 
         def val = cache.get(key)
         assertNull val
-        assertNull cache.put(key, prev)
+        assertNotNull cache.put(key, prev)
 
         val = cache.put(key, value)
 
-        assertSame prev, val
+        assertNotSame prev, val
     }
 
     @Test
