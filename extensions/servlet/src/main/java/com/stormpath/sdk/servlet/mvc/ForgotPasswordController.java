@@ -127,6 +127,12 @@ public class ForgotPasswordController extends FormController {
         return errors;
     }
 
+    protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
+        if (!isJsonPreferred(request, response)){
+            super.validate(request, response,form);
+        }
+    }
+
     protected ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form) {
 
         Application application = (Application) request.getAttribute(Application.class.getName());
@@ -145,21 +151,11 @@ public class ForgotPasswordController extends FormController {
             }
         } catch (ResourceException e) {
             if (isJsonPreferred(request, response)) {
-                model.put("status", 200);
-                model.put("message", "OK");
-                return new DefaultViewModel("stormpathJsonView", model);
+                return new DefaultViewModel("stormpathJsonView");
             }
-            //404 == resource does not exist.  Do not let the user know that the account does not
-            //exist, otherwise we open up to phishing attacks
-            if (e.getCode() != 404) {
-                throw e;
-            }
-            //otherwise don't do anything
         }
         if (isJsonPreferred(request, response)) {
-            model.put("status", 200);
-            model.put("message", "OK");
-            return new DefaultViewModel("stormpathJsonView", model);
+            return new DefaultViewModel("stormpathJsonView");
         }
 
         return new DefaultViewModel(nextUri).setRedirect(true);
