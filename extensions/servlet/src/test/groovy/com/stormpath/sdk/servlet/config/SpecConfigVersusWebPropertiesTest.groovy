@@ -71,7 +71,7 @@ class SpecConfigVersusWebPropertiesTest {
 
         assertEquals diff.size(), 0, "Missing keys in default config: ${diff}"
     }
-    
+
     @Test
     void verifyPropertiesInDefaultAreInSpec() {
         def diff = defaultProperties.findResults { k,v ->
