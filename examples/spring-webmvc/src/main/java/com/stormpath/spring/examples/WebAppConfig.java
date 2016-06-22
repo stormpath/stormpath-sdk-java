@@ -31,7 +31,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @EnableStormpath //Stormpath base beans
 @EnableStormpathWebMvc //Stormpath web mvc beans plus out-of-the-box views
-@ComponentScan
+@ComponentScan(basePackages = {"com.stormpath.spring"}) // add basePackages so com.stormpath.spring.errors is scanned for ControllerAdvice-annotated classes
 @PropertySource("classpath:application.properties")
 public class WebAppConfig {
 
@@ -44,7 +44,7 @@ public class WebAppConfig {
     /**
      * This bean and the @PropertySource annotation above allow you to configure Stormpath beans with properties
      * prefixed with {@code stormpath.}, i.e. {@code stormpath.application.href}, {@code stormpath.client.apiKey.file}, etc.
-     *
+     * <p>
      * <p>Combine this with Spring's Profile support to override property values based on specific runtime environments,
      * e.g. development, production, etc.</p>
      *
