@@ -90,7 +90,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
 
-    @Autowired
+    @Autowired(required = false) //needed for Spring MVC, but not for Spring Boot
     protected Http401UnauthorizedEntryPoint authenticationEntryPoint;
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
@@ -239,7 +239,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         }
 
         // 706: Translate errors to JSON when preferred by client
-        http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
+        if (authenticationEntryPoint != null) {
+            http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
+        }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
             String permittedResultPath = (idSiteEnabled) ? idSiteResultUri : samlResultUri;
