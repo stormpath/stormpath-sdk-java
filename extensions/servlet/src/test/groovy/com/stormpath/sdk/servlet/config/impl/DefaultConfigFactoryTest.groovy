@@ -25,7 +25,12 @@ import org.yaml.snakeyaml.Yaml
 
 import java.lang.reflect.Field
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.assertNotNull
+
+
 /**
  * @since 1.0.RC9
  */
@@ -78,19 +83,6 @@ class DefaultConfigFactoryTest {
 
     @Test
     public void verifyAllEndpointsCanBeDisabled() {
-        /* This test verifies the following properties are read properly from stormpath.properties
-            stormpath.web.oauth2.enabled=true
-            stormpath.web.register.enabled=true
-            stormpath.web.verifyEmail.enabled=true
-            stormpath.web.login.enabled=true
-            stormpath.web.logout.enabled=true
-            stormpath.web.forgotPassword.enabled=null
-            stormpath.web.changePassword.enabled=null
-            stormpath.web.idSite.enabled=false
-            stormpath.web.callback.enabled=true
-            stormpath.web.me.enabled=true
-         */
-
         assertFalse config.isOAuthEnabled()
         assertFalse config.getRegisterControllerConfig().isEnabled()
         assertFalse config.getSendVerificationEmailControllerConfig().isEnabled()
@@ -136,8 +128,8 @@ class DefaultConfigFactoryTest {
     private static void setEnv(Map<String, String> newenv) throws Exception {
         Class[] classes = Collections.class.getDeclaredClasses();
         Map<String, String> env = System.getenv();
-        for(Class cl : classes) {
-            if('java.util.Collections$UnmodifiableMap'.equals(cl.getName())) {
+        for (Class cl : classes) {
+            if ('java.util.Collections$UnmodifiableMap'.equals(cl.getName())) {
                 Field field = cl.getDeclaredField('m');
                 field.setAccessible(true);
                 Object obj = field.get(env);
