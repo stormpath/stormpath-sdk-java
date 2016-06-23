@@ -36,20 +36,11 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
-import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
-import com.stormpath.sdk.servlet.filter.FilterBuilder;
-import com.stormpath.sdk.servlet.filter.FilterChainResolver;
-import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.filter.StormpathFilter;
-import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
-import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
-import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -58,7 +49,6 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
-import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
@@ -80,12 +70,8 @@ import org.springframework.web.servlet.view.JstlView;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @since 1.0.RC4
@@ -501,11 +487,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public ControllerConfigResolver stormpathVerifyControllerConfigResolver() {
         return super.stormpathVerifyControllerConfigResolver();
-    }
-
-    @Bean
-    public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
-        return super.stormpathSendVerificationEmailControllerConfigResolver();
     }
 
     @Bean

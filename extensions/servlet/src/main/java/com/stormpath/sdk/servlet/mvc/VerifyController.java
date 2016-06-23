@@ -115,8 +115,7 @@ public class VerifyController extends FormController {
                 model.put("message", i18n(request, "stormpath.web.verify.emptyToken.error"));
                 return new DefaultViewModel("stormpathJsonView", model);
             }
-            //redirect to send verification email form
-            Map<String,Object> model = new HashMap<String, Object>();
+            Map<String, ?> model = createModel(request, response);
             return new DefaultViewModel(view, model).setRedirect(false);
         }
 
@@ -236,18 +235,6 @@ public class VerifyController extends FormController {
         return fields;
     }
 
-    @Override
-    protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
-        log.debug("Unable to send account verification email.", e);
-        List<ErrorModel> errors = new ArrayList<ErrorModel>();
-        ErrorModel error = ErrorModel.builder()
-                .setStatus(400)
-                .setMessage("Invalid email address.").build();
-        errors.add(error);
-
-        return errors;
-    }
-
     protected ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form) {
 
         Application application = (Application) request.getAttribute(Application.class.getName());
@@ -266,16 +253,10 @@ public class VerifyController extends FormController {
 
             application.sendVerificationEmail(verificationEmailRequest);
         } catch (ResourceException e) {
-            //404 == resource does not exist.  Do not let the user know that the account does not
-            //exist, otherwise we open up to phishing attacks
-            if (e.getCode() != 404) {
-                if (UserAgents.get(request).isJsonPreferred()) {
-                    Map<String,Object> model = errorMap.toErrorMap(e.getStormpathError());
-                    return new DefaultViewModel("stormpathJsonView", model);
-                }
-                throw e;
+            if (UserAgents.get(request).isJsonPreferred()) {
+                Map<String,Object> model = errorMap.toErrorMap(e.getStormpathError());
+                return new DefaultViewModel("stormpathJsonView", model);
             }
-            //otherwise don't do anything
         }
 
         if (UserAgents.get(request).isJsonPreferred()) {

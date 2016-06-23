@@ -651,12 +651,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathSendVerificationEmailControllerConfigResolver")
-    public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
-        return super.stormpathSendVerificationEmailControllerConfigResolver();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathChangePasswordControllerConfigResolver")
     public ControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
         return super.stormpathChangePasswordControllerConfigResolver();

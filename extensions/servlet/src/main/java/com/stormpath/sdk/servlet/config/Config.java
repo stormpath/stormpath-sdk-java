@@ -40,8 +40,6 @@ public interface Config extends Map<String, String> {
 
     ControllerConfigResolver getVerifyControllerConfig();
 
-    ControllerConfigResolver getSendVerificationEmailControllerConfig();
-
     ControllerConfigResolver getChangePasswordControllerConfig();
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();
