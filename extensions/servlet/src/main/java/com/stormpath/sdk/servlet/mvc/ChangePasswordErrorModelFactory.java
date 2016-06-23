@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
  * @since 1.0.0
  */
 public class ChangePasswordErrorModelFactory extends AbstractErrorModelFactory {
-    private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
+    private static final String INVALID_CHANGE_PASSWORD_MESSAGE = "stormpath.web.changePassword.form.errors.invalid";
 
     public ChangePasswordErrorModelFactory(MessageSource messageSource) {
         this.messageSource = messageSource;
@@ -30,7 +30,7 @@ public class ChangePasswordErrorModelFactory extends AbstractErrorModelFactory {
 
     @Override
     protected String getDefaultMessageKey() {
-        return INVALID_LOGIN_MESSAGE;
+        return INVALID_CHANGE_PASSWORD_MESSAGE;
     }
 
     @Override
