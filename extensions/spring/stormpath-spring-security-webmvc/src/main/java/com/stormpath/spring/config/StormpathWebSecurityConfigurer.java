@@ -21,7 +21,9 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
+import com.stormpath.spring.filter.LoginHandlerFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.slf4j.Logger;
@@ -181,6 +183,14 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.social.github.uri'] ?: '/callbacks/github' }")
     protected String githubCallbackUri;
 
+    @Autowired(required = false)
+    @Qualifier("loginPreHandler")
+    protected WebHandler loginPreHandler;
+
+    @Autowired(required = false)
+    @Qualifier("loginPostHandler")
+    protected WebHandler loginPostHandler;
+
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
      * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
@@ -232,6 +242,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
             http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+            http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationAuthenticationFilter.class);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
@@ -351,6 +363,15 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         filter.setAuthenticationFailureHandler(failureHandler);
 
         return filter;
+    }
+
+    // Creates the pre login handler filter with the user define handler
+    private LoginHandlerFilter preLoginHandlerFilter() {
+        return new LoginHandlerFilter(loginPreHandler, loginUri);
+    }
+
+    private LoginHandlerFilter postLoginHandlerFilter() {
+        return new LoginHandlerFilter(loginPostHandler, loginUri);
     }
 
     /**

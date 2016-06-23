@@ -78,8 +78,8 @@
                     <label>Easy 1-click login:</label>
                     <button th:each="accountStore : ${accountStores}" class="btn btn-social"
                             th:classappend="${'btn-'+accountStore.provider.providerId}"
-                            th:text="${accountStore.provider.providerId}"
-                            th:id="${accountStore.provider.providerId == 'saml' ? 'saml' : accountStore.provider.clientId}">
+                            th:text="${accountStore.provider.providerId == 'saml' ? accountStore.name : accountStore.provider.providerId}"
+                            th:id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}">
                         |Provider|
                     </button>
                 </div>

@@ -27,7 +27,7 @@
     <packaging>war</packaging>
 
     <properties>
-        <jdk.version>1.6</jdk.version>
+        <jdk.version>1.7</jdk.version>
         <logback.version>1.1.7</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <servlet.version>3.1.0</servlet.version>
@@ -102,9 +102,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.7</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>

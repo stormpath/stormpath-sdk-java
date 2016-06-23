@@ -27,10 +27,12 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.security.provider.StormpathUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -57,6 +59,10 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
 
     private List<MediaType> supportedMediaTypes;
 
+    @Autowired(required = false)
+    @Qualifier("loginPostHandler")
+    protected WebHandler loginPostHandler;
+
     @Autowired
     private Publisher<RequestEvent> stormpathRequestEventPublisher;
 
@@ -75,12 +81,19 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
 
         // Content Negotiation per https://github.com/stormpath/stormpath-sdk-java/issues/682
         try {
-            MediaType mediaType =
-                ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
-            if (MediaType.APPLICATION_JSON.equals(mediaType)) {
-                request.getRequestDispatcher(meUri).forward(request, response);
-            } else {
-                super.onAuthenticationSuccess(request, response, authentication);
+            boolean shouldContinue = true;
+
+            if (loginPostHandler != null) {
+                shouldContinue = loginPostHandler.handle(request, response, getAccount(authentication));
+            }
+            if (shouldContinue) {
+                MediaType mediaType =
+                        ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
+                if (MediaType.APPLICATION_JSON.equals(mediaType)) {
+                    request.getRequestDispatcher(meUri).forward(request, response);
+                } else {
+                    super.onAuthenticationSuccess(request, response, authentication);
+                }
             }
         } catch (UnresolvedMediaTypeException ex) {
             log.error("Couldn't resolve media type: {}", ex.getMessage(), ex);

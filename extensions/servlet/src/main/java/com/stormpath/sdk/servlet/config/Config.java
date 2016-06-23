@@ -19,6 +19,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -49,6 +50,8 @@ public interface Config extends Map<String, String> {
 
     boolean isRegisterAutoLoginEnabled();
 
+    boolean isSamlLoginEnabled();
+
     /**
      * @since 1.0.RC6
      */
@@ -70,6 +73,14 @@ public interface Config extends Map<String, String> {
 
     String getAccessTokenValidationStrategy();
 
+    WebHandler getLoginPreHandler();
+
+    WebHandler getLoginPostHandler();
+
+    WebHandler getRegisterPreHandler();
+
+    WebHandler getRegisterPostHandler();
+
     <T> T getInstance(String classPropertyName) throws ServletException;
 
     <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException;
@@ -78,4 +89,19 @@ public interface Config extends Map<String, String> {
      * @since 1.0.0
      */
     String getProducesMediaTypes();
+
+    /**
+     * @since 1.0.0
+     */
+    boolean isOAuthEnabled();
+
+    /**
+     * @since 1.0.0
+     */
+    boolean isIdSiteEnabled();
+
+    /**
+     * @since 1.0.0
+     */
+    boolean isSamlEnabled();
 }

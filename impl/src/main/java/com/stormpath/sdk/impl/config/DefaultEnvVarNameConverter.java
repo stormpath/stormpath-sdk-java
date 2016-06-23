@@ -61,6 +61,18 @@ public class DefaultEnvVarNameConverter implements EnvVarNameConverter {
         if ("STORMPATH_BASEURL".equals(envVarName)) {
             return "stormpath.baseUrl";
         }
+        if ("STORMPATH_WEB_VERIFYEMAIL_ENABLED".equals((envVarName))) {
+            return "stormpath.web.verifyEmail.enabled";
+        }
+        if ("STORMPATH_WEB_FORGOTPASSWORD_ENABLED".equals((envVarName))) {
+            return "stormpath.web.forgotPassword.enabled";
+        }
+        if ("STORMPATH_WEB_CHANGEPASSWORD_ENABLED".equals((envVarName))) {
+            return "stormpath.web.changePassword.enabled";
+        }
+        if ("STORMPATH_WEB_IDSITE_ENABLED".equals((envVarName))) {
+            return "stormpath.web.idSite.enabled";
+        }
 
         //default cases:
         StringBuilder sb = new StringBuilder();

@@ -103,6 +103,7 @@ import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
@@ -418,6 +419,22 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Autowired
     protected Environment environment;
 
+    @Autowired(required = false)
+    @Qualifier("loginPreHandler")
+    protected WebHandler loginPreHandler;
+
+    @Autowired(required = false)
+    @Qualifier("loginPostHandler")
+    protected WebHandler loginPostHandler;
+
+    @Autowired(required = false)
+    @Qualifier("registerPreHandler")
+    protected WebHandler registerPreHandler;
+
+    @Autowired(required = false)
+    @Qualifier("registerPostHandler")
+    protected WebHandler registerPostHandler;
+
     public HandlerMapping stormpathHandlerMapping() throws Exception {
 
         Map<String, Controller> mappings = new LinkedHashMap<String, Controller>();
@@ -452,6 +469,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             mappings.put(idSiteResultUri, stormpathIdSiteResultController());
         }
         if (samlEnabled) {
+            mappings.put("/saml", stormpathSamlController());
             mappings.put(samlResultUri, stormpathSamlResultController());
         }
         if (meEnabled) {
@@ -754,7 +772,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Resolver<Account> stormpathCookieAccountResolver() {
-        return new CookieAccountResolver(stormpathAccessTokenCookieConfig(), stormpathJwtAccountResolver());
+        return new CookieAccountResolver(
+                stormpathAccessTokenCookieConfig(),
+                stormpathRefreshTokenCookieConfig(),
+                stormpathJwtAccountResolver(),
+                stormpathCookieAuthenticationResultSaver(),
+                stormpathAccessTokenResultFactory());
     }
 
     public Resolver<Account> stormpathSessionAccountResolver() {
@@ -816,10 +839,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     /**
      * @since 1.0.RC8
      */
-    protected Controller createSamlController(String samlUri) {
+    protected Controller stormpathSamlController() {
         SamlController controller = new SamlController();
         controller.setServerUriResolver(stormpathServerUriResolver());
-        controller.setSamlUri(samlUri);
         controller.setCallbackUri(samlResultUri);
         controller.setAlreadyLoggedInUri(stormpathLoginControllerConfigResolver().getNextUri());
         controller.setSamlOrganizationResolver(stormpathSamlOrganizationResolver());
@@ -840,12 +862,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return uri;
     }
 
-    //public Controller stormpathSpaController() {
-    //    final String view = createForwardView(spaUri);
-    //    ParameterizableViewController controller = new ParameterizableViewController();
-    //    controller.setViewName(view);
-    //    return controller;
-    //}
 
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
         return new DefaultAccountStoreModelFactory();
@@ -859,10 +875,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (idSiteEnabled) {
             return createIdSiteController(idSiteLoginUri);
-        }
-
-        if (samlEnabled) {
-            return createSamlController("/");
         }
 
         //otherwise standard login controller:
@@ -1273,6 +1285,26 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         return new Config() {
             @Override
+            public WebHandler getLoginPreHandler() {
+                return loginPreHandler;
+            }
+
+            @Override
+            public WebHandler getLoginPostHandler() {
+                return loginPostHandler;
+            }
+
+            @Override
+            public WebHandler getRegisterPreHandler() {
+                return registerPreHandler;
+            }
+
+            @Override
+            public WebHandler getRegisterPostHandler() {
+                return registerPostHandler;
+            }
+
+            @Override
             public ControllerConfigResolver getLoginControllerConfig() {
                 return stormpathLoginControllerConfigResolver();
             }
@@ -1358,6 +1390,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
+            public boolean isSamlLoginEnabled() {
+                return samlEnabled;
+            }
+
+            @Override
             public List<String> getMeExpandedProperties() {
                 return java.util.Collections.EMPTY_LIST;
             }
@@ -1389,6 +1426,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             @Override
             public String getProducesMediaTypes() {
                 return produces;
+            }
+
+            @Override
+            public boolean isOAuthEnabled() {
+                return accessTokenEnabled;
+            }
+
+            @Override
+            public boolean isIdSiteEnabled() {
+                return idSiteEnabled;
+            }
+
+            @Override
+            public boolean isSamlEnabled() {
+                return samlEnabled;
             }
 
             @Override
