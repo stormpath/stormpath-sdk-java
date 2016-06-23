@@ -146,6 +146,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public boolean isSamlLoginEnabled() {
+        return CFG.getBoolean("stormpath.web.callback.enabled");
+    }
+
+    @Override
     public boolean isLogoutInvalidateHttpSession() {
         return CFG.getBoolean(LOGOUT_INVALIDATE_HTTP_SESSION);
     }

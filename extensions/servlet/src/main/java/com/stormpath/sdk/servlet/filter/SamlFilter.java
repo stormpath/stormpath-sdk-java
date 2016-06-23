@@ -16,6 +16,10 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.mvc.SamlController;
+import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
+import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
+import com.stormpath.sdk.servlet.util.SubdomainResolver;
 
 import javax.servlet.ServletException;
 
@@ -26,7 +30,6 @@ public class SamlFilter extends ControllerFilter {
 
     @Override
     protected void onInit() throws ServletException {
-        /* TODO SAML is currently broken. Potentially to be solved on https://github.com/stormpath/stormpath-sdk-java/issues/438
         SubdomainResolver subdomainResolver = new SubdomainResolver();
         subdomainResolver.setBaseDomainName(getConfig().get("stormpath.web.application.domain"));
 
@@ -38,14 +41,12 @@ public class SamlFilter extends ControllerFilter {
 
         SamlController controller = new SamlController();
         controller.setServerUriResolver(new DefaultServerUriResolver());
-        controller.setSamlUri("/");
-        controller.setCallbackUri(getConfig().get("stormpath.web.saml.result.uri"));
+        controller.setCallbackUri(getConfig().get("stormpath.web.callback.uri"));
         controller.setAlreadyLoggedInUri(getConfig().getLoginControllerConfig().getNextUri());
         controller.setSamlOrganizationResolver(samlOrganizationResolver);
         controller.init();
 
         setController(controller);
-        */
         super.onInit();
     }
 }
