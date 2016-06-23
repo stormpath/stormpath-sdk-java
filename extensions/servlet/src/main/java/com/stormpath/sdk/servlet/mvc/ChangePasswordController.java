@@ -17,7 +17,6 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
@@ -42,14 +41,14 @@ public class ChangePasswordController extends FormController {
     private String loginNextUri;
     private String errorUri;
     private boolean autoLogin;
-    private ErrorMapModelFactory errorMapModelFactory;
+    private ErrorModelFactory errorModelFactory;
     private AccountModelFactory accountModelFactory;
 
     public ChangePasswordController() {
         super();
     }
 
-    public ChangePasswordController(Config config) {
+    public ChangePasswordController(Config config, ErrorModelFactory errorModelFactory) {
         super(config.getChangePasswordControllerConfig(), config.getProducesMediaTypes());
         this.forgotPasswordUri = config.getForgotPasswordControllerConfig().getUri();
         this.loginUri = config.getLoginControllerConfig().getUri();
@@ -57,12 +56,17 @@ public class ChangePasswordController extends FormController {
         this.errorUri = config.getChangePasswordControllerConfig().getErrorUri();
         this.autoLogin = config.getChangePasswordControllerConfig().isAutoLogin();
         this.accountModelFactory = new DefaultAccountModelFactory();
-        this.errorMapModelFactory = new DefaultErrorMapModelFactory();
+        this.errorModelFactory = errorModelFactory;
+
+        if (this.errorModelFactory == null) {
+            this.errorModelFactory = new ChangePasswordErrorModelFactory(this.messageSource);
+        }
 
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(loginNextUri, "loginNextUri cannot be null or empty.");
         Assert.hasText(errorUri, "errorUri cannot be null or empty.");
+        Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null or empty.");
     }
 
     @Override
@@ -78,8 +82,9 @@ public class ChangePasswordController extends FormController {
         if (isJsonPreferred(request, response)) {
             Map<String, Object> model = new HashMap<String, Object>(1);
             if (sptoken == null) {
-                model.put("status", "400");
+                model.put("status", HttpServletResponse.SC_BAD_REQUEST);
                 model.put("message", i18n(request, "stormpath.web.changePassword.form.errors.no_token"));
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
             else {
                 try {
@@ -87,8 +92,9 @@ public class ChangePasswordController extends FormController {
                     application.verifyPasswordResetToken(sptoken);
                     return new DefaultViewModel("stormpathJsonView");
                 }
-                catch (ResourceException re) {
-                    model = errorMapModelFactory.toErrorMap(re.getStormpathError());
+                catch (Exception e) {
+                    model = errorModelFactory.toError(request, e).toMap();
+                    response.setStatus(errorModelFactory.toError(request, e).getStatus());
                 }
             }
             return new DefaultViewModel("stormpathJsonView", model);
@@ -190,15 +196,9 @@ public class ChangePasswordController extends FormController {
                     return new DefaultViewModel("stormpathJsonView");
                 }
             }
-            catch (ResourceException re) {
-                model = errorMapModelFactory.toErrorMap(re.getStormpathError());
-            }
             catch (Exception e) {
-                Map<String, Object> exceptionErrorMap = new HashMap<String, Object>();
-                exceptionErrorMap.put("message", e.getMessage());
-                exceptionErrorMap.put("status", 400);
-                DefaultError error = new DefaultError(exceptionErrorMap);
-                model = errorMapModelFactory.toErrorMap(error);
+                model = errorModelFactory.toError(request, e).toMap();
+                response.setStatus(errorModelFactory.toError(request, e).getStatus());
             }
 
             return new DefaultViewModel("stormpathJsonView", model);

@@ -89,6 +89,7 @@ import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
+import com.stormpath.sdk.servlet.mvc.ChangePasswordErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 import com.stormpath.sdk.servlet.mvc.IdSiteController;
@@ -412,6 +413,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Autowired(required = false)
     protected ErrorModelFactory loginErrorModelFactory;
+
+    @Autowired(required = false)
+    protected ErrorModelFactory changePasswordErrorModelFactory;
 
     @Autowired(required = false)
     protected ObjectMapper objectMapper = new ObjectMapper();
@@ -832,6 +836,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new LoginErrorModelFactory(stormpathMessageSource());
     }
 
+    public ErrorModelFactory stormpathChangePasswordErrorModelFactory() {
+        return new ChangePasswordErrorModelFactory(stormpathMessageSource());
+    }
+
     protected String createForwardView(String uri) {
         Assert.hasText("uri cannot be null or empty.");
         assert uri != null;
@@ -1128,7 +1136,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             return createIdSiteController(null);
         }
 
-        ChangePasswordController controller = new ChangePasswordController(stormpathInternalConfig());
+        ChangePasswordController controller = new ChangePasswordController(stormpathInternalConfig(), changePasswordErrorModelFactory);
 
         return createSpaAwareSpringController(controller);
     }

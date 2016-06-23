@@ -16,7 +16,9 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
+import com.stormpath.sdk.servlet.mvc.ChangePasswordErrorModelFactory;
 
 import javax.servlet.ServletException;
 
@@ -24,10 +26,13 @@ import javax.servlet.ServletException;
  * @since 1.0.RC3
  */
 public class ChangePasswordFilter extends ControllerFilter {
+    public static final String MESSAGE_SOURCE = "stormpath.web.message.source";
 
     @Override
     protected void onInit() throws ServletException {
-        ChangePasswordController controller = new ChangePasswordController(getConfig());
+        MessageSource messageSource = getConfig().getInstance(MESSAGE_SOURCE);
+
+        ChangePasswordController controller = new ChangePasswordController(getConfig(), new ChangePasswordErrorModelFactory(messageSource));
 
         setController(controller);
 
