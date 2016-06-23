@@ -89,4 +89,19 @@ public interface Config extends Map<String, String> {
      * @since 1.0.0
      */
     String getProducesMediaTypes();
+
+    /**
+     * @since 1.0.0
+     */
+    boolean isOAuthEnabled();
+
+    /**
+     * @since 1.0.0
+     */
+    boolean isIdSiteEnabled();
+
+    /**
+     * @since 1.0.0
+     */
+    boolean isSamlEnabled();
 }
