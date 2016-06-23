@@ -31,7 +31,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @since 1.0.RC4
@@ -75,7 +79,7 @@ public class ForgotPasswordController extends FormController {
 
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (isJsonPreferred(request, response)) {
-            response.setStatus(405);
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return new DefaultViewModel("stormpathJsonView", Collections.EMPTY_MAP);
         }
         return super.doGet(request, response);
@@ -139,7 +143,6 @@ public class ForgotPasswordController extends FormController {
 
         String email = form.getFieldValue("email");
 
-        Map<String, Object> model = new HashMap<String, Object>();
         try {
             //set the form on the request in case the AccountStoreResolver needs to inspect it:
             request.setAttribute("form", form);
