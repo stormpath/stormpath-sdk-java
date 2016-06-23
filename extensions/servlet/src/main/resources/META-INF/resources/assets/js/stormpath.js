@@ -35,7 +35,7 @@ $('.btn-linkedin').click(function (event) {
 
 $('.btn-saml').click(function (event) {
     event.preventDefault();
-    samlLogin();
+    samlLogin(event.target.id);
 });
 
 function baseUrl() {
@@ -61,8 +61,8 @@ function githubLogin(clientId) {
     window.location.replace('https://github.com/login/oauth/authorize?client_id=' + clientId);
 }
 
-function samlLogin() {
-    window.location.replace(baseUrl() + '/saml');
+function samlLogin(href) {
+    window.location.replace(baseUrl() + '/saml?href=' + encodeURIComponent(href));
 }
 
 function facebookLogin(appId) {
@@ -77,9 +77,9 @@ function facebookLogin(appId) {
         if (response.status === 'connected') {
             var queryStr = window.location.search.replace('?', '');
             if (queryStr) {
-                window.location.replace('/callbacks/facebook?queryStr&accessToken=' + FB.getAuthResponse()['accessToken']);
+                window.location.replace(baseUrl() + '/callbacks/facebook?queryStr&accessToken=' + FB.getAuthResponse()['accessToken']);
             } else {
-                window.location.replace('/callbacks/facebook?accessToken=' + FB.getAuthResponse()['accessToken']);
+                window.location.replace(baseUrl() + '/callbacks/facebook?accessToken=' + FB.getAuthResponse()['accessToken']);
             }
         }
     }, {scope: 'email'});

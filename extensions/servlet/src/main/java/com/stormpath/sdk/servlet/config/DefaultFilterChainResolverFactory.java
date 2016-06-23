@@ -136,6 +136,11 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
         boolean unauthorizedChainSpecified = false;
 
+        String samlUrl = "/saml";
+        String samlUrlPattern = cleanUri(samlUrl);
+        boolean samlChainSpecified = false;
+        boolean samlEnabled = config.isSamlEnabled();
+
         String meUrl = config.getMeUrl();
         String meUrlPattern = cleanUri(meUrl);
         boolean meChainSpecified = false;
@@ -143,7 +148,6 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
 
         // todo: figure out where idsite is added to the filter chain and allow disabling
         boolean isIdSiteEnabled = config.isIdSiteEnabled();
-        boolean isSamlEnabled = config.isSamlEnabled();
 
         String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
         String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
@@ -271,6 +275,12 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
+                } else if (uriPattern.startsWith(samlUrlPattern)) {
+                    samlChainSpecified = true;
+                    String filterName = DefaultFilter.saml.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
                 } else if (uriPattern.startsWith(meUrlPattern)) {
                     meChainSpecified = true;
 
@@ -313,6 +323,9 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         }
         if (!accessTokenChainSpecified && oauthEnabled) {
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
+        }
+        if (!samlChainSpecified && samlEnabled) {
+            fcManager.createChain(samlUrlPattern, DefaultFilter.saml.name());
         }
         if (!meChainSpecified && meEnabled) {
             fcManager.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());

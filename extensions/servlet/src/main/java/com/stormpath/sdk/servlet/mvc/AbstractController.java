@@ -61,6 +61,8 @@ public abstract class AbstractController implements Controller {
     protected String controllerKey;
     private Resolver<Locale> localeResolver;
 
+    protected ContentNegotiationResolver contentNegotiationResolver = ContentNegotiationResolver.INSTANCE;
+
     public AbstractController(ControllerConfigResolver controllerConfigResolver, String produces) {
         this.nextUri = controllerConfigResolver.getNextUri();
         this.messageSource = controllerConfigResolver.getMessageSource();
@@ -110,7 +112,7 @@ public abstract class AbstractController implements Controller {
 
     protected boolean isJsonPreferred(HttpServletRequest request, HttpServletResponse response) {
         try {
-            return MediaType.APPLICATION_JSON.equals(ContentNegotiationResolver.INSTANCE.getContentType(request, response, produces));
+            return MediaType.APPLICATION_JSON.equals(contentNegotiationResolver.getContentType(request, response, produces));
         } catch (UnresolvedMediaTypeException e) {
             log.error("Couldn't resolve content type", e);
             return false;
@@ -119,7 +121,7 @@ public abstract class AbstractController implements Controller {
 
     protected boolean isHtmlPreferred(HttpServletRequest request, HttpServletResponse response) {
         try {
-            return MediaType.TEXT_HTML.equals(ContentNegotiationResolver.INSTANCE.getContentType(request, response, produces));
+            return MediaType.TEXT_HTML.equals(contentNegotiationResolver.getContentType(request, response, produces));
         } catch (UnresolvedMediaTypeException e) {
             log.error("Couldn't resolve content type", e);
             return false;

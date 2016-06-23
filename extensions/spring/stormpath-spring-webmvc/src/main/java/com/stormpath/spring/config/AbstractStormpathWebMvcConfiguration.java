@@ -452,6 +452,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             mappings.put(idSiteResultUri, stormpathIdSiteResultController());
         }
         if (samlEnabled) {
+            mappings.put("/saml", stormpathSamlController());
             mappings.put(samlResultUri, stormpathSamlResultController());
         }
         if (meEnabled) {
@@ -754,7 +755,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Resolver<Account> stormpathCookieAccountResolver() {
-        return new CookieAccountResolver(stormpathAccessTokenCookieConfig(), stormpathJwtAccountResolver());
+        return new CookieAccountResolver(
+                stormpathAccessTokenCookieConfig(),
+                stormpathRefreshTokenCookieConfig(),
+                stormpathJwtAccountResolver(),
+                stormpathCookieAuthenticationResultSaver(),
+                stormpathAccessTokenResultFactory());
     }
 
     public Resolver<Account> stormpathSessionAccountResolver() {
@@ -816,10 +822,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     /**
      * @since 1.0.RC8
      */
-    protected Controller createSamlController(String samlUri) {
+    protected Controller stormpathSamlController() {
         SamlController controller = new SamlController();
         controller.setServerUriResolver(stormpathServerUriResolver());
-        controller.setSamlUri(samlUri);
         controller.setCallbackUri(samlResultUri);
         controller.setAlreadyLoggedInUri(stormpathLoginControllerConfigResolver().getNextUri());
         controller.setSamlOrganizationResolver(stormpathSamlOrganizationResolver());
@@ -840,12 +845,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return uri;
     }
 
-    //public Controller stormpathSpaController() {
-    //    final String view = createForwardView(spaUri);
-    //    ParameterizableViewController controller = new ParameterizableViewController();
-    //    controller.setViewName(view);
-    //    return controller;
-    //}
 
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
         return new DefaultAccountStoreModelFactory();
@@ -859,10 +858,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (idSiteEnabled) {
             return createIdSiteController(idSiteLoginUri);
-        }
-
-        if (samlEnabled) {
-            return createSamlController("/");
         }
 
         //otherwise standard login controller:
@@ -1355,6 +1350,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             @Override
             public boolean isRegisterAutoLoginEnabled() {
                 return registerAutoLogin;
+            }
+
+            @Override
+            public boolean isSamlLoginEnabled() {
+                return samlEnabled;
             }
 
             @Override
