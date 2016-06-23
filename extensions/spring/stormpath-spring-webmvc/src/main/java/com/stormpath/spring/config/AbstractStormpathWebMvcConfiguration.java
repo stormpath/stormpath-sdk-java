@@ -103,6 +103,7 @@ import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
@@ -417,6 +418,22 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Autowired
     protected Environment environment;
+
+    @Autowired(required = false)
+    @Qualifier("loginPreHandler")
+    protected WebHandler loginPreHandler;
+
+    @Autowired(required = false)
+    @Qualifier("loginPostHandler")
+    protected WebHandler loginPostHandler;
+
+    @Autowired(required = false)
+    @Qualifier("registerPreHandler")
+    protected WebHandler registerPreHandler;
+
+    @Autowired(required = false)
+    @Qualifier("registerPostHandler")
+    protected WebHandler registerPostHandler;
 
     public HandlerMapping stormpathHandlerMapping() throws Exception {
 
@@ -1267,6 +1284,26 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         final Resolver<Locale> localeResolver = stormpathLocaleResolver();
 
         return new Config() {
+            @Override
+            public WebHandler getLoginPreHandler() {
+                return loginPreHandler;
+            }
+
+            @Override
+            public WebHandler getLoginPostHandler() {
+                return loginPostHandler;
+            }
+
+            @Override
+            public WebHandler getRegisterPreHandler() {
+                return registerPreHandler;
+            }
+
+            @Override
+            public WebHandler getRegisterPostHandler() {
+                return registerPostHandler;
+            }
+
             @Override
             public ControllerConfigResolver getLoginControllerConfig() {
                 return stormpathLoginControllerConfigResolver();

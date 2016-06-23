@@ -19,6 +19,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -71,6 +72,14 @@ public interface Config extends Map<String, String> {
     CookieConfig getAccessTokenCookieConfig();
 
     String getAccessTokenValidationStrategy();
+
+    WebHandler getLoginPreHandler();
+
+    WebHandler getLoginPostHandler();
+
+    WebHandler getRegisterPreHandler();
+
+    WebHandler getRegisterPostHandler();
 
     <T> T getInstance(String classPropertyName) throws ServletException;
 

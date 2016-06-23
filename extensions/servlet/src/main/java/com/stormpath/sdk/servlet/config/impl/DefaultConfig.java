@@ -27,6 +27,7 @@ import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -207,6 +208,42 @@ public class DefaultConfig implements Config {
         return CFG.getString(ACCESS_TOKEN_VALIDATION_STRATEGY);
     }
 
+    @Override
+    public WebHandler getLoginPreHandler() {
+        try {
+            return getInstance("stormpath.web.login.preHandler");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate login pre handler", e);
+        }
+    }
+
+    @Override
+    public WebHandler getLoginPostHandler() {
+        try {
+            return getInstance("stormpath.web.login.postHandler");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate login post handler", e);
+        }
+    }
+
+    @Override
+    public WebHandler getRegisterPreHandler() {
+        try {
+            return getInstance("stormpath.web.register.preHandler");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate login pre handler", e);
+        }
+    }
+
+    @Override
+    public WebHandler getRegisterPostHandler() {
+        try {
+            return getInstance("stormpath.web.register.postHandler");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate register post handler", e);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getInstance(String classPropertyName) throws ServletException {
@@ -231,7 +268,7 @@ public class DefaultConfig implements Config {
 
         if (!expectedType.isInstance(instance)) {
             String msg = "Configured " + classPropertyName + " class name must be an instance of " +
-                                 expectedType.getName();
+                    expectedType.getName();
             throw new ServletException(msg);
         }
 
@@ -285,7 +322,7 @@ public class DefaultConfig implements Config {
             instance = Classes.newInstance(val);
         } catch (Exception e) {
             String msg = "Unable to instantiate " + classPropertyName + " class name " +
-                                 val + ": " + e.getMessage();
+                    val + ": " + e.getMessage();
             throw new ServletException(msg, e);
         }
 
@@ -294,7 +331,7 @@ public class DefaultConfig implements Config {
                 ((ServletContextInitializable) instance).init(this.servletContext);
             } catch (Exception e) {
                 String msg = "Unable to initialize " + classPropertyName + " instance of type " +
-                                     val + ": " + e.getMessage();
+                        val + ": " + e.getMessage();
                 throw new ServletException(msg, e);
             }
         }
