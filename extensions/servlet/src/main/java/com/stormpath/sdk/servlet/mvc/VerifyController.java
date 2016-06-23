@@ -58,7 +58,7 @@ public class VerifyController extends FormController {
     private Client client;
     private boolean autoLogin;
     private AccountModelFactory accountModelFactory;
-    private ErrorMapModelFactory errorMap;
+    private ErrorModelFactory errorModelFactory;
     private Saver<AuthenticationResult> authenticationResultSaver;
     private AccountStoreResolver accountStoreResolver;
 
@@ -82,7 +82,7 @@ public class VerifyController extends FormController {
         this.client = client;
         this.autoLogin = autoLogin;
         this.accountModelFactory = new DefaultAccountModelFactory();
-        this.errorMap = new DefaultErrorMapModelFactory();
+        this.errorModelFactory = new VerifyPasswordErrorModelFactory(messageSource);
         this.authenticationResultSaver = authenticationResultSaver;
         this.accountStoreResolver = accountStoreResolver;
         this.sendVerificationEmailUri = "sendVerificationEmail";
@@ -93,7 +93,6 @@ public class VerifyController extends FormController {
         Assert.notNull(client, "client cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
         Assert.notNull(accountModelFactory, "accountModelFactory cannot be null.");
-        Assert.notNull(errorMap, "errorMap cannot be null.");
         Assert.notNull(autoLogin, "autoLogin cannot be null.");
         Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
     }
@@ -111,8 +110,9 @@ public class VerifyController extends FormController {
         if (sptoken == null) {
             if (isJsonPreferred(request, response)) {
                 Map<String,Object> model = new HashMap<String, Object>();
-                model.put("status", 400);
+                model.put("status", HttpServletResponse.SC_BAD_REQUEST);
                 model.put("message", i18n(request, "stormpath.web.verify.emptyToken.error"));
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return new DefaultViewModel("stormpathJsonView", model);
             }
             Map<String, ?> model = createModel(request, response);
@@ -124,7 +124,8 @@ public class VerifyController extends FormController {
         }
         catch (ResourceException re) {
             if (isJsonPreferred(request, response)) {
-                Map<String,Object> model = errorMap.toErrorMap(re.getStormpathError());
+                Map<String,Object> model = errorModelFactory.toError(request, re).toMap();
+                response.setStatus(errorModelFactory.toError(request, re).getStatus());
                 return new DefaultViewModel("stormpathJsonView", model);
             }
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
@@ -138,8 +139,9 @@ public class VerifyController extends FormController {
         catch (Exception e) {
             if (isJsonPreferred(request, response)) {
                 Map<String,Object> model = new HashMap<String, Object>();
-                model.put("status", 400);
+                model.put("status", HttpServletResponse.SC_BAD_REQUEST);
                 model.put("message", i18n(request, "stormpath.web.login.form.errors.invalidLogin"));
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return new DefaultViewModel("stormpathJsonView", model);
             }
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
@@ -150,6 +152,12 @@ public class VerifyController extends FormController {
             return new DefaultViewModel(view, model);
         }
     }
+
+    @Override
+    protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
+        return Arrays.asList(errorModelFactory.toError(request, e));
+    }
+
     protected ViewModel verify(HttpServletRequest request, HttpServletResponse response, String sptoken)
             throws ServletException, IOException {
 
@@ -252,9 +260,10 @@ public class VerifyController extends FormController {
                     .build();
 
             application.sendVerificationEmail(verificationEmailRequest);
-        } catch (ResourceException e) {
+        } catch (Exception e) {
             if (UserAgents.get(request).isJsonPreferred()) {
-                Map<String,Object> model = errorMap.toErrorMap(e.getStormpathError());
+                Map<String,Object> model = errorModelFactory.toError(request, e).toMap();
+                response.setStatus(errorModelFactory.toError(request, e).getStatus());
                 return new DefaultViewModel("stormpathJsonView", model);
             }
         }
