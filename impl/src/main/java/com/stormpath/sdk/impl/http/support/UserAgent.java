@@ -67,13 +67,16 @@ public class UserAgent {
     private static final String STORMPATH_SDK_SERVLET_ID = "stormpath-servlet-java";
     private static final String STORMPATH_SDK_SERVLET_CLASS = "com.stormpath.sdk.servlet.filter.StormpathFilter";
 
+    private static final String STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_ID = "stormpath-spring-webmvc";
+    private static final String STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_CLASS = "com.stormpath.spring.mvc.SpringController";
+
     //Stormpath Spring Boot
     private static final String STORMPATH_SDK_SPRING_BOOT_STARTER_ID = "stormpath-spring-boot-starter";
     private static final String STORMPATH_SDK_SPRING_BOOT_STARTER_CLASS = "com.stormpath.spring.boot.autoconfigure.StormpathAutoConfiguration";
 
     //Integration Runtimes
-    private static final String INTEGRATION_RUNTIME_SPRING_SECURITY_ID = "spring";
-    private static final String INTEGRATION_RUNTIME_SPRING_SECURITY_CLASS = "org.springframework.context.ApplicationContext";
+    private static final String INTEGRATION_RUNTIME_SPRING_ID = "spring";
+    private static final String INTEGRATION_RUNTIME_SPRING_CLASS = "org.springframework.context.ApplicationContext";
 
     //Rapid Prototyping
     private static final String RAPID_PROTOTYPING_SPRING_BOOT_ID = "spring-boot";
@@ -152,7 +155,7 @@ public class UserAgent {
 
     private static String getIntegrationRuntimeString() {
         String integrationRuntimeString;
-        integrationRuntimeString = getFullEntryStringUsingManifest(INTEGRATION_RUNTIME_SPRING_SECURITY_CLASS, INTEGRATION_RUNTIME_SPRING_SECURITY_ID);
+        integrationRuntimeString = getFullEntryStringUsingManifest(INTEGRATION_RUNTIME_SPRING_CLASS, INTEGRATION_RUNTIME_SPRING_ID);
         if(Strings.hasText(integrationRuntimeString)) {
             return integrationRuntimeString;
         }
@@ -196,6 +199,11 @@ public class UserAgent {
         String sdkServletString = getFullEntryStringUsingSDKVersion(STORMPATH_SDK_SERVLET_CLASS, STORMPATH_SDK_SERVLET_ID);
         if (Strings.hasText(sdkServletString)) {
             stormpathComponentsString.append(sdkServletString);
+        }
+
+        String stormpathSpringWebMvcString = getFullEntryStringUsingSDKVersion(STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_CLASS, STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_ID);
+        if (Strings.hasText(stormpathSpringWebMvcString)) {
+            stormpathComponentsString.append(stormpathSpringWebMvcString);
         }
 
         String stormpathSpringBootStarterString = getFullEntryStringUsingSDKVersion(STORMPATH_SDK_SPRING_BOOT_STARTER_CLASS, STORMPATH_SDK_SPRING_BOOT_STARTER_ID);
