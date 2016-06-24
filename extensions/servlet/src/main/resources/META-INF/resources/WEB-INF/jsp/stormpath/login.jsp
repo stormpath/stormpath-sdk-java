@@ -104,7 +104,7 @@
 
                     <c:if test="${verifyEnabled}">
                         <a href="${pageContext.request.contextPath}${verifyUri}" class="verify"><sp:message
-                                key="stormpath.web.login.form.sendVerificationEmail.text"/></a>
+                                key="stormpath.web.login.form.verifyEmail.text"/></a>
                     </c:if>
                     <a href="${pageContext.request.contextPath}${forgotLoginUri}" class="to-login"><sp:message
                             key="stormpath.web.login.form.resetLink.text"/></a>

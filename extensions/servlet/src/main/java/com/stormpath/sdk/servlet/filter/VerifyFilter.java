@@ -30,7 +30,7 @@ public class VerifyFilter extends ControllerFilter {
         VerifyController controller = new VerifyController(
                 getConfig().getVerifyControllerConfig(),
                 getConfig().getLoginControllerConfig().getUri(),
-                getConfig().getLogoutControllerConfig().getUri(),
+                getConfig().getLoginControllerConfig().getNextUri(),
                 getClient(),
                 getConfig().getProducesMediaTypes(),
                 getConfig().isRegisterAutoLoginEnabled(),

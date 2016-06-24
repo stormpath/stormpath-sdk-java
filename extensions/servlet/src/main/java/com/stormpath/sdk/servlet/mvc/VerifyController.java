@@ -43,8 +43,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
-
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * @since 1.0.RC4
  */
@@ -53,8 +57,7 @@ public class VerifyController extends FormController {
     private static final Logger log = LoggerFactory.getLogger(VerifyController.class);
 
     private String loginUri;
-    private String logoutUri;
-    private String sendVerificationEmailUri;
+    private String loginNextUri;
     private Client client;
     private boolean autoLogin;
     private AccountModelFactory accountModelFactory;
@@ -68,7 +71,7 @@ public class VerifyController extends FormController {
 
     public VerifyController(ControllerConfigResolver controllerConfigResolver,
                             String loginUri,
-                            String logoutUri,
+                            String loginNextUri,
                             Client client,
                             String produces,
                             boolean autoLogin,
@@ -78,18 +81,16 @@ public class VerifyController extends FormController {
         super(controllerConfigResolver, produces);
 
         this.loginUri = loginUri;
-        this.logoutUri = logoutUri;
+        this.loginNextUri = loginNextUri;
         this.client = client;
         this.autoLogin = autoLogin;
         this.accountModelFactory = new DefaultAccountModelFactory();
-        this.errorModelFactory = new VerifyPasswordErrorModelFactory(messageSource);
+        this.errorModelFactory = new VerifyErrorModelFactory(messageSource);
         this.authenticationResultSaver = authenticationResultSaver;
         this.accountStoreResolver = accountStoreResolver;
-        this.sendVerificationEmailUri = "sendVerificationEmail";
 
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
-        Assert.hasText(logoutUri, "logoutUri cannot be null or empty.");
-        Assert.hasText(sendVerificationEmailUri, "sendVerificationEmailUri cannot be null or empty.");
+        Assert.hasText(loginNextUri, "logoutUri cannot be null or empty.");
         Assert.notNull(client, "client cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
         Assert.notNull(accountModelFactory, "accountModelFactory cannot be null.");
@@ -168,33 +169,28 @@ public class VerifyController extends FormController {
         publish(e);
 
         if (UserAgents.get(request).isJsonPreferred()) {
-            Map<String,Object> model = new HashMap<String, Object>();
             if (autoLogin){
-                model.put("status", 200);
+                final AuthenticationResult result = new TransientAuthenticationResult(account);
+                this.authenticationResultSaver.set(request, response, result);
+
+                Map<String,Object> model = new HashMap<String, Object>();
                 model.put("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST));
+                return new DefaultViewModel("stormpathJsonView", model);
             }
             else {
-                model.put("status", 200);
-                model.put("message", "OK");
+                return new DefaultViewModel("stormpathJsonView");
             }
-            return new DefaultViewModel("stormpathJsonView", model);
         }
         else {
-            String next = Strings.clean(request.getParameter("next"));
-
-            if (!Strings.hasText(next)) {
-                next = nextUri;
-            }
-
             if (autoLogin) {
                 final AuthenticationResult result = new TransientAuthenticationResult(account);
                 this.authenticationResultSaver.set(request, response, result);
 
-                return new DefaultViewModel(next.concat("?status=verified")).setRedirect(true);
+                return new DefaultViewModel(loginUri).setRedirect(true);
             }
             else {
 
-                return new DefaultViewModel(next).setRedirect(true);
+                return new DefaultViewModel(nextUri).setRedirect(true);
             }
         }
     }
@@ -230,8 +226,8 @@ public class VerifyController extends FormController {
 
             DefaultField field = new DefaultField();
             field.setName(fieldName);
-            field.setLabel("stormpath.web.sendVerificationEmail.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.sendVerificationEmail.form.fields." + fieldName + ".placeholder");
+            field.setLabel("stormpath.web.verifyEmail.form.fields." + fieldName + ".label");
+            field.setPlaceholder("stormpath.web.verifyEmail.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("text");
             String param = request.getParameter(fieldName);
@@ -260,21 +256,14 @@ public class VerifyController extends FormController {
                     .build();
 
             application.sendVerificationEmail(verificationEmailRequest);
-        } catch (Exception e) {
+        }
+        finally {
             if (UserAgents.get(request).isJsonPreferred()) {
-                Map<String,Object> model = errorModelFactory.toError(request, e).toMap();
-                response.setStatus(errorModelFactory.toError(request, e).getStatus());
-                return new DefaultViewModel("stormpathJsonView", model);
+                return new DefaultViewModel("stormpathJsonView");
             }
+
+            return new DefaultViewModel(nextUri.concat("?status=unverified"));
         }
 
-        if (UserAgents.get(request).isJsonPreferred()) {
-            Map<String,Object> model = new HashMap<String, Object>();
-            model.put("status", 200);
-            model.put("message", "OK");
-            return new DefaultViewModel("stormpathJsonView", model);
-        }
-
-        return new DefaultViewModel("stormpath/verify-complete");
     }
 }

@@ -23,9 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.0
  */
-public class VerifyPasswordErrorModelFactory extends AbstractErrorModelFactory {
+public class VerifyErrorModelFactory extends AbstractErrorModelFactory {
 
-    public VerifyPasswordErrorModelFactory(MessageSource messageSource) {
+    public VerifyErrorModelFactory(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 

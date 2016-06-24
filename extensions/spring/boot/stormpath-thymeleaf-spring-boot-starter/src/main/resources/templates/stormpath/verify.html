@@ -15,7 +15,7 @@
 */-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{stormpath.web.sendVerificationEmail.title}">|Forgot Login?|</title>
+    <title th:text="#{stormpath.web.verifyEmail.title}">|Forgot Login?|</title>
     <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
 </head>
 <body class="login">
@@ -28,9 +28,9 @@
                     <div class="email-password-area col-xs-12 large col-sm-12">
 
                         <div class="header">
-                            <span th:text="#{stormpath.web.sendVerificationEmail.form.title}">|Forgot your password?|</span>
+                            <span th:text="#{stormpath.web.verifyEmail.form.title}">|Forgot your password?|</span>
 
-                            <p th:text="#{stormpath.web.sendVerificationEmail.form.instructions}">|Enter your email address below to
+                            <p th:text="#{stormpath.web.verifyEmail.form.instructions}">|Enter your email address below to
                                 reset your password.|</p>
                         </div>
 
@@ -61,7 +61,7 @@
 
                             <div>
                                 <button type="submit" class="login btn btn-login btn-sp-green"
-                                        th:text="#{stormpath.web.sendVerificationEmail.form.button.value}">|Login|
+                                        th:text="#{stormpath.web.verifyEmail.form.button.value}">|Login|
                                 </button>
                             </div>
 
@@ -71,7 +71,7 @@
 
                 </div>
 
-                <a th:href="@{${loginUri}}" class="to-login" th:text="#{stormpath.web.sendVerificationEmail.form.loginLink.text}">|Back
+                <a th:href="@{${loginUri}}" class="to-login" th:text="#{stormpath.web.verifyEmail.form.loginLink.text}">|Back
                     to Login|</a>
             </div>
 

@@ -1104,7 +1104,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         VerifyController controller = new VerifyController(
                 stormpathVerifyControllerConfigResolver(),
                 stormpathLoginControllerConfigResolver().getUri(),
-                stormpathLogoutControllerConfigResolver().getUri(),
+                stormpathLoginControllerConfigResolver().getNextUri(),
                 client,
                 produces,
                 stormpathInternalConfig().isRegisterAutoLoginEnabled(),
