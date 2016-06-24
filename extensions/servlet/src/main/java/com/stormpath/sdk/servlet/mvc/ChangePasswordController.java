@@ -48,7 +48,7 @@ public class ChangePasswordController extends FormController {
         super();
     }
 
-    public ChangePasswordController(Config config, ErrorModelFactory errorModelFactory) {
+    public ChangePasswordController(Config config) {
         super(config.getChangePasswordControllerConfig(), config.getProducesMediaTypes());
         this.forgotPasswordUri = config.getForgotPasswordControllerConfig().getUri();
         this.loginUri = config.getLoginControllerConfig().getUri();
@@ -56,17 +56,12 @@ public class ChangePasswordController extends FormController {
         this.errorUri = config.getChangePasswordControllerConfig().getErrorUri();
         this.autoLogin = config.getChangePasswordControllerConfig().isAutoLogin();
         this.accountModelFactory = new DefaultAccountModelFactory();
-        this.errorModelFactory = errorModelFactory;
-
-        if (this.errorModelFactory == null) {
-            this.errorModelFactory = new ChangePasswordErrorModelFactory(this.messageSource);
-        }
+        this.errorModelFactory = new ChangePasswordErrorModelFactory(this.messageSource);
 
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(loginNextUri, "loginNextUri cannot be null or empty.");
         Assert.hasText(errorUri, "errorUri cannot be null or empty.");
-        Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null or empty.");
     }
 
     @Override
