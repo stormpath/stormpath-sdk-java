@@ -13,18 +13,209 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.mvc;
+package com.stormpath.sdk.servlet.mvc
 
-import com.stormpath.sdk.impl.account.DefaultAccount;
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.client.Client
+import com.stormpath.sdk.directory.CustomData
+import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import org.testng.Assert;
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
+import com.stormpath.sdk.servlet.event.RequestEvent
+import com.stormpath.sdk.servlet.event.impl.Publisher
+import com.stormpath.sdk.servlet.form.DefaultForm
+import com.stormpath.sdk.servlet.form.Field
+import com.stormpath.sdk.servlet.form.Form
+import com.stormpath.sdk.servlet.http.MediaType
+import com.stormpath.sdk.servlet.http.UserAgents
+import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent
+import org.testng.Assert
 import org.testng.annotations.Test
-import static org.easymock.EasyMock.createStrictMock;
+
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNull
 
 /**
  * @since 1.0.0
  */
 public class RegisterControllerTest {
+
+    @Test
+    void testPreRegisterHandlerAndContinueNormalWorkflow() {
+        WebHandler registerPreHandler = createMock(WebHandler)
+        HttpServletRequest request = createMock(HttpServletRequest)
+        HttpServletResponse response = createMock(HttpServletResponse)
+        Form form = DefaultForm.builder().setFields(new ArrayList<Field>()).build()
+        Client client = createMock(Client)
+        Account account = createNiceMock(Account)
+        CsrfTokenManager csrfTokenManager = createMock(CsrfTokenManager)
+        RequestFieldValueResolver requestFieldValueResolver = createMock(RequestFieldValueResolver)
+        Application application = createMock(Application)
+        CustomData customData = createMock(CustomData)
+        Publisher<RequestEvent> eventPublisher = createMock(Publisher)
+
+        RegisterController registerController = new RegisterController(
+                client: client,
+                preRegisterHandler: registerPreHandler,
+                csrfTokenManager: csrfTokenManager,
+                fieldValueResolver: requestFieldValueResolver,
+                produces: Arrays.asList(MediaType.TEXT_HTML),
+                eventPublisher: eventPublisher
+        )
+
+        expect(client.instantiate(Account.class)).andReturn account
+        expect(requestFieldValueResolver.getAllFields(request)).andReturn new HashMap<String, Object>()
+        expect(request.getAttribute(Application.class.getName())).andReturn ((Application)application)
+        expect(registerPreHandler.handle(request, response, account)).andReturn true
+        expect(account.setGivenName("UNKNOWN")).andReturn account
+        expect(account.setSurname("UNKNOWN")).andReturn account
+        expect(account.getCustomData()).andReturn customData
+        expect(application.createAccount(account)).andReturn account
+        expect(eventPublisher.publish(anyObject()))
+
+        expect(request.getAttribute(UserAgents.USER_AGENT_REQUEST_ATTRIBUTE_NAME)).andReturn new DefaultUserAgent(request)
+        expect(request.getHeader("Accept")).andReturn "text/html"
+
+        replay eventPublisher, registerPreHandler, request, response, client, requestFieldValueResolver, application, account
+
+        def vm = registerController.onValidSubmit(request, response, form)
+
+        verify eventPublisher, registerPreHandler, request, response, client, requestFieldValueResolver, application, account
+
+        assertNotNull(vm, "ViewModel should not be empty")
+    }
+
+    @Test
+    void testPreRegisterHandlerAndAbortNormalWorkflow() {
+        WebHandler registerPreHandler = createMock(WebHandler)
+        HttpServletRequest request = createMock(HttpServletRequest)
+        HttpServletResponse response = createMock(HttpServletResponse)
+        Form form = DefaultForm.builder().setFields(new ArrayList<Field>()).build()
+        Client client = createMock(Client)
+        Account account = createNiceMock(Account)
+        CsrfTokenManager csrfTokenManager = createMock(CsrfTokenManager)
+        RequestFieldValueResolver requestFieldValueResolver = createMock(RequestFieldValueResolver)
+        Application application = createMock(Application)
+        CustomData customData = createMock(CustomData)
+        Publisher<RequestEvent> eventPublisher = createMock(Publisher)
+
+        RegisterController registerController = new RegisterController(
+                client: client,
+                preRegisterHandler: registerPreHandler,
+                csrfTokenManager: csrfTokenManager,
+                fieldValueResolver: requestFieldValueResolver,
+                produces: Arrays.asList(MediaType.TEXT_HTML),
+                eventPublisher: eventPublisher
+        )
+
+        expect(client.instantiate(Account.class)).andReturn account
+        expect(requestFieldValueResolver.getAllFields(request)).andReturn new HashMap<String, Object>()
+        expect(request.getAttribute(Application.class.getName())).andReturn ((Application)application)
+        expect(registerPreHandler.handle(request, response, account)).andReturn false
+        expect(account.setGivenName("UNKNOWN")).andReturn account
+        expect(account.setSurname("UNKNOWN")).andReturn account
+        expect(account.getCustomData()).andReturn customData
+
+        replay eventPublisher, registerPreHandler, request, response, client, requestFieldValueResolver, application, account
+
+        def vm = registerController.onValidSubmit(request, response, form)
+
+        verify eventPublisher, registerPreHandler, request, response, client, requestFieldValueResolver, application, account
+
+        assertNull(vm, "ViewModel should be empty")
+    }
+
+    @Test
+    void testPostRegisterHandlerAndContinueNormalWorkflow() {
+        WebHandler registerPostHandler = createMock(WebHandler)
+        HttpServletRequest request = createMock(HttpServletRequest)
+        HttpServletResponse response = createMock(HttpServletResponse)
+        Form form = DefaultForm.builder().setFields(new ArrayList<Field>()).build()
+        Client client = createMock(Client)
+        Account account = createNiceMock(Account)
+        CsrfTokenManager csrfTokenManager = createMock(CsrfTokenManager)
+        RequestFieldValueResolver requestFieldValueResolver = createMock(RequestFieldValueResolver)
+        Application application = createMock(Application)
+        CustomData customData = createMock(CustomData)
+        Publisher<RequestEvent> eventPublisher = createMock(Publisher)
+
+        RegisterController registerController = new RegisterController(
+                client: client,
+                postRegisterHandler: registerPostHandler,
+                csrfTokenManager: csrfTokenManager,
+                fieldValueResolver: requestFieldValueResolver,
+                produces: Arrays.asList(MediaType.TEXT_HTML),
+                eventPublisher: eventPublisher
+        )
+
+        expect(client.instantiate(Account.class)).andReturn account
+        expect(requestFieldValueResolver.getAllFields(request)).andReturn new HashMap<String, Object>()
+        expect(request.getAttribute(Application.class.getName())).andReturn ((Application)application)
+        expect(account.setGivenName("UNKNOWN")).andReturn account
+        expect(account.setSurname("UNKNOWN")).andReturn account
+        expect(account.getCustomData()).andReturn customData
+        expect(application.createAccount(account)).andReturn account
+        expect(registerPostHandler.handle(request, response, account)).andReturn true
+        expect(eventPublisher.publish(anyObject()))
+
+        expect(request.getAttribute(UserAgents.USER_AGENT_REQUEST_ATTRIBUTE_NAME)).andReturn new DefaultUserAgent(request)
+        expect(request.getHeader("Accept")).andReturn "text/html"
+
+        replay eventPublisher, registerPostHandler, request, response, client, requestFieldValueResolver, application, account
+
+        def vm = registerController.onValidSubmit(request, response, form)
+
+        verify eventPublisher, registerPostHandler, request, response, client, requestFieldValueResolver, application, account
+
+        assertNotNull(vm, "ViewModel should not be empty")
+    }
+
+    @Test
+    void testPostRegisterHandlerAndAbortNormalWorkflow() {
+        WebHandler registerPostHandler = createMock(WebHandler)
+        HttpServletRequest request = createMock(HttpServletRequest)
+        HttpServletResponse response = createMock(HttpServletResponse)
+        Form form = DefaultForm.builder().setFields(new ArrayList<Field>()).build()
+        Client client = createMock(Client)
+        Account account = createNiceMock(Account)
+        CsrfTokenManager csrfTokenManager = createMock(CsrfTokenManager)
+        RequestFieldValueResolver requestFieldValueResolver = createMock(RequestFieldValueResolver)
+        Application application = createMock(Application)
+        CustomData customData = createMock(CustomData)
+        Publisher<RequestEvent> eventPublisher = createMock(Publisher)
+
+        RegisterController registerController = new RegisterController(
+                client: client,
+                postRegisterHandler: registerPostHandler,
+                csrfTokenManager: csrfTokenManager,
+                fieldValueResolver: requestFieldValueResolver,
+                produces: Arrays.asList(MediaType.TEXT_HTML),
+                eventPublisher: eventPublisher
+        )
+
+        expect(client.instantiate(Account.class)).andReturn account
+        expect(requestFieldValueResolver.getAllFields(request)).andReturn new HashMap<String, Object>()
+        expect(request.getAttribute(Application.class.getName())).andReturn ((Application)application)
+        expect(account.setGivenName("UNKNOWN")).andReturn account
+        expect(account.setSurname("UNKNOWN")).andReturn account
+        expect(account.getCustomData()).andReturn customData
+        expect(application.createAccount(account)).andReturn account
+        expect(registerPostHandler.handle(request, response, account)).andReturn false
+        expect(eventPublisher.publish(anyObject()))
+
+        replay eventPublisher, registerPostHandler, request, response, client, requestFieldValueResolver, application, account
+
+        def vm = registerController.onValidSubmit(request, response, form)
+
+        verify eventPublisher, registerPostHandler, request, response, client, requestFieldValueResolver, application, account
+
+        assertNull(vm, "ViewModel should not be empty")
+    }
 
     @Test
     void testAccountProperties() {

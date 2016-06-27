@@ -35,7 +35,7 @@ $('.btn-linkedin').click(function (event) {
 
 $('.btn-saml').click(function (event) {
     event.preventDefault();
-    samlLogin();
+    samlLogin(event.target.id);
 });
 
 function baseUrl() {
@@ -61,8 +61,8 @@ function githubLogin(clientId) {
     window.location.replace('https://github.com/login/oauth/authorize?client_id=' + clientId);
 }
 
-function samlLogin() {
-    window.location.replace(baseUrl() + '/saml');
+function samlLogin(href) {
+    window.location.replace(baseUrl() + '/saml?href=' + encodeURIComponent(href));
 }
 
 function facebookLogin(appId) {

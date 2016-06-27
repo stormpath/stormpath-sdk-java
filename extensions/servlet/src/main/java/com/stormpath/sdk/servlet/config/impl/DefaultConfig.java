@@ -27,6 +27,7 @@ import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -55,6 +56,10 @@ public class DefaultConfig implements Config {
     public static final String ME_ENABLED = "stormpath.web.me.enabled";
     public static final String ME_URL = "stormpath.web.me.uri";
 
+    public static final String OAUTH_ENABLED = "stormpath.web.oauth2.enabled";
+    public static final String ID_SITE_ENABLED = "stormpath.web.idSite.enabled";
+    public static final String CALLBACK_ENABLED = "stormpath.web.callback.enabled";
+
     private final ServletContext servletContext;
     private final ConfigReader CFG;
     private final Map<String, String> props;
@@ -70,7 +75,7 @@ public class DefaultConfig implements Config {
         this.servletContext = servletContext;
         this.props = Collections.unmodifiableMap(configProps);
         this.CFG = new ExpressionConfigReader(servletContext, this.props);
-        this.SINGLETONS = new LinkedHashMap<String, Object>();
+        this.SINGLETONS = new LinkedHashMap<>();
 
         this.ACCESS_TOKEN_COOKIE_CONFIG = new AccessTokenCookieConfig(CFG);
         this.REFRESH_TOKEN_COOKIE_CONFIG = new RefreshTokenCookieConfig(CFG);
@@ -146,6 +151,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public boolean isSamlLoginEnabled() {
+        return CFG.getBoolean("stormpath.web.callback.enabled");
+    }
+
+    @Override
     public boolean isLogoutInvalidateHttpSession() {
         return CFG.getBoolean(LOGOUT_INVALIDATE_HTTP_SESSION);
     }
@@ -202,6 +212,42 @@ public class DefaultConfig implements Config {
         return CFG.getString(ACCESS_TOKEN_VALIDATION_STRATEGY);
     }
 
+    @Override
+    public WebHandler getLoginPreHandler() {
+        try {
+            return getInstance("stormpath.web.login.preHandler");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate login pre handler", e);
+        }
+    }
+
+    @Override
+    public WebHandler getLoginPostHandler() {
+        try {
+            return getInstance("stormpath.web.login.postHandler");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate login post handler", e);
+        }
+    }
+
+    @Override
+    public WebHandler getRegisterPreHandler() {
+        try {
+            return getInstance("stormpath.web.register.preHandler");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate login pre handler", e);
+        }
+    }
+
+    @Override
+    public WebHandler getRegisterPostHandler() {
+        try {
+            return getInstance("stormpath.web.register.postHandler");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate register post handler", e);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getInstance(String classPropertyName) throws ServletException {
@@ -226,7 +272,7 @@ public class DefaultConfig implements Config {
 
         if (!expectedType.isInstance(instance)) {
             String msg = "Configured " + classPropertyName + " class name must be an instance of " +
-                                 expectedType.getName();
+                    expectedType.getName();
             throw new ServletException(msg);
         }
 
@@ -263,6 +309,21 @@ public class DefaultConfig implements Config {
         return Strings.collectionToCommaDelimitedString(mediaTypes);
     }
 
+    @Override
+    public boolean isOAuthEnabled() {
+        return CFG.getBoolean(OAUTH_ENABLED);
+    }
+
+    @Override
+    public boolean isIdSiteEnabled() {
+        return CFG.getBoolean(ID_SITE_ENABLED);
+    }
+
+    @Override
+    public boolean isSamlEnabled() {
+        return CFG.getBoolean(CALLBACK_ENABLED);
+    }
+
     @SuppressWarnings("unchecked")
     protected <T> T newInstance(String classPropertyName) throws ServletException {
 
@@ -280,7 +341,7 @@ public class DefaultConfig implements Config {
             instance = Classes.newInstance(val);
         } catch (Exception e) {
             String msg = "Unable to instantiate " + classPropertyName + " class name " +
-                                 val + ": " + e.getMessage();
+                    val + ": " + e.getMessage();
             throw new ServletException(msg, e);
         }
 
@@ -289,7 +350,7 @@ public class DefaultConfig implements Config {
                 ((ServletContextInitializable) instance).init(this.servletContext);
             } catch (Exception e) {
                 String msg = "Unable to initialize " + classPropertyName + " instance of type " +
-                                     val + ": " + e.getMessage();
+                        val + ": " + e.getMessage();
                 throw new ServletException(msg, e);
             }
         }

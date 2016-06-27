@@ -15,30 +15,25 @@
  */
 package com.stormpath.sdk.impl.idsite;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.jsonwebtoken.impl.DefaultClaims;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.stormpath.sdk.impl.provider.ProviderClaims;
 
 /**
  * IdSiteClaims exposes the Claims parameters used for IdSite.
  *
  * @since 1.0.RC5
  */
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class IdSiteClaims extends DefaultClaims {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class IdSiteClaims extends ProviderClaims {
 
-    public static final String CALLBACK_URI = "cb_uri";
-    public static final String PATH = "path";
-    public static final String ORGANIZATION_NAME_KEY = "onk";
     public static final String SHOW_ORGANIZATION_FIELD = "sof";
     public static final String USE_SUBDOMAIN = "usd";
-    public static final String SP_TOKEN = "sp_token";
 
     public static final String ACCESS_TOKEN = "accessToken";
     public static final String JWT_REQUEST = "jwtRequest";
     public static final String JWT_RESPONSE = "jwtResponse";
 
     //request/response
-    public static final String STATE = "state";
     public static final String RESPONSE_ID = "irt";
 
     //Id Token Parameters
@@ -47,43 +42,6 @@ public class IdSiteClaims extends DefaultClaims {
     public static final String STATUS = "status";
 
     public static final String ERROR = "err";
-
-
-    public String getCallbackUri() {
-        return getString(CALLBACK_URI);
-    }
-
-    public IdSiteClaims setCallbackUri(String callbackUri) {
-        setValue(CALLBACK_URI, callbackUri);
-        return this;
-    }
-
-    public String getState() {
-        return getString(STATE);
-    }
-
-    public IdSiteClaims setState(String state) {
-        setValue(STATE, state);
-        return this;
-    }
-
-    public String getPath() {
-        return getString(PATH);
-    }
-
-    public IdSiteClaims setPath(String path) {
-        setValue(PATH, path);
-        return this;
-    }
-
-    public String getOrganizationNameKey() {
-        return getString(ORGANIZATION_NAME_KEY);
-    }
-
-    public IdSiteClaims setOrganizationNameKey(String organizationNameKey) {
-        setValue(ORGANIZATION_NAME_KEY, organizationNameKey);
-        return this;
-    }
 
     public Boolean getUseSubdomain() {
         return getBoolean(USE_SUBDOMAIN);
@@ -100,15 +58,6 @@ public class IdSiteClaims extends DefaultClaims {
 
     public IdSiteClaims setShowOrganizationField(boolean showOrganizationField) {
         setValue(SHOW_ORGANIZATION_FIELD, showOrganizationField);
-        return this;
-    }
-
-    public String getSpToken() {
-        return getString(SP_TOKEN);
-    }
-
-    public IdSiteClaims setSpToken(String spToken) {
-        setValue(SP_TOKEN, spToken);
         return this;
     }
 

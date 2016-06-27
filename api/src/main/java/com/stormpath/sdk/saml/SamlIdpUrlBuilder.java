@@ -96,6 +96,17 @@ public interface SamlIdpUrlBuilder {
      */
     SamlIdpUrlBuilder setSpToken(String spToken);
 
+
+    /**
+     * Sets the {@code ash} property used by the SAML Identity Provider to complete a SAML authentication workflow.
+     * If {@code ash} property is present and valid, the user will be redirected to the SAML Identity Provider URL
+     * with the {@code ash} embedded in the signed JWT.
+     *
+     * @param accountStoreHref the account store href that indicates a SAML directory to authenticate against.
+     * @return this instance for method chaining.
+     */
+    SamlIdpUrlBuilder setAccountStoreHref(String accountStoreHref);
+
     /**
      * Convenience method to set any key value. This is important to decouple the server releases from the library
      * releases, when a new property is supported in the initial SAML Identity Provider call, and there is no {@code setter} to

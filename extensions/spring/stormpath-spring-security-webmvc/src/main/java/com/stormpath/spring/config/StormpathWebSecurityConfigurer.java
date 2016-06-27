@@ -22,7 +22,9 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.spring.errors.Http401UnauthorizedEntryPoint;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
+import com.stormpath.spring.filter.LoginHandlerFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -62,6 +65,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
+
+    @Autowired
+    AuthenticationEntryPoint stormpathAuthenticationEntryPoint;
 
     @Autowired
     protected Client client;
@@ -185,6 +191,14 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.social.github.uri'] ?: '/callbacks/github' }")
     protected String githubCallbackUri;
 
+    @Autowired(required = false)
+    @Qualifier("loginPreHandler")
+    protected WebHandler loginPreHandler;
+
+    @Autowired(required = false)
+    @Qualifier("loginPostHandler")
+    protected WebHandler loginPostHandler;
+
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
      * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
@@ -236,6 +250,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
             http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+            http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationAuthenticationFilter.class);
         }
 
         // 706: Translate errors to JSON when preferred by client
@@ -249,7 +265,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http
                 .authorizeRequests()
                 .antMatchers(loginUri).permitAll()
-                .antMatchers(permittedResultPath).permitAll();
+                .antMatchers(permittedResultPath).permitAll()
+                .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
                 // make sure that /login and /login?status=... is permitted
@@ -261,7 +278,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .antMatchers(googleCallbackUri).permitAll()
                     .antMatchers(githubCallbackUri).permitAll()
                     .antMatchers(facebookCallbackUri).permitAll()
-                    .antMatchers(linkedinCallbackUri).permitAll();
+                    .antMatchers(linkedinCallbackUri).permitAll()
+                    .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
             }
 
             http.authorizeRequests()
@@ -359,6 +377,15 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         filter.setAuthenticationFailureHandler(failureHandler);
 
         return filter;
+    }
+
+    // Creates the pre login handler filter with the user define handler
+    private LoginHandlerFilter preLoginHandlerFilter() {
+        return new LoginHandlerFilter(loginPreHandler, loginUri);
+    }
+
+    private LoginHandlerFilter postLoginHandlerFilter() {
+        return new LoginHandlerFilter(loginPostHandler, loginUri);
     }
 
     /**

@@ -96,26 +96,32 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String loginUrl = config.getLoginControllerConfig().getUri();
         String loginUrlPattern = cleanUri(loginUrl);
         boolean loginChainSpecified = false;
+        boolean loginEnabled = config.getLoginControllerConfig().isEnabled();
 
         String logoutUrl = config.getLogoutControllerConfig().getUri();
         String logoutUrlPattern = cleanUri(logoutUrl);
         boolean logoutChainSpecified = false;
+        boolean logoutEnabled = config.getLogoutControllerConfig().isEnabled();
 
         String forgotUrl = config.getForgotPasswordControllerConfig().getUri();
         String forgotUrlPattern = cleanUri(forgotUrl);
         boolean forgotChainSpecified = false;
+        boolean forgotPasswordEnabled = config.getForgotPasswordControllerConfig().isEnabled();
 
         String changeUrl = config.getChangePasswordControllerConfig().getUri();
         String changeUrlPattern = cleanUri(changeUrl);
         boolean changeChainSpecified = false;
+        boolean changePasswordEnabled = config.getChangePasswordControllerConfig().isEnabled();
 
         String registerUrl = config.getRegisterControllerConfig().getUri();
         String registerUrlPattern = cleanUri(registerUrl);
         boolean registerChainSpecified = false;
+        boolean registerEnabled = config.getRegisterControllerConfig().isEnabled();
 
         String verifyUrl = config.getVerifyControllerConfig().getUri();
         String verifyUrlPattern = cleanUri(verifyUrl);
         boolean verifyChainSpecified = false;
+        boolean verifyEmailEnabled = config.getVerifyControllerConfig().isEnabled();
 
         String sendVerificationUrl = config.getSendVerificationEmailControllerConfig().getUri();
         String sendVerificationUrlPattern = cleanUri(sendVerificationUrl);
@@ -124,14 +130,24 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String accessTokenUrl = config.getAccessTokenUrl();
         String accessTokenUrlPattern = cleanUri(accessTokenUrl);
         boolean accessTokenChainSpecified = false;
+        boolean oauthEnabled = config.isOAuthEnabled();
 
         String unauthorizedUrl = config.getUnauthorizedUrl();
         String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
         boolean unauthorizedChainSpecified = false;
 
+        String samlUrl = "/saml";
+        String samlUrlPattern = cleanUri(samlUrl);
+        boolean samlChainSpecified = false;
+        boolean samlEnabled = config.isSamlEnabled();
+
         String meUrl = config.getMeUrl();
         String meUrlPattern = cleanUri(meUrl);
         boolean meChainSpecified = false;
+        boolean meEnabled = config.isMeEnabled();
+
+        // todo: figure out where idsite is added to the filter chain and allow disabling
+        boolean isIdSiteEnabled = config.isIdSiteEnabled();
 
         String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
         String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
@@ -259,6 +275,12 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
+                } else if (uriPattern.startsWith(samlUrlPattern)) {
+                    samlChainSpecified = true;
+                    String filterName = DefaultFilter.saml.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
                 } else if (uriPattern.startsWith(meUrlPattern)) {
                     meChainSpecified = true;
 
@@ -278,31 +300,34 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         if (!unauthorizedChainSpecified) {
             fcManager.createChain(unauthorizedUrlPattern, DefaultFilter.unauthorized.name());
         }
-        if (!loginChainSpecified) {
+        if (!loginChainSpecified && loginEnabled) {
             fcManager.createChain(loginUrlPattern, DefaultFilter.login.name());
         }
-        if (!logoutChainSpecified) {
+        if (!logoutChainSpecified && logoutEnabled) {
             fcManager.createChain(logoutUrlPattern, DefaultFilter.logout.name());
         }
-        if (!forgotChainSpecified) {
+        if (!forgotChainSpecified && forgotPasswordEnabled) {
             fcManager.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
         }
-        if (!changeChainSpecified) {
+        if (!changeChainSpecified && changePasswordEnabled) {
             fcManager.createChain(changeUrlPattern, DefaultFilter.change.name());
         }
-        if (!registerChainSpecified) {
+        if (!registerChainSpecified && registerEnabled) {
             fcManager.createChain(registerUrlPattern, DefaultFilter.register.name());
         }
         if (!verifyChainSpecified) {
             fcManager.createChain(verifyUrlPattern, DefaultFilter.verify.name());
         }
-        if (!sendVerificationEmailChainSpecified) {
+        if (!sendVerificationEmailChainSpecified && verifyEmailEnabled) {
             fcManager.createChain(sendVerificationUrlPattern, DefaultFilter.sendVerificationEmail.name());
         }
-        if (!accessTokenChainSpecified) {
+        if (!accessTokenChainSpecified && oauthEnabled) {
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
         }
-        if (!meChainSpecified) {
+        if (!samlChainSpecified && samlEnabled) {
+            fcManager.createChain(samlUrlPattern, DefaultFilter.saml.name());
+        }
+        if (!meChainSpecified && meEnabled) {
             fcManager.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
         }
         if (!googleCallbackChainSpecified) {

@@ -23,6 +23,7 @@ import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -96,4 +97,11 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     public Http401UnauthorizedEntryPoint http401UnauthorizedEntryPoint() {
         return new Http401UnauthorizedEntryPoint();
     }
+
+    @Bean
+    @Override
+    public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
+        return super.stormpathAuthenticationEntryPoint();
+    }
+
 }

@@ -48,6 +48,9 @@ public class LoginController extends FormController {
     private LoginFormStatusResolver loginFormStatusResolver;
     private AccountStoreModelFactory accountStoreModelFactory;
     private AccountModelFactory accountModelFactory;
+    private WebHandler preLoginHandler;
+    private WebHandler postLoginHandler;
+    private boolean samlLoginEnabled;
 
     public LoginController() {
         super();
@@ -65,9 +68,13 @@ public class LoginController extends FormController {
         this.errorModelFactory = errorModelFactory;
         this.formFields = config.getLoginControllerConfig().getFormFields();
 
+        this.preLoginHandler = config.getLoginPreHandler();
+        this.postLoginHandler = config.getLoginPostHandler();
+
         this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
         this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
         this.accountModelFactory = new DefaultAccountModelFactory();
+        this.samlLoginEnabled = config.isSamlLoginEnabled();
 
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new LoginErrorModelFactory(this.messageSource);
@@ -89,7 +96,9 @@ public class LoginController extends FormController {
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-        model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
+        if (samlLoginEnabled) {
+            model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
+        }
 
         if (isHtmlPreferred(request, response)) {
             model.put("forgotLoginUri", forgotLoginUri);
@@ -112,6 +121,12 @@ public class LoginController extends FormController {
     @Override
     protected ViewModel onValidSubmit(HttpServletRequest req, HttpServletResponse resp, Form form) throws Exception {
 
+        if (preLoginHandler != null) {
+            if (!preLoginHandler.handle(req, resp, null)) {
+                return null;
+            }
+        }
+
         String usernameOrEmail = form.getFieldValue("login");
         String password = form.getFieldValue("password");
 
@@ -119,6 +134,12 @@ public class LoginController extends FormController {
 
         AccessTokenResult result = (AccessTokenResult) req.getAttribute(OAuthTokenResolver.REQUEST_ATTR_NAME);
         saveResult(req, resp, result);
+
+        if (postLoginHandler != null) {
+            if(!postLoginHandler.handle(req, resp, result.getAccount())) {
+                return null;
+            }
+        }
 
         if (isJsonPreferred(req, resp)) {
             //noinspection unchecked
