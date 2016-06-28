@@ -72,14 +72,20 @@
 
                 </div>
 
-                <div th:if="${not #lists.isEmpty(accountStores)}" class="provider-area  col-xs-12 col-sm-4">
+                <div th:if="${not #lists.isEmpty(accountStores)}" class="provider-area col-xs-12 col-sm-4">
                     <div class="header">&nbsp;</div>
                     <label>Easy 1-click login:</label>
                     <button th:each="accountStore : ${accountStores}" class="btn btn-social"
                             th:classappend="${'btn-'+accountStore.provider.providerId}"
-                            th:text="${accountStore.provider.providerId == 'saml' ? accountStore.name : accountStore.provider.providerId}"
                             th:id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}">
-                        |Provider|
+                    <th:block th:if="${accountStore.provider.providerId != 'saml'}">
+                        <i class="fa" th:classappend="${'fa-'+accountStore.provider.providerId}"></i>
+                        <span th:text="${accountStore.provider.providerId}">|Provider|</span>
+                    </th:block>
+                    <th:block th:if="${accountStore.provider.providerId == 'saml'}">
+                        <i class="fa fa-lock"></i>
+                        <span th:text="${accountStore.name}">|SAML|</span>
+                    </th:block>
                     </button>
                 </div>
             </div>
