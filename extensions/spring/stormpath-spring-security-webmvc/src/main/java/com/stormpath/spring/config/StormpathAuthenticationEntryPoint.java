@@ -15,8 +15,17 @@
  */
 package com.stormpath.spring.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
+import com.stormpath.sdk.servlet.http.MediaType;
+import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.spring.errors.Error;
+import com.stormpath.spring.errors.ErrorConstants;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -27,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
@@ -35,17 +45,44 @@ import java.io.IOException;
  */
 public class StormpathAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    private final Logger log = LoggerFactory.getLogger(StormpathAuthenticationEntryPoint.class);
+    private final ObjectMapper om;
+    private final ContentNegotiationResolver contentNegotiationResolver = ContentNegotiationResolver.INSTANCE;
+    @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
+    protected String producesTypes;
     protected String loginUri;
 
     public StormpathAuthenticationEntryPoint(String loginUri) {
         Assert.notNull(loginUri, "loginUri cannot be null");
         this.loginUri = loginUri;
+        this.om = new ObjectMapper();
     }
 
+    private boolean isJsonPreferred(HttpServletRequest request, HttpServletResponse response) {
+        List<MediaType> produces = MediaType.parseMediaTypes(producesTypes);
+        try {
+            return MediaType.APPLICATION_JSON.equals(contentNegotiationResolver.getContentType(request, response, produces));
+        } catch (UnresolvedMediaTypeException e) {
+            log.error("Couldn't resolve content type", e);
+            return false;
+        }
+    }
+
+    /**
+     * Always returns a 401 error code to the client.
+     */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                   AuthenticationException authException) throws IOException, ServletException {
-        sendRedirect(request, response);
+
+        log.debug("Pre-authenticated entry point called. Rejecting access");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        if (isJsonPreferred(request, response)) {
+            om.writeValue(response.getOutputStream(),
+                    new Error(ErrorConstants.ERR_ACCESS_DENIED, authException.getMessage()));
+        } else {
+            sendRedirect(request, response);
+        }
     }
 
     private boolean isAuthenticated() {

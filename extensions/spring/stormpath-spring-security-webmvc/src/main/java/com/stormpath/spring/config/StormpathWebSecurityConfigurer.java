@@ -21,7 +21,6 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
-import com.stormpath.spring.errors.Http401UnauthorizedEntryPoint;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
 import com.stormpath.spring.filter.LoginHandlerFilter;
@@ -95,9 +94,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
-
-    @Autowired(required = false) //needed for Spring MVC, but not for Spring Boot
-    protected Http401UnauthorizedEntryPoint authenticationEntryPoint;
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
     protected String produces;
@@ -252,11 +248,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
             http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationAuthenticationFilter.class);
-        }
-
-        // 706: Translate errors to JSON when preferred by client
-        if (authenticationEntryPoint != null) {
-            http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         }
 
         if ((idSiteEnabled || samlEnabled) && loginEnabled) {
