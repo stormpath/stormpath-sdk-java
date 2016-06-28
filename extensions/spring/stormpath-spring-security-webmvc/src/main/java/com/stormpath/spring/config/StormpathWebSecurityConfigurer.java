@@ -250,7 +250,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationAuthenticationFilter.class);
         }
 
-        if ((idSiteEnabled || samlEnabled) && loginEnabled) {
+        if (idSiteEnabled && loginEnabled) {
             String permittedResultPath = (idSiteEnabled) ? idSiteResultUri : samlResultUri;
 
             http
