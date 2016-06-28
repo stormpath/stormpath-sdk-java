@@ -51,7 +51,7 @@ class DefaultAccessTokenTest {
 
         String jwt = Jwts.builder()
             .setSubject(href)
-            .claim("rti", "abcdefg")
+            .claim("stt", "access")
             .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
             .compact();
 
@@ -97,10 +97,10 @@ class DefaultAccessTokenTest {
         def secret = "a_very_secret_key"
         def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
 
-        // no rti claim means it's not a valid access token
+        // An sst claim of 'access' means it's a valid access token
         String jwt = Jwts.builder()
             .setSubject(href)
-            .claim("rti", "abcdefg")
+            .claim("stt", "access")
             .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
             .compact();
 
@@ -147,9 +147,10 @@ class DefaultAccessTokenTest {
         def secret = "a_very_secret_key"
         def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
 
-        // no rti claim means it's not a valid access token
+        // An sst claim of 'refresh' means it's not a valid access token
         String jwt = Jwts.builder()
             .setSubject(href)
+            .claim("stt", "refresh")
             .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
             .compact();
 
@@ -183,7 +184,7 @@ class DefaultAccessTokenTest {
 
         String jwt = Jwts.builder()
             .setSubject(href)
-            .claim("rti", "abcdefg")
+            .claim("stt", "access")
             .signWith(SignatureAlgorithm.HS512, secret.getBytes("UTF-8"))
             .compact();
 

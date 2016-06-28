@@ -50,9 +50,8 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
                         .setSigningKey(getDataStore().getApiKey().getSecret().getBytes("UTF-8"))
                         .parseClaimsJws(getString(JWT)).getBody();
 
-                // token *must* have an rti claim to be an access_token
-                // otherwise, it may be a refresh_token trying to be passed off as an access_token
-                Assert.isTrue(Strings.hasText((String) claims.get("rti")));
+                String tokenType = (String) claims.get("stt");
+                Assert.isTrue(tokenType.equals("access"));
             } catch (Exception e) {
                 throw new JwtException("JWT failed validation; it cannot be trusted.");
             }
