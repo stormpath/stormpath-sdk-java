@@ -62,7 +62,7 @@ public class DefaultJwtAccountResolver implements JwtAccountResolver {
 
         Claims claims = Jwts.parser().setSigningKeyResolver(signingKeyResolver).parseClaimsJws(jwt).getBody();
 
-        if (!claims.containsKey("rti")) {
+        if (claims.get("stt").equals("refresh")) {
             //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/674
             //This is a refresh token, let's not allow the account to be obtained from it
             return null;

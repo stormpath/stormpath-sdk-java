@@ -102,7 +102,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
     }
 
     private boolean isAccessToken(Claims claims) {
-        return claims.containsKey("rti");
+        return claims.get("stt").equals("access");
     }
 
     private void gracefullyDeleteAccessToken(String accessTokenId) {
