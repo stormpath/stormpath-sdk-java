@@ -137,9 +137,8 @@ public class ChangePasswordController extends FormController {
 
             DefaultField field = new DefaultField();
             field.setName(fieldName);
-            field.setName(fieldName);
-            field.setLabel("stormpath.web.changePassword.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.changePassword.form.fields." + fieldName + ".placeholder");
+            field.setLabel(i18n(request, "stormpath.web.changePassword.form.fields." + fieldName + ".label"));
+            field.setPlaceholder(i18n(request, "stormpath.web.changePassword.form.fields." + fieldName + ".placeholder"));
             field.setRequired(true);
             field.setType("password");
             String val = fieldValueResolver.getValue(request, fieldName);

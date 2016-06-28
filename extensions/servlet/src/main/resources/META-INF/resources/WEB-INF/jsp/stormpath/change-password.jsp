@@ -54,10 +54,10 @@
                                         </c:when>
                                         <c:otherwise>
                                             <div form-group="true" class="form-group group-${field.name}">
-                                                <label class="col-sm-4"><sp:message key="${field.label}"/></label>
+                                                <label class="col-sm-4">${field.label}</label>
                                                 <div class="col-sm-8">
                                                     <input name="${field.name}" value="${field.value}" type="${field.type}"
-                                                           placeholder="<sp:message key="${field.placeholder}"/>"
+                                                           placeholder="${field.placeholder}"
                                                            <c:if test="${field.required}">required="required" </c:if>
                                                            class="form-control"/>
                                                 </div>
