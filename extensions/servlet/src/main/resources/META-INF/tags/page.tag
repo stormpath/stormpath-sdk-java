@@ -36,7 +36,11 @@
 <meta content="width=device-width" name="viewport">
 <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800"
       rel="stylesheet" type="text/css">
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+<c:if test="${!empty accountStores}">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+<link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.0.0/bootstrap-social.min.css" rel="stylesheet">
+</c:if>
 <link href="${pageContext.request.contextPath}/assets/css/stormpath.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/assets/css/custom.stormpath.css" rel="stylesheet">
 <!--[if lt IE 9]>
@@ -44,7 +48,7 @@
 <script src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js'></script>
 <![endif]-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </head>
 <body<c:if test="${!empty bodyCssClass}"> class="${bodyCssClass}"</c:if>>
     <jsp:doBody/>

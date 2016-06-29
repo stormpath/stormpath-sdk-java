@@ -166,8 +166,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
     protected boolean idSiteEnabled;
 
-    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: false }")
-    protected boolean samlEnabled;
+    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: true }")
+    protected boolean callbackEnabled;
 
     @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/idSiteResult' }")
     protected String idSiteResultUri;
@@ -279,7 +279,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 .antMatchers("/assets/js/stormpath.js").permitAll();
         }
 
-        if (idSiteEnabled || samlEnabled || stormpathWebEnabled) {
+        if (idSiteEnabled || callbackEnabled || stormpathWebEnabled) {
             if (logoutEnabled) {
                 http
                     .logout()
@@ -306,7 +306,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .antMatchers(sendVerificationEmailUri).permitAll();
             }
             if (accessTokenEnabled) {
-                if (!samlEnabled && !idSiteEnabled && !loginEnabled) {
+                if (!callbackEnabled && !idSiteEnabled && !loginEnabled) {
                     oauthAuthenticationSpringSecurityProcessingFilter.setStateless(true);
                 }
                 http.authorizeRequests().antMatchers(accessTokenUri).permitAll();

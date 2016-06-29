@@ -340,8 +340,10 @@ class ApplicationIT extends ClientIT {
                     .inAccountStore(accountStoreMapping2.getAccountStore()).build()
             app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 7104 (http://docs.stormpath.com/errors/7104), RequestId " + e.getRequestId() + ": Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.getStatus(), 400)
+            assertEquals(e.getCode(), 7104)
+            assertTrue(e.getDeveloperMessage().contains("Login attempt failed because there is no Account in the Application's associated Account Stores with the specified username or email."))
         }
 
         //No account store has been defined, therefore login must succeed
@@ -419,8 +421,10 @@ class ApplicationIT extends ClientIT {
             request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).inAccountStore(org2).build()
             result = app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 5114 (http://docs.stormpath.com/errors/5114), RequestId " + e.getRequestId() + ": The specified application account store reference is invalid: the specified account store is not one of the application's assigned account stores.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.getStatus(), 400)
+            assertEquals(e.getCode(), 5114)
+            assertTrue(e.getDeveloperMessage().contains("The specified Account Store is not one of the Application's assigned Account Stores."))
         }
     }
 
@@ -534,9 +538,7 @@ class ApplicationIT extends ClientIT {
         } catch (com.stormpath.sdk.resource.ResourceException e) {
             assertEquals(e.getStatus(), 400)
             assertEquals(e.getCode(), 7200)
-            assertTrue(e.getDeveloperMessage().contains("Stormpath was not able to complete the request to Google: this can be " +
-                    "caused by either a bad Google directory configuration, or the provided account credentials are not " +
-                    "valid."))
+            assertTrue(e.getDeveloperMessage().contains("Stormpath was not able to complete the request to Google: this can be caused by either a bad Google Directory configuration, or the provided Account credentials are not valid."))
         }
     }
 
