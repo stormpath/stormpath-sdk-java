@@ -332,8 +332,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.idSite.showOrganizationField'] }")
     protected Boolean idSiteShowOrganizationField;
 
-    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: false }")
-    protected boolean samlEnabled;
+    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: true }")
+    protected boolean callbackEnabled;
 
     @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/samlResult' }")
     protected String samlResultUri;
@@ -468,7 +468,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (idSiteEnabled) {
             mappings.put(idSiteResultUri, stormpathIdSiteResultController());
         }
-        if (samlEnabled) {
+        if (callbackEnabled) {
             mappings.put("/saml", stormpathSamlController());
             mappings.put(samlResultUri, stormpathSamlResultController());
         }
@@ -1259,7 +1259,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             controller = c;
         }
 
-        if (samlEnabled) {
+        if (callbackEnabled) {
             SamlLogoutController c = new SamlLogoutController(stormpathInternalConfig().getLogoutControllerConfig(), stormpathInternalConfig().getProducesMediaTypes());
             c.setServerUriResolver(stormpathServerUriResolver());
             c.setSamlResultUri(samlResultUri);
@@ -1391,7 +1391,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
             @Override
             public boolean isSamlLoginEnabled() {
-                return samlEnabled;
+                return callbackEnabled;
             }
 
             @Override
@@ -1439,8 +1439,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
-            public boolean isSamlEnabled() {
-                return samlEnabled;
+            public boolean isCallbackEnabled() {
+                return callbackEnabled;
             }
 
             @Override
