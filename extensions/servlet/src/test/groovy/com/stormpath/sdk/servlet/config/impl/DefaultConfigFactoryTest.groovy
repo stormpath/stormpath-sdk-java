@@ -91,7 +91,7 @@ class DefaultConfigFactoryTest {
         assertFalse config.getForgotPasswordControllerConfig().isEnabled()
         assertFalse config.getChangePasswordControllerConfig().isEnabled()
         assertFalse config.isIdSiteEnabled()
-        assertFalse config.isSamlEnabled()
+        assertFalse config.isCallbackEnabled()
         assertFalse config.isMeEnabled()
     }
 
@@ -120,7 +120,7 @@ class DefaultConfigFactoryTest {
         assertTrue config.getForgotPasswordControllerConfig().isEnabled()
         assertTrue config.getChangePasswordControllerConfig().isEnabled()
         assertTrue config.isIdSiteEnabled()
-        assertTrue config.isSamlEnabled()
+        assertTrue config.isCallbackEnabled()
         assertTrue config.isMeEnabled()
     }
 
