@@ -279,7 +279,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.head.fragmentSelector'] ?: 'head' }")
     protected String headFragmentSelector;
 
-    @Value("#{ @environment['stormpath.web.head.cssUris'] ?: '//fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800 //netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css /assets/css/stormpath.css' }")
+    @Value("#{ @environment['stormpath.web.head.cssUris'] ?: '//fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800 //netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css /assets/css/stormpath.css' }")
     protected String headCssUris;
 
     @Value("#{ @environment['stormpath.web.head.extraCssUris'] }")

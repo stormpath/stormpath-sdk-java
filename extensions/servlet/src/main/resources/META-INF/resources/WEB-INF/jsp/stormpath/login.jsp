@@ -94,6 +94,12 @@
                                 <c:forEach items="${accountStores}" var="accountStore">
                                     <button class="btn btn-social btn-${accountStore.provider.providerId}"
                                             id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}">
+                                        <c:if test="${accountStore.provider.providerId != 'saml'}">
+                                            <span class="fa fa-${accountStore.provider.providerId}"></span>
+                                        </c:if>
+                                        <c:if test="${accountStore.provider.providerId == 'saml'}">
+                                            <span class="fa fa-lock"></span>
+                                        </c:if>
                                         <c:out value="${accountStore.provider.providerId == 'saml' ? accountStore.name : accountStore.provider.providerId}"/>
                                     </button>
                                 </c:forEach>
