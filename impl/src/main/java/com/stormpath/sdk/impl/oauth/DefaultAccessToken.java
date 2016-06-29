@@ -17,9 +17,8 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessToken;
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 
@@ -40,17 +39,17 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
      * `refresh_token`). If that is not the case then this operation will throw a JwtException. It is called
      * from the constructor, so an AccessToken cannot be instantiated without verifying the jwt is a proper
      * `access_token`
-     * 
+     *
      * @since 1.0.RC8.3
      */
     private void ensureAccessToken() {
         if(isMaterialized()) {
             try {
-                Claims claims = Jwts.parser()
+                JwsHeader header = Jwts.parser()
                         .setSigningKey(getDataStore().getApiKey().getSecret().getBytes("UTF-8"))
-                        .parseClaimsJws(getString(JWT)).getBody();
+                        .parseClaimsJws(getString(JWT)).getHeader();
 
-                String tokenType = (String) claims.get("stt");
+                String tokenType = (String) header.get("stt");
                 Assert.isTrue(tokenType.equals("access"));
             } catch (Exception e) {
                 throw new JwtException("JWT failed validation; it cannot be trusted.");
