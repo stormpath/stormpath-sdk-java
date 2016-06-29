@@ -51,7 +51,7 @@ class DefaultAccessTokenTest {
 
         String jwt = Jwts.builder()
             .setSubject(href)
-            .claim("stt", "access")
+            .setHeaderParam("stt", "access")
             .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
             .compact();
 
@@ -100,7 +100,7 @@ class DefaultAccessTokenTest {
         // An sst claim of 'access' means it's a valid access token
         String jwt = Jwts.builder()
             .setSubject(href)
-            .claim("stt", "access")
+            .setHeaderParam("stt", "access")
             .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
             .compact();
 
@@ -184,7 +184,7 @@ class DefaultAccessTokenTest {
 
         String jwt = Jwts.builder()
             .setSubject(href)
-            .claim("stt", "access")
+            .setHeaderParam("stt", "access")
             .signWith(SignatureAlgorithm.HS512, secret.getBytes("UTF-8"))
             .compact();
 
