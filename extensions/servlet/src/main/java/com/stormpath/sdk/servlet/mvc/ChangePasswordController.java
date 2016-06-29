@@ -17,13 +17,16 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.Saver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +46,7 @@ public class ChangePasswordController extends FormController {
     private boolean autoLogin;
     private ErrorModelFactory errorModelFactory;
     private AccountModelFactory accountModelFactory;
+    private Saver<AuthenticationResult> authenticationResultSaver;
 
     public ChangePasswordController() {
         super();
@@ -57,6 +61,8 @@ public class ChangePasswordController extends FormController {
         this.autoLogin = config.getChangePasswordControllerConfig().isAutoLogin();
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.errorModelFactory = new ChangePasswordErrorModelFactory(this.messageSource);
+        this.authenticationResultSaver = config.getAuthenticationResultSaver();
+
 
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
@@ -121,7 +127,7 @@ public class ChangePasswordController extends FormController {
 
         List<Field> fields = new ArrayList<Field>(3);
 
-        String value = Strings.clean(request.getParameter("sptoken"));
+        String value = Strings.clean(fieldValueResolver.getValue(request, "sptoken"));
 
         if (value != null) {
             DefaultField field = new DefaultField();
@@ -156,7 +162,7 @@ public class ChangePasswordController extends FormController {
         String errorMsg = i18n(request, "stormpath.web.changePassword.form.errors.default");
         int status = 400;
 
-        if (e instanceof IllegalArgumentException || e instanceof MismatchedPasswordException) {
+        if (e instanceof IllegalArgumentException || e instanceof MismatchedPasswordException || e instanceof ValidationException) {
             errorMsg = e.getMessage();
         } else if (e instanceof ResourceException && ((ResourceException) e).getStatus() == 400) {
             //TODO: update this with a specific message that tells the exact password requirements.
@@ -185,6 +191,8 @@ public class ChangePasswordController extends FormController {
             try {
                 Account account = application.resetPassword(sptoken, password);
                 if (autoLogin){
+                    final AuthenticationResult result = new TransientAuthenticationResult(account);
+                    this.authenticationResultSaver.set(request, response, result);
                     model.put("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST));                }
                 else {
                     return new DefaultViewModel("stormpathJsonView");
@@ -198,9 +206,11 @@ public class ChangePasswordController extends FormController {
             return new DefaultViewModel("stormpathJsonView", model);
         }
 
-        application.resetPassword(sptoken, password);
+        Account account = application.resetPassword(sptoken, password);
         String next;
         if (autoLogin){
+            final AuthenticationResult result = new TransientAuthenticationResult(account);
+            this.authenticationResultSaver.set(request, response, result);
             next = loginNextUri;
         }
         else{
@@ -211,16 +221,32 @@ public class ChangePasswordController extends FormController {
     }
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
-        super.validate(request, response, form);
+        if (isJsonPreferred(request, response)) {
+            String password = form.getFieldValue("password");
+            if (password == null || password.isEmpty()) {
+                String key = "stormpath.web.changePassword.form.fields.password.required";
+                String msg = i18n(request, key);
+                throw new ValidationException(msg);
+            }
+            String sptoken = form.getFieldValue("sptoken");
+            if (sptoken == null || sptoken.isEmpty()) {
+                String key = "stormpath.web.changePassword.form.errors.no_token";
+                String msg = i18n(request, key);
+                throw new ValidationException(msg);
+            }
+        }
+        else {
+            super.validate(request, response, form);
 
-        //ensure fields match:
-        String password = form.getFieldValue("password");
-        String confirmPassword = form.getFieldValue("confirmPassword");
+            //ensure fields match:
+            String password = form.getFieldValue("password");
+            String confirmPassword = form.getFieldValue("confirmPassword");
 
-        if (!password.equals(confirmPassword)) {
-            String key = "stormpath.web.changePassword.form.errors.mismatch";
-            String msg = i18n(request, key);
-            throw new MismatchedPasswordException(msg);
+            if (!password.equals(confirmPassword)) {
+                String key = "stormpath.web.changePassword.form.errors.mismatch";
+                String msg = i18n(request, key);
+                throw new MismatchedPasswordException(msg);
+            }
         }
     }
 }
