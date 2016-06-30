@@ -78,7 +78,7 @@ public class ChangePasswordController extends FormController {
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String sptoken = Strings.clean(request.getParameter("sptoken"));
+        String sptoken = Strings.clean(fieldValueResolver.getValue(request, "sptoken"));
 
         if (isJsonPreferred(request, response)) {
             Map<String, Object> model = new HashMap<String, Object>(1);
