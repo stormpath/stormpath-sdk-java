@@ -106,13 +106,13 @@ public class VerifyController extends FormController {
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        String sptoken = Strings.clean(request.getParameter("sptoken"));
+        String sptoken = Strings.clean(fieldValueResolver.getValue(request, "sptoken"));
 
         if (sptoken == null) {
             if (isJsonPreferred(request, response)) {
                 Map<String,Object> model = new HashMap<String, Object>();
                 model.put("status", HttpServletResponse.SC_BAD_REQUEST);
-                model.put("message", i18n(request, "stormpath.web.verify.emptyToken.error"));
+                model.put("message", i18n(request, "stormpath.web.verifyEmail.form.errors.noToken"));
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return new DefaultViewModel("stormpathJsonView", model);
             }
@@ -132,23 +132,22 @@ public class VerifyController extends FormController {
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
             Map<String,Object> model = newModel();
             List<String> errors = new ArrayList<String>();
-            errors.add(i18n(request, "stormpath.web.verify.invalidLink.error"));
+            errors.add(i18n(request, "stormpath.web.verifyEmail.form.errors.invalidLink"));
             model.put("errors", errors);
             return new DefaultViewModel(view, model).setRedirect(false);
 
         }
         catch (Exception e) {
             if (isJsonPreferred(request, response)) {
-                Map<String,Object> model = new HashMap<String, Object>();
-                model.put("status", HttpServletResponse.SC_BAD_REQUEST);
-                model.put("message", i18n(request, "stormpath.web.login.form.errors.invalidLogin"));
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                Map<String,Object> model = errorModelFactory.toError(request, e).toMap();
+                errorModelFactory.toError(request, e);
+                response.setStatus(errorModelFactory.toError(request, e).getStatus());
                 return new DefaultViewModel("stormpathJsonView", model);
             }
             //safest thing to do if token is invalid or if there is an error (could be illegal access)
             Map<String,Object> model = newModel();
             List<String> errors = new ArrayList<String>();
-            errors.add(i18n(request, "stormpath.web.verify.invalidLink.error"));
+            errors.add(i18n(request, "stormpath.web.verifyEmail.form.errors.invalidLink"));
             model.put("errors", errors);
             return new DefaultViewModel(view, model);
         }
@@ -230,7 +229,7 @@ public class VerifyController extends FormController {
             field.setPlaceholder("stormpath.web.verifyEmail.form.fields." + fieldName + ".placeholder");
             field.setRequired(true);
             field.setType("text");
-            String param = request.getParameter(fieldName);
+            String param = fieldValueResolver.getValue(request, fieldName);
             field.setValue(param != null ? param : "");
 
             fields.add(field);
@@ -243,7 +242,7 @@ public class VerifyController extends FormController {
 
         Application application = (Application) request.getAttribute(Application.class.getName());
 
-        String email = form.getFieldValue("email");
+        String email = fieldValueResolver.getValue(request, "email");
 
         try {
             //set the form on the request in case the AccountStoreResolver needs to inspect it:
