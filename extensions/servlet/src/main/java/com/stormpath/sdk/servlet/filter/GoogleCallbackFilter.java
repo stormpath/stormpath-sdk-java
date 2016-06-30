@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.mvc.provider.GoogleCallbackController;
 
@@ -29,7 +31,8 @@ public class GoogleCallbackFilter extends ControllerFilter {
     protected void onInit() throws ServletException {
         GoogleCallbackController googleCallbackController = new GoogleCallbackController(
                 getConfig().getLoginControllerConfig().getNextUri(),
-                getConfig().getAuthenticationResultSaver()
+                getConfig().getAuthenticationResultSaver(),
+                getConfig().<Publisher<RequestEvent>>getInstance(EVENT_PUBLISHER)
         );
 
         setController(googleCallbackController);

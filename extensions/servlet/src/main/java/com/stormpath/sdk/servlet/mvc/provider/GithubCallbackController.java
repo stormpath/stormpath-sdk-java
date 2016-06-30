@@ -27,6 +27,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.util.ServletUtils;
@@ -58,8 +60,8 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
 
     private AccountStoreModelFactory accountStoreModelFactory;
 
-    public GithubCallbackController(String loginNextUri, Saver<AuthenticationResult> authenticationResultSaver) {
-        super(loginNextUri, authenticationResultSaver);
+    public GithubCallbackController(String loginNextUri, Saver<AuthenticationResult> authenticationResultSaver, Publisher<RequestEvent> requestEventPublisher) {
+        super(loginNextUri, authenticationResultSaver, requestEventPublisher);
 
         accountStoreModelFactory = new DefaultAccountStoreModelFactory();
 

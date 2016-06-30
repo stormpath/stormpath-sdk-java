@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.mvc.provider.LinkedinCallbackController;
 
@@ -30,7 +32,8 @@ public class LinkedinCallbackFilter extends ControllerFilter {
 
         LinkedinCallbackController linkedinCallbackController = new LinkedinCallbackController(
                 getConfig().getLoginControllerConfig().getNextUri(),
-                getConfig().getAuthenticationResultSaver()
+                getConfig().getAuthenticationResultSaver(),
+                getConfig().<Publisher<RequestEvent>>getInstance(EVENT_PUBLISHER)
         );
 
         setController(linkedinCallbackController);

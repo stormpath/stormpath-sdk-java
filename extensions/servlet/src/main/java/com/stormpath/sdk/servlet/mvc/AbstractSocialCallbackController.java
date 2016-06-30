@@ -15,13 +15,21 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.servlet.account.event.RegisteredAccountRequestEvent;
+import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,13 +42,18 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
 
     protected Saver<AuthenticationResult> authenticationResultSaver;
 
+    private final Publisher<RequestEvent> requestEventPublisher;
+
     public AbstractSocialCallbackController(String loginNextUri,
-                                            Saver<AuthenticationResult> authenticationResultSaver) {
+                                            Saver<AuthenticationResult> authenticationResultSaver,
+                                            Publisher<RequestEvent> requestEventPublisher) {
         this.nextUri = loginNextUri;
         this.authenticationResultSaver = authenticationResultSaver;
+        this.requestEventPublisher = requestEventPublisher;
 
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver cannot be null.");
         Assert.hasLength(this.nextUri, "nextUri cannot be null.");
+        Assert.notNull(this.requestEventPublisher, "requestEventPublisher cannot be null");
     }
 
     @Override
@@ -61,6 +74,25 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
         AuthenticationResult authcResult = new TransientAuthenticationResult(result.getAccount());
         authenticationResultSaver.set(request, response, authcResult);
 
+        if (result.isNewAccount()) {
+            this.requestEventPublisher.publish(createRegisteredEvent(request, response, result.getAccount()));
+        } else {
+            this.requestEventPublisher.publish(createSuccessEvent(request, response, null, authcResult));
+        }
+
+
         return new DefaultViewModel(nextUri).setRedirect(true);
+    }
+
+    protected RegisteredAccountRequestEvent createRegisteredEvent(HttpServletRequest request,
+                                                                  HttpServletResponse response, Account account) {
+        return new DefaultRegisteredAccountRequestEvent(request, response, account);
+    }
+
+    protected SuccessfulAuthenticationRequestEvent createSuccessEvent(HttpServletRequest request,
+                                                                      HttpServletResponse response,
+                                                                      AuthenticationRequest authenticationRequest,
+                                                                      AuthenticationResult authcResult) {
+        return new DefaultSuccessfulAuthenticationRequestEvent(request, response, authenticationRequest, authcResult);
     }
 }

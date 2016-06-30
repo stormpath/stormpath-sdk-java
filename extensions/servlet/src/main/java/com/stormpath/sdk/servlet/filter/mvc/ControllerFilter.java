@@ -42,6 +42,8 @@ import java.util.List;
  */
 public class ControllerFilter extends HttpFilter {
 
+    protected static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+
     private static final Logger log = LoggerFactory.getLogger(ControllerFilter.class);
 
     private Controller controller;

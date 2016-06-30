@@ -15,6 +15,8 @@
  */
 package com.stormpath.spring.boot.examples;
 
+import com.stormpath.sdk.servlet.event.RequestEventListener;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -37,6 +39,11 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers("/restricted").fullyAuthenticated()
             .antMatchers("/**").permitAll();
+    }
+
+    @Bean
+    public RequestEventListener stormpathRequestEventListener() {
+        return new CustomRequestEventListener();
     }
 
 }
