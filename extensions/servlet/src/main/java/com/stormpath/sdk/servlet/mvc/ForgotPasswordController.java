@@ -23,14 +23,18 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -42,6 +46,8 @@ public class ForgotPasswordController extends FormController {
 
     private String loginUri;
     private AccountStoreResolver accountStoreResolver;
+    private Resolver<Locale> localeResolver;
+    private MessageSource messageSource;
 
     public ForgotPasswordController() {
         super();
@@ -52,9 +58,13 @@ public class ForgotPasswordController extends FormController {
 
         this.loginUri = config.getLoginControllerConfig().getUri();
         this.accountStoreResolver = config.getAccountStoreResolver();
+        this.messageSource = config.getForgotPasswordControllerConfig().getMessageSource();
+        this.localeResolver = config.getForgotPasswordControllerConfig().getLocaleResolver();
 
         Assert.hasText(this.loginUri, "loginUri cannot be null.");
         Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");
+        Assert.notNull(this.messageSource, "messageSource cannot be null.");
+        Assert.notNull(this.localeResolver, "localeResolver cannot be null.");
     }
 
     @Override
@@ -62,11 +72,29 @@ public class ForgotPasswordController extends FormController {
         return true;
     }
 
+    protected String i18n(HttpServletRequest request, String key) {
+        Locale locale = localeResolver.get(request, null);
+        return messageSource.getMessage(key, locale);
+    }
+
+    protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (isJsonPreferred(request, response)) {
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return new DefaultViewModel("stormpathJsonView", Collections.EMPTY_MAP);
+        }
+        return super.doGet(request, response);
+    }
 
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
         model.put("loginUri", loginUri);
+        String status = request.getParameter("status");
+        if ("invalid_sptoken".equals(status)) {
+            String key = "stormpath.web.forgotPassword.form.status";
+            model.put("status", i18n(request, key.concat(".").concat(status)));
+        }
+
     }
 
     @Override
@@ -103,6 +131,12 @@ public class ForgotPasswordController extends FormController {
         return errors;
     }
 
+    protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
+        if (!isJsonPreferred(request, response)){
+            super.validate(request, response,form);
+        }
+    }
+
     protected ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form) {
 
         Application application = (Application) request.getAttribute(Application.class.getName());
@@ -119,12 +153,12 @@ public class ForgotPasswordController extends FormController {
                 application.sendPasswordResetEmail(email);
             }
         } catch (ResourceException e) {
-            //404 == resource does not exist.  Do not let the user know that the account does not
-            //exist, otherwise we open up to phishing attacks
-            if (e.getCode() != 404) {
-                throw e;
+            if (isJsonPreferred(request, response)) {
+                return new DefaultViewModel("stormpathJsonView");
             }
-            //otherwise don't do anything
+        }
+        if (isJsonPreferred(request, response)) {
+            return new DefaultViewModel("stormpathJsonView");
         }
 
         return new DefaultViewModel(nextUri).setRedirect(true);
