@@ -24,7 +24,7 @@ class CustomRequestEventListener extends RequestEventListenerAdapter {
     @Override
     public void on(RegisteredAccountRequestEvent e) {
         Account account = e.getAccount();
-        account.getCustomData().put("isUserAggreementAccepted", "false");
+        account.getCustomData().put("isUserAgreementAccepted", "false");
         account.save();
     }
 }
