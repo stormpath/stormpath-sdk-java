@@ -34,9 +34,7 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .apply(stormpath()).and()
-            .authorizeRequests()
-            .antMatchers("/restricted").fullyAuthenticated()
-            .antMatchers("/**").permitAll();
+            .authorizeRequests();
     }
 
 }

@@ -36,8 +36,6 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
         // We want to restrict access to one path and leave all other paths open.
         http
             .apply(stormpath()).and()
-            .authorizeRequests()
-            .antMatchers("/restricted").fullyAuthenticated()
-            .antMatchers("/**").permitAll();
+            .authorizeRequests();
     }
 }
