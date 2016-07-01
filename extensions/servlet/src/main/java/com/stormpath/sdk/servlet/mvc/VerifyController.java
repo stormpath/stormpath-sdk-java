@@ -123,20 +123,6 @@ public class VerifyController extends FormController {
         try {
             return verify(request, response, sptoken);
         }
-        catch (ResourceException re) {
-            if (isJsonPreferred(request, response)) {
-                Map<String,Object> model = errorModelFactory.toError(request, re).toMap();
-                response.setStatus(errorModelFactory.toError(request, re).getStatus());
-                return new DefaultViewModel("stormpathJsonView", model);
-            }
-            //safest thing to do if token is invalid or if there is an error (could be illegal access)
-            Map<String,Object> model = newModel();
-            List<String> errors = new ArrayList<String>();
-            errors.add(i18n(request, "stormpath.web.verifyEmail.form.errors.invalidLink"));
-            model.put("errors", errors);
-            return new DefaultViewModel(view, model).setRedirect(false);
-
-        }
         catch (Exception e) {
             if (isJsonPreferred(request, response)) {
                 Map<String,Object> model = errorModelFactory.toError(request, e).toMap();
@@ -144,11 +130,10 @@ public class VerifyController extends FormController {
                 response.setStatus(errorModelFactory.toError(request, e).getStatus());
                 return new DefaultViewModel("stormpathJsonView", model);
             }
-            //safest thing to do if token is invalid or if there is an error (could be illegal access)
-            Map<String,Object> model = newModel();
-            List<String> errors = new ArrayList<String>();
-            errors.add(i18n(request, "stormpath.web.verifyEmail.form.errors.invalidLink"));
-            model.put("errors", errors);
+            List<ErrorModel> errors = new ArrayList<ErrorModel>();
+            ErrorModel error = ErrorModel.builder().setStatus(HttpServletResponse.SC_BAD_REQUEST).setMessage(i18n(request, "stormpath.web.verifyEmail.form.errors.invalidLink")).build();
+            errors.add(error);
+            Map<String, ?> model = createModel(request, response, null, errors);
             return new DefaultViewModel(view, model);
         }
     }
@@ -167,7 +152,7 @@ public class VerifyController extends FormController {
         RequestEvent e = createVerifiedEvent(request, response, account);
         publish(e);
 
-        if (UserAgents.get(request).isJsonPreferred()) {
+        if (isJsonPreferred(request, response)) {
             if (autoLogin){
                 final AuthenticationResult result = new TransientAuthenticationResult(account);
                 this.authenticationResultSaver.set(request, response, result);
@@ -185,7 +170,7 @@ public class VerifyController extends FormController {
                 final AuthenticationResult result = new TransientAuthenticationResult(account);
                 this.authenticationResultSaver.set(request, response, result);
 
-                return new DefaultViewModel(loginUri).setRedirect(true);
+                return new DefaultViewModel(loginNextUri).setRedirect(true);
             }
             else {
 
@@ -257,11 +242,11 @@ public class VerifyController extends FormController {
             application.sendVerificationEmail(verificationEmailRequest);
         }
         finally {
-            if (UserAgents.get(request).isJsonPreferred()) {
+            if (isJsonPreferred(request, response)) {
                 return new DefaultViewModel("stormpathJsonView");
             }
 
-            return new DefaultViewModel(nextUri.concat("?status=unverified"));
+            return new DefaultViewModel(nextUri.replace("status=verified", "status=unverified")).setRedirect(true);
         }
 
     }
