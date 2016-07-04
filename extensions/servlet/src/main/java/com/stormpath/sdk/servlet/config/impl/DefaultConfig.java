@@ -304,7 +304,7 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public boolean isSamlEnabled() {
+    public boolean isCallbackEnabled() {
         return CFG.getBoolean(CALLBACK_ENABLED);
     }
 

@@ -135,7 +135,7 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String samlUrl = "/saml";
         String samlUrlPattern = cleanUri(samlUrl);
         boolean samlChainSpecified = false;
-        boolean samlEnabled = config.isSamlEnabled();
+        boolean callbackEnabled = config.isCallbackEnabled();
 
         String meUrl = config.getMeUrl();
         String meUrlPattern = cleanUri(meUrl);
@@ -309,7 +309,7 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         if (!accessTokenChainSpecified && oauthEnabled) {
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
         }
-        if (!samlChainSpecified && samlEnabled) {
+        if (!samlChainSpecified && callbackEnabled) {
             fcManager.createChain(samlUrlPattern, DefaultFilter.saml.name());
         }
         if (!meChainSpecified && meEnabled) {

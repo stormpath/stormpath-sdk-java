@@ -38,6 +38,7 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -63,6 +64,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
+
+    @Autowired
+    AuthenticationEntryPoint stormpathAuthenticationEntryPoint;
 
     @Autowired
     protected Client client;
@@ -160,8 +164,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
     protected boolean idSiteEnabled;
 
-    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: false }")
-    protected boolean samlEnabled;
+    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: true }")
+    protected boolean callbackEnabled;
 
     @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/idSiteResult' }")
     protected String idSiteResultUri;
@@ -244,13 +248,14 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationAuthenticationFilter.class);
         }
 
-        if ((idSiteEnabled || samlEnabled) && loginEnabled) {
+        if (idSiteEnabled && loginEnabled) {
             String permittedResultPath = (idSiteEnabled) ? idSiteResultUri : samlResultUri;
 
             http
                 .authorizeRequests()
                 .antMatchers(loginUri).permitAll()
-                .antMatchers(permittedResultPath).permitAll();
+                .antMatchers(permittedResultPath).permitAll()
+                .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
                 // make sure that /login and /login?status=... is permitted
@@ -262,7 +267,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .antMatchers(googleCallbackUri).permitAll()
                     .antMatchers(githubCallbackUri).permitAll()
                     .antMatchers(facebookCallbackUri).permitAll()
-                    .antMatchers(linkedinCallbackUri).permitAll();
+                    .antMatchers(linkedinCallbackUri).permitAll()
+                    .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
             }
 
             http.authorizeRequests()
@@ -271,7 +277,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 .antMatchers("/assets/js/stormpath.js").permitAll();
         }
 
-        if (idSiteEnabled || samlEnabled || stormpathWebEnabled) {
+        if (idSiteEnabled || callbackEnabled || stormpathWebEnabled) {
             if (logoutEnabled) {
                 http
                     .logout()
@@ -297,7 +303,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .antMatchers(verifyUri).permitAll();
             }
             if (accessTokenEnabled) {
-                if (!samlEnabled && !idSiteEnabled && !loginEnabled) {
+                if (!callbackEnabled && !idSiteEnabled && !loginEnabled) {
                     oauthAuthenticationSpringSecurityProcessingFilter.setStateless(true);
                 }
                 http.authorizeRequests().antMatchers(accessTokenUri).permitAll();

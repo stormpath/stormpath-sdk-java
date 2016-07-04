@@ -101,5 +101,5 @@ public interface Config extends Map<String, String> {
     /**
      * @since 1.0.0
      */
-    boolean isSamlEnabled();
+    boolean isCallbackEnabled();
 }

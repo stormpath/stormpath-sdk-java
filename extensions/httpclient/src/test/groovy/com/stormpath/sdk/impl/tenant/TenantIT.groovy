@@ -679,8 +679,10 @@ class TenantIT extends ClientIT {
             def dirList = tenant.getDirectories(
                     Directories.where(Directories.modifiedAt().matches("wrong match expression")))
             fail("should have thrown")
-        } catch (Exception e){
-            assertEquals(e.getMessage(), "HTTP 400, Stormpath 2103 (http://docs.stormpath.com/errors/2103), RequestId "+ e.getRequestId() + ": modifiedAt query criteria parameter value is invalid or an unexpected type.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.getStatus(), 400)
+            assertEquals(e.getCode(), 2103)
+            assertTrue(e.getDeveloperMessage().contains("modifiedAt query parameter value is invalid or an unexpected type."))
         }
     }
 
