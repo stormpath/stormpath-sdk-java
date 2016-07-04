@@ -49,11 +49,11 @@ public class SendVerificationEmailController extends FormController {
         super();
     }
 
-    public SendVerificationEmailController(Config confing) {
-        super(confing.getSendVerificationEmailControllerConfig(), confing.getProducesMediaTypes());
+    public SendVerificationEmailController(Config config) {
+        super(config.getSendVerificationEmailControllerConfig(), config.getProducesMediaTypes());
 
-        this.loginUri = confing.getLoginControllerConfig().getUri();
-        this.accountStoreResolver = confing.getAccountStoreResolver();
+        this.loginUri = config.getLoginControllerConfig().getUri();
+        this.accountStoreResolver = config.getAccountStoreResolver();
 
         Assert.hasText(this.loginUri, "loginUri cannot be null.");
         Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");

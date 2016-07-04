@@ -26,7 +26,6 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
-import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -206,7 +205,7 @@ public abstract class FormController extends AbstractController {
 
         List<ErrorModel> errors = toErrors(request, form, e);
 
-        if (UserAgents.get(request).isJsonPreferred()) {
+        if (isJsonPreferred(request, response)) {
             //TODO according to the spec if multiple errors only the most relevant should be return in case of JSON response, we don't have way to know that for now
             response.setStatus(errors.get(0).getStatus());
             return new DefaultViewModel("stormpathJsonView", errors.get(0).toMap());

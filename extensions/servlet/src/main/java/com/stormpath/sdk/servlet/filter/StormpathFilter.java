@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.http.HttpHeadersHolder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
@@ -28,7 +29,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -122,12 +128,25 @@ public class StormpathFilter extends HttpFilter {
 
         //continue:
         target.doFilter(request, response);
+
+        HttpHeadersHolder.clear();
     }
 
     protected void setRequestAttributes(HttpServletRequest request) {
         //ensure the Client and Application are conveniently available to all request filters/handlers:
         setClientRequestAttributes(request);
         setApplicationRequestAttributes(request);
+
+        // set client headers on a thread local so they can be retrieved in DefaultDataStore
+        Map<String, List<String>> headersMap = new LinkedHashMap<>();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            // Tomcat returns all header names as lowercase. In case others don't, lowercase key name
+            // http://grokbase.com/t/tomcat/users/0968njb9en/header-names-lower-case
+            headersMap.put(name.toLowerCase(), Collections.list(request.getHeaders(name)));
+        }
+        HttpHeadersHolder.set(headersMap);
     }
 
     protected void setClientRequestAttributes(HttpServletRequest request) {

@@ -26,7 +26,10 @@ import org.yaml.snakeyaml.Yaml
 import java.lang.reflect.Field
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertTrue
 import static org.testng.Assert.assertNotNull
+
 
 /**
  * @since 1.0.RC9
@@ -78,12 +81,55 @@ class DefaultConfigFactoryTest {
         assertNotNull(Classes.forName(Yaml.class.getName()))
     }
 
+    @Test
+    public void verifyAllEndpointsCanBeDisabled() {
+        assertFalse config.isOAuthEnabled()
+        assertFalse config.getRegisterControllerConfig().isEnabled()
+        assertFalse config.getSendVerificationEmailControllerConfig().isEnabled()
+        assertFalse config.getLoginControllerConfig().isEnabled()
+        assertFalse config.getLogoutControllerConfig().isEnabled()
+        assertFalse config.getForgotPasswordControllerConfig().isEnabled()
+        assertFalse config.getChangePasswordControllerConfig().isEnabled()
+        assertFalse config.isIdSiteEnabled()
+        assertFalse config.isCallbackEnabled()
+        assertFalse config.isMeEnabled()
+    }
+
+    @Test
+    public void verifyAllEndpointsCanBeEnabled() {
+        // Enable all endpoints with environment overrides since stormpath.properties has false for all
+        Map<String, String> env = new HashMap<>()
+        env.put('STORMPATH_WEB_OAUTH2_ENABLED', "true")
+        env.put('STORMPATH_WEB_REGISTER_ENABLED', "true")
+        env.put('STORMPATH_WEB_VERIFYEMAIL_ENABLED', "true")
+        env.put('STORMPATH_WEB_LOGIN_ENABLED', "true")
+        env.put('STORMPATH_WEB_LOGOUT_ENABLED', "true")
+        env.put('STORMPATH_WEB_FORGOTPASSWORD_ENABLED', "true")
+        env.put('STORMPATH_WEB_CHANGEPASSWORD_ENABLED', "true")
+        env.put('STORMPATH_WEB_IDSITE_ENABLED', "true")
+        env.put('STORMPATH_WEB_CALLBACK_ENABLED', "true")
+        env.put('STORMPATH_WEB_ME_ENABLED', "true")
+        setEnv(env)
+        config = new ConfigLoader().createConfig(new MockServletContext())
+
+        assertTrue config.isOAuthEnabled()
+        assertTrue config.getRegisterControllerConfig().isEnabled()
+        assertTrue config.getVerifyControllerConfig().isEnabled()
+        assertTrue config.getLoginControllerConfig().isEnabled()
+        assertTrue config.getLogoutControllerConfig().isEnabled()
+        assertTrue config.getForgotPasswordControllerConfig().isEnabled()
+        assertTrue config.getChangePasswordControllerConfig().isEnabled()
+        assertTrue config.isIdSiteEnabled()
+        assertTrue config.isCallbackEnabled()
+        assertTrue config.isMeEnabled()
+    }
+
     // From http://stackoverflow.com/a/496849
     private static void setEnv(Map<String, String> newenv) throws Exception {
         Class[] classes = Collections.class.getDeclaredClasses();
         Map<String, String> env = System.getenv();
-        for(Class cl : classes) {
-            if('java.util.Collections$UnmodifiableMap'.equals(cl.getName())) {
+        for (Class cl : classes) {
+            if ('java.util.Collections$UnmodifiableMap'.equals(cl.getName())) {
                 Field field = cl.getDeclaredField('m');
                 field.setAccessible(true);
                 Object obj = field.get(env);

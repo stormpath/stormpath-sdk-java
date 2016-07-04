@@ -88,14 +88,20 @@
                         </div>
 
                         <c:if test="${!empty accountStores}">
-                            <div class="provider-area  col-xs-12 col-sm-4">
+                            <div class="provider-area col-xs-12 col-sm-4">
                                 <div class="header">&nbsp;</div>
                                 <label>Easy 1-click login:</label>
                                 <c:forEach items="${accountStores}" var="accountStore">
                                     <button class="btn btn-social btn-${accountStore.provider.providerId}"
-                                            id="${accountStore.provider.providerId == 'saml' ? 'saml' : accountStore.provider.clientId}">
-                                        <c:out
-                                            value="${accountStore.provider.providerId}"/></button>
+                                            id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}">
+                                        <c:if test="${accountStore.provider.providerId != 'saml'}">
+                                            <span class="fa fa-${accountStore.provider.providerId}"></span>
+                                        </c:if>
+                                        <c:if test="${accountStore.provider.providerId == 'saml'}">
+                                            <span class="fa fa-lock"></span>
+                                        </c:if>
+                                        <c:out value="${accountStore.provider.providerId == 'saml' ? accountStore.name : accountStore.provider.providerId}"/>
+                                    </button>
                                 </c:forEach>
                             </div>
                         </c:if>

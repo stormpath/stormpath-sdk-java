@@ -41,7 +41,7 @@ public class DefaultSamlIdpUrlBuilder implements SamlIdpUrlBuilder {
     public final String ssoEndpoint;
     private final InternalDataStore internalDataStore;
     private final String applicationHref;
-    private final IdSiteClaims claims;
+    private final SamlClaims claims;
 
     private boolean logout = false;
 
@@ -52,7 +52,7 @@ public class DefaultSamlIdpUrlBuilder implements SamlIdpUrlBuilder {
         this.ssoEndpoint = samlProviderEndpoint;
         this.internalDataStore = internalDataStore;
         this.applicationHref = applicationHref;
-        this.claims = new IdSiteClaims();
+        this.claims = new SamlClaims();
     }
 
     @Override
@@ -82,6 +82,12 @@ public class DefaultSamlIdpUrlBuilder implements SamlIdpUrlBuilder {
     @Override
     public SamlIdpUrlBuilder setSpToken(String spToken) {
         claims.setSpToken(spToken);
+        return this;
+    }
+
+    @Override
+    public SamlIdpUrlBuilder setAccountStoreHref(String accountStoreHref) {
+        claims.setAccountStoreHref(accountStoreHref);
         return this;
     }
 

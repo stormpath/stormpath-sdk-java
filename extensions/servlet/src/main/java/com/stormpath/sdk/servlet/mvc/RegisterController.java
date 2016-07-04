@@ -54,6 +54,8 @@ public class RegisterController extends FormController {
     private AccountModelFactory accountModelFactory;
     private AccountStoreModelFactory accountStoreModelFactory;
     private ErrorModelFactory errorModelFactory;
+    private WebHandler preRegisterHandler;
+    private WebHandler postRegisterHandler;
 
     private boolean autoLogin;
 
@@ -74,6 +76,9 @@ public class RegisterController extends FormController {
         this.loginUri = config.getLoginControllerConfig().getUri();
         this.verifyViewName = config.getVerifyControllerConfig().getView();
         this.autoLogin = config.isRegisterAutoLoginEnabled();
+
+        this.preRegisterHandler = config.getRegisterPreHandler();
+        this.postRegisterHandler = config.getRegisterPostHandler();
 
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
@@ -162,12 +167,24 @@ public class RegisterController extends FormController {
         //Get the Stormpath Application instance corresponding to this web app:
         Application app = (Application) req.getAttribute(Application.class.getName());
 
+        if (preRegisterHandler != null) {
+            if (!preRegisterHandler.handle(req, resp, account)) {
+                return null;
+            }
+        }
+
         //now persist the new account, and ensure our account reference points to the newly created/returned instance:
         account = app.createAccount(account);
 
-        AccountStatus status = account.getStatus();
-
         publishRequestEvent(new DefaultRegisteredAccountRequestEvent(req, resp, account));
+
+        if (postRegisterHandler != null) {
+            if (!postRegisterHandler.handle(req, resp, account)) {
+                return null;
+            }
+        }
+
+        AccountStatus status = account.getStatus();
 
         if (isJsonPreferred(req, resp)) {
             //noinspection unchecked

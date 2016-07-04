@@ -15,13 +15,22 @@
  */
 package com.stormpath.spring.examples;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.config.EnableStormpathWebSecurity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
 /**
  * @since 1.0.RC6
@@ -31,6 +40,51 @@ import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.*;
 @PropertySource("classpath:application.properties")
 @EnableStormpathWebSecurity
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+    private static final Logger log = LoggerFactory.getLogger(SpringSecurityWebAppConfig.class);
+
+    @Bean
+    public WebHandler registerPreHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                log.debug("----> PreRegisterHandler");
+                return true;
+            }
+        };
+    }
+
+    @Bean
+    public WebHandler registerPostHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                log.debug("----> PostRegisterHandler");
+                return true;
+            }
+        };
+    }
+
+    @Bean
+    public WebHandler loginPreHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                log.debug("----> PreLoginHandler");
+                return true;
+            }
+        };
+    }
+
+    @Bean
+    public WebHandler loginPostHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                log.debug("----> PostLoginHandler");
+                return true;
+            }
+        };
+    }
 
     /**
      * {@inheritDoc}

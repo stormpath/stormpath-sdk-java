@@ -50,11 +50,8 @@ public class SpringCache<K, V> implements Cache<K, V> {
 
     @Override
     public V put(K key, V value) {
-        org.springframework.cache.Cache.ValueWrapper vw = springCache.putIfAbsent(key, value);
-        if (vw == null) {
-            return null;
-        }
-        return (V) vw.get();
+        springCache.put(key, value);
+        return get(key);
     }
 
     @Override
