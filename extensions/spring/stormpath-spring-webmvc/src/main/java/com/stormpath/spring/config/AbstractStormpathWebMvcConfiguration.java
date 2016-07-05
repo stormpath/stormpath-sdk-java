@@ -496,7 +496,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathGoogleCallbackController() {
         GoogleCallbackController googleCallbackController = new GoogleCallbackController(
                 stormpathLoginControllerConfigResolver().getNextUri(),
-                stormpathAuthenticationResultSaver()
+                stormpathAuthenticationResultSaver(),
+                stormpathRequestEventPublisher()
         );
 
         return createSpringController(googleCallbackController);
@@ -505,7 +506,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathGithubCallbackController() {
         GithubCallbackController githubCallbackController = new GithubCallbackController(
                 stormpathLoginControllerConfigResolver().getNextUri(),
-                stormpathAuthenticationResultSaver()
+                stormpathAuthenticationResultSaver(),
+                stormpathRequestEventPublisher()
         );
 
         return createSpringController(githubCallbackController);
@@ -514,7 +516,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathFacebookCallbackController() {
         FacebookCallbackController facebookCallbackController = new FacebookCallbackController(
                 stormpathLoginControllerConfigResolver().getNextUri(),
-                stormpathAuthenticationResultSaver()
+                stormpathAuthenticationResultSaver(),
+                stormpathRequestEventPublisher()
         );
 
         return createSpringController(facebookCallbackController);
@@ -523,7 +526,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathLinkedinCallbackController() {
         LinkedinCallbackController linkedinCallbackController = new LinkedinCallbackController(
                 stormpathLoginControllerConfigResolver().getNextUri(),
-                stormpathAuthenticationResultSaver()
+                stormpathAuthenticationResultSaver(),
+                stormpathRequestEventPublisher()
         );
 
         return createSpringController(linkedinCallbackController);
@@ -1342,6 +1346,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             @Override
             public Saver<AuthenticationResult> getAuthenticationResultSaver() {
                 return stormpathAuthenticationResultSaver();
+            }
+
+            @Override
+            public Publisher<RequestEvent> getRequestEventPublisher() {
+                return stormpathRequestEventPublisher();
             }
 
             @Override

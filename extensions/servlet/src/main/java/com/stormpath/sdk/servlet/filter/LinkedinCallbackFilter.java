@@ -30,7 +30,8 @@ public class LinkedinCallbackFilter extends ControllerFilter {
 
         LinkedinCallbackController linkedinCallbackController = new LinkedinCallbackController(
                 getConfig().getLoginControllerConfig().getNextUri(),
-                getConfig().getAuthenticationResultSaver()
+                getConfig().getAuthenticationResultSaver(),
+                getConfig().getRequestEventPublisher()
         );
 
         setController(linkedinCallbackController);
