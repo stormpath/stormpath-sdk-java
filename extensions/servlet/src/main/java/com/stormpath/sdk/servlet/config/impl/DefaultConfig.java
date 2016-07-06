@@ -51,7 +51,7 @@ public class DefaultConfig implements Config {
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
-    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.validationStrategy";
+    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.password.validationStrategy";
 
     public static final String PRODUCES_MEDIA_TYPES = "stormpath.web.produces";
 

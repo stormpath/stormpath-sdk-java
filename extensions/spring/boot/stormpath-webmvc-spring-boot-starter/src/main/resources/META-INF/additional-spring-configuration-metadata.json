@@ -466,12 +466,14 @@
     {
       "name": "stormpath.web.oauth2.password.enabled",
       "type": "java.lang.Boolean",
-      "description": true
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.oauth2.password.validationStrategy",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "local"
     },
     {
       "name": "stormpath.web.accessTokenCookie.name",
@@ -1012,12 +1014,6 @@
       "type": "java.lang.String",
       "description": "The context-relative path where an authenticated (already logged in) user will be redirected when attempting to access a url they are not allowed to access.",
       "defaultValue": "/unauthorized"
-    },
-    {
-      "name": "stormpath.web.oauth2.validationStrategy",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "stormpath"
     },
     {
       "name": "stormpath.web.request.event.publisher",
