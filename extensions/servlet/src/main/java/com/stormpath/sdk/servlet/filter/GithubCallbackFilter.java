@@ -14,7 +14,8 @@ public class GithubCallbackFilter extends ControllerFilter {
     protected void onInit() throws ServletException {
         GithubCallbackController githubCallbackController = new GithubCallbackController(
                 getConfig().getLoginControllerConfig().getNextUri(),
-                getConfig().getAuthenticationResultSaver()
+                getConfig().getAuthenticationResultSaver(),
+                getConfig().getRequestEventPublisher()
         );
 
         setController(githubCallbackController);

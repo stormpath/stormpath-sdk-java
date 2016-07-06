@@ -29,7 +29,8 @@ public class GoogleCallbackFilter extends ControllerFilter {
     protected void onInit() throws ServletException {
         GoogleCallbackController googleCallbackController = new GoogleCallbackController(
                 getConfig().getLoginControllerConfig().getNextUri(),
-                getConfig().getAuthenticationResultSaver()
+                getConfig().getAuthenticationResultSaver(),
+                getConfig().getRequestEventPublisher()
         );
 
         setController(googleCallbackController);

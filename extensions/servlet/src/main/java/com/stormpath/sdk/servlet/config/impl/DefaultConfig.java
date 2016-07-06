@@ -23,6 +23,8 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -142,6 +144,15 @@ public class DefaultConfig implements Config {
             return getInstance("stormpath.web.accountStoreResolver");
         } catch (ServletException e) {
             throw new RuntimeException("Couldn't instantiate " + AccountStoreResolver.class.getName(), e);
+        }
+    }
+
+    @Override
+    public Publisher<RequestEvent> getRequestEventPublisher() {
+        try {
+            return getInstance("stormpath.web.request.event.publisher");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate the default RequestEventPublisher instance", e);
         }
     }
 
