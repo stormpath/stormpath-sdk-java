@@ -80,7 +80,7 @@ public class ForgotPasswordController extends FormController {
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (isJsonPreferred(request, response)) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return new DefaultViewModel(FormController.STORMPATH_JSON_VIEW_NAME, Collections.EMPTY_MAP);
+            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, Collections.EMPTY_MAP);
         }
         return super.doGet(request, response);
     }
