@@ -114,7 +114,7 @@ public class VerifyController extends FormController {
                 model.put("status", HttpServletResponse.SC_BAD_REQUEST);
                 model.put("message", i18n(request, "stormpath.web.verifyEmail.form.errors.noToken"));
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                return new DefaultViewModel("stormpathJsonView", model);
+                return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, model);
             }
             Map<String, ?> model = createModel(request, response);
             return new DefaultViewModel(view, model).setRedirect(false);
@@ -128,7 +128,7 @@ public class VerifyController extends FormController {
                 Map<String,Object> model = errorModelFactory.toError(request, e).toMap();
                 errorModelFactory.toError(request, e);
                 response.setStatus(errorModelFactory.toError(request, e).getStatus());
-                return new DefaultViewModel("stormpathJsonView", model);
+                return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, model);
             }
             List<ErrorModel> errors = new ArrayList<ErrorModel>();
             ErrorModel error = ErrorModel.builder().setStatus(HttpServletResponse.SC_BAD_REQUEST).setMessage(i18n(request, "stormpath.web.verifyEmail.form.errors.invalidLink")).build();
@@ -159,10 +159,10 @@ public class VerifyController extends FormController {
 
                 Map<String,Object> model = new HashMap<String, Object>();
                 model.put("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST));
-                return new DefaultViewModel("stormpathJsonView", model);
+                return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, model);
             }
             else {
-                return new DefaultViewModel("stormpathJsonView");
+                return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME);
             }
         }
         else {
@@ -243,7 +243,7 @@ public class VerifyController extends FormController {
         }
         finally {
             if (isJsonPreferred(request, response)) {
-                return new DefaultViewModel("stormpathJsonView");
+                return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME);
             }
 
             return new DefaultViewModel(nextUri.replace("status=verified", "status=unverified")).setRedirect(true);

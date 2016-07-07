@@ -29,7 +29,8 @@ public class FacebookCallbackFilter extends ControllerFilter {
     protected void onInit() throws ServletException {
         FacebookCallbackController facebookCallbackController = new FacebookCallbackController(
                 getConfig().getLoginControllerConfig().getNextUri(),
-                getConfig().getAuthenticationResultSaver()
+                getConfig().getAuthenticationResultSaver(),
+                getConfig().getRequestEventPublisher()
         );
 
         setController(facebookCallbackController);

@@ -16,6 +16,7 @@
 package com.stormpath.spring.mvc;
 
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.mvc.Controller;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -72,7 +73,7 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
     protected boolean shouldExecute(HttpServletRequest request, HttpServletResponse response,
                                     Object handler, ModelAndView modelAndView) {
 
-        if (modelAndView == null || !modelAndView.isReference() || "stormpathJsonView".equals(modelAndView.getViewName())) {
+        if (modelAndView == null || !modelAndView.isReference() || Controller.STORMPATH_JSON_VIEW_NAME.equals(modelAndView.getViewName())) {
             return false;
         }
 

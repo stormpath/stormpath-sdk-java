@@ -188,7 +188,7 @@ public class RegisterController extends FormController {
 
         if (isJsonPreferred(req, resp)) {
             //noinspection unchecked
-            return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST)));
+            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST)));
         }
 
         if (status == AccountStatus.ENABLED) {

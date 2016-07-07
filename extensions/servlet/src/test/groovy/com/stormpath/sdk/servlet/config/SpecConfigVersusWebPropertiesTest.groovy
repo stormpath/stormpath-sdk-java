@@ -48,7 +48,6 @@ class SpecConfigVersusWebPropertiesTest {
 
         ResourceFactory resourceFactory = new DefaultResourceFactory()
         Resource defaultConfig = resourceFactory.createResource(DEFAULT_CONFIG_LOCATION)
-
         defaultProperties = new ResourcePropertiesSource(defaultConfig).properties
     }
 
@@ -73,17 +72,17 @@ class SpecConfigVersusWebPropertiesTest {
     }
 
     @Test
-    void verifyPropertiesInDefaultAreInSpec() {
+    void verifyWebPropertiesInDefaultAreInSpec() {
         def diff = defaultProperties.findResults { k,v ->
             specProperties.containsKey(k) ? null : k
         }
 
-        if (diff.size != 61) {
-            println "It looks like a new property was added to the Framework Spec or to web.stormpath.properties."
+        if (diff.size != 60) {
+            println "It looks like a property was added or removed from the Framework Spec or web.stormpath.properties."
             println "Please examine this method to see the mismatch and commented code for debugging what's changed."
         }
 
-        assertEquals diff.size(), 61, "Missing keys in spec config: ${diff}"
+        assertEquals diff.size(), 60, "Missing keys in spec config: ${diff}"
 
         // to see the keys missing in spec, uncomment the following
         /*if (diff.size > 0) {
