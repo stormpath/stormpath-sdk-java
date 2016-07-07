@@ -21,8 +21,8 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.application.DefaultApplication
-import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
@@ -34,8 +34,13 @@ import org.testng.annotations.Test
 
 import java.text.DateFormat
 
-import static org.easymock.EasyMock.*
-import static org.testng.Assert.*
+import static org.easymock.EasyMock.createStrictMock
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.easymock.EasyMock.verify
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
 
 /**
  * Test for AccessToken class
@@ -148,31 +153,44 @@ class DefaultAccessTokenTest {
         def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
 
         // An sst claim of 'refresh' means it's not a valid access token
-        String jwt = Jwts.builder()
-            .setSubject(href)
-            .claim("stt", "refresh")
-            .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
-            .compact();
-
-        def properties = [
-            href: href,
-            jwt: jwt
+        def invalidJwts = [
+                Jwts.builder()
+                        .setHeaderParam("stt", "refresh")
+                        .setSubject(href)
+                        .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+                        .compact(),
+                Jwts.builder()
+                        .setHeaderParam("stt", "xxxx")
+                        .setSubject(href)
+                        .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+                        .compact(),
+                Jwts.builder()
+                        .setSubject(href)
+                        .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+                        .compact()
         ]
 
-        def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        invalidJwts.each { jwt ->
+            def properties = [
+                    href: href,
+                    jwt : jwt
+            ]
 
-        expect(apiKey.getSecret()).andReturn(secret)
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+            def internalDataStore = createStrictMock(InternalDataStore)
+            def apiKey = createStrictMock(ApiKey)
 
-        replay internalDataStore, apiKey
+            expect(apiKey.getSecret()).andReturn(secret)
+            expect(internalDataStore.getApiKey()).andReturn(apiKey)
 
-        try {
-            new DefaultAccessToken(internalDataStore, properties)
-            fail("should have thrown")
-        } catch (Exception e) {
-            def message = e.getMessage()
-            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+            replay internalDataStore, apiKey
+
+            try {
+                new DefaultAccessToken(internalDataStore, properties)
+                fail("should have thrown")
+            } catch (Exception e) {
+                def message = e.getMessage()
+                assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+            }
         }
     }
 
