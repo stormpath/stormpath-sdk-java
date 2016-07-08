@@ -25,6 +25,8 @@ import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
 import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
 import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfigResolver;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -51,7 +53,7 @@ public class DefaultConfig implements Config {
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
-    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.validationStrategy";
+    public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.password.validationStrategy";
 
     public static final String PRODUCES_MEDIA_TYPES = "stormpath.web.produces";
 
@@ -144,6 +146,15 @@ public class DefaultConfig implements Config {
             return getInstance("stormpath.web.accountStoreResolver");
         } catch (ServletException e) {
             throw new RuntimeException("Couldn't instantiate " + AccountStoreResolver.class.getName(), e);
+        }
+    }
+
+    @Override
+    public Publisher<RequestEvent> getRequestEventPublisher() {
+        try {
+            return getInstance("stormpath.web.request.event.publisher");
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate the default RequestEventPublisher instance", e);
         }
     }
 

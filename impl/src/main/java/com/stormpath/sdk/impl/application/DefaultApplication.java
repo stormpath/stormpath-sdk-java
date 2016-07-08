@@ -29,9 +29,9 @@ import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
+import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
-import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -40,9 +40,9 @@ import com.stormpath.sdk.directory.Directories;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.directory.DirectoryList;
-import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.http.HttpRequest;
@@ -59,6 +59,7 @@ import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
 import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticator;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
@@ -77,10 +78,11 @@ import com.stormpath.sdk.impl.saml.DefaultSamlIdpUrlBuilder;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.oauth.IdSiteAuthenticator;
-import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
-import com.stormpath.sdk.oauth.OAuthPolicy;
-import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthApiRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthPolicy;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthenticator;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.organization.OrganizationCriteria;
@@ -864,6 +866,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, responseOptions);
         return this;
+    }
+
+    /* @since 1.0.0 */
+    public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
+        return new DefaultOAuthClientCredentialsGrantRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.0.RC7 */

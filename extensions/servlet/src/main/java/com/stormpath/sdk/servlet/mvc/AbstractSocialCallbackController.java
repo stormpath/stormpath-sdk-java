@@ -21,7 +21,10 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,14 +36,18 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class AbstractSocialCallbackController extends AbstractController {
 
     protected Saver<AuthenticationResult> authenticationResultSaver;
+    private final Publisher<RequestEvent> eventPublisher;
 
     public AbstractSocialCallbackController(String loginNextUri,
-                                            Saver<AuthenticationResult> authenticationResultSaver) {
+                                            Saver<AuthenticationResult> authenticationResultSaver,
+                                            Publisher<RequestEvent> eventPublisher) {
         this.nextUri = loginNextUri;
         this.authenticationResultSaver = authenticationResultSaver;
+        this.eventPublisher = eventPublisher;
 
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver cannot be null.");
         Assert.hasLength(this.nextUri, "nextUri cannot be null.");
+        Assert.notNull(this.eventPublisher, "eventPublish cannot be null.");
     }
 
     @Override
@@ -60,6 +67,8 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
         ProviderAccountResult result = getApplication(request).getAccount(providerRequest);
         AuthenticationResult authcResult = new TransientAuthenticationResult(result.getAccount());
         authenticationResultSaver.set(request, response, authcResult);
+
+        eventPublisher.publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
 
         return new DefaultViewModel(nextUri).setRedirect(true);
     }

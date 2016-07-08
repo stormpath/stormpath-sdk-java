@@ -23,23 +23,23 @@ import com.stormpath.sdk.oauth.*;
  */
 public class DefaultOAuthGrantRequestAuthenticationResultBuilder implements OAuthGrantRequestAuthenticationResultBuilder {
 
-    private AccessToken accessToken;
+    protected AccessToken accessToken;
 
-    private String accessTokenString;
+    protected String accessTokenString;
 
-    private RefreshToken refreshToken;
+    protected RefreshToken refreshToken;
 
-    private String refreshTokenString;
+    protected String refreshTokenString;
 
-    private String accessTokenHref;
+    protected String accessTokenHref;
 
-    private String tokenType;
+    protected String tokenType;
 
-    private long expiresIn;
+    protected long expiresIn;
 
-    private Boolean isRefreshGrantAuthRequest = false;
+    protected Boolean isRefreshGrantAuthRequest = false;
 
-    private GrantAuthenticationToken grantAuthenticationToken;
+    protected GrantAuthenticationToken grantAuthenticationToken;
 
     public DefaultOAuthGrantRequestAuthenticationResultBuilder(GrantAuthenticationToken grantAuthenticationToken) {
         Assert.notNull(grantAuthenticationToken, "grantAuthenticationToken cannot be null.");
