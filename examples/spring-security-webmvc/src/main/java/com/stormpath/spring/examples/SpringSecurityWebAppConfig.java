@@ -94,6 +94,8 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 
         http
             .apply(stormpath()).and()
-            .authorizeRequests();
+            .authorizeRequests()
+            .antMatchers("/restricted").fullyAuthenticated()
+            .antMatchers("/**").permitAll();
     }
 }
