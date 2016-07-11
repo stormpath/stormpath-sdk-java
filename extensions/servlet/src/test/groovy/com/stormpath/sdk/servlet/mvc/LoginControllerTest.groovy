@@ -9,20 +9,28 @@ import com.stormpath.sdk.servlet.http.MediaType
 import com.stormpath.sdk.servlet.http.Saver
 import com.stormpath.sdk.servlet.http.UserAgents
 import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent
+import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModel
+import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory
+import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModel
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.testng.PowerMockTestCase
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import static org.easymock.EasyMock.*
+import static org.powermock.api.easymock.PowerMock.mockStatic
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertNull
-
 /**
  * @since 1.0.0
  */
-class LoginControllerTest {
+@PrepareForTest(LoggerFactory.class)
+class LoginControllerTest extends PowerMockTestCase {
 
     @Test
     public void testLoginPreHandlerAndContinueNormalWorkflow() {
@@ -159,5 +167,41 @@ class LoginControllerTest {
         verify loginPostHandler, authenticationResultSaver, request, response, form, accessTokenResult
 
         assertNull(vm, "ViewModel should be empty")
+    }
+
+    @Test
+    public void testLogWarningWhenAccountStoresExistAndCallbackDisabled() {
+        mockStatic(LoggerFactory.class);
+        Logger logger = mock(Logger.class);
+        expect(LoggerFactory.getLogger(same(LoginController))).andReturn(logger);
+
+        HttpServletRequest request = createMock(HttpServletRequest)
+        HttpServletResponse response = createMock(HttpServletResponse)
+        AccountStoreModelFactory accountStoreModelFactory = createMock(AccountStoreModelFactory)
+        Form form = createMock(Form)
+
+        List<AccountStoreModel> accountStores = new ArrayList<AccountStoreModel>();
+        accountStores.add(new DefaultAccountStoreModel(null, null));
+        expect(accountStoreModelFactory.getAccountStores(request)).andReturn(accountStores)
+        expect(request.getAttribute(UserAgents.USER_AGENT_REQUEST_ATTRIBUTE_NAME)).andReturn new DefaultUserAgent(request)
+        expect(request.getParameter("status")).andReturn null
+        expect(request.getHeader("Accept")).andReturn "text/html"
+
+        LoginController loginController = new LoginController(
+                produces: Arrays.asList(MediaType.TEXT_HTML),
+                accountStoreModelFactory: accountStoreModelFactory,
+                idSiteEnabled: false,
+                callbackEnabled: false,
+        )
+
+        replay request, response, form, accountStoreModelFactory, logger
+
+        List<ErrorModel> errors = new ArrayList<>();
+        Map<String, Object> model = new HashMap<>();
+
+        loginController.appendModel(request, response, form, errors, model)
+        verify(logger.warn(anyString()))
+
+        verify request, response, form, accountStoreModelFactory, logger
     }
 }
