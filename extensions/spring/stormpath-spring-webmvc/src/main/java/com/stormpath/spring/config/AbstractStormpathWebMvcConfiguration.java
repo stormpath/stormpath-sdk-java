@@ -306,7 +306,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.oauth2.origin.authorizer.originUris'] }")
     protected String accessTokenAuthorizedOriginUris;
 
-    @Value("#{ @environment['stormpath.web.oauth2.validationStrategy'] ?: 'stormpath'}")
+    @Value("#{ @environment['stormpath.web.oauth2.password.validationStrategy'] ?: 'local'}")
     protected String accessTokenValidationStrategy;
 
     // ================  ID Site properties  ===================
@@ -1396,11 +1396,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             @Override
             public boolean isRegisterAutoLoginEnabled() {
                 return registerAutoLogin;
-            }
-
-            @Override
-            public boolean isSamlLoginEnabled() {
-                return callbackEnabled;
             }
 
             @Override

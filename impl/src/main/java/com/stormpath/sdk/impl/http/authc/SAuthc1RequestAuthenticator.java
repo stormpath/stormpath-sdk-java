@@ -47,7 +47,6 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String HOST_HEADER = "Host";
-    public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String STORMAPTH_DATE_HEADER = "X-Stormpath-Date";
     public static final String ID_TERMINATOR = "sauthc1_request";
     public static final String ALGORITHM = "HMAC-SHA-256";

@@ -39,7 +39,6 @@ import java.util.SimpleTimeZone;
 public class BasicRequestAuthenticator implements RequestAuthenticator {
     private static final Logger log = LoggerFactory.getLogger(BasicRequestAuthenticator.class);
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String STORMPATH_DATE_HEADER = "X-Stormpath-Date";
     public static final String AUTHENTICATION_SCHEME = "Basic";
 
