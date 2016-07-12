@@ -81,13 +81,6 @@ public class DefaultConfig implements Config {
 
         this.ACCESS_TOKEN_COOKIE_CONFIG = new AccessTokenCookieConfig(CFG);
         this.REFRESH_TOKEN_COOKIE_CONFIG = new RefreshTokenCookieConfig(CFG);
-
-        // 748: If stormpath.web.idSite.enabled property is true and the stormpath.web.callback.enabled is false,
-        // this is a config error that should be caught on startup.
-        if (isIdSiteEnabled() && !isCallbackEnabled()) {
-            throw new IllegalArgumentException("Cannot enable ID Site without having callback enabled. Please change 'stormpath.web.callback.enabled' to true " +
-                    "or disable ID Site by setting 'stormpath.web.idSite.enabled` to false.");
-        }
     }
 
     @Override
@@ -166,6 +159,11 @@ public class DefaultConfig implements Config {
     @Override
     public boolean isRegisterAutoLoginEnabled() {
         return CFG.getBoolean("stormpath.web.register.autoLogin");
+    }
+
+    @Override
+    public boolean isSamlLoginEnabled() {
+        return CFG.getBoolean("stormpath.web.callback.enabled");
     }
 
     @Override
