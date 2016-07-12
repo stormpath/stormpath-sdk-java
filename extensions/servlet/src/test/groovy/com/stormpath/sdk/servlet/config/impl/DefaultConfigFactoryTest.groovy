@@ -124,17 +124,6 @@ class DefaultConfigFactoryTest {
         assertTrue config.isMeEnabled()
     }
 
-    @Test(expectedExceptions = IllegalArgumentException, enabled = false)
-    public void confirmIllegalArgumentExceptionWhenIdSiteEnabledAndCallbackDisabled() {
-        assertEquals config.get('stormpath.web.idSite.enabled'), 'false'
-        assertEquals config.get('stormpath.web.callback.enabled'), 'false' // changed in src/test/resources/stormpath.properties
-        Map<String, String> env = new HashMap<>()
-        env.put('STORMPATH_WEB_IDSITE_ENABLED', 'true')
-        env.put('STORMPATH_WEB_CALLBACK_ENABLED', 'false')
-        setEnv(env)
-        config = new ConfigLoader().createConfig(new MockServletContext())
-    }
-
     // From http://stackoverflow.com/a/496849
     private static void setEnv(Map<String, String> newenv) throws Exception {
         Class[] classes = Collections.class.getDeclaredClasses();

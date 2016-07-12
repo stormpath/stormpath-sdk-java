@@ -21,12 +21,9 @@ import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModel;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +38,6 @@ import java.util.UUID;
  */
 public class LoginController extends FormController {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
     private String forgotLoginUri;
     private String verifyUri;
     private String registerUri;
@@ -56,8 +52,7 @@ public class LoginController extends FormController {
     private AccountModelFactory accountModelFactory;
     private WebHandler preLoginHandler;
     private WebHandler postLoginHandler;
-    private boolean idSiteEnabled;
-    private boolean callbackEnabled;
+    private boolean samlLoginEnabled;
 
     public LoginController() {
         super();
@@ -83,10 +78,7 @@ public class LoginController extends FormController {
         this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
         this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
         this.accountModelFactory = new DefaultAccountModelFactory();
-        this.idSiteEnabled = config.isIdSiteEnabled();
-        this.callbackEnabled = config.isCallbackEnabled();
-
-        System.out.println("idSiteEnabled: " + idSiteEnabled);
+        this.samlLoginEnabled = config.isSamlLoginEnabled();
 
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new LoginErrorModelFactory(this.messageSource);
@@ -107,16 +99,8 @@ public class LoginController extends FormController {
     @Override
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
-
-        List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
-        // 748: If stormpath.web.idSite.enabled is false and stormpath.web.callback.enabled is false AND
-        // there are SAML directories mapped to the application, that is a configuration error.
-        if (!idSiteEnabled && !callbackEnabled && accountStores.size() > 0) {
-            log.warn("ID Site is disabled and callbacks are disabled, yet this application has SAML directories. This is a configuration error.");
-        }
-
-        if (callbackEnabled) {
-            model.put("accountStores", accountStores);
+        if (samlLoginEnabled) {
+            model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
         }
 
         if (isHtmlPreferred(request, response)) {
