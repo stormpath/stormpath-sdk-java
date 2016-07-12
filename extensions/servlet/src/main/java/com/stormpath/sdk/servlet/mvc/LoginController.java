@@ -83,9 +83,7 @@ public class LoginController extends FormController {
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.idSiteEnabled = config.isIdSiteEnabled();
         this.callbackEnabled = config.isCallbackEnabled();
-
-        System.out.println("idSiteEnabled: " + idSiteEnabled);
-
+        
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new LoginErrorModelFactory(this.messageSource);
         }
