@@ -78,7 +78,7 @@ public class ChangePasswordController extends FormController {
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String sptoken = Strings.clean(fieldValueResolver.getValue(request, "sptoken"));
+        String sptoken = Strings.clean(request.getParameter("sptoken"));
 
         if (isJsonPreferred(request, response)) {
             Map<String, Object> model = new HashMap<String, Object>(1);
@@ -206,15 +206,20 @@ public class ChangePasswordController extends FormController {
             return new DefaultViewModel("stormpathJsonView", model);
         }
 
-        Account account = application.resetPassword(sptoken, password);
         String next;
-        if (autoLogin){
-            final AuthenticationResult result = new TransientAuthenticationResult(account);
-            this.authenticationResultSaver.set(request, response, result);
-            next = loginNextUri;
+        try {
+            Account account = application.resetPassword(sptoken, password);
+            if (autoLogin){
+                final AuthenticationResult result = new TransientAuthenticationResult(account);
+                this.authenticationResultSaver.set(request, response, result);
+                next = loginNextUri;
+            }
+            else{
+                next = this.nextUri;
+            }
         }
-        else{
-            next = this.nextUri;
+        catch (Exception e) {
+            next = errorUri;
         }
 
         return new DefaultViewModel(next).setRedirect(true);
