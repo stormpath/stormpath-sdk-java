@@ -86,7 +86,7 @@ public class LoginController extends FormController {
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.idSiteEnabled = config.isIdSiteEnabled();
         this.callbackEnabled = config.isCallbackEnabled();
-        
+
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new LoginErrorModelFactory(this.messageSource);
         }
@@ -145,7 +145,7 @@ public class LoginController extends FormController {
     protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
         // Arrays.asList: Returns a fixed-size list backed by the specified array.
         // For this reason, created a LinkedList so errors can be added in appendModel().
-        return new LinkedList<ErrorModel>(Collections.singletonList(errorModelFactory.toError(request, e)));
+        return new LinkedList<>(Collections.singletonList(errorModelFactory.toError(request, e)));
     }
 
     @Override
