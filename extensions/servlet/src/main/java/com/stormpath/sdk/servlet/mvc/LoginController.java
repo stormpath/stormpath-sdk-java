@@ -25,6 +25,7 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModel;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultSamlProviderModelFactory;
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,7 @@ public class LoginController extends FormController {
     private ErrorModelFactory errorModelFactory;
     private LoginFormStatusResolver loginFormStatusResolver;
     private AccountStoreModelFactory accountStoreModelFactory;
+    private AccountStoreModelFactory samlAccountStoreModelFactory;
     private AccountModelFactory accountModelFactory;
     private WebHandler preLoginHandler;
     private WebHandler postLoginHandler;
@@ -80,6 +82,7 @@ public class LoginController extends FormController {
 
         this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
         this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
+        this.samlAccountStoreModelFactory = new DefaultSamlProviderModelFactory();
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.idSiteEnabled = config.isIdSiteEnabled();
         this.callbackEnabled = config.isCallbackEnabled();
@@ -105,24 +108,25 @@ public class LoginController extends FormController {
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
 
-        List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
         // 748: If stormpath.web.idSite.enabled is false and stormpath.web.callback.enabled is false AND
         // there are SAML directories mapped to the application, that is a configuration error.
-        if (!idSiteEnabled && !callbackEnabled && accountStores.size() > 0) {
-            String errorMsg = "ID Site is disabled and callbacks are disabled, yet this application has SAML directories. Please enable callbacks or remove SAML directories.";
-            log.warn(errorMsg);
-            if (errors == null) {
-                errors = new ArrayList<>();
-            }
-            // only add to errors on GET, not POST
-            if (request.getMethod().equals(HttpMethod.GET.name())) {
-                errors.add(ErrorModel.builder().setStatus(HttpServletResponse.SC_OK).setMessage(errorMsg).build());
+        if (!idSiteEnabled && !callbackEnabled) {
+            List<AccountStoreModel> accountStores = samlAccountStoreModelFactory.getAccountStores(request);
+            if (accountStores.size() > 0) {
+                String errorMsg = "ID Site is disabled and callbacks are disabled, yet this application has SAML directories. Please enable callbacks or remove SAML directories.";
+                log.warn(errorMsg);
+                if (errors == null) {
+                    errors = new ArrayList<>();
+                }
+                // only add to errors on GET, not POST
+                if (request.getMethod().equals(HttpMethod.GET.name())) {
+                    errors.add(ErrorModel.builder().setStatus(HttpServletResponse.SC_OK).setMessage(errorMsg).build());
+                }
             }
         }
 
-        if (callbackEnabled) {
-            model.put("accountStores", accountStores);
-        }
+        List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
+        model.put("accountStores", accountStores);
 
         if (isHtmlPreferred(request, response)) {
             model.put("forgotLoginUri", forgotLoginUri);
