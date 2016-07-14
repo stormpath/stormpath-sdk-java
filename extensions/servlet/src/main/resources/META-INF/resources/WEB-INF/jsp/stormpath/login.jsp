@@ -34,10 +34,18 @@
 
                             <div class="header">
                                 <span>
-                                    <sp:message key="stormpath.web.login.form.title">
-                                        <sp:param><a href="${pageContext.request.contextPath}${registerUri}"><sp:message
-                                                key="stormpath.web.login.form.registerLink.text"/></a></sp:param>
-                                    </sp:message>
+                                    <c:choose>
+                                        <c:when test="${!registerEnabled}">
+                                            <sp:message key="stormpath.web.login.form.title"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <sp:message key="stormpath.web.login.form.titleWithRegister">
+                                                <sp:param><a href="${pageContext.request.contextPath}${registerUri}"><sp:message
+                                                        key="stormpath.web.login.form.registerLink.text"/></a></sp:param>
+                                            </sp:message>
+                                        </c:otherwise>
+                                    </c:choose>
+
                                 </span>
                             </div>
 
@@ -94,6 +102,12 @@
                                 <c:forEach items="${accountStores}" var="accountStore">
                                     <button class="btn btn-social btn-${accountStore.provider.providerId}"
                                             id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}">
+                                        <c:if test="${accountStore.provider.providerId != 'saml'}">
+                                            <span class="fa fa-${accountStore.provider.providerId}"></span>
+                                        </c:if>
+                                        <c:if test="${accountStore.provider.providerId == 'saml'}">
+                                            <span class="fa fa-lock"></span>
+                                        </c:if>
                                         <c:out value="${accountStore.provider.providerId == 'saml' ? accountStore.name : accountStore.provider.providerId}"/>
                                     </button>
                                 </c:forEach>
@@ -106,9 +120,10 @@
                         <a href="${pageContext.request.contextPath}${verifyUri}" class="verify"><sp:message
                                 key="stormpath.web.login.form.sendVerificationEmail.text"/></a>
                     </c:if>
-                    <a href="${pageContext.request.contextPath}${forgotLoginUri}" class="to-login"><sp:message
-                            key="stormpath.web.login.form.resetLink.text"/></a>
-
+                    <c:if test="${forgotPasswordEnabled}">
+                        <a href="${pageContext.request.contextPath}${forgotLoginUri}" class="to-login"><sp:message
+                                key="stormpath.web.login.form.resetLink.text"/></a>
+                    </c:if>
                 </div>
                 <c:set var="req" value="${pageContext.request}"/>
                 <input type="hidden" id="baseUrl"

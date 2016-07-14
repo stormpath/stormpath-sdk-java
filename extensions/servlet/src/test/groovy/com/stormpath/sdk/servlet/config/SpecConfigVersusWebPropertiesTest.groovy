@@ -48,7 +48,6 @@ class SpecConfigVersusWebPropertiesTest {
 
         ResourceFactory resourceFactory = new DefaultResourceFactory()
         Resource defaultConfig = resourceFactory.createResource(DEFAULT_CONFIG_LOCATION)
-
         defaultProperties = new ResourcePropertiesSource(defaultConfig).properties
     }
 
@@ -73,13 +72,13 @@ class SpecConfigVersusWebPropertiesTest {
     }
 
     @Test
-    void verifyPropertiesInDefaultAreInSpec() {
+    void verifyWebPropertiesInDefaultAreInSpec() {
         def diff = defaultProperties.findResults { k,v ->
             specProperties.containsKey(k) ? null : k
         }
 
         if (diff.size != 63) {
-            println "It looks like a new property was added to the Framework Spec or to web.stormpath.properties."
+            println "It looks like a property was added or removed from the Framework Spec or web.stormpath.properties."
             println "Please examine this method to see the mismatch and commented code for debugging what's changed."
         }
 

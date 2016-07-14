@@ -203,7 +203,7 @@
       "name": "stormpath.web.head.cssUris",
       "type": "java.lang.String",
       "description": "One or more space-delimited URIs defining the CSS files to be used to style the views. This replaces the default base set of CSS files (Bootstrap + Stormpath defaults).  If you do not wish to completely override this value, and only wish to append your own CSS URIs, you can set the stormpath.web.head.extraCssUris instead.",
-      "defaultValue": "https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800 https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css /assets/css/stormpath.css"
+      "defaultValue": "https://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,600italic,600,700italic,700,800italic,800 https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css /assets/css/stormpath.css"
     },
     {
       "name": "stormpath.web.head.extraCssUris",
@@ -466,12 +466,14 @@
     {
       "name": "stormpath.web.oauth2.password.enabled",
       "type": "java.lang.Boolean",
-      "description": true
+      "description": "",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.oauth2.password.validationStrategy",
       "type": "java.lang.String",
-      "description": ""
+      "description": "",
+      "defaultValue": "local"
     },
     {
       "name": "stormpath.web.accessTokenCookie.name",
@@ -1012,12 +1014,6 @@
       "type": "java.lang.String",
       "description": "The context-relative path where an authenticated (already logged in) user will be redirected when attempting to access a url they are not allowed to access.",
       "defaultValue": "/unauthorized"
-    },
-    {
-      "name": "stormpath.web.oauth2.validationStrategy",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "stormpath"
     },
     {
       "name": "stormpath.web.request.event.publisher",

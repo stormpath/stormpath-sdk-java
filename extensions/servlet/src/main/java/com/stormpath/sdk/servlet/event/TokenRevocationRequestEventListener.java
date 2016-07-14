@@ -28,6 +28,7 @@ import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.oltu.oauth2.rs.extractor.BearerHeaderTokenExtractor;
@@ -81,11 +82,12 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
             }
 
             Key signingKey = jwtTokenSigningKeyResolver.getSigningKey(event.getRequest(), event.getResponse(), null, SignatureAlgorithm.HS256);
+            JwsHeader header = Jwts.parser().setSigningKey(signingKey.getEncoded()).parseClaimsJws(jwt).getHeader();
             Claims claims = Jwts.parser().setSigningKey(signingKey.getEncoded()).parseClaimsJws(jwt).getBody();
 
             //Let's be sure this jwt is actually an access token otherwise we will have an error when trying to retrieve
             //a resource (in order to delete it) that actually is not what we expect
-            if (isAccessToken(claims)) {
+            if (isAccessToken(header)) {
                 gracefullyDeleteRefreshToken((String) claims.get("rti"));
                 gracefullyDeleteAccessToken(claims.getId());
             }
@@ -101,8 +103,8 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
         }
     }
 
-    private boolean isAccessToken(Claims claims) {
-        return claims.containsKey("rti");
+    private boolean isAccessToken(JwsHeader header) {
+        return header.get("stt").equals("access");
     }
 
     private void gracefullyDeleteAccessToken(String accessTokenId) {

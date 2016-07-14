@@ -16,6 +16,8 @@
 package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.servlet.event.RequestEvent;
+import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
@@ -48,9 +50,9 @@ public interface Config extends Map<String, String> {
 
     AccountStoreResolver getAccountStoreResolver();
 
-    boolean isRegisterAutoLoginEnabled();
+    Publisher<RequestEvent> getRequestEventPublisher();
 
-    boolean isSamlLoginEnabled();
+    boolean isRegisterAutoLoginEnabled();
 
     /**
      * @since 1.0.RC6
@@ -103,5 +105,5 @@ public interface Config extends Map<String, String> {
     /**
      * @since 1.0.0
      */
-    boolean isSamlEnabled();
+    boolean isCallbackEnabled();
 }

@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @since 1.0.RC7
  */
-public class DefaultOAuthGrantAuthenticationAttempt extends AbstractResource implements OAuthGrantAuthenticationAttempt {
+public class DefaultOAuthPasswordGrantAuthenticationAttempt extends AbstractResource implements OAuthPasswordGrantAuthenticationAttempt {
 
     static final StringProperty LOGIN = new StringProperty("username");
     static final StringProperty PASSWORD = new StringProperty("password");
@@ -35,11 +35,11 @@ public class DefaultOAuthGrantAuthenticationAttempt extends AbstractResource imp
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(LOGIN, PASSWORD, ACCOUNT_STORE_HREF, GRANT_TYPE);
 
-    public DefaultOAuthGrantAuthenticationAttempt(InternalDataStore dataStore) {
+    public DefaultOAuthPasswordGrantAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultOAuthGrantAuthenticationAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultOAuthPasswordGrantAuthenticationAttempt(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

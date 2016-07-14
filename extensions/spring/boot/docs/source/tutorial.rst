@@ -242,16 +242,21 @@ Next, we've added a service called ``HelloService.java``:
     public class HelloService {
         private static final String MY_GROUP = "GROUP_HREF_HERE";
 
-        @PreAuthorize("hasRole('" + MY_GROUP + "')")
+        @PreAuthorize("hasAuthority('" + MY_GROUP + "')")
         public String sayHello(Account account) {
             return "Hello, " + account.getGivenName() +
-                ". You have the required persmissions to access this restricted resource.";
+                ". You have the required permissions to access this restricted resource.";
         }
     }
 
 With the Stormpath Spring Security integration, roles are tied to Stormpath Groups. A Stormpath Group has a unique
 URL (aka href) to identify it. Line 5 above ensures that only members of the group (identified by the URL you put in for the
 ``MY_GROUP`` variable) can access the ``sayHello`` method.
+
+
+NOTE: In this example, ``hasAuthority`` is used because Spring Security looks for roles with a "ROLE_" prefix.
+For this reason, we recommend you use ``hasAuthority``. See `this issue <https://github.com/stormpath/stormpath-sdk-java/issues/325#issuecomment-220923162>`_
+for more information.
 
 If the authenticated user is not in the specified group, a ``403`` (forbidden) status will be returned. This will
 automatically redirect to ``/error``, which gets handled by our ``RestrictedErrorController.java``.
@@ -322,7 +327,7 @@ Take a look at the updated ``HelloService`` class:
 
     @Service
     public class HelloService {
-        @PreAuthorize("hasRole(@roles.USER)")
+        @PreAuthorize("hasAuthority(@groups.USER)")
         public String sayHello(Account account) {
             return "Hello, " + account.getGivenName() +
                 ". You have the required permissions to access this restricted resource.";
@@ -334,23 +339,23 @@ Spring has an expression language called
 reference objects and properties found in your Spring app in a number of ways.
 
 The ``@`` symbol is used to refer to a bean that is in the Spring context. On line 3 above, we are referencing the
-``USER`` property of the ``roles`` bean. The implication is that there is a ``USER`` role defined somewhere that Spring
+``USER`` property of the ``groups`` bean. The implication is that there is a ``USER`` group defined somewhere that Spring
 can resolve.
 
 Remember, in the context of Stormpath, that must ultimately resolve to a fully qualified href that refers to a Stormpath group.
 
-Let's now take a look at this ``roles`` bean.
+Let's now take a look at this ``groups`` bean.
 
 .. code-block:: java
     :linenos:
     :emphasize-lines: 1,7
 
     @Component
-    public class Roles {
+    public class Groups {
         public final String USER;
 
         @Autowired
-        public Roles(Environment env) {
+        public Groups(Environment env) {
             USER = env.getProperty("stormpath.authorized.group.user");
         }
     }
@@ -358,14 +363,14 @@ Let's now take a look at this ``roles`` bean.
 Line 1 uses the standard Spring ``@Component`` annotation to instantiate this object and make it available as a bean in
 the application.
 
-By default, Spring will name the bean in context using camelcase conventions. Therefore the bean will be named ``roles``.
+By default, Spring will name the bean in context using camelcase conventions. Therefore the bean will be named ``groups``.
 
 We use some Spring magic on lines 5 and 6 to pass the ``Environment`` into the constructor using the `@Autowired` annotation.
 
 In the constructor, we set the ``USER`` variable to the value of the environment property called ``stormpath.authorized.group.user``.
 
 The expectation is that the ``stormpath.authorized.group.user`` environment variable will hold the fully qualified href to the
-Stormpath group that backs the ``USER`` role.
+Stormpath group that backs the ``USER`` group.
 
 With Spring, you can define the ``stormpath.authorized.group.user`` in the ``application.properties`` file and that property will be available
 to your app.
@@ -374,23 +379,23 @@ Now, for the Stormpath magic. You can also have a system environment variable na
 Behind the scenes, Stormpath will convert that system environment variable to a Spring environment variable named
 ``stormpath.authorized.group.user``.
 
-This makes it very easy to change the group ``USER`` role href in different deployment environments without having to
+This makes it very easy to change the group ``USER`` group href in different deployment environments without having to
 reconfigure and recompile your code.
 
-Additionally, the ``Roles`` class is very easily extended. Let's say you want to add an ``ADMIN`` role into the mix. You
-could update the ``Roles`` class like so:
+Additionally, the ``Groups`` class is very easily extended. Let's say you want to add an ``ADMIN`` role into the mix. You
+could update the ``Groups`` class like so:
 
 .. code-block:: java
     :linenos:
     :emphasize-lines: 4,9
 
         @Component
-        public class Roles {
+        public class Groups {
             public final String USER;
             public final String ADMIN;
 
             @Autowired
-            public Roles(Environment env) {
+            public Groups(Environment env) {
                 USER = env.getProperty("stormpath.authorized.group.user");
                 ADMIN = env.getProperty("stormpath.authorized.group.admin");
             }
@@ -416,7 +421,7 @@ A Finer Grain of Control
 
 The code for this section can be found `here <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/04-a-finer-grain-of-control>`_.
 
-So far, we've restricted access to certain methods with the `hasRole` clause of the `@PreAuthorize` annotation. In this
+So far, we've restricted access to certain methods with the `hasAuthority` clause of the `@PreAuthorize` annotation. In this
 section, we are going to look at examples that give a finer grain of control and demonstrate how Stormpath hooks into
 Spring Security.
 
@@ -461,15 +466,15 @@ Let's take a look at the updated ``HelloService``:
 
     @Service
     public class HelloService {
-        @PreAuthorize("hasRole(@roles.USER) and hasPermission('say', 'hello')")
+        @PreAuthorize("hasAuthority(@groups.USER) and hasPermission('say', 'hello')")
         public String sayHello(Account account) {
             return "Hello, " + account.getGivenName() +
                 ". You have the required permissions to access this restricted resource.";
         }
     }
 
-Notice that in addition to the ``hasRole`` clause, we now have added: ``hasPermission('say', 'hello')``. We are saying that
-in addition to the user being in the group identified by ``@roles.USER``, they must also have the permission to say hello.
+Notice that in addition to the ``hasAuthority`` clause, we now have added: ``hasPermission('say', 'hello')``. We are saying that
+in addition to the user being in the group identified by ``@groups.USER``, they must also have the permission to say hello.
 
 This is connected to Stormpath by having the following custom data present:
 

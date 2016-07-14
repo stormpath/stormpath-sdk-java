@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class HelloService {
-    @PreAuthorize("hasRole(@roles.USER) and hasPermission('say', 'hello')")
+    @PreAuthorize("hasAuthority(@groups.USER) and hasPermission('say', 'hello')")
     public String sayHello(Account account) {
         return "Hello, " + account.getGivenName() +
             ". You have the required permissions to access this restricted resource.";

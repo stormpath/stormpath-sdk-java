@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultProviderModelFactory implements AccountStoreModelFactory {
+public class DefaultSamlProviderModelFactory implements AccountStoreModelFactory {
 
     @Override
     public List<AccountStoreModel> getAccountStores(HttpServletRequest request) {

@@ -38,6 +38,7 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
@@ -166,8 +167,8 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
     protected boolean idSiteEnabled;
 
-    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: false }")
-    protected boolean samlEnabled;
+    @Value("#{ @environment['stormpath.web.callback.enabled'] ?: true }")
+    protected boolean callbackEnabled;
 
     @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/idSiteResult' }")
     protected String idSiteResultUri;
@@ -250,7 +251,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationAuthenticationFilter.class);
         }
 
-        if ((idSiteEnabled || samlEnabled) && loginEnabled) {
+        if (idSiteEnabled && loginEnabled) {
             String permittedResultPath = (idSiteEnabled) ? idSiteResultUri : samlResultUri;
 
             http
@@ -279,13 +280,18 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 .antMatchers("/assets/js/stormpath.js").permitAll();
         }
 
-        if (idSiteEnabled || samlEnabled || stormpathWebEnabled) {
+        if (idSiteEnabled || callbackEnabled || stormpathWebEnabled) {
             if (logoutEnabled) {
-                http
-                    .logout()
-                    .invalidateHttpSession(true)
-                    .logoutUrl(logoutUri)
-                    .logoutSuccessUrl(logoutNextUri)
+                LogoutConfigurer<HttpSecurity> httpSecurityLogoutConfigurer = http
+                        .logout()
+                        .invalidateHttpSession(true)
+                        .logoutUrl(logoutUri);
+
+                if (!idSiteEnabled) {
+                    httpSecurityLogoutConfigurer.logoutSuccessUrl(logoutNextUri);
+                }
+
+                httpSecurityLogoutConfigurer
                     .addLogoutHandler(logoutHandler)
                     .and().authorizeRequests()
                     .antMatchers(logoutUri).permitAll();
@@ -306,7 +312,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .antMatchers(sendVerificationEmailUri).permitAll();
             }
             if (accessTokenEnabled) {
-                if (!samlEnabled && !idSiteEnabled && !loginEnabled) {
+                if (!callbackEnabled && !idSiteEnabled && !loginEnabled) {
                     oauthAuthenticationSpringSecurityProcessingFilter.setStateless(true);
                 }
                 http.authorizeRequests().antMatchers(accessTokenUri).permitAll();

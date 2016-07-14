@@ -29,6 +29,7 @@ import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
  * @since 0.9.3
  */
 public interface RequestAuthenticator {
+    String AUTHORIZATION_HEADER = "Authorization";
 
     /**
      * Implementations of this operation will prepare the authentication information as expected by the Stormpath API server.
