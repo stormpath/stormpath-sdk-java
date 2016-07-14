@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
@@ -26,6 +27,7 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -91,7 +93,8 @@ public class ChangePasswordController extends FormController {
                 try {
                     Application application = (Application) request.getAttribute(Application.class.getName());
                     application.verifyPasswordResetToken(sptoken);
-                    return new DefaultViewModel("stormpathJsonView");
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    return null;
                 }
                 catch (Exception e) {
                     model = errorModelFactory.toError(request, e).toMap();
@@ -195,7 +198,8 @@ public class ChangePasswordController extends FormController {
                     this.authenticationResultSaver.set(request, response, result);
                     model.put("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST));                }
                 else {
-                    return new DefaultViewModel("stormpathJsonView");
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    return null;
                 }
             }
             catch (Exception e) {
