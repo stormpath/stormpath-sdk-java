@@ -140,21 +140,17 @@ public class ChangePasswordController extends FormController {
             fields.add(field);
         }
 
-        String[] fieldNames = new String[]{"password", "confirmPassword"};
+        String fieldName = "password";
+        DefaultField field = new DefaultField();
+        field.setName(fieldName);
+        field.setLabel(i18n(request, "stormpath.web.changePassword.form.fields." + fieldName + ".label"));
+        field.setPlaceholder(i18n(request, "stormpath.web.changePassword.form.fields." + fieldName + ".placeholder"));
+        field.setRequired(true);
+        field.setType("password");
+        String val = fieldValueResolver.getValue(request, fieldName);
+        field.setValue(retainPassword && val != null ? val : "");
 
-        for (String fieldName : fieldNames) {
-
-            DefaultField field = new DefaultField();
-            field.setName(fieldName);
-            field.setLabel(i18n(request, "stormpath.web.changePassword.form.fields." + fieldName + ".label"));
-            field.setPlaceholder(i18n(request, "stormpath.web.changePassword.form.fields." + fieldName + ".placeholder"));
-            field.setRequired(true);
-            field.setType("password");
-            String val = fieldValueResolver.getValue(request, fieldName);
-            field.setValue(retainPassword && val != null ? val : "");
-
-            fields.add(field);
-        }
+        fields.add(field);
 
         return fields;
     }
@@ -246,16 +242,6 @@ public class ChangePasswordController extends FormController {
         }
         else {
             super.validate(request, response, form);
-
-            //ensure fields match:
-            String password = form.getFieldValue("password");
-            String confirmPassword = form.getFieldValue("confirmPassword");
-
-            if (!password.equals(confirmPassword)) {
-                String key = "stormpath.web.changePassword.form.errors.mismatch";
-                String msg = i18n(request, key);
-                throw new MismatchedPasswordException(msg);
-            }
         }
     }
 }
