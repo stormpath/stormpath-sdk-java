@@ -121,6 +121,11 @@ public class StormpathFilter extends HttpFilter {
 
         setRequestAttributes(request);
 
+        // 212: Prevent browser caching
+        response.setHeader("Expires", "0");
+        response.setHeader("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+
         //wrap:
         request = wrapRequest(request, response);
 
