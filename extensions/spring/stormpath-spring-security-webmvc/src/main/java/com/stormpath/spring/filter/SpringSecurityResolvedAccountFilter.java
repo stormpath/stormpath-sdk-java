@@ -15,7 +15,6 @@ import org.springframework.util.Assert;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 /**
  * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/450
