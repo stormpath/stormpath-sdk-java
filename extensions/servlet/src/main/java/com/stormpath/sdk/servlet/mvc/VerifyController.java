@@ -106,7 +106,7 @@ public class VerifyController extends FormController {
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        String sptoken = Strings.clean(fieldValueResolver.getValue(request, "sptoken"));
+        String sptoken = Strings.clean(request.getParameter("sptoken"));
 
         if (sptoken == null) {
             if (isJsonPreferred(request, response)) {
@@ -162,7 +162,7 @@ public class VerifyController extends FormController {
                 return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, model);
             }
             else {
-                return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME);
+                return null;
             }
         }
         else {
@@ -243,7 +243,7 @@ public class VerifyController extends FormController {
         }
         finally {
             if (isJsonPreferred(request, response)) {
-                return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME);
+                return null;
             }
 
             return new DefaultViewModel(nextUri.replace("status=verified", "status=unverified")).setRedirect(true);
