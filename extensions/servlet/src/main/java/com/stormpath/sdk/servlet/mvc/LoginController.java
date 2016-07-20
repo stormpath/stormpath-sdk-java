@@ -15,17 +15,19 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModel;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultSamlProviderModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +64,7 @@ public class LoginController extends FormController {
     private WebHandler postLoginHandler;
     private boolean idSiteEnabled;
     private boolean callbackEnabled;
+    private ApplicationResolver applicationResolver;
 
     public LoginController() {
         super();
@@ -85,7 +88,7 @@ public class LoginController extends FormController {
         this.postLoginHandler = config.getLoginPostHandler();
 
         this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
-        this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
+        this.accountStoreModelFactory = new ExternalAccountStoreModelFactory();
         this.samlAccountStoreModelFactory = new DefaultSamlProviderModelFactory();
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.idSiteEnabled = config.isIdSiteEnabled();
@@ -94,6 +97,8 @@ public class LoginController extends FormController {
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new LoginErrorModelFactory(this.messageSource);
         }
+
+        this.applicationResolver = ApplicationResolver.INSTANCE;
 
         Assert.hasText(this.forgotLoginUri, "forgotLoginUri property cannot be null or empty.");
         Assert.hasText(this.verifyUri, "verifyUri property cannot be null or empty.");
@@ -136,7 +141,7 @@ public class LoginController extends FormController {
             model.put("forgotLoginUri", forgotLoginUri);
             model.put("verifyEnabled", verifyEnabled);
             model.put("verifyUri", verifyUri);
-            model.put("registerEnabled", registerEnabled);
+            model.put("registerEnabled", isRegisterEnabled(request));
             model.put("registerUri", registerUri);
             model.put("oauthStateToken", UUID.randomUUID().toString());
             String status = request.getParameter("status");
@@ -144,6 +149,38 @@ public class LoginController extends FormController {
                 model.put("status", loginFormStatusResolver.getStatusMessage(request, status));
             }
         }
+    }
+
+    /**
+     * Only enable registration if:
+     * 1) the user has enabled it via configuration and
+     * 2) the application has been mapped with a default account store.
+     *
+     * @param request current request
+     * @return true if this.registerEnabled is true and the application has a default account store.
+     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/333">Issue 333</a>
+     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/772">Issue 772</a>
+     * @since 1.0.0
+     */
+    protected boolean isRegisterEnabled(HttpServletRequest request) {
+        if (!this.registerEnabled) {
+            return false;
+        }
+        final Application application = applicationResolver.getApplication(request);
+        boolean hasDefaultAccountStore = application.getDefaultAccountStore() != null;
+
+        // https://github.com/stormpath/stormpath-sdk-java/issues/772:
+        if (this.registerEnabled && !hasDefaultAccountStore && log.isWarnEnabled()) {
+            String msg = "stormpath.web.register.enabled = true, but the application does not have anywhere to " +
+                "save new accounts: the application has not been assigned a default account store (either a " +
+                "Directory, Group or Organization).  You must specify the default account store where your " +
+                "application's newly created accounts will be reside.  As a result, registration will be disabled " +
+                "until an account store is assigned as the application's default account store (you can do this " +
+                "via the REST API or in the Stormpath Administration console).";
+            log.warn(msg);
+        }
+
+        return hasDefaultAccountStore;
     }
 
     @Override
@@ -171,7 +208,7 @@ public class LoginController extends FormController {
         saveResult(req, resp, result);
 
         if (postLoginHandler != null) {
-            if(!postLoginHandler.handle(req, resp, result.getAccount())) {
+            if (!postLoginHandler.handle(req, resp, result.getAccount())) {
                 return null;
             }
         }

@@ -35,9 +35,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Returns {@link AccountStoreModel} instances <em>only</em> for external account stores mapped to the current
+ * application.  An <em>external</em> account store is a 3rd-party account store like Google, LinkedIn or SAML where
+ * the accounts are not natively resolved by the application and rely on the end-user to indicate which account service
+ * to use.
+ * <p>
  * 1.0.0
  */
-public class DefaultAccountStoreModelFactory implements AccountStoreModelFactory {
+public class ExternalAccountStoreModelFactory implements AccountStoreModelFactory {
 
     @Override
     public List<AccountStoreModel> getAccountStores(HttpServletRequest request) {

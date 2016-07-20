@@ -105,7 +105,7 @@ import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GoogleCallbackController;
@@ -868,7 +868,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
 
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
-        return new DefaultAccountStoreModelFactory();
+        return new ExternalAccountStoreModelFactory();
     }
 
     public ControllerConfigResolver stormpathLoginControllerConfigResolver() {
