@@ -12,9 +12,20 @@ class DefaultErrorTest {
 
     @Test
     void testGetPropertyDescriptors() {
-
         def defaultError = new DefaultError(new HashMap<String, Object>())
+        finishTest(defaultError);
+    }
 
+    /*
+     * see https://github.com/stormpath/stormpath-sdk-java/pull/770
+     */
+    @Test
+    void testtestGetPropertyDescriptorsDefaultConstructor() {
+        def defaultError = new DefaultError()
+        finishTest(defaultError);
+    }
+
+    private void finishTest(DefaultError defaultError) {
         assertEquals defaultError.propertyDescriptors.keySet().size(), 5
         [
             DefaultError.STATUS, DefaultError.CODE, DefaultError.DEV_MESSAGE,
