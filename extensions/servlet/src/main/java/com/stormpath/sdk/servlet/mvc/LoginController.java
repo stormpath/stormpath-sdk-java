@@ -48,8 +48,10 @@ public class LoginController extends FormController {
     private String forgotLoginUri;
     private String verifyUri;
     private String registerUri;
+    private boolean registerEnabled = true;
     private String logoutUri;
-    private Boolean verifyEnabled;
+    private boolean verifyEnabled = true;
+    private boolean forgotPasswordEnabled = true;
     private Saver<AuthenticationResult> authenticationResultSaver;
     private ErrorModelFactory errorModelFactory;
     private LoginFormStatusResolver loginFormStatusResolver;
@@ -69,8 +71,10 @@ public class LoginController extends FormController {
         super(config.getLoginControllerConfig(), config.getProducesMediaTypes());
 
         this.forgotLoginUri = config.getForgotPasswordControllerConfig().getUri();
+        this.forgotPasswordEnabled = config.getForgotPasswordControllerConfig().isEnabled();
         this.verifyUri = config.getVerifyControllerConfig().getUri();
         this.registerUri = config.getRegisterControllerConfig().getUri();
+        this.registerEnabled = config.getRegisterControllerConfig().isEnabled();
         this.logoutUri = config.getLogoutControllerConfig().getUri();
         this.verifyEnabled = config.getVerifyControllerConfig().isEnabled();
         this.authenticationResultSaver = config.getAuthenticationResultSaver();
@@ -95,7 +99,6 @@ public class LoginController extends FormController {
         Assert.hasText(this.verifyUri, "verifyUri property cannot be null or empty.");
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
-        Assert.notNull(this.verifyEnabled, "verifyEnabled property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
     }
 
@@ -129,9 +132,11 @@ public class LoginController extends FormController {
         model.put("accountStores", accountStores);
 
         if (isHtmlPreferred(request, response)) {
+            model.put("forgotPasswordEnabled", forgotPasswordEnabled);
             model.put("forgotLoginUri", forgotLoginUri);
-            model.put("verifyUri", verifyUri);
             model.put("verifyEnabled", verifyEnabled);
+            model.put("verifyUri", verifyUri);
+            model.put("registerEnabled", registerEnabled);
             model.put("registerUri", registerUri);
             model.put("oauthStateToken", UUID.randomUUID().toString());
             String status = request.getParameter("status");
