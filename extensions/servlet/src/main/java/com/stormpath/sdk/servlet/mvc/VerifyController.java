@@ -125,9 +125,9 @@ public class VerifyController extends FormController {
         }
         catch (Exception e) {
             if (isJsonPreferred(request, response)) {
-                Map<String,Object> model = errorModelFactory.toError(request, e).toMap();
-                errorModelFactory.toError(request, e);
-                response.setStatus(errorModelFactory.toError(request, e).getStatus());
+                ErrorModel error = errorModelFactory.toError(request, e);
+                response.setStatus(error.getStatus());
+                Map<String,Object> model = error.toMap();
                 return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, model);
             }
             List<ErrorModel> errors = new ArrayList<ErrorModel>();
