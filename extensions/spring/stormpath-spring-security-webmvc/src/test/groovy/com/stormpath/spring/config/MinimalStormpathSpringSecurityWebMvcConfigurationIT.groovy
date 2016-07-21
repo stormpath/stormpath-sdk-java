@@ -215,14 +215,37 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
      */
     @Test
     void testPreAuthenticationCheckOnCookieRequest() {
-        HttpServletRequest servletRequest = createStrictMock(HttpServletRequest.class)
-        HttpServletResponse servletResponse = createStrictMock(HttpServletResponse.class)
-        javax.servlet.FilterChain filterChain = createStrictMock(javax.servlet.FilterChain.class)
+        HttpServletRequest servletRequest = createStrictMock(HttpServletRequest)
+        HttpServletResponse servletResponse = createStrictMock(HttpServletResponse)
+        javax.servlet.FilterChain filterChain = createStrictMock(javax.servlet.FilterChain)
         Authentication authentication = createStrictMock(Authentication.class)
+        Account account = createStrictMock(Account)
 
+        expect(servletRequest.getAttribute(Account.class.getName())).andReturn(account)
+
+        def userDetails = createStrictMock(StormpathUserDetails)
+
+        // set href on account that's retrieved from request
+        expect(account.getHref()).andReturn "url"
+
+        Map<String, String> props = new HashMap()
+        props.put("href", "url")
+
+        // return matching href on account so authentication is not performed
+        expect(userDetails.getProperties()).andReturn props
+
+        expect(authentication.getPrincipal()).andReturn(userDetails).times(2)
+
+        // set authentication
         SecurityContextHolder.getContext().setAuthentication(authentication)
 
+        replay account, authentication, servletRequest, userDetails
+
         ((SpringSecurityResolvedAccountFilter)springSecurityResolvedAccountFilter).filter(servletRequest, servletResponse, filterChain)
+
+        verify account, authentication, servletRequest, userDetails
+
+        // verify authentication object was not changed, meaning backend was not contacted
         Assert.isTrue(SecurityContextHolder.getContext().getAuthentication().equals(authentication))
     }
 
