@@ -20,43 +20,44 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * @since 1.0.0
  */
-public class VerifyControllerConfigResolver extends AbstractSpringControllerConfigResolver {
+public class FacebookControllerConfigResolver extends AbstractSpringControllerConfigResolver {
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
-    protected boolean verifyEnabled;
+    @Value("#{ @environment['stormpath.web.social.facebook.enabled'] ?: true }")
+    protected boolean enabled;
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.uri'] ?: '/verify' }")
-    protected String verifyUri;
+    @Value("#{ @environment['stormpath.web.social.facebook.uri'] ?: '/callbacks/facebook' }")
+    protected String uri;
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.nextUri'] ?: '/login?status=verified' }")
-    protected String verifyNextUri;
+    @Value("#{ @environment['stormpath.web.social.facebook.scope'] ?: 'email' }")
+    protected String scope;
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'verify' }")
-    protected String verifyView;
-
-    @Override
-    public String getView() {
-        return verifyView;
+    public FacebookControllerConfigResolver() {
+        System.out.print("aa");
     }
 
     @Override
     public String getUri() {
-        return verifyUri;
-    }
-
-    @Override
-    public String getNextUri() {
-        return verifyNextUri;
+        return uri;
     }
 
     @Override
     public boolean isEnabled() {
-        return verifyEnabled;
+        return enabled;
     }
 
     @Override
     public String getControllerKey() {
-        return "verifyEmail";
+        return "social.facebook";
+    }
+
+    @Override
+    public String getNextUri() {
+        return null; //Not relevant;
+    }
+
+    @Override
+    public String getView() {
+        return null; //Not relevant
     }
 
     @Override

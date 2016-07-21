@@ -45,9 +45,9 @@ import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.PathMatchingFilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
@@ -121,7 +121,11 @@ import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.spring.context.CompositeMessageSource;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfigResolver;
+import com.stormpath.spring.mvc.FacebookControllerConfigResolver;
 import com.stormpath.spring.mvc.ForgotPasswordControllerConfigResolver;
+import com.stormpath.spring.mvc.GithubControllerConfigResolver;
+import com.stormpath.spring.mvc.GoogleControllerConfigResolver;
+import com.stormpath.spring.mvc.LinkedinControllerConfigResolver;
 import com.stormpath.spring.mvc.LoginControllerConfigResolver;
 import com.stormpath.spring.mvc.LogoutControllerConfigResolver;
 import com.stormpath.spring.mvc.RegisterControllerConfigResolver;
@@ -162,6 +166,7 @@ import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -284,6 +289,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.head.extraCssUris'] }")
     protected String headExtraCssUris;
+
+    // ================  Login Controller properties  ===================
+
+    @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
+    protected String loginNextUri;
 
     // ================  Register Controller properties  ===================
 
@@ -437,65 +447,67 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public HandlerMapping stormpathHandlerMapping() throws Exception {
 
-        Map<String, Controller> mappings = new LinkedHashMap<String, Controller>();
-
-        if (stormpathLoginControllerConfigResolver().isEnabled()) {
-            mappings.put(stormpathLoginControllerConfigResolver().getUri(), stormpathLoginController());
-            mappings.put(googleCallbackUri, stormpathGoogleCallbackController());
-            mappings.put(githubCallbackUri, stormpathGithubCallbackController());
-            mappings.put(facebookCallbackUri, stormpathFacebookCallbackController());
-            mappings.put(linkedinCallbackUri, stormpathLinkedinCallbackController());
-        }
-        if (stormpathLogoutControllerConfigResolver().isEnabled()) {
-            mappings.put(stormpathLogoutControllerConfigResolver().getUri(), stormpathLogoutController());
-        }
-        if (stormpathRegisterControllerConfigResolver().isEnabled()) {
-            mappings.put(stormpathRegisterControllerConfigResolver().getUri(), stormpathRegisterController());
-        }
-        if (stormpathVerifyControllerConfigResolver().isEnabled()) {
-            mappings.put(stormpathVerifyControllerConfigResolver().getUri(), stormpathVerifyController());
-            mappings.put(stormpathSendVerificationEmailControllerConfigResolver().getUri(), stormpathSendVerificationEmailController());
-        }
-        if (stormpathForgotPasswordControllerConfigResolver().isEnabled()) {
-            mappings.put(stormpathForgotPasswordControllerConfigResolver().getUri(), stormpathForgotPasswordController());
-        }
-        if (stormpathChangePasswordControllerConfigResolver().isEnabled()) {
-            mappings.put(stormpathChangePasswordControllerConfigResolver().getUri(), stormpathChangePasswordController());
-        }
-        if (accessTokenEnabled) {
-            mappings.put(accessTokenUri, stormpathAccessTokenController());
-        }
-        if (idSiteEnabled) {
-            mappings.put(idSiteResultUri, stormpathIdSiteResultController());
-        }
-        if (callbackEnabled) {
-            mappings.put("/saml", stormpathSamlController());
-            mappings.put(samlResultUri, stormpathSamlResultController());
-        }
-        if (meEnabled) {
-            mappings.put(meUri, stormpathMeController());
-        }
-
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-        mapping.setOrder(handlerMappingOrder);
-        mapping.setUrlMap(mappings);
-
-        mapping.setInterceptors(new Object[]{stormpathLocaleChangeInterceptor(), stormpathLayoutInterceptor()});
-
-        if (pathMatcher != null) {
-            mapping.setPathMatcher(pathMatcher);
-        }
-
-        if (urlPathHelper != null) {
-            mapping.setUrlPathHelper(urlPathHelper);
-        }
-
-        return mapping;
+//        Map<String, Controller> mappings = new LinkedHashMap<String, Controller>();
+//
+////        if (stormpathLoginControllerConfigResolver().isEnabled()) {
+////            mappings.put(stormpathLoginControllerConfigResolver().getUri(), stormpathLoginController());
+////            mappings.put(googleCallbackUri, stormpathGoogleCallbackController());
+////            mappings.put(githubCallbackUri, stormpathGithubCallbackController());
+////            mappings.put(facebookCallbackUri, stormpathFacebookCallbackController());
+////            mappings.put(linkedinCallbackUri, stormpathLinkedinCallbackController());
+////        }
+////        if (stormpathLogoutControllerConfigResolver().isEnabled()) {
+////            mappings.put(stormpathLogoutControllerConfigResolver().getUri(), stormpathLogoutController());
+////        }
+//
+//        if (stormpathRegisterControllerConfigResolver().isEnabled()) {
+//            mappings.put(stormpathRegisterControllerConfigResolver().getUri(), stormpathRegisterController());
+//        }
+//        if (stormpathVerifyControllerConfigResolver().isEnabled()) {
+//            mappings.put(stormpathVerifyControllerConfigResolver().getUri(), stormpathVerifyController());
+//            mappings.put(stormpathSendVerificationEmailControllerConfigResolver().getUri(), stormpathSendVerificationEmailController());
+//        }
+//        if (stormpathForgotPasswordControllerConfigResolver().isEnabled()) {
+//            mappings.put(stormpathForgotPasswordControllerConfigResolver().getUri(), stormpathForgotPasswordController());
+//        }
+//        if (stormpathChangePasswordControllerConfigResolver().isEnabled()) {
+//            mappings.put(stormpathChangePasswordControllerConfigResolver().getUri(), stormpathChangePasswordController());
+//        }
+//        if (accessTokenEnabled) {
+//            mappings.put(accessTokenUri, stormpathAccessTokenController());
+//        }
+//        if (idSiteEnabled) {
+//            mappings.put(idSiteResultUri, stormpathIdSiteResultController());
+//        }
+//        if (callbackEnabled) {
+//            mappings.put("/saml", stormpathSamlController());
+//            mappings.put(samlResultUri, stormpathSamlResultController());
+//        }
+//        if (meEnabled) {
+//            mappings.put(meUri, stormpathMeController());
+//        }
+//
+//        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+//        mapping.setOrder(handlerMappingOrder);
+//        mapping.setUrlMap(mappings);
+//
+//        mapping.setInterceptors(new Object[]{stormpathLocaleChangeInterceptor(), stormpathLayoutInterceptor()});
+//
+//        if (pathMatcher != null) {
+//            mapping.setPathMatcher(pathMatcher);
+//        }
+//
+//        if (urlPathHelper != null) {
+//            mapping.setUrlPathHelper(urlPathHelper);
+//        }
+//
+//        return mapping;
+        return null;
     }
 
     public Controller stormpathGoogleCallbackController() {
         GoogleCallbackController googleCallbackController = new GoogleCallbackController(
-                stormpathLoginControllerConfigResolver().getNextUri(),
+                loginNextUri,
                 stormpathAuthenticationResultSaver(),
                 stormpathRequestEventPublisher()
         );
@@ -505,7 +517,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathGithubCallbackController() {
         GithubCallbackController githubCallbackController = new GithubCallbackController(
-                stormpathLoginControllerConfigResolver().getNextUri(),
+                loginNextUri,
                 stormpathAuthenticationResultSaver(),
                 stormpathRequestEventPublisher()
         );
@@ -515,7 +527,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathFacebookCallbackController() {
         FacebookCallbackController facebookCallbackController = new FacebookCallbackController(
-                stormpathLoginControllerConfigResolver().getNextUri(),
+                loginNextUri,
                 stormpathAuthenticationResultSaver(),
                 stormpathRequestEventPublisher()
         );
@@ -525,7 +537,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathLinkedinCallbackController() {
         LinkedinCallbackController linkedinCallbackController = new LinkedinCallbackController(
-                stormpathLoginControllerConfigResolver().getNextUri(),
+                loginNextUri,
                 stormpathAuthenticationResultSaver(),
                 stormpathRequestEventPublisher()
         );
@@ -1137,6 +1149,22 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new ChangePasswordControllerConfigResolver();
     }
 
+    public ControllerConfigResolver stormpathGoogleControllerConfigResolver() {
+        return new GoogleControllerConfigResolver();
+    }
+
+    public ControllerConfigResolver stormpathGithubControllerConfigResolver() {
+        return new GithubControllerConfigResolver();
+    }
+
+    public ControllerConfigResolver stormpathFacebookControllerConfigResolver() {
+        return new FacebookControllerConfigResolver();
+    }
+
+    public ControllerConfigResolver stormpathLinkedinControllerConfigResolver() {
+        return new LinkedinControllerConfigResolver();
+    }
+
     public Controller stormpathChangePasswordController() {
 
         if (idSiteEnabled) {
@@ -1507,26 +1535,97 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             public Set<Entry<String, String>> entrySet() {
                 throw new UnsupportedOperationException("Not supported for spring environments.");
             }
-        };
-    }
-
-    public FilterChainResolver stormpathFilterChainResolver() {
-
-        return new FilterChainResolver() {
 
             @Override
-            public FilterChain getChain(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
-
-                // The account resolver filter always executes immediately after the StormpathFilter but
-                // before any other configured filters in the chain:
-                Filter accountResolverFilter = stormpathAccountResolverFilter();
-                List<Filter> immediateExecutionFilters = Arrays.asList(accountResolverFilter);
-                chain = new ProxiedFilterChain(chain, immediateExecutionFilters);
-
-                return chain;
+            public ControllerConfigResolver getGoogleControllerConfig() {
+                return stormpathGoogleControllerConfigResolver();
             }
+
+            @Override
+            public ControllerConfigResolver getFacebookControllerConfig() {
+                return stormpathFacebookControllerConfigResolver();
+            }
+
+            @Override
+            public ControllerConfigResolver getGithubControllerConfig() {
+                return stormpathGithubControllerConfigResolver();
+            }
+
+            @Override
+            public ControllerConfigResolver getLinkedinControllerConfig() {
+                return stormpathLinkedinControllerConfigResolver();
+            }
+
+            @Override
+            public AccessTokenAuthenticationRequestFactory getAccessTokenAuthenticationRequestFactory() {
+                return stormpathAccessTokenAuthenticationRequestFactory();
+            }
+
+            @Override
+            public RefreshTokenAuthenticationRequestFactory getRefreshTokenAuthenticationRequestFactory() {
+                return stormpathRefreshTokenAuthenticationRequestFactory();
+            }
+
+            @Override
+            public RequestAuthorizer getRequestAuthorizer() {
+                return stormpathOriginAccessTokenRequestAuthorizer();
+            }
+
+            @Override
+            public AccessTokenResultFactory getAccessTokenResultFactory() {
+                return stormpathAccessTokenResultFactory();
+            }
+
+            @Override
+            public RefreshTokenResultFactory getRefreshTokenResultFactory() {
+                return stormpathRefreshTokenResultFactory();
+            }
+
+            @Override
+            public BasicAuthenticationScheme getBasicAuthenticationScheme() {
+                return (BasicAuthenticationScheme) stormpathBasicAuthenticationScheme();
+            }
+
+            @Override
+            public String getWebApplicationDomain() {
+                return getWebApplicationDomain();
+            }
+
         };
     }
+
+
+    public abstract FilterChainResolver stormpathFilterChainResolver();
+
+//        return new FilterChainResolver() {
+//
+//            @Override
+//            public FilterChain getChain(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+//
+//                // The account resolver filter always executes immediately after the StormpathFilter but
+//                // before any other configured filters in the chain:
+//                Filter accountResolverFilter = stormpathAccountResolverFilter();
+//                List<Filter> immediateExecutionFilters = Arrays.asList(accountResolverFilter);
+//                chain = new ProxiedFilterChain(chain, immediateExecutionFilters);
+//
+//                return chain;
+//            }
+//        };
+
+//        DefaultFilterChainResolverFactory filterChainResolverFactory = new DefaultFilterChainResolverFactory();
+//        FilterChainResolver filterChainResolver = filterChainResolverFactory.getInstance();
+//
+//        return filterChainResolver;
+
+//        try {
+//            return new PathMatchingFilterChainResolver(null);
+//        } catch (ServletException e) {
+//            //TODO: catch here
+//        }
+
+        //return null;
+
+//    }
 
     public Filter stormpathAccountResolverFilter() {
 
@@ -1542,15 +1641,20 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return filter;
     }
 
-    //Class that suppresses configuration logic in the default StormpathFilter implementation
-    //Dependencies must be injected into the instance in @Bean annotated methods explicitly.
-    public static class SpringStormpathFilter extends StormpathFilter {
+//    public FilterChainResolver filterChainResolver() {
+//        return new PathMatchingFilterChainResolver(servl);
+//    }
 
-        @Override
-        protected void onInit() throws ServletException {
-            //no-op - we apply dependencies via setters
-        }
-    }
+//    //Class that suppresses configuration logic in the default StormpathFilter implementation
+//    //Dependencies must be injected into the instance in @Bean annotated methods explicitly.
+//    public static class SpringStormpathFilter extends StormpathFilter {
+//
+////        @Override
+////        protected void onInit() throws ServletException {
+////            //no-op - we apply dependencies via setters
+////        }
+//        return new SpringControllerFilter();
+//    }
 
     protected static class DisabledAuthenticationResultSaver implements Saver<AuthenticationResult> {
 

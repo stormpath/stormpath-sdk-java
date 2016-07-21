@@ -34,7 +34,7 @@ public class LoginControllerConfigResolver extends AbstractSpringControllerConfi
     @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
     private String loginNextUri;
 
-    @Value("#{ @environment['stormpath.web.login.view'] ?: 'stormpath/login' }")
+    @Value("#{ @environment['stormpath.web.login.view'] ?: 'login' }")
     private String loginView;
 
     @Override

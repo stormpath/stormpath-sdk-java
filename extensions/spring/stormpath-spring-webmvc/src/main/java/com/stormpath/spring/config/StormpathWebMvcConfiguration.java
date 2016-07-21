@@ -36,20 +36,11 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
-import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
-import com.stormpath.sdk.servlet.filter.FilterBuilder;
-import com.stormpath.sdk.servlet.filter.FilterChainResolver;
-import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.filter.StormpathFilter;
-import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
-import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
-import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -58,9 +49,12 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
-import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.spring.mvc.GoogleControllerConfigResolver;
+import com.stormpath.spring.mvc.SpringStormpathFilter;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,12 +74,8 @@ import org.springframework.web.servlet.view.JstlView;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @since 1.0.RC4
@@ -95,6 +85,9 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         implements ServletContextAware, InitializingBean {
 
     private ServletContext servletContext;
+
+//    @Autowired
+//    SpringFilterChainResolver springFilterChainResolver;
 
     @Override
     public void setServletContext(ServletContext servletContext) {
@@ -151,6 +144,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathJsonViewResolver();
     }
 
+    //TODO: delete this comment?
     //this isn't needed in a Spring environment, but we have to have it because the
     //default .jsp views reference it (MessageTag uses a Config instance:
     @Bean
@@ -158,10 +152,10 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathInternalConfig();
     }
 
-    @Bean
-    public HandlerMapping stormpathHandlerMapping() throws Exception {
-        return super.stormpathHandlerMapping();
-    }
+//    @Bean
+//    public HandlerMapping stormpathHandlerMapping() throws Exception {
+//        return super.stormpathHandlerMapping();
+//    }
 
     @Bean
     public HandlerInterceptor stormpathLayoutInterceptor() throws Exception {
@@ -455,9 +449,37 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathLogoutController();
     }
 
+
+//    @Autowired
+//    private SpringFilterChainResolver springFilterChainResolver;
+
     @Bean
+    @Override
     public FilterChainResolver stormpathFilterChainResolver() {
-        return super.stormpathFilterChainResolver();
+//        try {
+//            return springFilterChainResolver.getFilterChainResolver();
+//        } catch (ServletException e) {
+//            //TODO: what to do here?
+//        }
+//        return null;
+
+//        //return super.stormpathFilterChainResolver();
+//        //DefaultFilterChainResolverFactory filterChainResolverFactory = new DefaultFilterChainResolverFactory();
+        SpringFilterChainResolver filterChainResolver = new SpringFilterChainResolver();
+        try {
+            filterChainResolver.setConfig(stormpathInternalConfig());
+            filterChainResolver.setAccountResolverFilter(stormpathAccountResolverFilter());
+            filterChainResolver.setServletContext(servletContext);
+            //filterChainResolver.init(servletContext);
+            return filterChainResolver.getFilterChainResolver();
+//            if (stormpathLogoutControllerConfigResolver().isEnabled()) {
+//            }
+        } catch (ServletException e) {
+            //TODO: what to do here?
+        }
+//        //FilterChainResolver filterChainResolver = filterChainResolver.getInstance();
+//        return filterChainResolver;
+        return null;
     }
 
     @Bean
@@ -479,42 +501,75 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public Filter stormpathAccountResolverFilter() {
         return super.stormpathAccountResolverFilter();
     }
 
     @Bean
+    @Override
     public ControllerConfigResolver stormpathForgotPasswordControllerConfigResolver() {
         return super.stormpathForgotPasswordControllerConfigResolver();
     }
 
     @Bean
+    @Override
     public ControllerConfigResolver stormpathLoginControllerConfigResolver() {
         return super.stormpathLoginControllerConfigResolver();
     }
 
     @Bean
+    @Override
     public ControllerConfigResolver stormpathRegisterControllerConfigResolver() {
         return super.stormpathRegisterControllerConfigResolver();
     }
 
     @Bean
+    @Override
     public ControllerConfigResolver stormpathVerifyControllerConfigResolver() {
         return super.stormpathVerifyControllerConfigResolver();
     }
 
     @Bean
+    @Override
     public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
         return super.stormpathSendVerificationEmailControllerConfigResolver();
     }
 
     @Bean
+    @Override
     public ControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
         return super.stormpathChangePasswordControllerConfigResolver();
     }
 
     @Bean
+    @Override
     public ControllerConfigResolver stormpathLogoutControllerConfigResolver() {
         return super.stormpathLogoutControllerConfigResolver();
     }
+
+    @Bean
+    @Override
+    public ControllerConfigResolver stormpathGoogleControllerConfigResolver() {
+        return super.stormpathGoogleControllerConfigResolver();
+    }
+
+    @Bean
+    @Override
+    public ControllerConfigResolver stormpathFacebookControllerConfigResolver() {
+        return super.stormpathFacebookControllerConfigResolver();
+    }
+
+    @Bean
+    @Override
+    public ControllerConfigResolver stormpathGithubControllerConfigResolver() {
+        return super.stormpathGithubControllerConfigResolver();
+    }
+
+    @Bean
+    @Override
+    public ControllerConfigResolver stormpathLinkedinControllerConfigResolver() {
+        return super.stormpathLinkedinControllerConfigResolver();
+    }
+
 }

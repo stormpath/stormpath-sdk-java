@@ -19,6 +19,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
@@ -27,10 +28,17 @@ import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -48,10 +56,27 @@ import java.util.regex.Pattern;
  * @since 1.0.RC3
  */
 public class DefaultConfig implements Config {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultConfig.class);
+
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
     public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.password.validationStrategy";
+    public static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
+            "stormpath.web.oauth2.authenticationRequestFactory";
+    public static final String REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
+            "stormpath.web.refreshToken.authenticationRequestFactory";
+
+    public static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.oauth2.resultFactory";
+    public static final String REFRESH_TOKEN_RESULT_FACTORY = "stormpath.web.refreshToken.resultFactory";
+    public static final String REQUEST_AUTHORIZER = "stormpath.web.oauth2.authorizer";
+    public static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
+    public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
+    public static final String BASIC_AUTHENTICATION_REQUEST_FACTORY = "stormpath.web.http.authc.schemes.basic";
+
+    public static final String WEB_APPLICATION_DOMAIN = "stormpath.web.application.domain";
+
 
     public static final String PRODUCES_MEDIA_TYPES = "stormpath.web.produces";
 
@@ -72,6 +97,7 @@ public class DefaultConfig implements Config {
     private final Map<String, Object> SINGLETONS;
 
     public DefaultConfig(final ServletContext servletContext, Map<String, String> configProps) {
+
         Assert.notNull(servletContext, "servletContext argument cannot be null.");
         Assert.notNull(configProps, "Properties argument cannot be null.");
         this.servletContext = servletContext;
@@ -134,6 +160,26 @@ public class DefaultConfig implements Config {
     @Override
     public ControllerConfigResolver getChangePasswordControllerConfig() {
         return new ServletControllerConfigResolver(this, CFG, "changePassword");
+    }
+
+    @Override
+    public ControllerConfigResolver getGoogleControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "social.google");
+    }
+
+    @Override
+    public ControllerConfigResolver getFacebookControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "social.facebook");
+    }
+
+    @Override
+    public ControllerConfigResolver getGithubControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "social.github");
+    }
+
+    @Override
+    public ControllerConfigResolver getLinkedinControllerConfig() {
+        return new ServletControllerConfigResolver(this, CFG, "social.linkedin");
     }
 
     @Override
@@ -438,5 +484,90 @@ public class DefaultConfig implements Config {
     @Override
     public Set<Entry<String, String>> entrySet() {
         return props.entrySet();
+    }
+
+    @Override
+    public AccessTokenAuthenticationRequestFactory getAccessTokenAuthenticationRequestFactory() {
+        try {
+            return (AccessTokenAuthenticationRequestFactory) this.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiatng " + ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
+        }
+        return null;
+    }
+
+    @Override
+    public RefreshTokenAuthenticationRequestFactory getRefreshTokenAuthenticationRequestFactory() {
+        try {
+            return (RefreshTokenAuthenticationRequestFactory) this.getInstance(REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiatng " + REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
+        }
+        return null;
+    }
+
+    @Override
+    public RequestAuthorizer getRequestAuthorizer() {
+        try {
+            return (RequestAuthorizer) this.getInstance(REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiatng " + REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
+        }
+        return null;
+    }
+
+    @Override
+    public AccessTokenResultFactory getAccessTokenResultFactory() {
+        try {
+            return (AccessTokenResultFactory) this.getInstance(ACCESS_TOKEN_RESULT_FACTORY);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiatng " + ACCESS_TOKEN_RESULT_FACTORY, e);
+        }
+        return null;
+    }
+
+    @Override
+    public RefreshTokenResultFactory getRefreshTokenResultFactory() {
+        try {
+            return (RefreshTokenResultFactory) this.getInstance(REFRESH_TOKEN_RESULT_FACTORY);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiatng " + REFRESH_TOKEN_RESULT_FACTORY, e);
+        }
+        return null;
+    }
+
+//    @Override
+//    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
+//        try {
+//            return (Saver<AuthenticationResult>) this.getInstance(ACCOUNT_SAVER);
+//        } catch (ServletException e) {
+//            log.error("Exception occurred when instantiatng " + ACCOUNT_SAVER, e);
+//        }
+//        return null;
+//    }
+
+//    @Override
+//    public Publisher<RequestEvent> getRequestEventPublisher() {
+//        try {
+//            return (Publisher<RequestEvent>) this.getInstance(EVENT_PUBLISHER);
+//        } catch (ServletException e) {
+//            log.error("Exception occurred when instantiatng " + EVENT_PUBLISHER, e);
+//        }
+//        return null;
+//    }
+
+    @Override
+    public BasicAuthenticationScheme getBasicAuthenticationScheme() {
+        try {
+            return (BasicAuthenticationScheme) this.getInstance(BASIC_AUTHENTICATION_REQUEST_FACTORY);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiatng " + BASIC_AUTHENTICATION_REQUEST_FACTORY, e);
+        }
+        return null;
+    }
+
+    @Override
+    public String getWebApplicationDomain() {
+        return this.get(WEB_APPLICATION_DOMAIN);
     }
 }

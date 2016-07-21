@@ -32,31 +32,20 @@ import javax.servlet.ServletException;
  */
 public class AccessTokenFilter extends ControllerFilter {
 
-    protected static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
-        "stormpath.web.oauth2.authenticationRequestFactory";
-    protected static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.oauth2.resultFactory";
-    protected static final String REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
-            "stormpath.web.refreshToken.authenticationRequestFactory";
-    protected static final String REFRESH_TOKEN_RESULT_FACTORY = "stormpath.web.refreshToken.resultFactory";
-    protected static final String REQUEST_AUTHORIZER = "stormpath.web.oauth2.authorizer";
-    protected static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
-    protected static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
-    protected static final String BASIC_AUTHENTICATION_REQUEST_FACTORY = "stormpath.web.http.authc.schemes.basic";
-
     @Override
     protected void onInit() throws ServletException {
 
         Config config = getConfig();
         AccessTokenAuthenticationRequestFactory accessTokenAuthenticationRequestFactory =
-            config.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
+            config.getAccessTokenAuthenticationRequestFactory();
         RefreshTokenAuthenticationRequestFactory refreshTokenAuthenticationRequestFactory =
-                config.getInstance(REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
-        RequestAuthorizer requestAuthorizer = config.getInstance(REQUEST_AUTHORIZER);
-        AccessTokenResultFactory accessTokenResultFactory = config.getInstance(ACCESS_TOKEN_RESULT_FACTORY);
-        RefreshTokenResultFactory refreshTokenResultFactory = config.getInstance(REFRESH_TOKEN_RESULT_FACTORY);
-        Saver<AuthenticationResult> accountSaver = config.getInstance(ACCOUNT_SAVER);
-        Publisher<RequestEvent> eventPublisher = config.getInstance(EVENT_PUBLISHER);
-        BasicAuthenticationScheme basicAuthenticationScheme = config.getInstance(BASIC_AUTHENTICATION_REQUEST_FACTORY);
+                config.getRefreshTokenAuthenticationRequestFactory();
+        RequestAuthorizer requestAuthorizer = config.getRequestAuthorizer();
+        AccessTokenResultFactory accessTokenResultFactory = config.getAccessTokenResultFactory();
+        RefreshTokenResultFactory refreshTokenResultFactory = config.getRefreshTokenResultFactory();
+        Saver<AuthenticationResult> accountSaver = config.getAuthenticationResultSaver();
+        Publisher<RequestEvent> eventPublisher = config.getRequestEventPublisher();
+        BasicAuthenticationScheme basicAuthenticationScheme = config.getBasicAuthenticationScheme();
 
         AccessTokenController c = new AccessTokenController();
         c.setEventPublisher(eventPublisher);

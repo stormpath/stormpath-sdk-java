@@ -31,7 +31,7 @@ public class ForgotPasswordControllerConfigResolver extends AbstractSpringContro
     @Value("#{ @environment['stormpath.web.forgotPassword.nextUri'] ?: '/login?status=forgot' }")
     protected String forgotNextUri;
 
-    @Value("#{ @environment['stormpath.web.forgotPassword.view'] ?: 'stormpath/forgot-password' }")
+    @Value("#{ @environment['stormpath.web.forgotPassword.view'] ?: 'forgot-password' }")
     protected String forgotView;
 
     @Override

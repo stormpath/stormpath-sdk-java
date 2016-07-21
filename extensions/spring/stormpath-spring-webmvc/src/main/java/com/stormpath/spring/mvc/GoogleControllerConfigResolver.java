@@ -20,43 +20,40 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * @since 1.0.0
  */
-public class VerifyControllerConfigResolver extends AbstractSpringControllerConfigResolver {
+public class GoogleControllerConfigResolver extends AbstractSpringControllerConfigResolver {
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
-    protected boolean verifyEnabled;
+    @Value("#{ @environment['stormpath.web.social.google.enabled'] ?: true }")
+    protected boolean enabled;
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.uri'] ?: '/verify' }")
-    protected String verifyUri;
+    @Value("#{ @environment['stormpath.web.social.google.uri'] ?: '/callbacks/google' }")
+    protected String uri;
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.nextUri'] ?: '/login?status=verified' }")
-    protected String verifyNextUri;
-
-    @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'verify' }")
-    protected String verifyView;
-
-    @Override
-    public String getView() {
-        return verifyView;
-    }
+    @Value("#{ @environment['stormpath.web.social.google.scope'] ?: 'email profile' }")
+    protected String scope;
 
     @Override
     public String getUri() {
-        return verifyUri;
-    }
-
-    @Override
-    public String getNextUri() {
-        return verifyNextUri;
+        return uri;
     }
 
     @Override
     public boolean isEnabled() {
-        return verifyEnabled;
+        return enabled;
     }
 
     @Override
     public String getControllerKey() {
-        return "verifyEmail";
+        return "social.google";
+    }
+
+    @Override
+    public String getNextUri() {
+        return null; //Not relevant;
+    }
+
+    @Override
+    public String getView() {
+        return null; //Not relevant
     }
 
     @Override

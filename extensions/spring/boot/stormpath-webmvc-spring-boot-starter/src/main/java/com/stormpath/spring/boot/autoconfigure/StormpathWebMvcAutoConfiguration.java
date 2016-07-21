@@ -574,7 +574,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @Bean
     @Override
     public FilterChainResolver stormpathFilterChainResolver() {
-        return super.stormpathFilterChainResolver();
+        return null;
     }
 
     public Collection<String> stormpathFilterUrlPatterns() {

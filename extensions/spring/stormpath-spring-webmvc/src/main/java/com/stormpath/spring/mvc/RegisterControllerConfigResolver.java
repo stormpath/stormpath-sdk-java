@@ -36,7 +36,7 @@ public class RegisterControllerConfigResolver extends AbstractSpringControllerCo
     @Value("#{ @environment['stormpath.web.register.nextUri'] ?: '/' }")
     protected String registerNextUri;
 
-    @Value("#{ @environment['stormpath.web.register.view'] ?: 'stormpath/register' }")
+    @Value("#{ @environment['stormpath.web.register.view'] ?: 'register' }")
     protected String registerView;
 
     @Override

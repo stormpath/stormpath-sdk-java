@@ -16,11 +16,17 @@
 package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 
 import javax.servlet.ServletException;
@@ -106,4 +112,27 @@ public interface Config extends Map<String, String> {
      * @since 1.0.0
      */
     boolean isCallbackEnabled();
+
+    ControllerConfigResolver getGoogleControllerConfig();
+
+    ControllerConfigResolver getFacebookControllerConfig();
+
+    ControllerConfigResolver getGithubControllerConfig();
+
+    ControllerConfigResolver getLinkedinControllerConfig();
+
+    AccessTokenAuthenticationRequestFactory getAccessTokenAuthenticationRequestFactory();
+
+    RefreshTokenAuthenticationRequestFactory getRefreshTokenAuthenticationRequestFactory();
+
+    RequestAuthorizer getRequestAuthorizer();
+
+    AccessTokenResultFactory getAccessTokenResultFactory();
+
+    RefreshTokenResultFactory getRefreshTokenResultFactory();
+
+    BasicAuthenticationScheme getBasicAuthenticationScheme();
+
+    String getWebApplicationDomain();
+
 }
