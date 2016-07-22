@@ -1,8 +1,10 @@
-package com.stormpath.sdk.servlet.application;
+package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;

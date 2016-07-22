@@ -8,7 +8,7 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.oauth.authc.DefaultAccessTokenResult
 import com.stormpath.sdk.oauth.AccessTokenResult
 import com.stormpath.sdk.servlet.application.ApplicationResolver
-import com.stormpath.sdk.servlet.application.RegisterEnabledResolver
+import com.stormpath.sdk.servlet.config.RegisterEnabledResolver
 import com.stormpath.sdk.servlet.form.Form
 import com.stormpath.sdk.servlet.http.MediaType
 import com.stormpath.sdk.servlet.http.Saver

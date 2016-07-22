@@ -22,7 +22,7 @@ import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.application.RegisterEnabledResolver;
+import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
