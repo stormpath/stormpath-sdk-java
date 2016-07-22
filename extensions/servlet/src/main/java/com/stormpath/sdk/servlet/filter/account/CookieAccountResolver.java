@@ -142,7 +142,7 @@ public class CookieAccountResolver implements Resolver<Account> {
 
         } catch (Exception e) {
             String msg = "Encountered invalid JWT in refresh_token cookie. We will now delete both the access and refresh cookies for safety.";
-            log.debug(msg, e);
+            log.error(msg, e);
             deleteCookie(response, cookie);
             deleteCookie(response, accessTokenCookieResolver.get(request, response));
         }

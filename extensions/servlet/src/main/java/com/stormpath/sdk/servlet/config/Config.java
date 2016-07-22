@@ -52,8 +52,6 @@ public interface Config extends Map<String, String> {
 
     boolean isRegisterAutoLoginEnabled();
 
-    boolean isSamlLoginEnabled();
-
     /**
      * @since 1.0.RC6
      */

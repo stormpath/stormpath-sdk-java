@@ -23,11 +23,11 @@ import org.springframework.stereotype.Component;
  * @since 1.0.RC5
  */
 @Component
-public class Roles {
+public class Groups {
     public final String USER;
 
     @Autowired
-    public Roles(Environment env) {
+    public Groups(Environment env) {
         USER = env.getProperty("stormpath.authorized.group.user");
     }
 }

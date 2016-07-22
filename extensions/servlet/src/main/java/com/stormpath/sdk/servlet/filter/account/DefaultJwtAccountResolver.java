@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SigningKeyResolver;
@@ -60,9 +61,10 @@ public class DefaultJwtAccountResolver implements JwtAccountResolver {
             }
         };
 
-        Claims claims = Jwts.parser().setSigningKeyResolver(signingKeyResolver).parseClaimsJws(jwt).getBody();
+        Jws<Claims> jws = Jwts.parser().setSigningKeyResolver(signingKeyResolver).parseClaimsJws(jwt);
+        Claims claims = jws.getBody();
 
-        if (claims.get("stt").equals("refresh")) {
+        if ("refresh".equals(jws.getHeader().get("stt"))) {
             //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/674
             //This is a refresh token, let's not allow the account to be obtained from it
             return null;

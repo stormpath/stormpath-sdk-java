@@ -38,6 +38,7 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
@@ -279,11 +280,16 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
         if (idSiteEnabled || callbackEnabled || stormpathWebEnabled) {
             if (logoutEnabled) {
-                http
-                    .logout()
-                    .invalidateHttpSession(true)
-                    .logoutUrl(logoutUri)
-                    .logoutSuccessUrl(logoutNextUri)
+                LogoutConfigurer<HttpSecurity> httpSecurityLogoutConfigurer = http
+                        .logout()
+                        .invalidateHttpSession(true)
+                        .logoutUrl(logoutUri);
+
+                if (!idSiteEnabled) {
+                    httpSecurityLogoutConfigurer.logoutSuccessUrl(logoutNextUri);
+                }
+
+                httpSecurityLogoutConfigurer
                     .addLogoutHandler(logoutHandler)
                     .and().authorizeRequests()
                     .antMatchers(logoutUri).permitAll();

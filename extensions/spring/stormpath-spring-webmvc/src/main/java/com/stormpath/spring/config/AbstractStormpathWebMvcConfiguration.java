@@ -1380,11 +1380,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
-            public boolean isSamlLoginEnabled() {
-                return callbackEnabled;
-            }
-
-            @Override
             public List<String> getMeExpandedProperties() {
                 return java.util.Collections.EMPTY_LIST;
             }

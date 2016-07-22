@@ -30,12 +30,12 @@ import static org.testng.Assert.assertTrue
  * Test for GrantAuthenticationAttempt class
  * @since 1.0.RC7
  */
-class DefaultCreateOAuthGrantAuthenticationAttemptTest {
+class DefaultCreateOAuthPasswordGrantAuthenticationAttemptTest {
 
     @Test
     void testGetPropertyDescriptors() {
 
-        def defaultCreateGrantAuthAttempt = new DefaultOAuthGrantAuthenticationAttempt(createStrictMock(InternalDataStore))
+        def defaultCreateGrantAuthAttempt = new DefaultOAuthPasswordGrantAuthenticationAttempt(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = defaultCreateGrantAuthAttempt.getPropertyDescriptors()
 
@@ -58,7 +58,7 @@ class DefaultCreateOAuthGrantAuthenticationAttemptTest {
 
         def internalDataStore = createStrictMock(InternalDataStore)
 
-        def attempt = new DefaultOAuthGrantAuthenticationAttempt(internalDataStore, properties)
+        def attempt = new DefaultOAuthPasswordGrantAuthenticationAttempt(internalDataStore, properties)
         def accountStore = createStrictMock(Directory)
         def accountStoreHref = "https://api.stormpath.com/v1/directories/928glsjeorigjj09etiij"
 

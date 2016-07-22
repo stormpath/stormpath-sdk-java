@@ -1,7 +1,5 @@
 package com.stormpath.sdk.servlet.filter.account
 
-import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.servlet.config.CookieConfig
 import com.stormpath.sdk.servlet.http.Resolver
 import org.powermock.core.classloader.annotations.PrepareForTest

@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Classes
 import com.stormpath.sdk.servlet.config.Config
 import com.stormpath.sdk.servlet.config.ConfigLoader
 import org.springframework.mock.web.MockServletContext
+import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import org.yaml.snakeyaml.Yaml
@@ -41,6 +42,11 @@ class DefaultConfigFactoryTest {
 
     @BeforeMethod
     void setup() {
+        // make sure environment variables are set to defaults
+        Map<String, String> env = new HashMap<>()
+        env.put('STORMPATH_WEB_IDSITE_ENABLED', 'false')
+        env.put('STORMPATH_WEB_CALLBACK_ENABLED', 'true')
+        setEnv(env)
         mockServletContext = new MockServletContext()
         config = new ConfigLoader().createConfig(mockServletContext)
     }
@@ -90,7 +96,8 @@ class DefaultConfigFactoryTest {
         assertFalse config.getForgotPasswordControllerConfig().isEnabled()
         assertFalse config.getChangePasswordControllerConfig().isEnabled()
         assertFalse config.isIdSiteEnabled()
-        assertFalse config.isCallbackEnabled()
+        // enabled in @BeforeMethod
+        assertTrue config.isCallbackEnabled()
         assertFalse config.isMeEnabled()
     }
 
@@ -121,6 +128,27 @@ class DefaultConfigFactoryTest {
         assertTrue config.isIdSiteEnabled()
         assertTrue config.isCallbackEnabled()
         assertTrue config.isMeEnabled()
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException)
+    public void confirmIllegalArgumentExceptionWhenIdSiteEnabledAndCallbackDisabled() {
+        assertEquals config.get('stormpath.web.idSite.enabled'), 'false'
+        assertEquals config.get('stormpath.web.callback.enabled'), 'true'
+
+        Map<String, String> env = new HashMap<>()
+        env.put('STORMPATH_WEB_IDSITE_ENABLED', 'true')
+        env.put('STORMPATH_WEB_CALLBACK_ENABLED', 'false')
+        setEnv(env)
+        config = new ConfigLoader().createConfig(new MockServletContext())
+    }
+
+    @AfterTest
+    public void after() {
+        // reset idsite and callback back to defaults
+        Map<String, String> env = new HashMap<>()
+        env.put('STORMPATH_WEB_IDSITE_ENABLED', 'false')
+        env.put('STORMPATH_WEB_CALLBACK_ENABLED', 'true')
+        setEnv(env)
     }
 
     // From http://stackoverflow.com/a/496849
