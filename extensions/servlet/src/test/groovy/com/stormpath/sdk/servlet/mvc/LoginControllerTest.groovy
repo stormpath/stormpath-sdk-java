@@ -8,6 +8,7 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.oauth.authc.DefaultAccessTokenResult
 import com.stormpath.sdk.oauth.AccessTokenResult
 import com.stormpath.sdk.servlet.application.ApplicationResolver
+import com.stormpath.sdk.servlet.application.RegisterEnabledResolver
 import com.stormpath.sdk.servlet.form.Form
 import com.stormpath.sdk.servlet.http.MediaType
 import com.stormpath.sdk.servlet.http.Saver
@@ -195,7 +196,7 @@ class LoginControllerTest {
                 produces: Arrays.asList(MediaType.TEXT_HTML),
                 accountStoreModelFactory: accountStoreModelFactory,
                 samlAccountStoreModelFactory: accountStoreModelFactory,
-                applicationResolver: applicationResolver,
+                registerEnabledResolver: new RegisterEnabledResolver(true, applicationResolver),
                 idSiteEnabled: false,
                 callbackEnabled: false,
         )
@@ -209,44 +210,5 @@ class LoginControllerTest {
         assertEquals errors.size(), 1, "Errors not added when configuration mismatch"
 
         verify request, response, form, accountStoreModelFactory, applicationResolver, application, accountStore
-    }
-
-    /**
-     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/333">Issue 333</a>
-     */
-    @Test
-    public void testIsRegisterEnabledWhenPropertyIsFalse() {
-
-        HttpServletRequest request = createMock(HttpServletRequest)
-
-        LoginController controller = new LoginController(registerEnabled: false)
-
-        replay request
-
-        assertFalse controller.isRegisterEnabled(request)
-
-        verify request
-    }
-
-    /**
-     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/333">Issue 333</a>
-     */
-    @Test
-    public void testIsRegisterEnabledWhenPropertyIsTrueAndNoAppDefaultAccountStore() {
-
-        HttpServletRequest request = createMock(HttpServletRequest)
-        ApplicationResolver applicationResolver = createMock(ApplicationResolver)
-        Application application = createMock(Application)
-
-        LoginController controller = new LoginController(applicationResolver: applicationResolver)
-
-        expect(applicationResolver.getApplication((HttpServletRequest)same(request))).andReturn(application)
-        expect(application.getDefaultAccountStore()).andReturn(null)
-
-        replay request, applicationResolver, application
-
-        assertFalse controller.isRegisterEnabled(request)
-
-        verify request, applicationResolver, application
     }
 }

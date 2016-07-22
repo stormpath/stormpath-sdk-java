@@ -16,9 +16,12 @@
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
+import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
 import com.stormpath.sdk.servlet.config.Config;
@@ -130,6 +133,13 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         bean.setPrefix("/WEB-INF/jsp/");
         bean.setSuffix(".jsp");
         return bean;
+    }
+
+    /** @since 1.0.0 */
+    @Bean
+    @Override
+    public ApplicationResolver stormpathApplicationResolver() {
+        return super.stormpathApplicationResolver();
     }
 
     /** @since 1.0.0 */
@@ -397,6 +407,18 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Controller stormpathRegisterController() {
         return super.stormpathRegisterController();
+    }
+
+    @Bean
+    @Override
+    public Resolver<Boolean> stormpathRegisterEnabledResolver() {
+        return super.stormpathRegisterEnabledResolver();
+    }
+
+    @Bean
+    @Override
+    public BiPredicate<Boolean, Application> stormpathRegisterEnabledPredicate() {
+        return super.stormpathRegisterEnabledPredicate();
     }
 
     @Bean
