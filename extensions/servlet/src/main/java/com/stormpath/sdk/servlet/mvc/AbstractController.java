@@ -60,6 +60,7 @@ public abstract class AbstractController implements Controller {
 
     protected String controllerKey;
     private Resolver<Locale> localeResolver;
+    private AccountResolver accountResolver = AccountResolver.INSTANCE;
 
     protected ContentNegotiationResolver contentNegotiationResolver = ContentNegotiationResolver.INSTANCE;
 
@@ -78,6 +79,7 @@ public abstract class AbstractController implements Controller {
         Assert.notNull(this.messageSource, "messageSource cannot be null.");
         Assert.notNull(this.localeResolver, "localeResolver cannot be null.");
         Assert.hasText(this.controllerKey, "controllerKey cannot be null.");
+        Assert.notNull(this.accountResolver, "accountResolver cannot be null.");
     }
 
     protected AbstractController() {
@@ -133,10 +135,10 @@ public abstract class AbstractController implements Controller {
 
         String method = request.getMethod();
 
-        boolean hasAccount = AccountResolver.INSTANCE.hasAccount(request);
+        boolean hasAccount = accountResolver.hasAccount(request);
 
         if (HttpMethod.GET.name().equalsIgnoreCase(method)) {
-            if (isNotAllowedIfAuthenticated() && hasAccount) {
+            if (hasAccount && isNotAllowedIfAuthenticated()) {
                 return new DefaultViewModel(nextUri).setRedirect(true);
             }
             return doGet(request, response);

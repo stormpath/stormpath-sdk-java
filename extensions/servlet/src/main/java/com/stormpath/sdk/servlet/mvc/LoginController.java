@@ -19,13 +19,17 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
+import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModel;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.DefaultSamlProviderModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +52,6 @@ public class LoginController extends FormController {
     private String forgotLoginUri;
     private String verifyUri;
     private String registerUri;
-    private boolean registerEnabled = true;
     private String logoutUri;
     private boolean verifyEnabled = true;
     private boolean forgotPasswordEnabled = true;
@@ -62,6 +65,8 @@ public class LoginController extends FormController {
     private WebHandler postLoginHandler;
     private boolean idSiteEnabled;
     private boolean callbackEnabled;
+    private Resolver<Boolean> registerEnabledResolver =
+        new RegisterEnabledResolver(true, ApplicationResolver.INSTANCE, new RegisterEnabledPredicate());
 
     public LoginController() {
         super();
@@ -74,7 +79,7 @@ public class LoginController extends FormController {
         this.forgotPasswordEnabled = config.getForgotPasswordControllerConfig().isEnabled();
         this.verifyUri = config.getVerifyControllerConfig().getUri();
         this.registerUri = config.getRegisterControllerConfig().getUri();
-        this.registerEnabled = config.getRegisterControllerConfig().isEnabled();
+        this.registerEnabledResolver = config.getRegisterEnabledResolver();
         this.logoutUri = config.getLogoutControllerConfig().getUri();
         this.verifyEnabled = config.getVerifyControllerConfig().isEnabled();
         this.authenticationResultSaver = config.getAuthenticationResultSaver();
@@ -85,7 +90,7 @@ public class LoginController extends FormController {
         this.postLoginHandler = config.getLoginPostHandler();
 
         this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
-        this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
+        this.accountStoreModelFactory = new ExternalAccountStoreModelFactory();
         this.samlAccountStoreModelFactory = new DefaultSamlProviderModelFactory();
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.idSiteEnabled = config.isIdSiteEnabled();
@@ -136,7 +141,7 @@ public class LoginController extends FormController {
             model.put("forgotLoginUri", forgotLoginUri);
             model.put("verifyEnabled", verifyEnabled);
             model.put("verifyUri", verifyUri);
-            model.put("registerEnabled", registerEnabled);
+            model.put("registerEnabled", registerEnabledResolver.get(request, response));
             model.put("registerUri", registerUri);
             model.put("oauthStateToken", UUID.randomUUID().toString());
             String status = request.getParameter("status");
@@ -171,7 +176,7 @@ public class LoginController extends FormController {
         saveResult(req, resp, result);
 
         if (postLoginHandler != null) {
-            if(!postLoginHandler.handle(req, resp, result.getAccount())) {
+            if (!postLoginHandler.handle(req, resp, result.getAccount())) {
                 return null;
             }
         }
