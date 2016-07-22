@@ -282,8 +282,9 @@ public class DefaultConfig implements Config {
             }
         } else {
             boolean enabled = CFG.getBoolean("stormpath.web.register.enabled");
-            RegisterEnabledResolver resolver =
-                new RegisterEnabledResolver(enabled, ApplicationResolver.INSTANCE, getRegisterEnabledPredicate());
+            ApplicationResolver appResolver = getApplicationResolver();
+            BiPredicate<Boolean,Application> regEnabledPredicate = getRegisterEnabledPredicate();
+            RegisterEnabledResolver resolver = new RegisterEnabledResolver(enabled, appResolver, regEnabledPredicate);
             SINGLETONS.put(key, resolver);
             return resolver;
         }
