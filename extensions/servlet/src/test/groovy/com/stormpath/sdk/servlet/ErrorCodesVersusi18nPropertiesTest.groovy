@@ -26,11 +26,12 @@ import org.testng.annotations.Test
 import static org.testng.Assert.assertEquals
 
 /**
- * A test that downloads the <a href="https://docs.stormpath.com/rest/product-guide/latest/errors.html">Stormpath errors
- * documentation</a> and compares it with <code>com/stormpath/sdk/servlet/i18n.properties</code>.
+ * A test that compares the Stormpath error codes to make sure they're translated in
+ * <code>com/stormpath/sdk/servlet/i18n.properties</code>.
  *
- * This test will fail when a new property is added to the documentation but it does not exist in
- * <code>i18n.properties</code>.
+ * This test will fail when a new error code is added but it does not exist in
+ * <code>i18n.properties</code>. Of course, <code>api-errors.properties</code> will
+ * need to be updated when the backend adds new error codes.
  *
  * @since 1.0.0
  */
