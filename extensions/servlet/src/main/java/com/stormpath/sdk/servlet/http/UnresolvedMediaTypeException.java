@@ -29,8 +29,8 @@ import java.util.List;
 public class UnresolvedMediaTypeException extends Exception {
 
     public UnresolvedMediaTypeException(List<MediaType> acceptedMediaTypes, List<MediaType> producesMediaTypes, String message) {
-        super(MessageFormat.format("No MediaType could be resolved for this request ('{1}')" +
-                "and the configured producesMediaTypes settings ('{2}'). '{3}'",
+        super(MessageFormat.format("No MediaType could be resolved for this request ({0})" +
+                " and the configured producesMediaTypes settings ({1}). {2}",
                 Strings.collectionToCommaDelimitedString(acceptedMediaTypes),
                 Strings.collectionToCommaDelimitedString(producesMediaTypes),
                 message));
