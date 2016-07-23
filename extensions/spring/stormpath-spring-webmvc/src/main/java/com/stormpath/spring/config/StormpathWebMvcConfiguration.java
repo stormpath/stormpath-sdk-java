@@ -53,6 +53,7 @@ import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfigResolver;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -512,7 +513,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public ControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
+    public ChangePasswordControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
         return super.stormpathChangePasswordControllerConfigResolver();
     }
 

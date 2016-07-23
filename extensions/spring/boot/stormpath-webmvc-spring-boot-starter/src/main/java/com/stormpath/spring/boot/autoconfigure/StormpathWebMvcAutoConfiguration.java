@@ -43,7 +43,6 @@ import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
-import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -51,11 +50,11 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
-import com.stormpath.sdk.servlet.mvc.FormFieldParser;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import com.stormpath.spring.config.AccessTokenCookieProperties;
 import com.stormpath.spring.config.RefreshTokenCookieProperties;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfigResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -676,7 +675,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathChangePasswordControllerConfigResolver")
-    public ControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
+    public ChangePasswordControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
         return super.stormpathChangePasswordControllerConfigResolver();
     }
 

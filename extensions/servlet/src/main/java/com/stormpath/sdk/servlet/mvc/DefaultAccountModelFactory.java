@@ -58,11 +58,7 @@ public class DefaultAccountModelFactory implements AccountModelFactory {
                             accountMap.put(property, getResourceProperties((AbstractResource) propertyValue));
                         }
                     }
-                } catch (NoSuchMethodException e) {
-                    log.error("Error expanding account property", e);
-                } catch (InvocationTargetException e) {
-                    log.error("Error expanding account property", e);
-                } catch (IllegalAccessException e) {
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     log.error("Error expanding account property", e);
                 }
             }
