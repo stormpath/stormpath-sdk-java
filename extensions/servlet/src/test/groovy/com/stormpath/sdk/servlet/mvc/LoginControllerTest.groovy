@@ -17,7 +17,7 @@ import com.stormpath.sdk.servlet.http.impl.DefaultUserAgent
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModel
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory
 import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModel
-import com.stormpath.sdk.servlet.mvc.provider.DefaultSamlProviderModel
+import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderModel
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver
 import org.testng.annotations.Test
 
@@ -183,8 +183,8 @@ class LoginControllerTest {
         Form form = createMock(Form)
 
         List<AccountStoreModel> accountStores = new ArrayList<AccountStoreModel>()
-        accountStores.add(new DefaultAccountStoreModel(null, new DefaultSamlProviderModel(null)))
-        expect(accountStoreModelFactory.getAccountStores(request)).andReturn(accountStores).times(2)
+        accountStores.add(new DefaultAccountStoreModel(null, new DefaultProviderModel('foo', 'saml')))
+        expect(accountStoreModelFactory.getAccountStores(request)).andReturn(accountStores)
         expect(request.getAttribute(UserAgents.USER_AGENT_REQUEST_ATTRIBUTE_NAME)).andReturn new DefaultUserAgent(request)
         expect(request.getParameter("status")).andReturn null
         expect(request.getHeader("Accept")).andReturn "text/html"
@@ -195,7 +195,6 @@ class LoginControllerTest {
         LoginController loginController = new LoginController(
                 produces: Arrays.asList(MediaType.TEXT_HTML),
                 accountStoreModelFactory: accountStoreModelFactory,
-                samlAccountStoreModelFactory: accountStoreModelFactory,
                 registerEnabledResolver: new RegisterEnabledResolver(true, applicationResolver),
                 idSiteEnabled: false,
                 callbackEnabled: false,
