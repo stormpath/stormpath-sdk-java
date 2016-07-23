@@ -15,11 +15,15 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.lang.BiPredicate;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
@@ -32,6 +36,8 @@ import java.util.Map;
  * @since 1.0.RC3
  */
 public interface Config extends Map<String, String> {
+
+    ApplicationResolver getApplicationResolver();
 
     ControllerConfigResolver getLoginControllerConfig();
 
@@ -54,8 +60,6 @@ public interface Config extends Map<String, String> {
     Publisher<RequestEvent> getRequestEventPublisher();
 
     boolean isRegisterAutoLoginEnabled();
-
-    boolean isSamlLoginEnabled();
 
     /**
      * @since 1.0.RC6
@@ -85,6 +89,10 @@ public interface Config extends Map<String, String> {
     WebHandler getRegisterPreHandler();
 
     WebHandler getRegisterPostHandler();
+
+    BiPredicate<Boolean,Application> getRegisterEnabledPredicate();
+
+    Resolver<Boolean> getRegisterEnabledResolver();
 
     <T> T getInstance(String classPropertyName) throws ServletException;
 

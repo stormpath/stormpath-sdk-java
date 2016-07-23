@@ -33,11 +33,9 @@ public class HelloService {
      * <code>"springSecurityPermissions":["say:*"]</code> or <code>"springSecurityPermissions":["say:hello"]</code>
      * will be allowed to execute this method.
      */
-    @PreAuthorize("hasRole('" + MY_GROUP + "') and hasPermission('say', 'hello')")
+    @PreAuthorize("hasAuthority('" + MY_GROUP + "') and hasPermission('say', 'hello')")
     public String sayHello(Account account) {
         return "Hello, " + account.getGivenName() +
-            ". You have the required persmissions to access this restricted resource.";
+            ". You have the required permissions to access this restricted resource.";
     }
-
-
 }

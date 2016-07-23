@@ -16,11 +16,14 @@
 package com.stormpath.spring.boot.autoconfigure;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
+import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
 import com.stormpath.sdk.servlet.config.Config;
@@ -104,6 +107,13 @@ import java.util.Set;
 @ConditionalOnWebApplication
 @AutoConfigureAfter({WebMvcAutoConfiguration.class, StormpathAutoConfiguration.class})
 public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    @Override
+    public ApplicationResolver stormpathApplicationResolver() {
+        return super.stormpathApplicationResolver();
+    }
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathHandlerMapping")
@@ -421,6 +431,20 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name = "stormpathRegisterController")
     public Controller stormpathRegisterController() {
         return super.stormpathRegisterController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRegisterEnabledResolver")
+    @Override
+    public Resolver<Boolean> stormpathRegisterEnabledResolver() {
+        return super.stormpathRegisterEnabledResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRegisterEnabledPredicate")
+    @Override
+    public BiPredicate<Boolean, Application> stormpathRegisterEnabledPredicate() {
+        return super.stormpathRegisterEnabledPredicate();
     }
 
     @Bean
