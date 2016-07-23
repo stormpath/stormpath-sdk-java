@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,12 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
-
-import javax.servlet.ServletException;
-
 /**
- * @since 1.0.RC3
+ * @since 1.0.0
  */
-public class ChangePasswordFilter extends ControllerFilter {
+public interface ChangePasswordConfigResolver extends ControllerConfigResolver{
 
-    @Override
-    protected void onInit() throws ServletException {
+    String getErrorUri();
+    boolean isAutoLogin();
 
-        ChangePasswordController controller = new ChangePasswordController(getConfig());
-
-        setController(controller);
-
-        super.onInit();
-    }
 }
-
-

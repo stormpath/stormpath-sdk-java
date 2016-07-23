@@ -45,15 +45,16 @@ import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
-import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
-import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
-import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
-import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
+import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
+import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
+import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
+import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
@@ -1154,7 +1155,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return createSpringController(controller);
     }
 
-    public ControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
+    public ChangePasswordConfigResolver stormpathChangePasswordControllerConfigResolver() {
         return new ChangePasswordControllerConfigResolver();
     }
 
@@ -1376,7 +1377,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
 
             @Override
-            public ControllerConfigResolver getChangePasswordControllerConfig() {
+            public ChangePasswordConfigResolver getChangePasswordControllerConfig() {
                 return stormpathChangePasswordControllerConfigResolver();
             }
 

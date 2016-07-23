@@ -39,6 +39,13 @@
                                 <p><sp:message key="stormpath.web.forgotPassword.form.instructions"/></p>
                             </div>
 
+                            <c:if test="${!empty status and empty errors}">
+                                <div class="alert alert-dismissable alert-success">
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    <p>${status}</p>
+                                </div>
+                            </c:if>
+
                             <c:if test="${!empty errors}">
                                 <div class="alert alert-dismissable alert-danger bad-login">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>

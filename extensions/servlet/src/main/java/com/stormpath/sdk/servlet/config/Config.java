@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
@@ -50,7 +51,7 @@ public interface Config extends Map<String, String> {
 
     ControllerConfigResolver getSendVerificationEmailControllerConfig();
 
-    ControllerConfigResolver getChangePasswordControllerConfig();
+    ChangePasswordConfigResolver getChangePasswordControllerConfig();
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();
 

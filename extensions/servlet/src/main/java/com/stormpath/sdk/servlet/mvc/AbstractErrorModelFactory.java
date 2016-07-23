@@ -61,6 +61,9 @@ public abstract class AbstractErrorModelFactory implements ErrorModelFactory {
     }
 
     protected String getErrorMessage(HttpServletRequest request, String key, String defaultMessage) {
+        if (key.isEmpty()){
+            return defaultMessage;
+        }
         return messageSource.getMessage(key, defaultMessage, request.getLocale(), getMessageParams());
     }
 }
