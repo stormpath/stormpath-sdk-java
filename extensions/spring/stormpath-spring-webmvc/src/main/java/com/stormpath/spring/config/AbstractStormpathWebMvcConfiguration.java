@@ -23,12 +23,16 @@ import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlResultListener;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
+import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
+import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
 import com.stormpath.sdk.servlet.config.impl.AccessTokenCookieConfig;
 import com.stormpath.sdk.servlet.config.impl.RefreshTokenCookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
@@ -104,7 +108,7 @@ import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GoogleCallbackController;
@@ -186,8 +190,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     private static final Logger log = LoggerFactory.getLogger(AbstractStormpathWebMvcConfiguration.class);
 
     private static final String PRODUCES_SUPPORTED_TYPES_MSG = "stormpath.web.produces property value must " +
-            "specify either " + MediaType.APPLICATION_JSON_VALUE + " or " + MediaType.TEXT_HTML_VALUE + " or both.  " +
-            "Other media types for this property are not currently supported.";
+        "specify either " + MediaType.APPLICATION_JSON_VALUE + " or " + MediaType.TEXT_HTML_VALUE + " or both.  " +
+        "Other media types for this property are not currently supported.";
 
     protected static final String I18N_PROPERTIES_BASENAME = "com.stormpath.sdk.servlet.i18n";
 
@@ -447,7 +451,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (stormpathLogoutControllerConfigResolver().isEnabled()) {
             mappings.put(stormpathLogoutControllerConfigResolver().getUri(), stormpathLogoutController());
         }
-        if (stormpathRegisterControllerConfigResolver().isEnabled()) {
+        boolean registerEnabled = stormpathRegisterControllerConfigResolver().isEnabled();
+        if (stormpathRegisterEnabledPredicate().test(registerEnabled, application)) {
             mappings.put(stormpathRegisterControllerConfigResolver().getUri(), stormpathRegisterController());
         }
         if (stormpathVerifyControllerConfigResolver().isEnabled()) {
@@ -490,11 +495,27 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return mapping;
     }
 
+    public ApplicationResolver stormpathApplicationResolver() {
+        return ApplicationResolver.INSTANCE; //TODO remove static usage
+    }
+
+    public Resolver<Boolean> stormpathRegisterEnabledResolver() {
+        return new RegisterEnabledResolver(
+            stormpathRegisterControllerConfigResolver().isEnabled(),
+            stormpathApplicationResolver(),
+            stormpathRegisterEnabledPredicate()
+        );
+    }
+
+    public BiPredicate<Boolean, Application> stormpathRegisterEnabledPredicate() {
+        return new RegisterEnabledPredicate();
+    }
+
     public Controller stormpathGoogleCallbackController() {
         GoogleCallbackController googleCallbackController = new GoogleCallbackController(
-                stormpathLoginControllerConfigResolver().getNextUri(),
-                stormpathAuthenticationResultSaver(),
-                stormpathRequestEventPublisher()
+            stormpathLoginControllerConfigResolver().getNextUri(),
+            stormpathAuthenticationResultSaver(),
+            stormpathRequestEventPublisher()
         );
 
         return createSpringController(googleCallbackController);
@@ -502,9 +523,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathGithubCallbackController() {
         GithubCallbackController githubCallbackController = new GithubCallbackController(
-                stormpathLoginControllerConfigResolver().getNextUri(),
-                stormpathAuthenticationResultSaver(),
-                stormpathRequestEventPublisher()
+            stormpathLoginControllerConfigResolver().getNextUri(),
+            stormpathAuthenticationResultSaver(),
+            stormpathRequestEventPublisher()
         );
 
         return createSpringController(githubCallbackController);
@@ -512,9 +533,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathFacebookCallbackController() {
         FacebookCallbackController facebookCallbackController = new FacebookCallbackController(
-                stormpathLoginControllerConfigResolver().getNextUri(),
-                stormpathAuthenticationResultSaver(),
-                stormpathRequestEventPublisher()
+            stormpathLoginControllerConfigResolver().getNextUri(),
+            stormpathAuthenticationResultSaver(),
+            stormpathRequestEventPublisher()
         );
 
         return createSpringController(facebookCallbackController);
@@ -522,9 +543,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathLinkedinCallbackController() {
         LinkedinCallbackController linkedinCallbackController = new LinkedinCallbackController(
-                stormpathLoginControllerConfigResolver().getNextUri(),
-                stormpathAuthenticationResultSaver(),
-                stormpathRequestEventPublisher()
+            stormpathLoginControllerConfigResolver().getNextUri(),
+            stormpathAuthenticationResultSaver(),
+            stormpathRequestEventPublisher()
         );
 
         return createSpringController(linkedinCallbackController);
@@ -640,9 +661,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (cookieAuthenticationResultSaverEnabled) {
             return new CookieAuthenticationResultSaver(
-                    stormpathAccessTokenCookieConfig(),
-                    stormpathRefreshTokenCookieConfig(),
-                    stormpathSecureResolver()
+                stormpathAccessTokenCookieConfig(),
+                stormpathRefreshTokenCookieConfig(),
+                stormpathSecureResolver()
             );
         }
 
@@ -684,7 +705,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (Collections.isEmpty(savers)) {
             String msg = "No Saver<AuthenticationResult> instances have been enabled or configured.  This is " +
-                    "required to save authentication result state.";
+                "required to save authentication result state.";
             throw new IllegalStateException(msg);
         }
 
@@ -741,8 +762,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
         return new DefaultWrappedServletRequestFactory(
-                stormpathUsernamePasswordRequestFactory(), stormpathAuthenticationResultSaver(),
-                stormpathRequestEventPublisher(), requestUserPrincipalStrategy, requestRemoteUserStrategy
+            stormpathUsernamePasswordRequestFactory(), stormpathAuthenticationResultSaver(),
+            stormpathRequestEventPublisher(), requestUserPrincipalStrategy, requestRemoteUserStrategy
         );
     }
 
@@ -764,7 +785,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public HeaderAuthenticator stormpathAuthorizationHeaderAuthenticator() {
         return new AuthorizationHeaderAuthenticator(
-                stormpathHttpAuthenticationSchemes(), httpAuthenticationChallenge, stormpathRequestEventPublisher()
+            stormpathHttpAuthenticationSchemes(), httpAuthenticationChallenge, stormpathRequestEventPublisher()
         );
     }
 
@@ -774,11 +795,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Resolver<Account> stormpathCookieAccountResolver() {
         return new CookieAccountResolver(
-                stormpathAccessTokenCookieConfig(),
-                stormpathRefreshTokenCookieConfig(),
-                stormpathJwtAccountResolver(),
-                stormpathCookieAuthenticationResultSaver(),
-                stormpathAccessTokenResultFactory());
+            stormpathAccessTokenCookieConfig(),
+            stormpathRefreshTokenCookieConfig(),
+            stormpathJwtAccountResolver(),
+            stormpathCookieAuthenticationResultSaver(),
+            stormpathAccessTokenResultFactory());
     }
 
     public Resolver<Account> stormpathSessionAccountResolver() {
@@ -865,7 +886,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
 
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
-        return new DefaultAccountStoreModelFactory();
+        return new ExternalAccountStoreModelFactory();
     }
 
     public ControllerConfigResolver stormpathLoginControllerConfigResolver() {
@@ -986,8 +1007,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                 stormpathI18nAlreadyConfigured = true;
             } catch (NoSuchMessageException e) {
                 log.debug("Stormpath i18n properties have not been specified during message source configuration.  " +
-                        "Adding these property values as a fallback. Exception for reference (this and the " +
-                        "stack trace can safely be ignored): " + e.getMessage(), e);
+                    "Adding these property values as a fallback. Exception for reference (this and the " +
+                    "stack trace can safely be ignored): " + e.getMessage(), e);
             }
 
             if (!stormpathI18nAlreadyConfigured) {
@@ -1013,7 +1034,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     //
     protected boolean isPlaceholder(MessageSource messageSource) {
         return messageSource instanceof DelegatingMessageSource &&
-                ((DelegatingMessageSource) messageSource).getParentMessageSource() == null;
+            ((DelegatingMessageSource) messageSource).getParentMessageSource() == null;
     }
 
     protected MessageSource createI18nPropertiesMessageSource() {
@@ -1212,7 +1233,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public RequestAuthorizer stormpathAccessTokenRequestAuthorizer() {
         return new DefaultAccessTokenRequestAuthorizer(
-                stormpathSecureResolver(), stormpathOriginAccessTokenRequestAuthorizer()
+            stormpathSecureResolver(), stormpathOriginAccessTokenRequestAuthorizer()
         );
     }
 
@@ -1222,8 +1243,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer() {
         return new OriginAccessTokenRequestAuthorizer(
-                stormpathServerUriResolver(), stormpathLocalhostResolver(), stormpathAccessTokenAuthorizedOriginUris(),
-                stormpathProducesMediaTypes()
+            stormpathServerUriResolver(), stormpathLocalhostResolver(), stormpathAccessTokenAuthorizedOriginUris(),
+            stormpathProducesMediaTypes()
         );
     }
 
@@ -1238,8 +1259,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
 
         LogoutController controller = new LogoutController(
-                stormpathInternalConfig().getLogoutControllerConfig(),
-                stormpathInternalConfig().getProducesMediaTypes());
+            stormpathInternalConfig().getLogoutControllerConfig(),
+            stormpathInternalConfig().getProducesMediaTypes());
 
         if (idSiteEnabled) {
             IdSiteLogoutController c = new IdSiteLogoutController(stormpathInternalConfig().getLogoutControllerConfig(), stormpathInternalConfig().getProducesMediaTypes());
@@ -1274,6 +1295,17 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         final Resolver<Locale> localeResolver = stormpathLocaleResolver();
 
         return new Config() {
+
+            @Override
+            public ApplicationResolver getApplicationResolver() {
+                return stormpathApplicationResolver();
+            }
+
+            @Override
+            public BiPredicate<Boolean, Application> getRegisterEnabledPredicate() {
+                return stormpathRegisterEnabledPredicate();
+            }
+
             @Override
             public WebHandler getLoginPreHandler() {
                 return loginPreHandler;
@@ -1292,6 +1324,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             @Override
             public WebHandler getRegisterPostHandler() {
                 return registerPostHandler;
+            }
+
+            @Override
+            public Resolver<Boolean> getRegisterEnabledResolver() {
+                return stormpathRegisterEnabledResolver();
             }
 
             @Override
@@ -1397,14 +1434,14 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                     return (T) messageSource;
                 } else {
                     String msg = "The config key '" + classPropertyName + "' is not supported in Spring environments " +
-                            "- inject the required dependency via Spring config (e.g. @Autowired) instead.";
+                        "- inject the required dependency via Spring config (e.g. @Autowired) instead.";
                     throw new UnsupportedOperationException(msg);
                 }
             }
 
             @Override
             public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType)
-                    throws ServletException {
+                throws ServletException {
                 throw new UnsupportedOperationException("Not supported for spring environments.");
             }
 

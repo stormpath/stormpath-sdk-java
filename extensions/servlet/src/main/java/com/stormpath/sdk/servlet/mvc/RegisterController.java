@@ -20,7 +20,6 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
@@ -29,7 +28,7 @@ import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +80,7 @@ public class RegisterController extends FormController {
         this.postRegisterHandler = config.getRegisterPostHandler();
 
         this.accountModelFactory = new DefaultAccountModelFactory();
-        this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
+        this.accountStoreModelFactory = new ExternalAccountStoreModelFactory();
         this.errorModelFactory = new RegisterErrorModelFactory(this.messageSource);
 
         Assert.notNull(this.client, "client cannot be null.");

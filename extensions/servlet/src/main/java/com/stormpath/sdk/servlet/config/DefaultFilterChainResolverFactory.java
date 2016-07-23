@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.DefaultFilter;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
@@ -117,6 +118,8 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         String registerUrlPattern = cleanUri(registerUrl);
         boolean registerChainSpecified = false;
         boolean registerEnabled = config.getRegisterControllerConfig().isEnabled();
+        registerEnabled = config.getRegisterEnabledPredicate().test(registerEnabled,
+            ApplicationResolver.INSTANCE.getApplication(servletContext));
 
         String verifyUrl = config.getVerifyControllerConfig().getUri();
         String verifyUrlPattern = cleanUri(verifyUrl);
