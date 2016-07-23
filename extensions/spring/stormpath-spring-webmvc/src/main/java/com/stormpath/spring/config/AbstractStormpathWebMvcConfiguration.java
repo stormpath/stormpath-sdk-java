@@ -106,7 +106,6 @@ import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlLogoutController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
-import com.stormpath.sdk.servlet.mvc.SendVerificationEmailController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
@@ -130,7 +129,6 @@ import com.stormpath.spring.mvc.ForgotPasswordControllerConfigResolver;
 import com.stormpath.spring.mvc.LoginControllerConfigResolver;
 import com.stormpath.spring.mvc.LogoutControllerConfigResolver;
 import com.stormpath.spring.mvc.RegisterControllerConfigResolver;
-import com.stormpath.spring.mvc.SendVerificationEmailControllerConfigResolver;
 import com.stormpath.spring.mvc.SpringController;
 import com.stormpath.spring.mvc.SpringSpaController;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
@@ -460,7 +458,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
         if (stormpathVerifyControllerConfigResolver().isEnabled()) {
             mappings.put(stormpathVerifyControllerConfigResolver().getUri(), stormpathVerifyController());
-            mappings.put(stormpathSendVerificationEmailControllerConfigResolver().getUri(), stormpathSendVerificationEmailController());
         }
         if (stormpathForgotPasswordControllerConfigResolver().isEnabled()) {
             mappings.put(stormpathForgotPasswordControllerConfigResolver().getUri(), stormpathForgotPasswordController());
@@ -1131,31 +1128,20 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         VerifyController controller = new VerifyController(
-            stormpathVerifyControllerConfigResolver(),
-            stormpathLogoutControllerConfigResolver().getUri(),
-            stormpathSendVerificationEmailControllerConfigResolver().getUri(),
-            client,
-            produces
+                stormpathVerifyControllerConfigResolver(),
+                stormpathLoginControllerConfigResolver().getUri(),
+                stormpathLoginControllerConfigResolver().getNextUri(),
+                client,
+                produces,
+                stormpathInternalConfig().isRegisterAutoLoginEnabled(),
+                stormpathInternalConfig().getAuthenticationResultSaver(),
+                stormpathInternalConfig().getAccountStoreResolver()
         );
 
         return createSpringController(controller);
     }
 
-    public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
-        return new SendVerificationEmailControllerConfigResolver();
-    }
-
-    public Controller stormpathSendVerificationEmailController() {
-        if (idSiteEnabled) {
-            return createIdSiteController(null);
-        }
-
-        SendVerificationEmailController controller = new SendVerificationEmailController(stormpathInternalConfig());
-
-        return createSpringController(controller);
-    }
-
-    public ChangePasswordConfigResolver stormpathChangePasswordControllerConfigResolver() {
+    public ChangePasswordControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
         return new ChangePasswordControllerConfigResolver();
     }
 
@@ -1369,11 +1355,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             @Override
             public ControllerConfigResolver getVerifyControllerConfig() {
                 return stormpathVerifyControllerConfigResolver();
-            }
-
-            @Override
-            public ControllerConfigResolver getSendVerificationEmailControllerConfig() {
-                return stormpathSendVerificationEmailControllerConfigResolver();
             }
 
             @Override

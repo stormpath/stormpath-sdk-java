@@ -1004,12 +1004,6 @@
       "defaultValue": "com.stormpath.sdk.servlet.cache.config.DefaultCacheManagerFactory"
     },
     {
-      "name": "stormpath.web.sendVerificationEmail.uri",
-      "type": "java.lang.String",
-      "description": "This shows the view where a user can enter their email address to have a verification email re-sent to them.",
-      "defaultValue": "/sendVerificationEmail"
-    },
-    {
       "name": "stormpath.web.unauthorized.uri",
       "type": "java.lang.String",
       "description": "The context-relative path where an authenticated (already logged in) user will be redirected when attempting to access a url they are not allowed to access.",

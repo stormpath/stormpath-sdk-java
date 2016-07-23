@@ -38,7 +38,6 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
@@ -55,6 +54,7 @@ import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import com.stormpath.spring.config.AccessTokenCookieProperties;
 import com.stormpath.spring.config.RefreshTokenCookieProperties;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfigResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -674,14 +674,8 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathSendVerificationEmailControllerConfigResolver")
-    public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
-        return super.stormpathSendVerificationEmailControllerConfigResolver();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathChangePasswordControllerConfigResolver")
-    public ChangePasswordConfigResolver stormpathChangePasswordControllerConfigResolver() {
+    public ChangePasswordControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
         return super.stormpathChangePasswordControllerConfigResolver();
     }
 

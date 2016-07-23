@@ -80,7 +80,7 @@ public class ForgotPasswordController extends FormController {
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (isJsonPreferred(request, response)) {
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return new DefaultViewModel("stormpathJsonView", Collections.EMPTY_MAP);
+            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, Collections.EMPTY_MAP);
         }
         return super.doGet(request, response);
     }
@@ -154,11 +154,11 @@ public class ForgotPasswordController extends FormController {
             }
         } catch (ResourceException e) {
             if (isJsonPreferred(request, response)) {
-                return new DefaultViewModel("stormpathJsonView");
+                return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME);
             }
         }
         if (isJsonPreferred(request, response)) {
-            return new DefaultViewModel("stormpathJsonView");
+            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME);
         }
 
         return new DefaultViewModel(nextUri).setRedirect(true);

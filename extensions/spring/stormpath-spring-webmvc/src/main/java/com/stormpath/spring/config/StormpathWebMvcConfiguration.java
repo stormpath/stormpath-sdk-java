@@ -31,7 +31,6 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
 import com.stormpath.sdk.servlet.filter.FilterBuilder;
@@ -54,6 +53,7 @@ import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfigResolver;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -513,12 +513,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public ControllerConfigResolver stormpathSendVerificationEmailControllerConfigResolver() {
-        return super.stormpathSendVerificationEmailControllerConfigResolver();
-    }
-
-    @Bean
-    public ChangePasswordConfigResolver stormpathChangePasswordControllerConfigResolver() {
+    public ChangePasswordControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
         return super.stormpathChangePasswordControllerConfigResolver();
     }
 

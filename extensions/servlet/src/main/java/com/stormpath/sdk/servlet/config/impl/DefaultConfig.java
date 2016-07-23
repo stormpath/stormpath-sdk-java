@@ -128,22 +128,6 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public ControllerConfigResolver getSendVerificationEmailControllerConfig() {
-        //TODO hack since verify and send verify should be single config and controller but now is not
-        return new ServletControllerConfigResolver(this, CFG, "sendVerificationEmail") {
-            @Override
-            public String getNextUri() {
-                return getVerifyControllerConfig().getNextUri();
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return getVerifyControllerConfig().isEnabled();
-            }
-        };
-    }
-
-    @Override
     public ChangePasswordConfigResolver getChangePasswordControllerConfig() {
         return new ChangePasswordServletControllerConfigResolver(this, CFG, "changePassword");
     }

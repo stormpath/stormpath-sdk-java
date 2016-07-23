@@ -59,12 +59,12 @@ public class MeController extends AbstractController {
         response.setHeader("Cache-Control", "no-store, no-cache");
         response.setHeader("Pragma", "no-cache");
 
-        if(account != null) {
-            return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
+        if (account != null) {
+            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        return new DefaultViewModel("stormpathJsonView", null);
+        return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, null);
     }
 }
