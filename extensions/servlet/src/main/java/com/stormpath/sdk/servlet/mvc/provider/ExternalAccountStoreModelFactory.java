@@ -39,8 +39,7 @@ import java.util.List;
  * application.  An <em>external</em> account store is a 3rd-party account store like Google, LinkedIn or SAML where
  * the accounts are not natively resolved by the application and rely on the end-user to indicate which account service
  * to use.
- * <p>
- * 1.0.0
+ * @since 1.0.0
  */
 public class ExternalAccountStoreModelFactory implements AccountStoreModelFactory {
 
@@ -84,13 +83,17 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         public void visit(Directory directory) {
 
             Provider provider = directory.getProvider();
+            ProviderModel providerModel = null;
 
             if (provider instanceof OAuthProvider) {
-                ProviderModel providerModel = new DefaultOAuthProviderModel((OAuthProvider) provider);
-                AccountStoreModel acctStoreModel = new DefaultAccountStoreModel(directory, providerModel);
-                accountStores.add(acctStoreModel);
+                providerModel = new DefaultOAuthProviderModel((OAuthProvider) provider);
             } else if (provider instanceof SamlProvider) {
-                ProviderModel providerModel = new DefaultSamlProviderModel((SamlProvider) provider);
+                //We currently don't need to retain any SAML-specific values for the login model, so we
+                //just use a simple provider model here:
+                providerModel = new DefaultProviderModel(provider);
+            }
+
+            if (providerModel != null) {
                 AccountStoreModel accountStoreModel = new DefaultAccountStoreModel(directory, providerModel);
                 accountStores.add(accountStoreModel);
             }

@@ -15,31 +15,24 @@
  */
 package com.stormpath.sdk.servlet.mvc.provider;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.OAuthProvider;
 
 /**
  * @since 1.0.0
  */
-public class DefaultOAuthProviderModel implements OAuthProviderModel {
+public class DefaultOAuthProviderModel extends DefaultProviderModel implements OAuthProviderModel {
 
-    private final OAuthProvider provider;
+    private final String clientId;
 
     public DefaultOAuthProviderModel(OAuthProvider provider) {
-        this.provider = provider;
-    }
-
-    @Override
-    public String getHref() {
-        return this.provider.getHref();
-    }
-
-    @Override
-    public String getProviderId() {
-        return this.provider.getProviderId();
+        super(provider);
+        this.clientId = provider.getClientId();
+        Assert.hasText(this.clientId, "provider clientId cannot be null or empty.");
     }
 
     @Override
     public String getClientId() {
-        return this.provider.getClientId();
+        return this.clientId;
     }
 }
