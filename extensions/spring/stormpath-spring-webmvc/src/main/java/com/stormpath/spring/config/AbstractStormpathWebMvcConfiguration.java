@@ -31,8 +31,8 @@ import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
-import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
 import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
+import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
 import com.stormpath.sdk.servlet.config.impl.AccessTokenCookieConfig;
 import com.stormpath.sdk.servlet.config.impl.RefreshTokenCookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
@@ -44,17 +44,17 @@ import com.stormpath.sdk.servlet.event.RequestEventListenerAdapter;
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
+import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
+import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
-import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
-import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
-import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
-import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.AuthorizationHeaderAccountResolver;
@@ -597,7 +597,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public org.springframework.web.servlet.View stormpathJsonView() {
-        return new MappingJackson2JsonView(objectMapper);
+        MappingJackson2JsonView jsonView = new MappingJackson2JsonView(objectMapper);
+        // 786: Suppress Jackson's setting a Cache-Control, since they're set in individual controllers
+        // Without this, we'll end up with duplicate Cache-Control headers
+        jsonView.setDisableCaching(false);
+        return jsonView;
     }
 
     interface OrderedViewResolver extends ViewResolver, Ordered {

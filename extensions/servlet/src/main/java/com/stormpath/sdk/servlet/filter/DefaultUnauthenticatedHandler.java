@@ -38,7 +38,7 @@ public class DefaultUnauthenticatedHandler implements UnauthenticatedHandler {
     @Override
     public boolean onAuthenticationRequired(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Cache-Control", "no-store, no-cache");
         response.setHeader("Pragma", "no-cache");
 
         if (isHtmlPreferred(request)) {

@@ -327,7 +327,7 @@ public class AccessTokenController extends AbstractController {
         }
 
         response.setContentType("application/json;charset=UTF-8");
-        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Cache-Control", "no-store, no-cache");
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Content-Length", String.valueOf(json.length()));
         response.getWriter().print(json);
