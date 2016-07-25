@@ -45,7 +45,12 @@ public enum DefaultFilter {
     facebookCallback(FacebookCallbackFilter.class),
     linkedinCallback(LinkedinCallbackFilter.class),
     saml(SamlFilter.class),
-    samlResult(SamlResultFilter.class);
+    samlResult(SamlResultFilter.class),
+    idSite(IDSiteFilter.class),
+    idSiteResult(IDSiteResultFilter.class),
+    idSiteLogout(IDSiteLogoutFilter.class),
+    idSiteRegister(IDSiteRegisterFilter.class),
+    idSiteForgot(IDSiteForgotFilter.class);
 
     private final Class<? extends Filter> filterClass;
 

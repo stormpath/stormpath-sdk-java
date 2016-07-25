@@ -45,7 +45,7 @@ import java.util.UUID;
 public class LoginController extends FormController {
 
     private static final Logger log = LoggerFactory.getLogger(LoginController.class);
-    private String forgotLoginUri;
+    private String forgotPasswordUri;
     private String verifyUri;
     private String registerUri;
     private boolean registerEnabled = true;
@@ -70,7 +70,7 @@ public class LoginController extends FormController {
     public LoginController(Config config, ErrorModelFactory errorModelFactory) {
         super(config.getLoginControllerConfig(), config.getProducesMediaTypes());
 
-        this.forgotLoginUri = config.getForgotPasswordControllerConfig().getUri();
+        this.forgotPasswordUri = config.getForgotPasswordControllerConfig().getUri();
         this.forgotPasswordEnabled = config.getForgotPasswordControllerConfig().isEnabled();
         this.verifyUri = config.getVerifyControllerConfig().getUri();
         this.registerUri = config.getRegisterControllerConfig().getUri();
@@ -95,7 +95,7 @@ public class LoginController extends FormController {
             this.errorModelFactory = new LoginErrorModelFactory(this.messageSource);
         }
 
-        Assert.hasText(this.forgotLoginUri, "forgotLoginUri property cannot be null or empty.");
+        Assert.hasText(this.forgotPasswordUri, "forgotPasswordUri property cannot be null or empty.");
         Assert.hasText(this.verifyUri, "verifyUri property cannot be null or empty.");
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
@@ -133,7 +133,7 @@ public class LoginController extends FormController {
 
         if (isHtmlPreferred(request, response)) {
             model.put("forgotPasswordEnabled", forgotPasswordEnabled);
-            model.put("forgotLoginUri", forgotLoginUri);
+            model.put("forgotPasswordUri", forgotPasswordUri);
             model.put("verifyEnabled", verifyEnabled);
             model.put("verifyUri", verifyUri);
             model.put("registerEnabled", registerEnabled);

@@ -135,24 +135,36 @@ class SpringFilterChainResolver extends DefaultFilterChainResolverFactory {
         boolean accessTokenChainSpecified = false;
         boolean oauthEnabled = stormpathInternalConfig.isOAuthEnabled();
 //
-//        String unauthorizedUrl = config.getUnauthorizedUrl();
-//        String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
-//        boolean unauthorizedChainSpecified = false;
+        String unauthorizedUrl = stormpathInternalConfig.getUnauthorizedUrl();
+        String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
+        boolean unauthorizedChainSpecified = false;
 //
         //TODO: saml uri?
-//        String samlUrl = "/saml";
-//        String samlUrlPattern = cleanUri(samlUrl);
-//        boolean samlChainSpecified = false;
-//        boolean callbackEnabled = stormpathInternalConfig.isCallbackEnabled();
+        String samlUrl = "/saml";
+        String samlUrlPattern = cleanUri(samlUrl);
+        boolean samlChainSpecified = false;
+        boolean callbackEnabled = stormpathInternalConfig.isCallbackEnabled();
+        String callbackUrl = stormpathInternalConfig.getCallbackUri();
+        String callbackUrlPattern = cleanUri(callbackUrl);
 
-//        String meUrl = stormpathInternalConfig.getMeUrl();
-//        String meUrlPattern = cleanUri(meUrl);
-//        boolean meChainSpecified = false;
-//        boolean meEnabled = stormpathInternalConfig.isMeEnabled();
-//
-//        // todo: figure out where idsite is added to the filter chain and allow disabling
-//        boolean isIdSiteEnabled = config.isIdSiteEnabled();
-//
+        String meUrl = stormpathInternalConfig.getMeUrl();
+        String meUrlPattern = cleanUri(meUrl);
+        boolean meChainSpecified = false;
+        boolean meEnabled = stormpathInternalConfig.isMeEnabled();
+
+        // todo: figure out where idsite is added to the filter chain and allow disabling
+        //TODO: IDSite uri?
+        boolean idSiteEnabled = stormpathInternalConfig.isIdSiteEnabled();
+        String idSiteUrl = loginUrl;
+        String idSiteUrlPattern = cleanUri(idSiteUrl);
+        boolean idSiteChainSpecified = false;
+
+        //IDSite Result
+        String idSiteResultUrl = stormpathInternalConfig.getIDSiteResultUri();
+        String idSiteResultUrlPattern = cleanUri(idSiteResultUrl);
+        //IDSite Forgot
+        String idSiteForgotUrl = stormpathInternalConfig.getIDSiteForgotUri();
+        String idSiteForgotUrlPattern = cleanUri(idSiteForgotUrl);
 
         String googleCallbackUrl = stormpathInternalConfig.getGoogleControllerConfig().getUri();
         String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
@@ -301,24 +313,43 @@ class SpringFilterChainResolver extends DefaultFilterChainResolverFactory {
 //
         //register configured request handlers if not yet specified:
         FilterChainManager fcManager = resolver.getFilterChainManager();
-//
-//        if (!unauthorizedChainSpecified) {
-//            fcManager.createChain(unauthorizedUrlPattern, DefaultFilter.unauthorized.name());
-//        }
-        if (!loginChainSpecified && loginEnabled) {
-            fcManager.createChain(loginUrlPattern, DefaultFilter.login.name());
+
+        if (!unauthorizedChainSpecified) {
+            fcManager.createChain(unauthorizedUrlPattern, DefaultFilter.unauthorized.name());
+        }
+        if (!idSiteEnabled) {
+            if (!loginChainSpecified && loginEnabled) {
+                fcManager.createChain(loginUrlPattern, DefaultFilter.login.name());
+            }
+        } else {
+            if (!idSiteChainSpecified) {
+                fcManager.createChain(idSiteUrlPattern, DefaultFilter.idSite.name());
+                fcManager.createChain(idSiteResultUrlPattern, DefaultFilter.idSiteResult.name());
+            }
         }
         if (!logoutChainSpecified && logoutEnabled) {
-            fcManager.createChain(logoutUrlPattern, DefaultFilter.logout.name());
+            if (!idSiteEnabled) {
+                fcManager.createChain(logoutUrlPattern, DefaultFilter.logout.name());
+            } else {
+                fcManager.createChain(logoutUrlPattern, DefaultFilter.idSiteLogout.name());
+            }
         }
         if (!forgotChainSpecified && forgotPasswordEnabled) {
-            fcManager.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
+            if (!idSiteEnabled) {
+                fcManager.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
+            } else {
+                fcManager.createChain(forgotUrlPattern, DefaultFilter.idSiteForgot.name());
+            }
         }
         if (!changeChainSpecified && changePasswordEnabled) {
             fcManager.createChain(changeUrlPattern, DefaultFilter.change.name());
         }
         if (!registerChainSpecified && registerEnabled) {
-            fcManager.createChain(registerUrlPattern, DefaultFilter.register.name());
+            if (!idSiteEnabled) {
+                fcManager.createChain(registerUrlPattern, DefaultFilter.register.name());
+            } else {
+                fcManager.createChain(registerUrlPattern, DefaultFilter.idSiteRegister.name());
+            }
         }
         if (!verifyChainSpecified) {
             fcManager.createChain(verifyUrlPattern, DefaultFilter.verify.name());
@@ -329,13 +360,13 @@ class SpringFilterChainResolver extends DefaultFilterChainResolverFactory {
         if (!accessTokenChainSpecified && oauthEnabled) {
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
         }
-//        if (!samlChainSpecified && callbackEnabled) {
-//            fcManager.createChain(samlUrlPattern, DefaultFilter.saml.name());
-//        }
-//        if (!meChainSpecified && meEnabled) {
-//            fcManager.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
-//        }
-
+        if (!samlChainSpecified && callbackEnabled) {
+            fcManager.createChain(samlUrlPattern, DefaultFilter.saml.name());
+            fcManager.createChain(callbackUrlPattern, DefaultFilter.samlResult.name());
+        }
+        if (!meChainSpecified && meEnabled) {
+            fcManager.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
+        }
         if (!googleCallbackChainSpecified) {
             fcManager.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());
         }
@@ -348,7 +379,7 @@ class SpringFilterChainResolver extends DefaultFilterChainResolverFactory {
         if (!linkedinCallbackChainSpecified) {
             fcManager.createChain(linkedinCallbackUrlPattern, DefaultFilter.linkedinCallback.name());
         }
-//
+
         //register all specified chains:
         for (String pattern : patternChains.keySet()) {
             String chainDefinition = patternChains.get(pattern);

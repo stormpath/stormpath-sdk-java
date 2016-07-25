@@ -484,11 +484,11 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathInternalConfig();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathIdSiteResultController")
-    public Controller stormpathIdSiteResultController() {
-        return super.stormpathIdSiteResultController();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean(name = "stormpathIdSiteResultController")
+//    public Controller stormpathIdSiteResultController() {
+//        return super.stormpathIdSiteResultController();
+//    }
 
     @Override
     @Bean

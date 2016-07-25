@@ -21,20 +21,27 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.UnauthenticatedHandler;
+import com.stormpath.sdk.servlet.filter.UnauthorizedHandler;
+import com.stormpath.sdk.servlet.filter.config.UnauthorizedHandlerFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import org.slf4j.Logger;
@@ -74,6 +81,15 @@ public class DefaultConfig implements Config {
     public static final String ACCOUNT_SAVER = "stormpath.web.authc.saver";
     public static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
     public static final String BASIC_AUTHENTICATION_REQUEST_FACTORY = "stormpath.web.http.authc.schemes.basic";
+    protected static final String UNAUTHENTICATED_HANDLER = "stormpath.web.authc.unauthenticatedHandler";
+    protected static final String UNAUTHORIZED_HANDLER = "stormpath.web.authz.unauthorizedHandler";
+    protected static final String SERVER_URI_RESOLVER = "stormpath.web.oauth2.origin.authorizer.serverUriResolver";
+    protected static final String IDSITE_RESULT_URI = "stormpath.web.idSite.resultUri";
+    protected static final String IDSITE_ORGANIZATION_RESOLVER_FACTORY = "stormpath.web.idSite.OrganizationResolverFactory";
+    protected static final String IDSITE_LOGIN_URI = "stormpath.web.idSite.loginUri";
+    protected static final String IDSITE_REGISTER_URI = "stormpath.web.idSite.registerUri";
+    protected static final String IDSITE_FORGOT_URI = "stormpath.web.idSite.forgotUri";
+    protected static final String IDSITE_CHANGE_URI = "stormpath.web.idSite.changeUri";
 
     public static final String WEB_APPLICATION_DOMAIN = "stormpath.web.application.domain";
 
@@ -86,6 +102,7 @@ public class DefaultConfig implements Config {
     public static final String OAUTH_ENABLED = "stormpath.web.oauth2.enabled";
     public static final String ID_SITE_ENABLED = "stormpath.web.idSite.enabled";
     public static final String CALLBACK_ENABLED = "stormpath.web.callback.enabled";
+    public static final String CALLBACK_URI = "stormpath.web.callback.uri";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -383,6 +400,20 @@ public class DefaultConfig implements Config {
         return CFG.getBoolean(CALLBACK_ENABLED);
     }
 
+    @Override
+    public String getCallbackUri() {
+        return CFG.getString(CALLBACK_URI);
+    }
+
+    public ServerUriResolver getServerUriResolver() {
+        try {
+            return (ServerUriResolver) this.getInstance(SERVER_URI_RESOLVER);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiating " + SERVER_URI_RESOLVER, e);
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     protected <T> T newInstance(String classPropertyName) throws ServletException {
 
@@ -491,7 +522,7 @@ public class DefaultConfig implements Config {
         try {
             return (AccessTokenAuthenticationRequestFactory) this.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
         } catch (ServletException e) {
-            log.error("Exception occurred when instantiatng " + ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
+            log.error("Exception occurred when instantiating " + ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
         }
         return null;
     }
@@ -501,7 +532,7 @@ public class DefaultConfig implements Config {
         try {
             return (RefreshTokenAuthenticationRequestFactory) this.getInstance(REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
         } catch (ServletException e) {
-            log.error("Exception occurred when instantiatng " + REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
+            log.error("Exception occurred when instantiating " + REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
         }
         return null;
     }
@@ -511,7 +542,7 @@ public class DefaultConfig implements Config {
         try {
             return (RequestAuthorizer) this.getInstance(REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
         } catch (ServletException e) {
-            log.error("Exception occurred when instantiatng " + REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
+            log.error("Exception occurred when instantiating " + REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
         }
         return null;
     }
@@ -521,7 +552,7 @@ public class DefaultConfig implements Config {
         try {
             return (AccessTokenResultFactory) this.getInstance(ACCESS_TOKEN_RESULT_FACTORY);
         } catch (ServletException e) {
-            log.error("Exception occurred when instantiatng " + ACCESS_TOKEN_RESULT_FACTORY, e);
+            log.error("Exception occurred when instantiating " + ACCESS_TOKEN_RESULT_FACTORY, e);
         }
         return null;
     }
@@ -531,7 +562,7 @@ public class DefaultConfig implements Config {
         try {
             return (RefreshTokenResultFactory) this.getInstance(REFRESH_TOKEN_RESULT_FACTORY);
         } catch (ServletException e) {
-            log.error("Exception occurred when instantiatng " + REFRESH_TOKEN_RESULT_FACTORY, e);
+            log.error("Exception occurred when instantiating " + REFRESH_TOKEN_RESULT_FACTORY, e);
         }
         return null;
     }
@@ -541,7 +572,7 @@ public class DefaultConfig implements Config {
 //        try {
 //            return (Saver<AuthenticationResult>) this.getInstance(ACCOUNT_SAVER);
 //        } catch (ServletException e) {
-//            log.error("Exception occurred when instantiatng " + ACCOUNT_SAVER, e);
+//            log.error("Exception occurred when instantiating " + ACCOUNT_SAVER, e);
 //        }
 //        return null;
 //    }
@@ -551,7 +582,7 @@ public class DefaultConfig implements Config {
 //        try {
 //            return (Publisher<RequestEvent>) this.getInstance(EVENT_PUBLISHER);
 //        } catch (ServletException e) {
-//            log.error("Exception occurred when instantiatng " + EVENT_PUBLISHER, e);
+//            log.error("Exception occurred when instantiating " + EVENT_PUBLISHER, e);
 //        }
 //        return null;
 //    }
@@ -561,13 +592,63 @@ public class DefaultConfig implements Config {
         try {
             return (BasicAuthenticationScheme) this.getInstance(BASIC_AUTHENTICATION_REQUEST_FACTORY);
         } catch (ServletException e) {
-            log.error("Exception occurred when instantiatng " + BASIC_AUTHENTICATION_REQUEST_FACTORY, e);
+            log.error("Exception occurred when instantiating " + BASIC_AUTHENTICATION_REQUEST_FACTORY, e);
         }
         return null;
     }
 
     @Override
     public String getWebApplicationDomain() {
-        return this.get(WEB_APPLICATION_DOMAIN);
+        return CFG.getString(WEB_APPLICATION_DOMAIN);
     }
+
+    public UnauthenticatedHandler getUnauthenticatedHandler() {
+        try {
+            return (UnauthenticatedHandler) this.getInstance(UNAUTHENTICATED_HANDLER);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiating " + UNAUTHENTICATED_HANDLER, e);
+        }
+        return null;
+    }
+
+    public UnauthorizedHandler getUnauthorizedHandler() {
+        try {
+            return (UnauthorizedHandler) this.getInstance(UNAUTHORIZED_HANDLER);
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiating " + UNAUTHORIZED_HANDLER, e);
+        }
+        return null;
+    }
+
+    @Override
+    public String getIDSiteResultUri() {
+        return CFG.getString(IDSITE_RESULT_URI);
+    }
+
+    @Override
+    public Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver() {
+        try {
+            ConfigSingletonFactory<Resolver<IdSiteOrganizationContext>> factory = this.getInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
+            return factory.getInstance();
+        } catch (ServletException e) {
+            log.error("Exception occurred when instantiating " + IDSITE_ORGANIZATION_RESOLVER_FACTORY, e);
+        }
+        return null;
+    }
+
+    @Override
+    public String getIDSiteLoginUri() {
+        return CFG.getString(IDSITE_LOGIN_URI);
+    }
+
+    @Override
+    public String getIDSiteRegisterUri() {
+        return CFG.getString(IDSITE_REGISTER_URI);
+    }
+
+    @Override
+    public String getIDSiteForgotUri() {
+        return CFG.getString(IDSITE_FORGOT_URI);
+    }
+
 }

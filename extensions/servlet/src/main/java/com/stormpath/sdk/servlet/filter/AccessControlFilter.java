@@ -30,8 +30,6 @@ public abstract class AccessControlFilter extends HttpFilter {
     protected String loginUrl;
     protected String accessTokenUrl;
 
-    protected static final String UNAUTHENTICATED_HANDLER = "stormpath.web.authc.unauthenticatedHandler";
-    protected static final String UNAUTHORIZED_HANDLER = "stormpath.web.authz.unauthorizedHandler";
     private UnauthenticatedHandler unauthenticatedHandler;
     private UnauthorizedHandler unauthorizedHandler;
 
@@ -40,8 +38,8 @@ public abstract class AccessControlFilter extends HttpFilter {
         super.onInit();
         this.loginUrl = UriCleaner.INSTANCE.clean(getConfig().getLoginControllerConfig().getUri());
         this.accessTokenUrl = UriCleaner.INSTANCE.clean(getConfig().getAccessTokenUrl());
-        this.unauthenticatedHandler = getConfig().getInstance(UNAUTHENTICATED_HANDLER);
-        this.unauthorizedHandler = getConfig().getInstance(UNAUTHORIZED_HANDLER);
+        this.unauthenticatedHandler = getConfig().getUnauthenticatedHandler();
+        this.unauthorizedHandler = getConfig().getUnauthorizedHandler();
     }
 
     public UnauthenticatedHandler getUnauthenticatedHandler() {

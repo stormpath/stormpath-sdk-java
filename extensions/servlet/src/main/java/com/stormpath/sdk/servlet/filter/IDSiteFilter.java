@@ -16,9 +16,9 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.mvc.SamlController;
+import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
+import com.stormpath.sdk.servlet.mvc.IdSiteController;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
-import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 
 import javax.servlet.ServletException;
@@ -26,7 +26,7 @@ import javax.servlet.ServletException;
 /**
  * @since 1.0.0
  */
-public class SamlFilter extends ControllerFilter {
+public class IDSiteFilter extends ControllerFilter {
 
     @Override
     protected void onInit() throws ServletException {
@@ -36,17 +36,22 @@ public class SamlFilter extends ControllerFilter {
         DefaultOrganizationNameKeyResolver organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
         organizationNameKeyResolver.setSubdomainResolver(subdomainResolver);
 
-        DefaultSamlOrganizationResolver samlOrganizationResolver = new DefaultSamlOrganizationResolver();
-        samlOrganizationResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
+        DefaultIdSiteOrganizationResolver idSiteOrganizationResolver = new DefaultIdSiteOrganizationResolver();
+        idSiteOrganizationResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
 
-        SamlController controller = new SamlController();
+        IdSiteController controller = new IdSiteController();
         controller.setServerUriResolver(new DefaultServerUriResolver());
-        controller.setCallbackUri(getConfig().getCallbackUri());
+        controller.setCallbackUri(getConfig().getIDSiteResultUri());
         controller.setAlreadyLoggedInUri(getConfig().getLoginControllerConfig().getNextUri());
-        controller.setSamlOrganizationResolver(samlOrganizationResolver);
+        controller.setIdSiteOrganizationResolver(idSiteOrganizationResolver);
+        controller.setIdSiteUri(getIdSiteUri());
         controller.init();
 
         setController(controller);
         super.onInit();
+    }
+
+    protected String getIdSiteUri() {
+        return getConfig().getIDSiteLoginUri();
     }
 }

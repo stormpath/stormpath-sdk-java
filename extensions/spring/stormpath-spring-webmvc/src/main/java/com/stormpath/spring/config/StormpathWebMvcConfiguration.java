@@ -414,10 +414,10 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathMeController();
     }
 
-    @Bean
-    public Controller stormpathIdSiteResultController() {
-        return super.stormpathIdSiteResultController();
-    }
+//    @Bean
+//    public Controller stormpathIdSiteResultController() {
+//        return super.stormpathIdSiteResultController();
+//    }
 
     @Bean
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {

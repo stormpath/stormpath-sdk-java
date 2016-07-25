@@ -13,11 +13,9 @@ import javax.servlet.ServletException;
  */
 public class SamlResultFilter extends ControllerFilter {
 
-    private static final String EVENT_PUBLISHER = "stormpath.web.request.event.publisher";
-
     @Override
     protected void onInit() throws ServletException {
-        Publisher<RequestEvent> eventPublisher = getConfig().getInstance(EVENT_PUBLISHER);
+        Publisher<RequestEvent> eventPublisher = getConfig().getRequestEventPublisher();
 
         LogoutController logoutController = new LogoutController(getConfig().getLogoutControllerConfig(), getConfig().getProducesMediaTypes());
         logoutController.setLogoutInvalidateHttpSession(getConfig().isLogoutInvalidateHttpSession());
