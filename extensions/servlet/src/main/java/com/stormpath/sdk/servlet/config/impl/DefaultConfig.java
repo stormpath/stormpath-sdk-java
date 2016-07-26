@@ -562,9 +562,9 @@ public class DefaultConfig implements Config {
     @Override
     public RequestAuthorizer getRequestAuthorizer() {
         try {
-            return (RequestAuthorizer) this.getInstance(REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
+            return (RequestAuthorizer) this.newInstance(REQUEST_AUTHORIZER);
         } catch (ServletException e) {
-            log.error("Exception occurred when instantiating " + REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY, e);
+            log.error("Exception occurred when instantiating " + REQUEST_AUTHORIZER, e);
         }
         return null;
     }
