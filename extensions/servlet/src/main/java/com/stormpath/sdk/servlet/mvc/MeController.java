@@ -17,6 +17,8 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,8 +65,14 @@ public class MeController extends AbstractController {
             return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
         }
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-        return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, null);
+        // Using UserAgent directly here since super.isHtmlPreferred(request, response) results in NPE b/c producesMediaTypes is null
+        if (UserAgents.get(request).isHtmlPreferred()) {
+            Config config = (Config) request.getServletContext().getAttribute(Config.class.getName());
+            String loginUri = config.getLoginControllerConfig().getUri();
+            return new DefaultViewModel(loginUri).setRedirect(true);
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, null);
+        }
     }
 }
