@@ -26,6 +26,7 @@ import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.client.ClientResolver;
+import com.stormpath.sdk.servlet.http.CookieResolver;
 import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
@@ -48,6 +49,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
     private static final Logger log = LoggerFactory.getLogger(TokenRevocationRequestEventListener.class);
 
     private final TokenExtractor tokenExtractor = new BearerHeaderTokenExtractor();
+    private final CookieResolver accessTokenCookieResolver = new CookieResolver("access_token");
 
     private final JwtTokenSigningKeyResolver jwtTokenSigningKeyResolver = new JwtTokenSigningKeyResolver();
 
@@ -75,7 +77,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
 
     @Override
     public void on(LogoutRequestEvent event) {
-        String jwt = tokenExtractor.getAccessToken(event.getRequest());
+        String jwt = getJwtFromLogoutRequestEvent(event);
         if (jwt != null) {
             if (this.client == null) {
                 this.client = ClientResolver.INSTANCE.getClient(event.getRequest()); //will throw if not found
@@ -101,6 +103,15 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
                 (event.getAccount() != null) ? event.getAccount().getEmail() : "unknown user"
             );
         }
+    }
+
+    private String getJwtFromLogoutRequestEvent(LogoutRequestEvent event) {
+        String jwt = tokenExtractor.getAccessToken(event.getRequest());
+        if (jwt == null && accessTokenCookieResolver.get(event.getRequest(), null) != null) {
+            jwt = accessTokenCookieResolver.get(event.getRequest(), null).getValue();
+        }
+
+        return jwt;
     }
 
     private boolean isAccessToken(JwsHeader header) {
