@@ -24,24 +24,23 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.Authenticators;
 import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
-import com.stormpath.sdk.oauth.OAuthPolicy;
 import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthRequests;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.CookieConfig;
-import com.stormpath.sdk.servlet.config.impl.AccessTokenCookieConfig;
-import com.stormpath.sdk.servlet.config.impl.RefreshTokenCookieConfig;
 import com.stormpath.sdk.servlet.http.CookieSaver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.joda.time.DateTime;
-import org.joda.time.Period;
+import org.joda.time.Seconds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +79,9 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
     @Override
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult value) {
 
+        Client client = ClientResolver.INSTANCE.getClient(request);
+        byte[] clientSecret = client.getApiKey().getSecret().getBytes();
+
         if (value == null) {
             remove(request, response);
             return;
@@ -88,13 +90,14 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
         if (value instanceof AccessTokenResult) {
             AccessTokenResult accessTokenResult = (AccessTokenResult) value;
 
-            getAccessTokenCookieSaver(request).set(request, response, accessTokenResult.getTokenResponse().getAccessToken());
-            getRefreshTokenCookieSaver(request).set(request, response, accessTokenResult.getTokenResponse().getRefreshToken());
+            String accessToken = accessTokenResult.getTokenResponse().getAccessToken();
+            String refreshToken = accessTokenResult.getTokenResponse().getRefreshToken();
+
+            getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret)).set(request, response, accessToken);
+            getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret)).set(request, response, refreshToken);
         }
         if (value instanceof TransientAuthenticationResult) {
             Account account = value.getAccount();
-
-            Client client = ClientResolver.INSTANCE.getClient(request);
             Application application = ApplicationResolver.INSTANCE.getApplication(request);
 
             //Since we only have the account we need to exchange it for an OAuth2 token
@@ -112,8 +115,11 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
                 OAuthRequestAuthentication authenticationRequest = OAuthRequests.IDSITE_AUTHENTICATION_REQUEST.builder().setToken(jwt).build();
                 OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.ID_SITE_AUTHENTICATOR.forApplication(application).authenticate(authenticationRequest);
 
-                getAccessTokenCookieSaver(request).set(request, response, authenticationResult.getAccessTokenString());
-                getRefreshTokenCookieSaver(request).set(request, response, authenticationResult.getRefreshTokenString());
+                String accessToken = authenticationResult.getAccessTokenString();
+                String refreshToken = authenticationResult.getRefreshTokenString();
+
+                getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret)).set(request, response, accessToken);
+                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret)).set(request, response, refreshToken);
             } catch (UnsupportedEncodingException e) {
                 //Should not happen since UTF-8 should always be a supported encoding, but we logged just in case
                 log.error("Error get the client API Secret", e);
@@ -122,8 +128,8 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
     }
 
     protected void remove(HttpServletRequest request, HttpServletResponse response) {
-        getAccessTokenCookieSaver(request).set(request, response, null);
-        getRefreshTokenCookieSaver(request).set(request, response, null);
+        getAccessTokenCookieSaver(request, -1).set(request, response, null);
+        getRefreshTokenCookieSaver(request, -1).set(request, response, null);
     }
 
     protected boolean isCookieSecure(final HttpServletRequest request, CookieConfig config) {
@@ -160,15 +166,15 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
         return configSecure && resolverSecure;
     }
 
-    private CookieSaver getRefreshTokenCookieSaver(final HttpServletRequest request) {
-        return getCookieSaver(refreshTokenCookieConfig, request);
+    private CookieSaver getRefreshTokenCookieSaver(final HttpServletRequest request, final int maxAge) {
+        return getCookieSaver(refreshTokenCookieConfig, request, maxAge);
     }
 
-    private CookieSaver getAccessTokenCookieSaver(final HttpServletRequest request) {
-        return getCookieSaver(accessTokenCookieConfig, request);
+    private CookieSaver getAccessTokenCookieSaver(final HttpServletRequest request, final int maxAge) {
+        return getCookieSaver(accessTokenCookieConfig, request, maxAge);
     }
 
-    private CookieSaver getCookieSaver(final CookieConfig cookieConfig, final HttpServletRequest request) {
+    private CookieSaver getCookieSaver(final CookieConfig cookieConfig, final HttpServletRequest request, final int maxAge) {
         final boolean secure = isCookieSecure(request, cookieConfig);
 
         String path = Strings.clean(cookieConfig.getPath());
@@ -200,7 +206,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
             @Override
             public int getMaxAge() {
-                return getCookieMaxAge(cookieConfig, ApplicationResolver.INSTANCE.getApplication(request));
+                return maxAge;
             }
 
             @Override
@@ -220,16 +226,13 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
         });
     }
 
-    private int getCookieMaxAge(CookieConfig cookieConfig, Application application) {
-        OAuthPolicy oauthPolicy = application.getOAuthPolicy();
+    private int getMaxAge(String token, byte[] clientSecret) {
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(clientSecret).parseClaimsJws(token);
+        DateTime issueAt = new DateTime(claimsJws.getBody().getIssuedAt());
+        DateTime expiration = new DateTime(claimsJws.getBody().getExpiration());
 
-        if (cookieConfig instanceof AccessTokenCookieConfig) {
-            return Period.parse(oauthPolicy.getAccessTokenTtl()).toStandardSeconds().getSeconds();
-        } else if (cookieConfig instanceof RefreshTokenCookieConfig) {
-            return Period.parse(oauthPolicy.getRefreshTokenTtl()).toStandardSeconds().getSeconds();
-        }
 
-        //We currently only have those 2 cookies but just in case we add a new one we default to the max value a cookie max age supports
-        return DEFAULT_COOKIE_MAX_AGE;
+
+        return Seconds.secondsBetween(issueAt, expiration).getSeconds() - Seconds.secondsBetween(issueAt, DateTime.now()).getSeconds();
     }
 }
