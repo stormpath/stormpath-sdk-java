@@ -94,7 +94,10 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             String refreshToken = accessTokenResult.getTokenResponse().getRefreshToken();
 
             getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret)).set(request, response, accessToken);
-            getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret)).set(request, response, refreshToken);
+            //Client Credentials auth workflow doesn't contains a refresh token
+            if (Strings.hasText(refreshToken)) {
+                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret)).set(request, response, refreshToken);
+            }
         }
         if (value instanceof TransientAuthenticationResult) {
             Account account = value.getAccount();
