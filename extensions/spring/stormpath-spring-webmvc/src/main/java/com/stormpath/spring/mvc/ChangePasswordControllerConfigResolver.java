@@ -35,7 +35,7 @@ public class ChangePasswordControllerConfigResolver extends  AbstractSpringContr
     @Value("#{ @environment['stormpath.web.changePassword.nextUri'] ?: '/login?status=reset' }")
     protected String changePasswordNextUri;
 
-    @Value("#{ @environment['stormpath.web.changePassword.view'] ?: 'change' }")
+    @Value("#{ @environment['stormpath.web.changePassword.view'] ?: 'change-password' }")
     protected String changePasswordView;
 
     @Value("#{ @environment['stormpath.web.changePassword.autoLogin'] ?: false }")

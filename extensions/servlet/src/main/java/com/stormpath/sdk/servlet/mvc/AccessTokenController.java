@@ -271,7 +271,7 @@ public class AccessTokenController extends AbstractController {
                 grantType = request.getParameter(GRANT_TYPE_PARAM_NAME);
                 Assert.hasText(grantType, "grant_type must not be null or empty.");
             } catch (IllegalArgumentException e) {
-                throw new OAuthException(OAuthErrorCode.INVALID_GRANT);
+                throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
             }
 
             switch (grantType) {
