@@ -41,6 +41,7 @@ public class MeFilter extends ControllerFilter {
 
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws Exception {
+        // addresses https://github.com/stormpath/stormpath-sdk-java/issues/784
         request = new MeHttpServletRequestWrapper(request);
 
         super.filter(request, response, chain);
