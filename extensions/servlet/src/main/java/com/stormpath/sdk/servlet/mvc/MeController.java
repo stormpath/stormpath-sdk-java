@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,6 +64,9 @@ public class MeController extends AbstractController {
             return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
         }
 
+        Application application = (Application) request.getServletContext().getAttribute(Application.class.getName());
+        String bearerRealm = String.format("Bearer realm=\"%s\"", application.getName());
+        response.addHeader("WWW-Authenticate", bearerRealm);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         return new DefaultViewModel("stormpathJsonView", null);
