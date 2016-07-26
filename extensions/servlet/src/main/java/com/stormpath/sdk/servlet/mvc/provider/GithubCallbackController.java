@@ -58,14 +58,8 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
     private static final String GITHUB_ACCES_TOKEN_URL = "https://github.com/login/oauth/access_token";
     private static final String ACCESS_TOKEN_FIELD = "access_token";
 
-    private AccountStoreModelFactory accountStoreModelFactory;
-
     public GithubCallbackController(String loginNextUri, Saver<AuthenticationResult> authenticationResultSaver, Publisher<RequestEvent> eventPublisher) {
         super(loginNextUri, authenticationResultSaver, eventPublisher);
-
-        accountStoreModelFactory = new DefaultAccountStoreModelFactory();
-
-        Assert.notNull(accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
     }
 
     @Override

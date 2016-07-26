@@ -61,7 +61,7 @@ public class SpringSpaController extends AbstractController {
 
             MediaType mediaType = ContentNegotiationResolver.INSTANCE.getContentType(request, response, producesMediaTypes);
             mav = delegate.handleRequest(request, response);
-            if (mediaType.equals(MediaType.APPLICATION_JSON)) {
+            if (mediaType.equals(MediaType.APPLICATION_JSON) && mav != null) {
                 mav.setViewName(jsonView);
             }
 

@@ -29,10 +29,13 @@ public class VerifyFilter extends ControllerFilter {
     protected void onInit() throws ServletException {
         VerifyController controller = new VerifyController(
                 getConfig().getVerifyControllerConfig(),
-                getConfig().getLogoutControllerConfig().getUri(),
-                getConfig().getSendVerificationEmailControllerConfig().getUri(),
+                getConfig().getLoginControllerConfig().getUri(),
+                getConfig().getLoginControllerConfig().getNextUri(),
                 getClient(),
-                getConfig().getProducesMediaTypes()
+                getConfig().getProducesMediaTypes(),
+                getConfig().isRegisterAutoLoginEnabled(),
+                getConfig().getAuthenticationResultSaver(),
+                getConfig().getAccountStoreResolver()
         );
 
         setController(controller);

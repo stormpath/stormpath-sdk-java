@@ -144,8 +144,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.verifyEmail.uri'] ?: '/verify' }")
     protected String verifyUri;
 
-    @Value("#{ @environment['stormpath.web.sendVerificationEmail.uri'] ?: '/sendVerificationEmail' }")
-    protected String sendVerificationEmailUri;
     @Value("#{ @environment['stormpath.web.oauth2.enabled'] ?: true }")
     protected boolean accessTokenEnabled;
 
@@ -308,8 +306,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             }
             if (verifyEnabled) {
                 http.authorizeRequests()
-                    .antMatchers(verifyUri).permitAll()
-                    .antMatchers(sendVerificationEmailUri).permitAll();
+                    .antMatchers(verifyUri).permitAll();
             }
             if (accessTokenEnabled) {
                 if (!callbackEnabled && !idSiteEnabled && !loginEnabled) {

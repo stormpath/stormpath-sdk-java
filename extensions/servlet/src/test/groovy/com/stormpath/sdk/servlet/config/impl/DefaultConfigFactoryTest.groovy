@@ -91,7 +91,6 @@ class DefaultConfigFactoryTest {
     public void verifyAllEndpointsCanBeDisabled() {
         assertFalse config.isOAuthEnabled()
         assertFalse config.getRegisterControllerConfig().isEnabled()
-        assertFalse config.getSendVerificationEmailControllerConfig().isEnabled()
         assertFalse config.getLoginControllerConfig().isEnabled()
         assertFalse config.getLogoutControllerConfig().isEnabled()
         assertFalse config.getForgotPasswordControllerConfig().isEnabled()

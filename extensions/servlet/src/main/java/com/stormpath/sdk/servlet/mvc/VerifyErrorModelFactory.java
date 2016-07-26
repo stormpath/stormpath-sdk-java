@@ -13,29 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.mvc.provider;
+package com.stormpath.sdk.servlet.mvc;
 
-import com.stormpath.sdk.provider.saml.SamlProvider;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @since 1.0.0
  */
-public class DefaultSamlProviderModel implements ProviderModel {
+public class VerifyErrorModelFactory extends AbstractErrorModelFactory {
 
-    private final SamlProvider provider;
-
-    public DefaultSamlProviderModel(SamlProvider provider) {
-        this.provider = provider;
+    public VerifyErrorModelFactory(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
     @Override
-    public String getHref() {
-        return this.provider.getHref();
+    protected String getDefaultMessageKey() {
+        return Strings.EMPTY_STRING;
     }
 
     @Override
-    public String getProviderId() {
-        return this.provider.getProviderId();
+    protected Object[] getMessageParams() {
+        return new Object[0];
     }
 
+    @Override
+    protected boolean hasError(HttpServletRequest request, Exception e) {
+        return e != null;
+    }
 }

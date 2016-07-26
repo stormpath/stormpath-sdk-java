@@ -18,14 +18,18 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
+import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
 import com.stormpath.sdk.servlet.form.Form;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModel;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultAccountStoreModelFactory;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultSamlProviderModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +37,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +50,6 @@ public class LoginController extends FormController {
     private String forgotPasswordUri;
     private String verifyUri;
     private String registerUri;
-    private boolean registerEnabled = true;
     private String logoutUri;
     private boolean verifyEnabled = true;
     private boolean forgotPasswordEnabled = true;
@@ -56,12 +57,13 @@ public class LoginController extends FormController {
     private ErrorModelFactory errorModelFactory;
     private LoginFormStatusResolver loginFormStatusResolver;
     private AccountStoreModelFactory accountStoreModelFactory;
-    private AccountStoreModelFactory samlAccountStoreModelFactory;
     private AccountModelFactory accountModelFactory;
     private WebHandler preLoginHandler;
     private WebHandler postLoginHandler;
     private boolean idSiteEnabled;
     private boolean callbackEnabled;
+    private Resolver<Boolean> registerEnabledResolver =
+        new RegisterEnabledResolver(true, ApplicationResolver.INSTANCE, new RegisterEnabledPredicate());
 
     public LoginController() {
         super();
@@ -74,7 +76,7 @@ public class LoginController extends FormController {
         this.forgotPasswordEnabled = config.getForgotPasswordControllerConfig().isEnabled();
         this.verifyUri = config.getVerifyControllerConfig().getUri();
         this.registerUri = config.getRegisterControllerConfig().getUri();
-        this.registerEnabled = config.getRegisterControllerConfig().isEnabled();
+        this.registerEnabledResolver = config.getRegisterEnabledResolver();
         this.logoutUri = config.getLogoutControllerConfig().getUri();
         this.verifyEnabled = config.getVerifyControllerConfig().isEnabled();
         this.authenticationResultSaver = config.getAuthenticationResultSaver();
@@ -85,8 +87,7 @@ public class LoginController extends FormController {
         this.postLoginHandler = config.getLoginPostHandler();
 
         this.loginFormStatusResolver = new DefaultLoginFormStatusResolver(this.messageSource, this.verifyUri);
-        this.accountStoreModelFactory = new DefaultAccountStoreModelFactory();
-        this.samlAccountStoreModelFactory = new DefaultSamlProviderModelFactory();
+        this.accountStoreModelFactory = new ExternalAccountStoreModelFactory();
         this.accountModelFactory = new DefaultAccountModelFactory();
         this.idSiteEnabled = config.isIdSiteEnabled();
         this.callbackEnabled = config.isCallbackEnabled();
@@ -111,24 +112,22 @@ public class LoginController extends FormController {
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
 
+        final List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
+
         // 748: If stormpath.web.idSite.enabled is false and stormpath.web.callback.enabled is false AND
         // there are SAML directories mapped to the application, that is a configuration error.
-        if (!idSiteEnabled && !callbackEnabled) {
-            List<AccountStoreModel> accountStores = samlAccountStoreModelFactory.getAccountStores(request);
-            if (accountStores.size() > 0) {
-                String errorMsg = "ID Site is disabled and callbacks are disabled, yet this application has SAML directories. Please enable callbacks or remove SAML directories.";
-                log.warn(errorMsg);
-                if (errors == null) {
-                    errors = new ArrayList<>();
-                }
-                // only add to errors on GET, not POST
-                if (request.getMethod().equals(HttpMethod.GET.name())) {
-                    errors.add(ErrorModel.builder().setStatus(HttpServletResponse.SC_OK).setMessage(errorMsg).build());
-                }
+        if (!idSiteEnabled && !callbackEnabled && containsSaml(accountStores)) {
+            String errorMsg = "ID Site is disabled and callbacks are disabled, yet this application has SAML directories. Please enable callbacks or remove SAML directories.";
+            log.warn(errorMsg);
+            if (errors == null) {
+                errors = new ArrayList<>();
+            }
+            // only add to errors on GET, not POST
+            if (request.getMethod().equals(HttpMethod.GET.name())) {
+                errors.add(ErrorModel.builder().setStatus(HttpServletResponse.SC_OK).setMessage(errorMsg).build());
             }
         }
 
-        List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
         model.put("accountStores", accountStores);
 
         if (isHtmlPreferred(request, response)) {
@@ -136,7 +135,7 @@ public class LoginController extends FormController {
             model.put("forgotPasswordUri", forgotPasswordUri);
             model.put("verifyEnabled", verifyEnabled);
             model.put("verifyUri", verifyUri);
-            model.put("registerEnabled", registerEnabled);
+            model.put("registerEnabled", registerEnabledResolver.get(request, response));
             model.put("registerUri", registerUri);
             model.put("oauthStateToken", UUID.randomUUID().toString());
             String status = request.getParameter("status");
@@ -146,11 +145,27 @@ public class LoginController extends FormController {
         }
     }
 
+    /**
+     * Returns {@code true} if the specified list represents a SAML-based Account Provider, {@code false} otherwise.
+     *
+     * @param accountStores the list of account store models to check
+     * @return {@code true} if the specified list represents a SAML-based Account Provider, {@code false} otherwise.
+     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/748">Isseue 748</a>
+     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/771">Isseue 771</a>
+     * @since 1.0.0
+     */
+    private boolean containsSaml(List<AccountStoreModel> accountStores) {
+        for (AccountStoreModel accountStore : accountStores) {
+            if ("saml".equalsIgnoreCase(accountStore.getProvider().getProviderId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
-        // Arrays.asList: Returns a fixed-size list backed by the specified array.
-        // For this reason, created a LinkedList so errors can be added in appendModel().
-        return new LinkedList<>(Collections.singletonList(errorModelFactory.toError(request, e)));
+        return Collections.toList(errorModelFactory.toError(request, e));
     }
 
     @Override
@@ -171,14 +186,13 @@ public class LoginController extends FormController {
         saveResult(req, resp, result);
 
         if (postLoginHandler != null) {
-            if(!postLoginHandler.handle(req, resp, result.getAccount())) {
+            if (!postLoginHandler.handle(req, resp, result.getAccount())) {
                 return null;
             }
         }
 
         if (isJsonPreferred(req, resp)) {
-            //noinspection unchecked
-            return new DefaultViewModel(view, java.util.Collections.singletonMap("account", accountModelFactory.toMap(result.getAccount(), Collections.EMPTY_LIST)));
+            return new DefaultViewModel(view, java.util.Collections.singletonMap("account", accountModelFactory.toMap(result.getAccount(), java.util.Collections.<String>emptyList())));
         }
 
         //otherwise HTML view:

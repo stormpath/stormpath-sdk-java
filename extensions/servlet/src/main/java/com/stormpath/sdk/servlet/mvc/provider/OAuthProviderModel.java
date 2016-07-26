@@ -20,5 +20,6 @@ package com.stormpath.sdk.servlet.mvc.provider;
  */
 public interface OAuthProviderModel extends ProviderModel {
 
+    @SuppressWarnings("unused") //This is used via reflection in html/jsp page templates
     String getClientId();
 }

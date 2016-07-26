@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.event.RequestEvent;
@@ -27,6 +28,9 @@ import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFa
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
+import com.stormpath.sdk.lang.BiPredicate;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
@@ -43,6 +47,8 @@ import java.util.Map;
  */
 public interface Config extends Map<String, String> {
 
+    ApplicationResolver getApplicationResolver();
+
     ControllerConfigResolver getLoginControllerConfig();
 
     ControllerConfigResolver getLogoutControllerConfig();
@@ -53,9 +59,7 @@ public interface Config extends Map<String, String> {
 
     ControllerConfigResolver getVerifyControllerConfig();
 
-    ControllerConfigResolver getSendVerificationEmailControllerConfig();
-
-    ControllerConfigResolver getChangePasswordControllerConfig();
+    ChangePasswordConfigResolver getChangePasswordControllerConfig();
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();
 
@@ -93,6 +97,10 @@ public interface Config extends Map<String, String> {
     WebHandler getRegisterPreHandler();
 
     WebHandler getRegisterPostHandler();
+
+    BiPredicate<Boolean,Application> getRegisterEnabledPredicate();
+
+    Resolver<Boolean> getRegisterEnabledResolver();
 
     <T> T getInstance(String classPropertyName) throws ServletException;
 

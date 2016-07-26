@@ -126,7 +126,7 @@ class SpringFilterChainResolver extends DefaultFilterChainResolverFactory {
         boolean verifyChainSpecified = false;
         boolean verifyEmailEnabled = stormpathInternalConfig.getVerifyControllerConfig().isEnabled();
 
-        String sendVerificationUrl = stormpathInternalConfig.getSendVerificationEmailControllerConfig().getUri();
+        String sendVerificationUrl = stormpathInternalConfig.getVerifyControllerConfig().getUri();
         String sendVerificationUrlPattern = cleanUri(sendVerificationUrl);
         boolean sendVerificationEmailChainSpecified = false;
 
@@ -355,7 +355,7 @@ class SpringFilterChainResolver extends DefaultFilterChainResolverFactory {
             fcManager.createChain(verifyUrlPattern, DefaultFilter.verify.name());
         }
         if (!sendVerificationEmailChainSpecified && verifyEmailEnabled) {
-            fcManager.createChain(sendVerificationUrlPattern, DefaultFilter.sendVerificationEmail.name());
+            fcManager.createChain(sendVerificationUrlPattern, DefaultFilter.verify.name());
         }
         if (!accessTokenChainSpecified && oauthEnabled) {
             fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());

@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface Controller {
 
+    String STORMPATH_JSON_VIEW_NAME = "stormpathJsonView";
+
     /**
      * Processes a view request (either to render or handle submission) and returns a {@link ViewModel} that represents
      * the resulting view to be rendered.  A {@code null} return value indicates that the controller implementation
