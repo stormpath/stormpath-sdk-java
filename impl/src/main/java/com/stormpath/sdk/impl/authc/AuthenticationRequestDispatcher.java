@@ -18,7 +18,6 @@ package com.stormpath.sdk.impl.authc;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 
@@ -34,7 +33,7 @@ public class AuthenticationRequestDispatcher {
         Assert.notNull(application, "application cannot be null.");
         Assert.notNull(request, "request cannot be null.");
 
-        if (request instanceof UsernamePasswordRequest || request instanceof DefaultUsernamePasswordRequest) {
+        if (request instanceof DefaultUsernamePasswordRequest) {
             return new BasicAuthenticator(dataStore).authenticate(application.getHref(), request);
         }
 

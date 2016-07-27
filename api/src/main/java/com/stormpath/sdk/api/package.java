@@ -17,17 +17,12 @@
  * Support for securing your application's REST API with {@link com.stormpath.sdk.api.ApiKey ApiKeys}.
  *
  * <p>HTTP requests authenticated with {@link com.stormpath.sdk.api.ApiKey ApiKeys} and sent to your application are
- * asserted via your
- * {@link com.stormpath.sdk.application.Application Application} instance's
- * {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object) authenticateApiRequest(httpRequest)}
- * and {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
- * authenticateOauthRequest(httpRequest)} methods.</p>
+ * asserted via {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)} method.</p>
  *
  * @see com.stormpath.sdk.api.ApiKey ApiKey
  * @see com.stormpath.sdk.account.Account#getApiKeys() account.getApiKeys()
  * @see com.stormpath.sdk.account.Account#createApiKey() account.createApiKey()
- * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
- * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
  * @since 1.0.RC
  */
 package com.stormpath.sdk.api;

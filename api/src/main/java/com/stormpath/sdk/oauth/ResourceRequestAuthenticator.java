@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.oauth;
 
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.http.HttpRequest;
 
 /**
@@ -24,14 +25,14 @@ import com.stormpath.sdk.http.HttpRequest;
  * the authentication attempt is processed.  For example:
  *
  * <pre>
- * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
  * application.authenticateOauthRequest(httpRequest)}
  *   <b>{@link #inLocation(RequestLocation...) .inLocation(RequestLocation.HEADER, RequestLocation.BODY)}
  *   .execute()</b>;
  * </pre>
  *
- * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest(httpRequest)
- * @see #execute()
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)
+ * @see #authenticate(HttpRequest)
  * @since 1.0.RC
  */
 public interface ResourceRequestAuthenticator {
@@ -47,17 +48,6 @@ public interface ResourceRequestAuthenticator {
      * @see RequestLocation
      */
     ResourceRequestAuthenticator inLocation(RequestLocation... locations);
-
-    /**
-     * Authenticates the OAuth request using a bearer Access Token and returns a corresponding result.  The result
-     * type may be either a {@link OAuthAuthenticationResult} or a {@link AccessTokenResult}.  See
-     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
-     * application.authenticateOauthRequest(httpRequest)} for more information.
-     *
-     * @return the result of the authentication attempt.
-     * @deprecated this method will be removed soon. Use {@link ResourceRequestAuthenticator#authenticate(HttpRequest)} instead
-     */
-    OAuthAuthenticationResult execute();
 
     /**
      * Authenticates an OAuth-based HTTP request using a bearer Access Token and returns the corresponding result.

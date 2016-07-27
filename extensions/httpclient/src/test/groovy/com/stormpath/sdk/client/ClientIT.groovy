@@ -17,6 +17,8 @@
 
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.directory.Directory
@@ -99,7 +101,7 @@ abstract class ClientIT {
 
     protected RequestCountingClient buildCountingClient() {
 
-        com.stormpath.sdk.api.ApiKey apiKey = com.stormpath.sdk.api.ApiKeys.builder().build();
+        ApiKey apiKey = ApiKeys.builder().build();
 
         return new RequestCountingClient(apiKey, baseUrl, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
     }

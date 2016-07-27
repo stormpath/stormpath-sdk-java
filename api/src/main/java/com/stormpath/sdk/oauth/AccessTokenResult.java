@@ -22,7 +22,7 @@ package com.stormpath.sdk.oauth;
  *
  * <p>The only time this result is returned is when an authenticated API client access your OAuth token URI, for
  * example {@code /oauth/token} and you've relayed the request for processing to the
- * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest})
+ * {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)} application.authenticateOauthRequest})
  * method.</p>
  *
  * <p>The created access token is available via the {@link #getTokenResponse() tokenResponse} property, and should be

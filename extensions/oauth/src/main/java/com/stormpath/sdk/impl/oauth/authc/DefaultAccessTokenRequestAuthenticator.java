@@ -71,25 +71,6 @@ public class DefaultAccessTokenRequestAuthenticator implements AccessTokenReques
     }
 
     @Override
-    @Deprecated //This method will be removed for 1.0. Use the authenticate method instead
-    public AccessTokenResult execute() {
-
-        AuthenticationRequest request;
-        try {
-            request = new AccessTokenAuthenticationRequest(httpServletRequest, scopeFactory, ttl);
-        } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory
-                .newOAuthException(OAuthAuthenticationException.class, OAuthAuthenticationException.INVALID_REQUEST);
-        }
-
-        AuthenticationResult authenticationResult = application.authenticateAccount(request);
-
-        Assert.isInstanceOf(AccessTokenResult.class, authenticationResult);
-
-        return (AccessTokenResult) authenticationResult;
-    }
-
-    @Override
     public AccessTokenResult authenticate(HttpRequest httpRequest) {
 
         Assert.notNull(httpRequest, "httpRequest cannot be null or empty.");
