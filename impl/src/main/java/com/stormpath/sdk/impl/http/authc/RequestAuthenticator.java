@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.http.authc;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.http.HttpAuthenticator;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 
@@ -28,7 +29,7 @@ import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
  * @see com.stormpath.sdk.client.AuthenticationScheme
  * @since 0.9.3
  */
-public interface RequestAuthenticator {
+public interface RequestAuthenticator extends HttpAuthenticator<Request, ApiKey> {
     String AUTHORIZATION_HEADER = "Authorization";
 
     /**

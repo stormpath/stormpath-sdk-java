@@ -27,9 +27,9 @@ import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
 import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.HttpHeadersHolder;
-import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.http.MediaType;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.QueryStringFactory;
 import com.stormpath.sdk.impl.http.Request;
@@ -66,7 +66,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-import static com.stormpath.sdk.impl.http.HttpHeaders.STORMPATH_AGENT;
+import static com.stormpath.sdk.http.HttpHeaders.STORMPATH_AGENT;
 
 /**
  * @since 0.1

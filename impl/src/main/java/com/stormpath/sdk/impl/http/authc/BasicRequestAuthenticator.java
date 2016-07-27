@@ -67,5 +67,4 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
         authorizationHeader = Base64.encodeBase64String(valueBytes);
         request.getHeaders().set(AUTHORIZATION_HEADER, AUTHENTICATION_SCHEME + " " + authorizationHeader);
     }
-
 }

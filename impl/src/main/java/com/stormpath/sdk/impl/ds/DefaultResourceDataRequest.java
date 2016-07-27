@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.http.HttpHeaders;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;

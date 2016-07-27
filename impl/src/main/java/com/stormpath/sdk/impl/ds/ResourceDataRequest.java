@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.http.HttpHeaders;
 
 /**
  * This class represents a request to obtain a resource and its related data.

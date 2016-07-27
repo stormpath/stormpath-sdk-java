@@ -162,8 +162,19 @@ public class StormpathFilter extends HttpFilter {
     }
 
     protected void setApplicationRequestAttributes(HttpServletRequest request) {
+
+        String serverName  =request.getServerName();
+
+        String applicationId = serverName.split("\\.")[0];
+
+        Client client = (Client) request.getAttribute(Client.class.getName());
+
+        String href = "https://api.stormpath.com/v1/applications/" + applicationId;  //applications/
+
+        Application application = client.getResource(href, Application.class);
+
         String name = Application.class.getName();
-        Application application = (Application) request.getServletContext().getAttribute(name);
+//        Application application = (Application) request.getServletContext().getAttribute(name);
         //this must always be set:
         request.setAttribute(name, application);
 

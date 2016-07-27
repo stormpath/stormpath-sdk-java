@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http;
+package com.stormpath.sdk.client;
 
-import com.stormpath.sdk.http.HttpMessage;
 
-/**
- * @since 0.1
- */
-public interface Response extends HttpMessage {
+public enum AuthenticationSchemes {
 
-    int getHttpStatus();
 
-    boolean isError();
-
-    boolean isServerError();
-
-    boolean isClientError();
 }

@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.http.authc
 
 import com.stormpath.sdk.api.ApiKey
-import com.stormpath.sdk.impl.http.HttpHeaders
+import com.stormpath.sdk.http.HttpHeaders
 import com.stormpath.sdk.impl.http.Request
 import org.testng.annotations.Test
 

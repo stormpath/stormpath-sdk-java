@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http;
+package com.stormpath.sdk.http;
 
-import com.stormpath.sdk.http.HttpMessage;
+import com.stormpath.sdk.client.ClientCredentials;
 
 /**
- * @since 0.1
+ * @since 1.0.0
  */
-public interface Response extends HttpMessage {
+public interface HttpAuthenticator<M extends HttpMessage, C extends ClientCredentials> {
 
-    int getHttpStatus();
+    void authenticate(M request, C clientCredentials);
 
-    boolean isError();
-
-    boolean isServerError();
-
-    boolean isClientError();
 }

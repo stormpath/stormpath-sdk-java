@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.ds.cache.CacheResolver;
-import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.http.HttpHeaders;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
