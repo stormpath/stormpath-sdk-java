@@ -454,9 +454,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * Creates a new {@link ApiKey} assigned to this account in the Stormpath server and returns the created resource.
      * The account can then use the ApiKey to communicate with your Application's API (e.g. REST API).
      * See {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
-     * application.authenticateApiRequest(request)} and
-     * {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
-     * application.authenticateOauthRequest(request)} for more information.
+     * for more information.
      *
      * <h3>Security Notice</h3>
      *

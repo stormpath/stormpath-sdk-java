@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.oauth;
 
+import com.stormpath.sdk.authc.AuthenticationRequest;
+
 /**
  * An {@code AuthenticationResult} that indicates a client authenticated with your server-side API specifically
  * for the purpose of obtaining a new OAuth Access Token (eg via a
@@ -22,8 +24,8 @@ package com.stormpath.sdk.oauth;
  *
  * <p>The only time this result is returned is when an authenticated API client access your OAuth token URI, for
  * example {@code /oauth/token} and you've relayed the request for processing to the
- * {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)} application.authenticateOauthRequest})
- * method.</p>
+ * {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)} method.
+ * </p>
  *
  * <p>The created access token is available via the {@link #getTokenResponse() tokenResponse} property, and should be
  * returned to the client so the client may use the token for subsequent requests to your API.</p>

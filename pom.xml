@@ -476,9 +476,7 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
             </dependency>
-
         </dependencies>
-
     </dependencyManagement>
 
     <build>
