@@ -34,6 +34,7 @@ import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
@@ -597,9 +598,17 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean
     @Override
     public FilterChainResolver stormpathFilterChainResolver() {
         return super.stormpathFilterChainResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @Override
+    public FilterChainManager stormpathFilterChainManager() {
+        return super.stormpathFilterChainManager();
     }
 
     public Collection<String> stormpathFilterUrlPatterns() {

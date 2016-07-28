@@ -15,14 +15,10 @@
  */
 package com.stormpath.sdk.servlet.config;
 
-import com.stormpath.sdk.servlet.config.impl.DefaultUriCleaner;
-
 /**
  * @since 1.0.RC3
  */
 public interface UriCleaner {
-
-    public static final UriCleaner INSTANCE = new DefaultUriCleaner();
 
     String clean(String uri);
 

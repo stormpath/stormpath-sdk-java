@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import static com.stormpath.sdk.impl.idsite.IdSiteClaims.STATUS;
+import static com.stormpath.sdk.impl.idsite.IdSiteClaims.*;
 
 /**
  * @since 1.0.RC3

@@ -16,17 +16,20 @@
 package com.stormpath.sdk.servlet.filter.mvc;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
-import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
 import com.stormpath.sdk.servlet.http.MediaType;
-import com.stormpath.sdk.servlet.mvc.*;
+import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
+import com.stormpath.sdk.servlet.mvc.InternalResourceViewResolver;
+import com.stormpath.sdk.servlet.mvc.JacksonView;
+import com.stormpath.sdk.servlet.mvc.View;
+import com.stormpath.sdk.servlet.mvc.ViewModel;
+import com.stormpath.sdk.servlet.mvc.ViewResolver;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -129,7 +132,7 @@ public class ControllerFilter extends HttpFilter {
         log.debug("Rendering view '{}' for request URI [{}]", vm.getViewName(), request.getRequestURI());
         View view = this.viewResolver.getView(vm, request);
         if (view != null) {
-            if(view instanceof JacksonView) {
+            if (view instanceof JacksonView) {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             }
             view.render(request, response, vm);

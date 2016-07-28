@@ -30,6 +30,7 @@ import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
@@ -48,11 +49,15 @@ import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.DefaultContentNegotiationResolver;
+import com.stormpath.sdk.servlet.filter.DefaultFilterChainManager;
+import com.stormpath.sdk.servlet.filter.DefaultFilterChainResolver;
 import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
-import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
+import com.stormpath.sdk.servlet.filter.PathMatchingFilterChainResolver;
+import com.stormpath.sdk.servlet.filter.PrioritizedFilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
@@ -170,7 +175,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.Filter;
-import javax.servlet.FilterChain;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -426,6 +431,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Autowired
     protected Environment environment;
 
+    @Autowired
+    protected ServletContext servletContext;
+
     @Autowired(required = false)
     @Qualifier("loginPreHandler")
     protected WebHandler loginPreHandler = new DisabledWebHandler();
@@ -501,7 +509,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public ApplicationResolver stormpathApplicationResolver() {
-        return ApplicationResolver.INSTANCE; //TODO remove static usage
+        return new DefaultApplicationResolver();
     }
 
     public Resolver<Boolean> stormpathRegisterEnabledResolver() {
@@ -1344,33 +1352,25 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public FilterChainResolver stormpathFilterChainResolver() {
 
-        return new FilterChainResolver() {
+        PathMatchingFilterChainResolver resolver = new PathMatchingFilterChainResolver(servletContext);
+        resolver.setFilterChainManager(stormpathFilterChainManager());
 
-            @Override
-            public FilterChain getChain(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+        // The account resolver filter always executes immediately after the StormpathFilter but
+        // before any other configured filters in the chain:
+        Filter accountResolverFilter = stormpathAccountResolverFilter();
+        List<Filter> priorityFilters = Arrays.asList(accountResolverFilter);
+        return new PrioritizedFilterChainResolver(resolver, priorityFilters);
+    }
 
-                // The account resolver filter always executes immediately after the StormpathFilter but
-                // before any other configured filters in the chain:
-                Filter accountResolverFilter = stormpathAccountResolverFilter();
-                List<Filter> immediateExecutionFilters = Arrays.asList(accountResolverFilter);
-                chain = new ProxiedFilterChain(chain, immediateExecutionFilters);
-
-                return chain;
-            }
-        };
+    public FilterChainManager stormpathFilterChainManager() {
+        return new DefaultFilterChainManager(servletContext);
     }
 
     public Filter stormpathAccountResolverFilter() {
-
-        List<Resolver<Account>> resolvers = stormpathAccountResolvers();
-
-        org.springframework.util.Assert.notEmpty(resolvers, "Account resolver collection cannot be null or empty.");
-
         AccountResolverFilter filter = new AccountResolverFilter();
         filter.setEnabled(stormpathFilterEnabled);
-        filter.setResolvers(resolvers);
+        filter.setResolvers(stormpathAccountResolvers());
         filter.setOauthEndpointUri(accessTokenUri);
-
         return filter;
     }
 

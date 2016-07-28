@@ -22,11 +22,13 @@ import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -113,6 +115,10 @@ public interface Config extends Map<String, String> {
     BiPredicate<Boolean,Application> getRegisterEnabledPredicate();
 
     Resolver<Boolean> getRegisterEnabledResolver();
+
+    FilterChainManager getFilterChainManager();
+
+    FilterChainResolver getFilterChainResolver();
 
     <T> T getInstance(String classPropertyName) throws ServletException;
 

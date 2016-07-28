@@ -19,8 +19,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
-import com.stormpath.sdk.servlet.http.UserAgent;
-import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

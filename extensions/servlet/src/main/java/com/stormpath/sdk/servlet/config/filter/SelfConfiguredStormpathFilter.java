@@ -47,14 +47,10 @@ public class SelfConfiguredStormpathFilter extends StormpathFilter {
     protected void doInit() throws ServletException {
 
         ServletContext servletContext = getServletContext();
-
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
 
-        Client client = ClientResolver.INSTANCE.getClient(servletContext);
-        setClient(client);
-
-        Application application = ApplicationResolver.INSTANCE.getApplication(servletContext);
-        setApplication(application);
+        setClient(config.getClient());
+        setApplication(config.getApplicationResolver().getApplication(servletContext));
 
         FilterChainResolver resolver = config.getInstance("stormpath.web.filter.chain.resolver");
         setFilterChainResolver(resolver);

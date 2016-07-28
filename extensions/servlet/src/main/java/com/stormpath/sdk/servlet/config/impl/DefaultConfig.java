@@ -37,6 +37,8 @@ import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfig;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfig;
 import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
 import com.stormpath.sdk.servlet.http.MediaType;
@@ -65,6 +67,7 @@ import java.util.regex.Pattern;
  * @since 1.0.RC3
  */
 public class DefaultConfig implements Config {
+
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
@@ -190,6 +193,16 @@ public class DefaultConfig implements Config {
     @Override
     public Publisher<RequestEvent> getRequestEventPublisher() {
         return getRuntimeInstance("stormpath.web.request.event.publisher");
+    }
+
+    @Override
+    public FilterChainManager getFilterChainManager() {
+        return getRuntimeInstance("stormpath.web.filter.chain.manager");
+    }
+
+    @Override
+    public FilterChainResolver getFilterChainResolver() {
+        return getRuntimeInstance("stormpath.web.filter.chain.resolver");
     }
 
     @Override

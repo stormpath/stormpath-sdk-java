@@ -33,6 +33,7 @@ import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
@@ -83,8 +84,6 @@ import java.util.Locale;
 @Configuration
 public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfiguration
     implements ServletContextAware, InitializingBean {
-
-    private ServletContext servletContext;
 
     @Override
     public void setServletContext(ServletContext servletContext) {
@@ -470,6 +469,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public FilterChainResolver stormpathFilterChainResolver() {
         return super.stormpathFilterChainResolver();
+    }
+
+    @Bean
+    @Override
+    public FilterChainManager stormpathFilterChainManager() {
+        return super.stormpathFilterChainManager();
     }
 
     @Bean

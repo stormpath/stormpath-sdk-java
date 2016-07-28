@@ -1,99 +1,43 @@
-/*
- * Copyright 2015 Stormpath, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.stormpath.sdk.servlet.config;
+package com.stormpath.sdk.servlet.config.filter;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.config.filter.AccountResolverFilterFactory;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.UriCleaner;
+import com.stormpath.sdk.servlet.config.impl.DefaultUriCleaner;
 import com.stormpath.sdk.servlet.filter.DefaultFilter;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
-import com.stormpath.sdk.servlet.filter.FilterChainResolver;
-import com.stormpath.sdk.servlet.filter.Filters;
-import com.stormpath.sdk.servlet.filter.PathMatchingFilterChainResolver;
-import com.stormpath.sdk.servlet.filter.ProxiedFilterChain;
-import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
-import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * @since 1.0.RC3
+ * @since 1.0.0
  */
-public class DefaultFilterChainResolverFactory implements Factory<FilterChainResolver>, ServletContextInitializable {
+public class DefaultFilterChainManagerConfigurer {
 
     public static final String ROUTE_CONFIG_NAME_PREFIX = "stormpath.web.uris.";
 
-    private FilterChainResolver resolver;
+    private static final UriCleaner URI_CLEANER = new DefaultUriCleaner();
 
-    private ServletContext servletContext;
+    private final FilterChainManager mgr;
+    private final ServletContext servletContext;
+    private final Config config;
 
-    @Override
-    public void init(ServletContext servletContext) throws ServletException {
+    public DefaultFilterChainManagerConfigurer(FilterChainManager mgr, ServletContext servletContext, Config config) {
+        Assert.notNull(mgr, "FilterChainManager cannot be null.");
+        this.mgr = mgr;
+        this.config = config;
         this.servletContext = servletContext;
-        try {
-            this.resolver = createInstance();
-        } catch (Exception e) {
-            String msg = "Unable to create FilterChainResolver instance: " + e.getMessage();
-            throw new ServletException(msg, e);
-        }
-    }
-
-    protected ServletContext getServletContext() {
-        return this.servletContext;
-    }
-
-    protected Config getConfig() {
-        return (Config) getServletContext().getAttribute(Config.class.getName());
-    }
-
-    @Override
-    public FilterChainResolver getInstance() {
-        return this.resolver;
     }
 
     protected String cleanUri(String uri) {
-        return UriCleaner.INSTANCE.clean(uri);
+        return URI_CLEANER.clean(uri);
     }
 
-    protected FilterChainResolver createInstance() throws ServletException {
-
-        final PathMatchingFilterChainResolver resolver = new PathMatchingFilterChainResolver(getServletContext());
-
-        //now register any configured chains:
-        Config config = getConfig();
-
-        //ensure the always-on AccountResolverFilter is available:
-        AccountResolverFilterFactory factory = new AccountResolverFilterFactory();
-        factory.init(servletContext);
-        Filter accountFilter = factory.getInstance();
-        accountFilter = Filters.builder().setServletContext(servletContext)
-            .setName(Strings.uncapitalize(AccountResolverFilter.class.getSimpleName()))
-            .setFilter(accountFilter)
-            .build();
-
-        final List<Filter> immediateExecutionFilters = Collections.singletonList(accountFilter);
+    public void configure() throws ServletException {
 
         //Too much copy-and-paste. YUCK.
         //TODO: refactor this method to be more generic
@@ -124,7 +68,7 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         boolean registerChainSpecified = false;
         boolean registerEnabled = config.getRegisterConfig().isEnabled();
         registerEnabled = config.getRegisterEnabledPredicate().test(registerEnabled,
-            ApplicationResolver.INSTANCE.getApplication(servletContext));
+            config.getApplicationResolver().getApplication(servletContext));
 
         String verifyUrl = config.getVerifyConfig().getUri();
         String verifyUrlPattern = cleanUri(verifyUrl);
@@ -291,76 +235,53 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         }
 
         //register configured request handlers if not yet specified:
-        FilterChainManager fcManager = resolver.getFilterChainManager();
-
         if (!unauthorizedChainSpecified) {
-            fcManager.createChain(unauthorizedUrlPattern, DefaultFilter.unauthorized.name());
+            mgr.createChain(unauthorizedUrlPattern, DefaultFilter.unauthorized.name());
         }
         if (!loginChainSpecified && loginEnabled) {
-            fcManager.createChain(loginUrlPattern, DefaultFilter.login.name());
+            mgr.createChain(loginUrlPattern, DefaultFilter.login.name());
         }
         if (!logoutChainSpecified && logoutEnabled) {
-            fcManager.createChain(logoutUrlPattern, DefaultFilter.logout.name());
+            mgr.createChain(logoutUrlPattern, DefaultFilter.logout.name());
         }
         if (!forgotChainSpecified && forgotPasswordEnabled) {
-            fcManager.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
+            mgr.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
         }
         if (!changeChainSpecified && changePasswordEnabled) {
-            fcManager.createChain(changeUrlPattern, DefaultFilter.change.name());
+            mgr.createChain(changeUrlPattern, DefaultFilter.change.name());
         }
         if (!registerChainSpecified && registerEnabled) {
-            fcManager.createChain(registerUrlPattern, DefaultFilter.register.name());
+            mgr.createChain(registerUrlPattern, DefaultFilter.register.name());
         }
         if (!verifyChainSpecified) {
-            fcManager.createChain(verifyUrlPattern, DefaultFilter.verify.name());
+            mgr.createChain(verifyUrlPattern, DefaultFilter.verify.name());
         }
         if (!accessTokenChainSpecified && oauthEnabled) {
-            fcManager.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
+            mgr.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
         }
         if (!samlChainSpecified && callbackEnabled) {
-            fcManager.createChain(samlUrlPattern, DefaultFilter.saml.name());
+            mgr.createChain(samlUrlPattern, DefaultFilter.saml.name());
         }
         if (!meChainSpecified && meEnabled) {
-            fcManager.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
+            mgr.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
         }
         if (!googleCallbackChainSpecified) {
-            fcManager.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());
+            mgr.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());
         }
         if (!githubCallbackChainSpecified) {
-            fcManager.createChain(githubCallbackUrlPattern, DefaultFilter.githubCallback.name());
+            mgr.createChain(githubCallbackUrlPattern, DefaultFilter.githubCallback.name());
         }
         if (!facebookCallbackChainSpecified) {
-            fcManager.createChain(facebookCallbackUrlPattern, DefaultFilter.facebookCallback.name());
+            mgr.createChain(facebookCallbackUrlPattern, DefaultFilter.facebookCallback.name());
         }
         if (!linkedinCallbackChainSpecified) {
-            fcManager.createChain(linkedinCallbackUrlPattern, DefaultFilter.linkedinCallback.name());
+            mgr.createChain(linkedinCallbackUrlPattern, DefaultFilter.linkedinCallback.name());
         }
 
         //register all specified chains:
         for (String pattern : patternChains.keySet()) {
             String chainDefinition = patternChains.get(pattern);
-            resolver.getFilterChainManager().createChain(pattern, chainDefinition);
+            mgr.createChain(pattern, chainDefinition);
         }
-
-        //we wrap the above constructed resolver with one that will always guarantee the account filter executes
-        //first before all others:
-
-        return new FilterChainResolver() {
-
-            @Override
-            public FilterChain getChain(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
-
-                FilterChain target = resolver.getChain(request, response, chain);
-
-                if (target == null) {
-                    target = chain;
-                }
-
-                //The account resolver filter always executes before any other configured filters in the chain:
-                target = new ProxiedFilterChain(target, immediateExecutionFilters);
-
-                return target;
-            }
-        };
     }
 }

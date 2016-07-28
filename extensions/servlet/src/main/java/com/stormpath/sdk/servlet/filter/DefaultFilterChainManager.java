@@ -16,10 +16,8 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
-import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +26,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,45 +41,25 @@ import java.util.Set;
  */
 public class DefaultFilterChainManager implements FilterChainManager {
 
-    public static final String FILTER_CONFIG_PREFIX = "stormpath.web.filters.";
-
     private static transient final Logger log = LoggerFactory.getLogger(DefaultFilterChainManager.class);
 
-    private final Map<String, List<Filter>> filterChains; //key: chain name, value: chain
-
     private final ServletContext servletContext;
-
+    private final Map<String, List<Filter>> filterChains; //key: chain name, value: chain
     private final Map<String, Class<? extends Filter>> configuredFilterClasses;
 
-    public DefaultFilterChainManager(ServletContext servletContext) throws ServletException {
+    public DefaultFilterChainManager(ServletContext servletContext) {
         Assert.notNull(servletContext, "ServletContext argument cannot be null.");
         this.servletContext = servletContext;
-        this.filterChains = new LinkedHashMap<String, List<Filter>>(); //iteration order is important
-
-        Map<String, Class<? extends Filter>> configuredFilterClasses =
-            new LinkedHashMap<String, Class<? extends Filter>>();
-
-        //add the defaults:
-        for (DefaultFilter defaultFilter : DefaultFilter.values()) {
-            configuredFilterClasses.put(defaultFilter.name(), defaultFilter.getFilterClass());
-        }
-
-        //pick up any user-configured filter classes and allow them to override the defaults:
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-
-        Map<String,Class<Filter>> foundClasses =
-            new ImplementationClassResolver<Filter>(config, FILTER_CONFIG_PREFIX, Filter.class)
-                .findImplementationClasses();
-
-        if (!com.stormpath.sdk.lang.Collections.isEmpty(foundClasses)) {
-            configuredFilterClasses.putAll(foundClasses);
-        }
-
-        this.configuredFilterClasses = Collections.unmodifiableMap(configuredFilterClasses);
+        this.filterChains = new LinkedHashMap<>(); //iteration order is important
+        this.configuredFilterClasses = new LinkedHashMap<>();
     }
 
-    protected Config getConfig() {
-        return ConfigResolver.INSTANCE.getConfig(this.servletContext);
+    //key: filter name, value: filter class
+    public void addFilterClasses(Map<String, Class<? extends Filter>> classes) {
+        if (Collections.isEmpty(classes)) {
+            return;
+        }
+        this.configuredFilterClasses.putAll(classes);
     }
 
     protected Filter createFilter(String name, String config) throws ServletException {
@@ -186,7 +163,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
                 config = Strings.clean(config);
             }
 
-            return new String[]{ name, config };
+            return new String[]{name, config};
 
         } catch (Exception e) {
             String msg = "Unable to parse filter chain definition token: " + token;
@@ -207,7 +184,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
     protected List<Filter> ensureChain(String chainName) {
         List<Filter> chain = getChain(chainName);
         if (chain == null) {
-            chain = new ArrayList<Filter>();
+            chain = new ArrayList<>();
             this.filterChains.put(chainName, chain);
         }
         return chain;

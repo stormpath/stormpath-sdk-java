@@ -4,6 +4,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.filter.Filters;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.http.Resolver;
 
@@ -31,7 +32,11 @@ public class AccountResolverFilterFactory extends FilterFactory<AccountResolverF
         List<Resolver<Account>> resolvers = getResolvers(config);
         filter.setResolvers(resolvers);
 
-        return filter;
+        return (AccountResolverFilter)
+            Filters.builder().setServletContext(servletContext)
+            .setName(Strings.uncapitalize(AccountResolverFilter.class.getSimpleName()))
+            .setFilter(filter)
+            .build(); //ensures init is called on the filter
     }
 
     protected List<Resolver<Account>> getResolvers(Config config) throws ServletException {

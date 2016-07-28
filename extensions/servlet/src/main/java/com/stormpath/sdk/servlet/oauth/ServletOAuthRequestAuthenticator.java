@@ -15,7 +15,11 @@
 */
 package com.stormpath.sdk.servlet.oauth;
 
-import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
+import com.stormpath.sdk.oauth.RequestLocation;
+import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
+import com.stormpath.sdk.oauth.ScopeFactory;
 import com.stormpath.sdk.servlet.api.ServletApiRequestAuthenticator;
 
 import javax.servlet.http.HttpServletRequest;
