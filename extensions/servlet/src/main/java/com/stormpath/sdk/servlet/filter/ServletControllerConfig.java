@@ -38,14 +38,14 @@ import java.util.regex.Pattern;
 /**
  * @since 1.0.0
  */
-public class ServletControllerConfigResolver implements ControllerConfigResolver {
-    private static final Logger log = LoggerFactory.getLogger(ServletControllerConfigResolver.class);
+public class ServletControllerConfig implements ControllerConfig {
+    private static final Logger log = LoggerFactory.getLogger(ServletControllerConfig.class);
 
     protected ConfigReader configReader;
     private Config config;
     private String controllerKey;
 
-    public ServletControllerConfigResolver(Config config, ConfigReader configReader, String controllerKey) {
+    public ServletControllerConfig(Config config, ConfigReader configReader, String controllerKey) {
         this.configReader = configReader;
         this.controllerKey = controllerKey;
         this.config = config;

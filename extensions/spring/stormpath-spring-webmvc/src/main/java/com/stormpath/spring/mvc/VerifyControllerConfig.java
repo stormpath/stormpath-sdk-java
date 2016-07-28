@@ -20,43 +20,43 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * @since 1.0.0
  */
-public class ForgotPasswordControllerConfigResolver extends AbstractSpringControllerConfigResolver {
+public class VerifyControllerConfig extends AbstractSpringControllerConfig {
 
-    @Value("#{ @environment['stormpath.web.forgotPassword.enabled'] ?: true }")
-    protected boolean forgotEnabled;
+    @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
+    protected boolean verifyEnabled;
 
-    @Value("#{ @environment['stormpath.web.forgotPassword.uri'] ?: '/forgot' }")
-    protected String forgotUri;
+    @Value("#{ @environment['stormpath.web.verifyEmail.uri'] ?: '/verify' }")
+    protected String verifyUri;
 
-    @Value("#{ @environment['stormpath.web.forgotPassword.nextUri'] ?: '/login?status=forgot' }")
-    protected String forgotNextUri;
+    @Value("#{ @environment['stormpath.web.verifyEmail.nextUri'] ?: '/login?status=verified' }")
+    protected String verifyNextUri;
 
-    @Value("#{ @environment['stormpath.web.forgotPassword.view'] ?: 'stormpath/forgot-password' }")
-    protected String forgotView;
+    @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'stormpath/verify' }")
+    protected String verifyView;
 
     @Override
     public String getView() {
-        return forgotView;
+        return verifyView;
     }
 
     @Override
     public String getUri() {
-        return forgotUri;
+        return verifyUri;
     }
 
     @Override
     public String getNextUri() {
-        return forgotNextUri;
+        return verifyNextUri;
     }
 
     @Override
     public boolean isEnabled() {
-        return forgotEnabled;
+        return verifyEnabled;
     }
 
     @Override
     public String getControllerKey() {
-        return "forgotPassword";
+        return "verifyEmail";
     }
 
     @Override

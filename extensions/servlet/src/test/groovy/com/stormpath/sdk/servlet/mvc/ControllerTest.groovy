@@ -17,7 +17,7 @@ package com.stormpath.sdk.servlet.mvc
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver
+import com.stormpath.sdk.servlet.filter.ControllerConfig
 import com.stormpath.sdk.servlet.i18n.DefaultLocaleResolver
 import com.stormpath.sdk.servlet.i18n.MessageSource
 import org.testng.annotations.Test
@@ -160,7 +160,7 @@ class ControllerTest {
 
     @Test
     void testControllersThatShouldAllowIfAuthenticated() {
-        def controllerConfigResolver = createNiceMock(ControllerConfigResolver)
+        def controllerConfigResolver = createNiceMock(ControllerConfig)
         def messageSource = createNiceMock(MessageSource)
         def localeResolver = createNiceMock(DefaultLocaleResolver)
         def produces = "application/json,text/html"

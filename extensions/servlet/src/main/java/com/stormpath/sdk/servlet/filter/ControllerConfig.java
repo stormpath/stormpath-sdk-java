@@ -27,7 +27,7 @@ import java.util.Locale;
 /**
  * @since 1.0.0
  */
-public interface ControllerConfigResolver extends FormFieldsFactory {
+public interface ControllerConfig extends FormFieldsFactory {
 
     String getView();
     String getUri();

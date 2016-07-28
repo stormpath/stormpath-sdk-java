@@ -17,12 +17,14 @@ package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
@@ -37,19 +39,21 @@ import java.util.Map;
  */
 public interface Config extends Map<String, String> {
 
+    Client getClient();
+
     ApplicationResolver getApplicationResolver();
 
-    ControllerConfigResolver getLoginControllerConfig();
+    ControllerConfig getLoginConfig();
 
-    ControllerConfigResolver getLogoutControllerConfig();
+    ControllerConfig getLogoutConfig();
 
-    ControllerConfigResolver getRegisterControllerConfig();
+    ControllerConfig getRegisterConfig();
 
-    ControllerConfigResolver getForgotPasswordControllerConfig();
+    ControllerConfig getForgotPasswordConfig();
 
-    ControllerConfigResolver getVerifyControllerConfig();
+    ControllerConfig getVerifyConfig();
 
-    ChangePasswordConfigResolver getChangePasswordControllerConfig();
+    ChangePasswordConfig getChangePasswordConfig();
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();
 
@@ -100,6 +104,11 @@ public interface Config extends Map<String, String> {
      * @since 1.0.0
      */
     String getProducesMediaTypes();
+
+    /**
+     * @since 1.0.0
+     */
+    List<MediaType> getProducedMediaTypes();
 
     /**
      * @since 1.0.0

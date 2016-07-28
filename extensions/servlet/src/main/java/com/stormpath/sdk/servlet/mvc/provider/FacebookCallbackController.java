@@ -15,12 +15,8 @@
  */
 package com.stormpath.sdk.servlet.mvc.provider;
 
-import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
@@ -30,10 +26,6 @@ import javax.servlet.http.HttpServletRequest;
  * @since 1.0.0
  */
 public class FacebookCallbackController extends AbstractSocialCallbackController {
-
-    public FacebookCallbackController(String loginNextUri, Saver<AuthenticationResult> authenticationResultSaver, Publisher<RequestEvent> eventPublisher) {
-        super(loginNextUri, authenticationResultSaver, eventPublisher);
-    }
 
     @Override
     protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {

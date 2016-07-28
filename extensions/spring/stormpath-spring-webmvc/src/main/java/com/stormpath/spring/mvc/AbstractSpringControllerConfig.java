@@ -19,7 +19,7 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.http.Resolver;
@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 /**
  * @since 1.0.0
  */
-abstract class AbstractSpringControllerConfigResolver implements ControllerConfigResolver, FormFieldsFactory {
+abstract class AbstractSpringControllerConfig implements ControllerConfig, FormFieldsFactory {
 
     protected abstract String[] getDefaultFieldOrder();
 

@@ -20,43 +20,40 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * @since 1.0.0
  */
-public class VerifyControllerConfigResolver extends AbstractSpringControllerConfigResolver {
+public class LogoutControllerConfig extends AbstractSpringControllerConfig {
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
-    protected boolean verifyEnabled;
+    @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
+    protected boolean logoutEnabled;
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.uri'] ?: '/verify' }")
-    protected String verifyUri;
+    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
+    protected String logoutUri;
 
-    @Value("#{ @environment['stormpath.web.verifyEmail.nextUri'] ?: '/login?status=verified' }")
-    protected String verifyNextUri;
-
-    @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'stormpath/verify' }")
-    protected String verifyView;
+    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/' }")
+    protected String logoutNextUri;
 
     @Override
     public String getView() {
-        return verifyView;
+        return null;
     }
 
     @Override
     public String getUri() {
-        return verifyUri;
+        return logoutUri;
     }
 
     @Override
     public String getNextUri() {
-        return verifyNextUri;
+        return logoutNextUri;
     }
 
     @Override
     public boolean isEnabled() {
-        return verifyEnabled;
+        return logoutEnabled;
     }
 
     @Override
     public String getControllerKey() {
-        return "verifyEmail";
+        return "logout";
     }
 
     @Override

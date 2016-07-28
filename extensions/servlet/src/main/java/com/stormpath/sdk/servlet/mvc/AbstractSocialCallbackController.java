@@ -26,8 +26,6 @@ import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,19 +36,29 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class AbstractSocialCallbackController extends AbstractController {
 
+    private String loginUri;
+    private ApplicationResolver applicationResolver;
     protected Saver<AuthenticationResult> authenticationResultSaver;
-    private final Publisher<RequestEvent> eventPublisher;
 
-    public AbstractSocialCallbackController(String loginNextUri,
-                                            Saver<AuthenticationResult> authenticationResultSaver,
-                                            Publisher<RequestEvent> eventPublisher) {
-        this.nextUri = loginNextUri;
+    public void setLoginUri(String loginUri) {
+        this.loginUri = loginUri;
+    }
+
+    public void setApplicationResolver(ApplicationResolver applicationResolver) {
+        this.applicationResolver = applicationResolver;
+    }
+
+    public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
         this.authenticationResultSaver = authenticationResultSaver;
-        this.eventPublisher = eventPublisher;
+    }
 
-        Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver cannot be null.");
-        Assert.hasLength(this.nextUri, "nextUri cannot be null.");
-        Assert.notNull(this.eventPublisher, "eventPublish cannot be null.");
+    @Override
+    public void init() throws Exception {
+        Assert.hasText(nextUri, "nextUri cannot be null or empty.");
+        Assert.hasText(loginUri, "loginUri cannot be null or empty.");
+        Assert.notNull(applicationResolver, "applicationResolver cannot be null.");
+        Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
+        Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
     }
 
     @Override
@@ -59,7 +67,7 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
     }
 
     protected Application getApplication(HttpServletRequest request) {
-        return ApplicationResolver.INSTANCE.getApplication(request);
+        return applicationResolver.getApplication(request);
     }
 
     protected abstract ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request);
@@ -73,7 +81,7 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
         Account account = result.getAccount();
         if (account.getStatus().equals(AccountStatus.UNVERIFIED)) {
             Config config = (Config) request.getServletContext().getAttribute(Config.class.getName());
-            String loginUri = config.getLoginControllerConfig().getUri();
+            String loginUri = config.getLoginConfig().getUri();
             return new DefaultViewModel(loginUri + "?status=unverified").setRedirect(true);
         }
 

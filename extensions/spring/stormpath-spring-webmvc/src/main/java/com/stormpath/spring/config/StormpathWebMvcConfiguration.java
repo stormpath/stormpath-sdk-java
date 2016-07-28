@@ -20,6 +20,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.lang.BiPredicate;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
@@ -31,9 +32,8 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
-import com.stormpath.sdk.servlet.filter.FilterBuilder;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
@@ -53,7 +53,7 @@ import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
-import com.stormpath.spring.mvc.ChangePasswordControllerConfigResolver;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -82,7 +82,7 @@ import java.util.Locale;
  */
 @Configuration
 public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfiguration
-        implements ServletContextAware, InitializingBean {
+    implements ServletContextAware, InitializingBean {
 
     private ServletContext servletContext;
 
@@ -105,11 +105,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
             registry.addResourceHandler("/assets/css/*stormpath.css")
-                    //reference the actual files in the stormpath-sdk-servlet .jar:
-                    .addResourceLocations("classpath:/META-INF/resources/assets/css/");
+                //reference the actual files in the stormpath-sdk-servlet .jar:
+                .addResourceLocations("classpath:/META-INF/resources/assets/css/");
             registry.addResourceHandler("/assets/js/*stormpath.js")
-                    //reference the actual files in the stormpath-sdk-servlet .jar:
-                    .addResourceLocations("classpath:/META-INF/resources/assets/js/");
+                //reference the actual files in the stormpath-sdk-servlet .jar:
+                .addResourceLocations("classpath:/META-INF/resources/assets/js/");
         }
     }
 
@@ -122,14 +122,18 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return bean;
     }
 
-    /** @since 1.0.0 */
+    /**
+     * @since 1.0.0
+     */
     @Bean
     @Override
     public ApplicationResolver stormpathApplicationResolver() {
         return super.stormpathApplicationResolver();
     }
 
-    /** @since 1.0.0 */
+    /**
+     * @since 1.0.0
+     */
     @Bean
     @Override
     public List<MediaType> stormpathProducesMediaTypes() {
@@ -472,19 +476,24 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Filter stormpathFilter() throws ServletException {
 
-        FilterBuilder builder = new DefaultFilterBuilder().setFilterClass(
-                SpringStormpathFilter.class) //suppress config logic since Spring is used for config here
-                .setServletContext(servletContext).setName("stormpathFilter");
-
-        StormpathFilter filter = (StormpathFilter) builder.build();
-
+        StormpathFilter filter = new StormpathFilter();
         filter.setEnabled(stormpathFilterEnabled);
         filter.setClientRequestAttributeNames(stormpathRequestClientAttributeNames());
         filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
         filter.setFilterChainResolver(stormpathFilterChainResolver());
         filter.setWrappedServletRequestFactory(stormpathWrappedServletRequestFactory());
 
-        return filter;
+        return new DefaultFilterBuilder()
+            .setFilter(filter)
+            .setServletContext(servletContext)
+            .setName("stormpathFilter")
+            .build();
+    }
+
+    @Bean
+    @Override
+    public AccountResolver stormpathAccountResolver() {
+        return super.stormpathAccountResolver();
     }
 
     @Bean
@@ -493,32 +502,32 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public ControllerConfigResolver stormpathForgotPasswordControllerConfigResolver() {
-        return super.stormpathForgotPasswordControllerConfigResolver();
+    public ControllerConfig stormpathForgotPasswordConfig() {
+        return super.stormpathForgotPasswordConfig();
     }
 
     @Bean
-    public ControllerConfigResolver stormpathLoginControllerConfigResolver() {
-        return super.stormpathLoginControllerConfigResolver();
+    public ControllerConfig stormpathLoginConfig() {
+        return super.stormpathLoginConfig();
     }
 
     @Bean
-    public ControllerConfigResolver stormpathRegisterControllerConfigResolver() {
-        return super.stormpathRegisterControllerConfigResolver();
+    public ControllerConfig stormpathRegisterConfig() {
+        return super.stormpathRegisterConfig();
     }
 
     @Bean
-    public ControllerConfigResolver stormpathVerifyControllerConfigResolver() {
-        return super.stormpathVerifyControllerConfigResolver();
+    public ControllerConfig stormpathVerifyConfig() {
+        return super.stormpathVerifyConfig();
     }
 
     @Bean
-    public ChangePasswordControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
-        return super.stormpathChangePasswordControllerConfigResolver();
+    public ChangePasswordControllerConfig stormpathChangePasswordConfig() {
+        return super.stormpathChangePasswordConfig();
     }
 
     @Bean
-    public ControllerConfigResolver stormpathLogoutControllerConfigResolver() {
-        return super.stormpathLogoutControllerConfigResolver();
+    public ControllerConfig stormpathLogoutConfig() {
+        return super.stormpathLogoutConfig();
     }
 }

@@ -48,7 +48,7 @@ public class ControllerFilter extends HttpFilter {
 
     private String prefix = "/WEB-INF/jsp/stormpath/";
     private String suffix = ".jsp";
-
+    private List<MediaType> producedMediaTypes;
     private ViewResolver viewResolver;
 
     public Controller getController() {
@@ -75,14 +75,22 @@ public class ControllerFilter extends HttpFilter {
         this.suffix = suffix;
     }
 
-    @Override
-    protected void onInit() throws ServletException {
-        Assert.notNull(controller, "Controller instance must be configured.");
+    public List<MediaType> getProducedMediaTypes() {
+        return producedMediaTypes;
+    }
 
+    public void setProducedMediaTypes(List<MediaType> producedMediaTypes) {
+        this.producedMediaTypes = producedMediaTypes;
+    }
+
+    @Override
+    protected void onInit() throws Exception {
+        Assert.notNull(controller, "Controller instance must be configured.");
+        Assert.notEmpty(producedMediaTypes, "producedMediaTypes property cannot be null or empty.");
         InternalResourceViewResolver irvr = new InternalResourceViewResolver();
         irvr.setPrefix(getPrefix());
         irvr.setSuffix(getSuffix());
-        this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), producesMediaTypes());
+        this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), producedMediaTypes);
     }
 
     @Override
@@ -127,18 +135,5 @@ public class ControllerFilter extends HttpFilter {
             view.render(request, response, vm);
         }
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-    }
-
-    /** @since 1.0.0 */
-    protected List<MediaType> producesMediaTypes() {
-        String mediaTypes = Strings.clean(getConfig().getProducesMediaTypes());
-        Assert.notNull(mediaTypes, "stormpath.web.produces property value cannot be null or empty.");
-
-        try {
-            return MediaType.parseMediaTypes(mediaTypes);
-        } catch (InvalidMediaTypeException e) {
-            String msg = "Unable to parse value in stormpath.web.produces property: " + e.getMessage();
-            throw new IllegalArgumentException(msg, e);
-        }
     }
 }

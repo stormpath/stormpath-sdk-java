@@ -16,10 +16,8 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.mvc.MeController;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -30,20 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 public class MeFilter extends ControllerFilter {
 
     @Override
-    protected void onInit() throws ServletException {
-
-        MeController controller = new MeController(getConfig().getMeExpandedProperties());
-
-        setController(controller);
-
-        super.onInit();
-    }
-
-    @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws Exception {
         // addresses https://github.com/stormpath/stormpath-sdk-java/issues/784
         request = new MeHttpServletRequestWrapper(request);
-
         super.filter(request, response, chain);
     }
 

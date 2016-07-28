@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.config.filter.AccountResolverFilterFactory;
 import com.stormpath.sdk.servlet.filter.DefaultFilter;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
@@ -32,7 +33,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,47 +85,51 @@ public class DefaultFilterChainResolverFactory implements Factory<FilterChainRes
         Config config = getConfig();
 
         //ensure the always-on AccountResolverFilter is available:
-        Filter accountFilter = Filters.builder().setServletContext(getServletContext())
-                .setName(Strings.uncapitalize(AccountResolverFilter.class.getSimpleName()))
-                .setFilterClass(AccountResolverFilter.class).build();
+        AccountResolverFilterFactory factory = new AccountResolverFilterFactory();
+        factory.init(servletContext);
+        Filter accountFilter = factory.getInstance();
+        accountFilter = Filters.builder().setServletContext(servletContext)
+            .setName(Strings.uncapitalize(AccountResolverFilter.class.getSimpleName()))
+            .setFilter(accountFilter)
+            .build();
 
-        final List<Filter> immediateExecutionFilters = Arrays.asList(accountFilter);
+        final List<Filter> immediateExecutionFilters = Collections.singletonList(accountFilter);
 
         //Too much copy-and-paste. YUCK.
         //TODO: refactor this method to be more generic
 
         //Ensure handlers are registered:
-        String loginUrl = config.getLoginControllerConfig().getUri();
+        String loginUrl = config.getLoginConfig().getUri();
         String loginUrlPattern = cleanUri(loginUrl);
         boolean loginChainSpecified = false;
-        boolean loginEnabled = config.getLoginControllerConfig().isEnabled();
+        boolean loginEnabled = config.getLoginConfig().isEnabled();
 
-        String logoutUrl = config.getLogoutControllerConfig().getUri();
+        String logoutUrl = config.getLogoutConfig().getUri();
         String logoutUrlPattern = cleanUri(logoutUrl);
         boolean logoutChainSpecified = false;
-        boolean logoutEnabled = config.getLogoutControllerConfig().isEnabled();
+        boolean logoutEnabled = config.getLogoutConfig().isEnabled();
 
-        String forgotUrl = config.getForgotPasswordControllerConfig().getUri();
+        String forgotUrl = config.getForgotPasswordConfig().getUri();
         String forgotUrlPattern = cleanUri(forgotUrl);
         boolean forgotChainSpecified = false;
-        boolean forgotPasswordEnabled = config.getForgotPasswordControllerConfig().isEnabled();
+        boolean forgotPasswordEnabled = config.getForgotPasswordConfig().isEnabled();
 
-        String changeUrl = config.getChangePasswordControllerConfig().getUri();
+        String changeUrl = config.getChangePasswordConfig().getUri();
         String changeUrlPattern = cleanUri(changeUrl);
         boolean changeChainSpecified = false;
-        boolean changePasswordEnabled = config.getChangePasswordControllerConfig().isEnabled();
+        boolean changePasswordEnabled = config.getChangePasswordConfig().isEnabled();
 
-        String registerUrl = config.getRegisterControllerConfig().getUri();
+        String registerUrl = config.getRegisterConfig().getUri();
         String registerUrlPattern = cleanUri(registerUrl);
         boolean registerChainSpecified = false;
-        boolean registerEnabled = config.getRegisterControllerConfig().isEnabled();
+        boolean registerEnabled = config.getRegisterConfig().isEnabled();
         registerEnabled = config.getRegisterEnabledPredicate().test(registerEnabled,
             ApplicationResolver.INSTANCE.getApplication(servletContext));
 
-        String verifyUrl = config.getVerifyControllerConfig().getUri();
+        String verifyUrl = config.getVerifyConfig().getUri();
         String verifyUrlPattern = cleanUri(verifyUrl);
         boolean verifyChainSpecified = false;
-        boolean verifyEmailEnabled = config.getVerifyControllerConfig().isEnabled();
+        boolean verifyEmailEnabled = config.getVerifyConfig().isEnabled();
 
         String accessTokenUrl = config.getAccessTokenUrl();
         String accessTokenUrlPattern = cleanUri(accessTokenUrl);

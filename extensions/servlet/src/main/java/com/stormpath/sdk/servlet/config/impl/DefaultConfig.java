@@ -17,22 +17,26 @@ package com.stormpath.sdk.servlet.config.impl;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
-import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
+import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfig;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
-import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.filter.ServletControllerConfig;
+import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
@@ -98,38 +102,43 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public Client getClient() {
+        return ClientResolver.INSTANCE.getClient(servletContext);
+    }
+
+    @Override
     public ApplicationResolver getApplicationResolver() {
         return ApplicationResolver.INSTANCE; //TODO remove static usage
     }
 
     @Override
-    public ControllerConfigResolver getLoginControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "login");
+    public ControllerConfig getLoginConfig() {
+        return new ServletControllerConfig(this, CFG, "login");
     }
 
     @Override
-    public ControllerConfigResolver getLogoutControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "logout");
+    public ControllerConfig getLogoutConfig() {
+        return new ServletControllerConfig(this, CFG, "logout");
     }
 
     @Override
-    public ControllerConfigResolver getRegisterControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "register");
+    public ControllerConfig getRegisterConfig() {
+        return new ServletControllerConfig(this, CFG, "register");
     }
 
     @Override
-    public ControllerConfigResolver getForgotPasswordControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "forgotPassword");
+    public ControllerConfig getForgotPasswordConfig() {
+        return new ServletControllerConfig(this, CFG, "forgotPassword");
     }
 
     @Override
-    public ControllerConfigResolver getVerifyControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "verifyEmail");
+    public ControllerConfig getVerifyConfig() {
+        return new ServletControllerConfig(this, CFG, "verifyEmail");
     }
 
     @Override
-    public ChangePasswordConfigResolver getChangePasswordControllerConfig() {
-        return new ChangePasswordServletControllerConfigResolver(this, CFG, "changePassword");
+    public ChangePasswordConfig getChangePasswordConfig() {
+        return new ChangePasswordServletControllerConfig(this, CFG, "changePassword");
     }
 
     @Override
@@ -344,6 +353,19 @@ public class DefaultConfig implements Config {
     public String getProducesMediaTypes() {
         List<String> mediaTypes = CFG.getList(PRODUCES_MEDIA_TYPES);
         return Strings.collectionToCommaDelimitedString(mediaTypes);
+    }
+
+    @Override
+    public List<MediaType> getProducedMediaTypes() {
+        String mediaTypes = Strings.clean(getProducesMediaTypes());
+        Assert.notNull(mediaTypes, "stormpath.web.produces property value cannot be null or empty.");
+
+        try {
+            return MediaType.parseMediaTypes(mediaTypes);
+        } catch (InvalidMediaTypeException e) {
+            String msg = "Unable to parse value in stormpath.web.produces property: " + e.getMessage();
+            throw new IllegalArgumentException(msg, e);
+        }
     }
 
     @Override

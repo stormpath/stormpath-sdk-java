@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,8 @@ public class DefaultLoginFormStatusResolver implements LoginFormStatusResolver {
     private String verifyEmailUri;
 
     public DefaultLoginFormStatusResolver(MessageSource messageSource, String verifyEmailUri) {
+        Assert.notNull(messageSource, "MessageSource cannot be null.");
+        Assert.hasText(verifyEmailUri, "verifyEmailUri cannot be null or empty.");
         this.messageSource = messageSource;
         this.verifyEmailUri = verifyEmailUri;
     }
