@@ -27,7 +27,6 @@ import com.stormpath.sdk.servlet.application.ApplicationLoader;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
-import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
@@ -499,12 +498,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name = "stormpathLogoutController")
     public Controller stormpathLogoutController() {
         return super.stormpathLogoutController();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathInternalConfig")
-    public Config stormpathInternalConfig() {
-        return super.stormpathInternalConfig();
     }
 
     @Bean

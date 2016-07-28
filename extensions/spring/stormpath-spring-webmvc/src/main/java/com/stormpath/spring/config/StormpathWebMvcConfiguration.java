@@ -25,8 +25,6 @@ import com.stormpath.sdk.servlet.application.ApplicationLoader;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigLoader;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
@@ -95,7 +93,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public void afterPropertiesSet() throws Exception {
         servletContext.setAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY, client);
         servletContext.setAttribute(ApplicationLoader.APP_ATTRIBUTE_NAME, application);
-        servletContext.setAttribute(ConfigLoader.CONFIG_ATTRIBUTE_NAME, stormpathInternalConfig());
+        //servletContext.setAttribute(ConfigLoader.CONFIG_ATTRIBUTE_NAME, stormpathInternalConfig());
     }
 
     @SuppressWarnings("SpringFacetCodeInspection")
@@ -150,13 +148,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Override
     public ViewResolver stormpathJsonViewResolver() {
         return super.stormpathJsonViewResolver();
-    }
-
-    //this isn't needed in a Spring environment, but we have to have it because the
-    //default .jsp views reference it (MessageTag uses a Config instance:
-    @Bean
-    public Config stormpathInternalConfig() {
-        return super.stormpathInternalConfig();
     }
 
     @Bean
