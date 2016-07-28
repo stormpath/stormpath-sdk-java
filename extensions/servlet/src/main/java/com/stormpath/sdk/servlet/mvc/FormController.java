@@ -66,7 +66,7 @@ public abstract class FormController extends AbstractController {
     @Override
     public void init() throws Exception {
         super.init();
-        Assert.notEmpty(formFields, "formFields cannot be null or empty.");
+        //Assert.notEmpty(formFields, "formFields cannot be null or empty."); some forms do this manually
         Assert.notNull(csrfTokenManager, "csrfTokenManager cannot be null.");
         Assert.notNull(fieldValueResolver, "fieldValueResolver cannot be null.");
     }

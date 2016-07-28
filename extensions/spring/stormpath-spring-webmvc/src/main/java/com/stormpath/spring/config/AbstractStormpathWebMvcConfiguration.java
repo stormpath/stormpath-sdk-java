@@ -45,7 +45,9 @@ import com.stormpath.sdk.servlet.event.RequestEventListenerAdapter;
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.filter.DefaultContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
@@ -93,6 +95,7 @@ import com.stormpath.sdk.servlet.mvc.AbstractController;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
+import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
@@ -105,6 +108,7 @@ import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.MeController;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
+import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
@@ -730,6 +734,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DisabledCsrfTokenManager(csrfTokenName);
     }
 
+    public RequestFieldValueResolver stormpathFieldValueResolver() {
+        return new ContentNegotiatingFieldValueResolver();
+    }
+
     public AccessTokenResultFactory stormpathAccessTokenResultFactory() {
         return new DefaultAccessTokenResultFactory(application);
     }
@@ -1266,20 +1274,31 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultAccountResolver();
     }
 
+    public ContentNegotiationResolver stormpathContentNegotiationResolver() {
+        return new DefaultContentNegotiationResolver();
+    }
+
     private void configure(AbstractController c) {
-        c.setEventPublisher(stormpathRequestEventPublisher());
         c.setAccountResolver(stormpathAccountResolver());
+        c.setContentNegotiationResolver(stormpathContentNegotiationResolver());
+        c.setEventPublisher(stormpathRequestEventPublisher());
+        c.setLocaleResolver(stormpathLocaleResolver());
+        c.setMessageSource(stormpathMessageSource());
+        c.setProduces(stormpathProducesMediaTypes());
     }
 
     private <T extends FormController> T configure(T c, ControllerConfig cr) {
         configure(c);
-        c.setControllerKey(cr.getControllerKey());
-        c.setCsrfTokenManager(stormpathCsrfTokenManager());
-        c.setFormFields(cr.getFormFields());
-        c.setLocaleResolver(stormpathLocaleResolver());
-        c.setMessageSource(stormpathMessageSource());
+        c.setUri(cr.getUri());
         c.setNextUri(cr.getNextUri());
         c.setView(cr.getView());
+        c.setControllerKey(cr.getControllerKey());
+        c.setCsrfTokenManager(stormpathCsrfTokenManager());
+        c.setFieldValueResolver(stormpathFieldValueResolver());
+        List<Field> fields = cr.getFormFields();
+        if (!Collections.isEmpty(fields)) { //might be empty if the fields are static / configured within the controller
+            c.setFormFields(fields);
+        }
         return c;
     }
 

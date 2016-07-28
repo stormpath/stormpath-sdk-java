@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +96,17 @@ public class VerifyController extends FormController {
 
     @Override
     public void init() throws Exception {
-        super.init();
+
+        List<Field> fields = new ArrayList<Field>(1);
+        String fieldName = "email";
+        DefaultField field = new DefaultField();
+        field.setName(fieldName);
+        field.setLabel("stormpath.web.verifyEmail.form.fields." + fieldName + ".label");
+        field.setPlaceholder("stormpath.web.verifyEmail.form.fields." + fieldName + ".placeholder");
+        field.setRequired(true);
+        field.setType("text");
+        fields.add(field);
+        setFormFields(fields);
 
         if (this.accountModelFactory == null) {
             this.accountModelFactory = new DefaultAccountModelFactory();
@@ -105,6 +114,8 @@ public class VerifyController extends FormController {
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new VerifyErrorModelFactory(this.messageSource);
         }
+
+        super.init();
 
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(loginNextUri, "logoutUri cannot be null or empty.");
@@ -154,7 +165,7 @@ public class VerifyController extends FormController {
 
     @Override
     protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
-        return Arrays.asList(errorModelFactory.toError(request, e));
+        return com.stormpath.sdk.lang.Collections.toList(errorModelFactory.toError(request, e));
     }
 
     protected ViewModel verify(HttpServletRequest request, HttpServletResponse response, String sptoken)
@@ -208,32 +219,6 @@ public class VerifyController extends FormController {
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
         model.put("loginUri", loginUri);
-    }
-
-    @Override
-    protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
-
-        List<Field> fields = new ArrayList<Field>(1);
-
-        RequestFieldValueResolver fieldValueResolver = getFieldValueResolver();
-
-        String[] fieldNames = new String[]{"email"};
-
-        for (String fieldName : fieldNames) {
-
-            DefaultField field = new DefaultField();
-            field.setName(fieldName);
-            field.setLabel("stormpath.web.verifyEmail.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.verifyEmail.form.fields." + fieldName + ".placeholder");
-            field.setRequired(true);
-            field.setType("text");
-            String param = fieldValueResolver.getValue(request, fieldName);
-            field.setValue(param != null ? param : "");
-
-            fields.add(field);
-        }
-
-        return fields;
     }
 
     protected ViewModel onValidSubmit(HttpServletRequest request, HttpServletResponse response, Form form) {

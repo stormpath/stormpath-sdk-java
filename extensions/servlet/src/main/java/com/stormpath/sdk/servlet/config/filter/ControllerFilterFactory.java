@@ -1,6 +1,5 @@
 package com.stormpath.sdk.servlet.config.filter;
 
-import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.mvc.AbstractController;
@@ -16,10 +15,15 @@ public abstract class ControllerFilterFactory<T extends AbstractController> exte
     protected final ControllerFilter createInstance(ServletContext servletContext, Config config) throws Exception {
 
         T c = newController();
-
+        c.setAccountResolver(config.getAccountResolver());
+        c.setContentNegotiationResolver(config.getContentNegotiationResolver());
         c.setEventPublisher(config.getRequestEventPublisher());
-        c.setAccountResolver(AccountResolver.INSTANCE);
+        c.setLocaleResolver(config.getLocaleResolver());
+        c.setMessageSource(config.getMessageSource());
+        c.setProduces(config.getProducedMediaTypes());
+
         configure(c, config);
+
         c.init();
 
         ControllerFilter filter = new ControllerFilter();

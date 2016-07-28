@@ -30,6 +30,7 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.DefaultFilterBuilder;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
@@ -50,6 +51,7 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import org.springframework.beans.factory.InitializingBean;
@@ -253,6 +255,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
+    }
+
+    @Bean
+    @Override
+    public RequestFieldValueResolver stormpathFieldValueResolver() {
+        return super.stormpathFieldValueResolver();
     }
 
     @Bean
@@ -468,6 +476,8 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public Filter stormpathFilter() throws ServletException {
 
         StormpathFilter filter = new StormpathFilter();
+        filter.setClient(client);
+        filter.setApplication(application);
         filter.setEnabled(stormpathFilterEnabled);
         filter.setClientRequestAttributeNames(stormpathRequestClientAttributeNames());
         filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
@@ -485,6 +495,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Override
     public AccountResolver stormpathAccountResolver() {
         return super.stormpathAccountResolver();
+    }
+
+    @Bean
+    @Override
+    public ContentNegotiationResolver stormpathContentNegotiationResolver() {
+        return super.stormpathContentNegotiationResolver();
     }
 
     @Bean

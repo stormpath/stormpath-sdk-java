@@ -20,7 +20,6 @@ public class SamlResultFilterFactory extends ControllerFilterFactory<SamlResultC
         c.setEventPublisher(config.getRequestEventPublisher());
 
         LogoutController controller = new LogoutController();
-        controller.setProduces(config.getProducedMediaTypes());
         controller.setNextUri(config.getLogoutConfig().getNextUri());
         controller.setInvalidateHttpSession(config.isLogoutInvalidateHttpSession());
         controller.init();

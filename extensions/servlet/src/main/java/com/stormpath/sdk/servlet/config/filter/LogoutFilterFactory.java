@@ -15,7 +15,6 @@ public class LogoutFilterFactory extends ControllerFilterFactory<LogoutControlle
 
     @Override
     protected void configure(LogoutController c, Config config) throws Exception {
-        c.setProduces(config.getProducedMediaTypes());
         c.setNextUri(config.getLogoutConfig().getNextUri());
         //c.setInvalidateHttpSession(); support this in plain servlet mode?
     }

@@ -61,6 +61,6 @@ public class VerifyControllerConfig extends AbstractSpringControllerConfig {
 
     @Override
     protected String[] getDefaultFieldOrder() {
-        return new String[0];
+        return new String[]{"email"};
     }
 }

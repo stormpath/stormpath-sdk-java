@@ -13,7 +13,6 @@ public abstract class SocialCallbackControllerFilterFactory<T extends AbstractSo
     protected final void configure(T c, Config config) throws Exception {
         c.setNextUri(config.getLoginConfig().getUri());
         c.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
-        c.setEventPublisher(config.getRequestEventPublisher());
         c.setApplicationResolver(config.getApplicationResolver());
     }
 }

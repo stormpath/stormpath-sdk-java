@@ -36,13 +36,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class AbstractSocialCallbackController extends AbstractController {
 
-    private String loginUri;
     private ApplicationResolver applicationResolver;
     protected Saver<AuthenticationResult> authenticationResultSaver;
-
-    public void setLoginUri(String loginUri) {
-        this.loginUri = loginUri;
-    }
 
     public void setApplicationResolver(ApplicationResolver applicationResolver) {
         this.applicationResolver = applicationResolver;
@@ -55,7 +50,6 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
     @Override
     public void init() throws Exception {
         Assert.hasText(nextUri, "nextUri cannot be null or empty.");
-        Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.notNull(applicationResolver, "applicationResolver cannot be null.");
         Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");

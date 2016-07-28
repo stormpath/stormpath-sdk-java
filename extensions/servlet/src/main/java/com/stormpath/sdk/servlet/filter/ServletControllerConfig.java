@@ -18,20 +18,13 @@ package com.stormpath.sdk.servlet.filter;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.impl.ConfigReader;
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.i18n.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +32,7 @@ import java.util.regex.Pattern;
  * @since 1.0.0
  */
 public class ServletControllerConfig implements ControllerConfig {
+
     private static final Logger log = LoggerFactory.getLogger(ServletControllerConfig.class);
 
     protected ConfigReader configReader;
@@ -82,46 +76,6 @@ public class ServletControllerConfig implements ControllerConfig {
     @Override
     public String getControllerKey() {
         return controllerKey;
-    }
-
-    @Override
-    public MessageSource getMessageSource() {
-        try {
-            return config.getInstance("stormpath.web.message.source");
-        } catch (ServletException e) {
-            log.error("Couldn't instantiate the default MessageSource instance", e);
-            return null;
-        }
-    }
-
-    @Override
-    public Resolver<Locale> getLocaleResolver() {
-        try {
-            return config.getInstance("stormpath.web.locale.resolver");
-        } catch (ServletException e) {
-            log.error("Couldn't instantiate the default LocaleResolver instance", e);
-            return null;
-        }
-    }
-
-    @Override
-    public CsrfTokenManager getCsrfTokenManager() {
-        try {
-            return config.getInstance("stormpath.web.csrf.token.manager");
-        } catch (ServletException e) {
-            log.error("Couldn't instantiate the default CsrfTokenManager instance", e);
-            return null;
-        }
-    }
-
-    @Override
-    public Publisher<RequestEvent> getRequestEventPublisher() {
-        try {
-            return config.getInstance("stormpath.web.request.event.publisher");
-        } catch (ServletException e) {
-            log.error("Couldn't instantiate the default RequestEventPublisher instance", e);
-            return null;
-        }
     }
 
     @Override

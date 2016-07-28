@@ -16,14 +16,9 @@
 package com.stormpath.spring.mvc;
 
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.FormFieldsFactory;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,39 +42,7 @@ abstract class AbstractSpringControllerConfig implements ControllerConfig, FormF
     protected abstract String[] getDefaultFieldOrder();
 
     @Autowired
-    protected MessageSource messageSource;
-
-    @Autowired
-    protected Resolver<Locale> localeResolver;
-
-    @Autowired
-    protected CsrfTokenManager csrfTokenManager;
-
-    @Autowired
-    protected Publisher<RequestEvent> eventPublisher;
-
-    @Autowired
     protected Environment env;
-
-    @Override
-    public MessageSource getMessageSource() {
-        return messageSource;
-    }
-
-    @Override
-    public Resolver<Locale> getLocaleResolver() {
-        return localeResolver;
-    }
-
-    @Override
-    public CsrfTokenManager getCsrfTokenManager() {
-        return csrfTokenManager;
-    }
-
-    @Override
-    public Publisher<RequestEvent> getRequestEventPublisher() {
-        return eventPublisher;
-    }
 
     private Map<String, Field> getDefaultFields() {
         Map<String, Field> fields = new LinkedHashMap<String, Field>();
@@ -162,7 +124,7 @@ abstract class AbstractSpringControllerConfig implements ControllerConfig, FormF
         }
     }
 
-    protected List<String> getDefaultDisableFields() {
-        return Collections.EMPTY_LIST;
+    protected List getDefaultDisableFields() {
+        return Collections.emptyList();
     }
 }

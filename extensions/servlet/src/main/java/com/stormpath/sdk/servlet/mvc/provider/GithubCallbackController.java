@@ -26,6 +26,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.apache.http.HttpResponse;
@@ -35,11 +36,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -97,8 +98,8 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
             nvps.add(new BasicNameValuePair("client_id", githubProvider[0].getClientId()));
             nvps.add(new BasicNameValuePair("client_secret", githubProvider[0].getClientSecret()));
 
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-            httpPost.addHeader("Accept", "application/json");
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8.displayName()));
+            httpPost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
 
             HttpResponse response = client.execute(httpPost);
             ObjectMapper objectMapper = new ObjectMapper();

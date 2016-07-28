@@ -19,19 +19,25 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.BiPredicate;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
+import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 
 import javax.servlet.ServletException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -42,6 +48,14 @@ public interface Config extends Map<String, String> {
     Client getClient();
 
     ApplicationResolver getApplicationResolver();
+
+    Resolver<Locale> getLocaleResolver();
+
+    CsrfTokenManager getCsrfTokenManager();
+
+    RequestFieldValueResolver getFieldValueResolver();
+
+    MessageSource getMessageSource();
 
     ControllerConfig getLoginConfig();
 
@@ -57,7 +71,11 @@ public interface Config extends Map<String, String> {
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();
 
+    AccountResolver getAccountResolver();
+
     AccountStoreResolver getAccountStoreResolver();
+
+    ContentNegotiationResolver getContentNegotiationResolver();
 
     Publisher<RequestEvent> getRequestEventPublisher();
 
