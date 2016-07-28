@@ -160,39 +160,13 @@ class ControllerTest {
 
     @Test
     void testControllersThatShouldAllowIfAuthenticated() {
-        def controllerConfigResolver = createNiceMock(ControllerConfig)
-        def messageSource = createNiceMock(MessageSource)
-        def localeResolver = createNiceMock(DefaultLocaleResolver)
-        def produces = "application/json,text/html"
-
-        expect(controllerConfigResolver.getNextUri()).andReturn "/"
-        expect(controllerConfigResolver.getUri()).andReturn "/"
-        expect(controllerConfigResolver.getMessageSource()).andReturn messageSource
-        expect(controllerConfigResolver.getLocaleResolver()).andReturn localeResolver
-        expect(controllerConfigResolver.getControllerKey()).andReturn "someKey"
-
-        expect(controllerConfigResolver.getNextUri()).andReturn "/"
-        expect(controllerConfigResolver.getUri()).andReturn "/"
-        expect(controllerConfigResolver.getMessageSource()).andReturn messageSource
-        expect(controllerConfigResolver.getLocaleResolver()).andReturn localeResolver
-        expect(controllerConfigResolver.getControllerKey()).andReturn "someKey"
-
-        expect(controllerConfigResolver.getNextUri()).andReturn "/"
-        expect(controllerConfigResolver.getUri()).andReturn "/"
-        expect(controllerConfigResolver.getMessageSource()).andReturn messageSource
-        expect(controllerConfigResolver.getLocaleResolver()).andReturn localeResolver
-        expect(controllerConfigResolver.getControllerKey()).andReturn "someKey"
-
-        replay controllerConfigResolver
-
-        def list = Collections.emptyList()
         [
-                new LogoutController(controllerConfigResolver, produces),
-                new SamlLogoutController(controllerConfigResolver, produces),
+                new LogoutController(),
+                new SamlLogoutController(),
                 new IdSiteController(),
-                new IdSiteLogoutController(controllerConfigResolver, produces),
+                new IdSiteLogoutController(),
                 new ChangePasswordController(),
-                new MeController(list)
+                new MeController([])
         ].each {
             assertFalse it.isNotAllowedIfAuthenticated()
         }
