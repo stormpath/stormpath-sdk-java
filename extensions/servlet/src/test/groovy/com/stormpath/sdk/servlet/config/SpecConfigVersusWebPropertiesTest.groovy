@@ -30,7 +30,7 @@ import static org.testng.Assert.assertEquals
  * A test that downloads the <a href="https://github.com/stormpath/stormpath-framework-spec/blob/master/example-config.yaml">web config
  * from the stormpath-framework-spec</a> and compares it with <code>com/stormpath/sdk/servlet/config/web.stormpath.properties</code>.
  *
- * This test will fail when a new property is added to the the spec's example-config.yaml but
+ * This test will fail when a new property is added to the spec's example-config.yaml but
  * it does not exist in <code>web.stormpath.properties</code>.
  *
  * @since 1.0.0
