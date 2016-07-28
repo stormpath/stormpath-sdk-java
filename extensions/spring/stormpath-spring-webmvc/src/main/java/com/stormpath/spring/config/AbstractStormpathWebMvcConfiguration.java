@@ -50,7 +50,6 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.DefaultContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.DefaultFilterChainManager;
-import com.stormpath.sdk.servlet.filter.DefaultFilterChainResolver;
 import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
@@ -906,6 +905,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setRegisterEnabledResolver(stormpathRegisterEnabledResolver());
         c.setRegisterUri(stormpathRegisterConfig().getUri());
         c.setLogoutUri(stormpathLogoutConfig().getUri());
+        c.setApplicationResolver(stormpathApplicationResolver());
         c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         c.setPreLoginHandler(loginPreHandler);
         c.setPostLoginHandler(loginPostHandler);
