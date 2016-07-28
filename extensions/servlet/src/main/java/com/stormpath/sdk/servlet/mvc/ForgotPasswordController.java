@@ -66,7 +66,7 @@ public class ForgotPasswordController extends FormController {
 
     protected String i18n(HttpServletRequest request, String key) {
         Locale locale = getLocaleResolver().get(request, null);
-        return messageSource.getMessage(key, locale);
+        return this.messageSource.getMessage(key, locale);
     }
 
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -91,23 +91,21 @@ public class ForgotPasswordController extends FormController {
     @Override
     protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
 
-        List<Field> fields = new ArrayList<Field>(1);
+        List<Field> fields = new ArrayList<>(1);
 
         RequestFieldValueResolver fieldValueResolver = getFieldValueResolver();
 
         String[] fieldNames = new String[]{ "email" };
 
         for (String fieldName : fieldNames) {
-
             DefaultField field = new DefaultField();
             field.setName(fieldName);
-            field.setLabel("stormpath.web.forgotPassword.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.forgotPassword.form.fields." + fieldName + ".placeholder");
+            field.setLabel(i18n(request, "stormpath.web.forgotPassword.form.fields." + fieldName + ".label"));
+            field.setPlaceholder(i18n(request, "stormpath.web.forgotPassword.form.fields." + fieldName + ".placeholder"));
             field.setRequired(true);
             field.setType("text");
             String val = fieldValueResolver.getValue(request, fieldName);
             field.setValue(val != null ? val : "");
-
             fields.add(field);
         }
 
@@ -118,7 +116,7 @@ public class ForgotPasswordController extends FormController {
     protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
         log.debug("Unable to send reset password email.", e);
 
-        List<ErrorModel> errors = new ArrayList<ErrorModel>(1);
+        List<ErrorModel> errors = new ArrayList<>(1);
         errors.add(ErrorModel.builder().setMessage("Invalid email address.").build());
 
         return errors;

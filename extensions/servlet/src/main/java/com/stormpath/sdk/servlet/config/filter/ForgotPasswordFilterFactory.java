@@ -31,7 +31,7 @@ public class ForgotPasswordFilterFactory extends FormControllerFilterFactory<For
 
     @Override
     protected ControllerConfig getResolver(Config config) {
-        return config.getLoginConfig();
+        return config.getForgotPasswordConfig();
     }
 
     @Override

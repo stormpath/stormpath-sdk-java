@@ -202,8 +202,8 @@ public class LoginController extends FormController {
      *
      * @param accountStores the list of account store models to check
      * @return {@code true} if the specified list represents a SAML-based Account Provider, {@code false} otherwise.
-     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/748">Isseue 748</a>
-     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/771">Isseue 771</a>
+     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/748">Issue 748</a>
+     * @see <a href="https://github.com/stormpath/stormpath-sdk-java/issues/771">Issue 771</a>
      * @since 1.0.0
      */
     private boolean containsSaml(List<AccountStoreModel> accountStores) {
