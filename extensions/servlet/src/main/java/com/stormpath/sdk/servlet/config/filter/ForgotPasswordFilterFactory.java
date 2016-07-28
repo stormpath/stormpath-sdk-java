@@ -38,6 +38,7 @@ public class ForgotPasswordFilterFactory extends FormControllerFilterFactory<For
     protected void doConfigure(ForgotPasswordController c, Config config) {
         c.setLoginUri(config.getLoginConfig().getUri());
         c.setView(config.getForgotPasswordConfig().getView());
+        c.setNextUri(config.getForgotPasswordConfig().getNextUri());
         c.setAccountStoreResolver(config.getAccountStoreResolver());
     }
 }
