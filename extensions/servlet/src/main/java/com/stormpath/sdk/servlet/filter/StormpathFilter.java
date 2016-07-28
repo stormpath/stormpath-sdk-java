@@ -49,8 +49,8 @@ public class StormpathFilter extends HttpFilter {
     private Application application;
 
     public StormpathFilter() {
-        this.clientRequestAttributeNames = java.util.Collections.emptySet();
-        this.applicationRequestAttributeNames = java.util.Collections.emptySet();
+        this.clientRequestAttributeNames = Collections.emptySet();
+        this.applicationRequestAttributeNames = Collections.emptySet();
     }
 
     public void setFilterChainResolver(FilterChainResolver filterChainResolver) {
