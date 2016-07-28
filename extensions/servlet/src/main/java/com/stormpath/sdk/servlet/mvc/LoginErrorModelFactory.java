@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ public class LoginErrorModelFactory extends AbstractErrorModelFactory {
     private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
 
     public LoginErrorModelFactory(MessageSource messageSource) {
+        Assert.notNull(messageSource, "MessageSource cannot be null.");
         this.messageSource = messageSource;
     }
 

@@ -16,17 +16,20 @@
 package com.stormpath.sdk.servlet.filter.mvc;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
-import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
 import com.stormpath.sdk.servlet.http.MediaType;
-import com.stormpath.sdk.servlet.mvc.*;
+import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
+import com.stormpath.sdk.servlet.mvc.InternalResourceViewResolver;
+import com.stormpath.sdk.servlet.mvc.JacksonView;
+import com.stormpath.sdk.servlet.mvc.View;
+import com.stormpath.sdk.servlet.mvc.ViewModel;
+import com.stormpath.sdk.servlet.mvc.ViewResolver;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -48,7 +51,7 @@ public class ControllerFilter extends HttpFilter {
 
     private String prefix = "/WEB-INF/jsp/stormpath/";
     private String suffix = ".jsp";
-
+    private List<MediaType> producedMediaTypes;
     private ViewResolver viewResolver;
 
     public Controller getController() {
@@ -75,14 +78,22 @@ public class ControllerFilter extends HttpFilter {
         this.suffix = suffix;
     }
 
-    @Override
-    protected void onInit() throws ServletException {
-        Assert.notNull(controller, "Controller instance must be configured.");
+    public List<MediaType> getProducedMediaTypes() {
+        return producedMediaTypes;
+    }
 
+    public void setProducedMediaTypes(List<MediaType> producedMediaTypes) {
+        this.producedMediaTypes = producedMediaTypes;
+    }
+
+    @Override
+    protected void onInit() throws Exception {
+        Assert.notNull(controller, "Controller instance must be configured.");
+        Assert.notEmpty(producedMediaTypes, "producedMediaTypes property cannot be null or empty.");
         InternalResourceViewResolver irvr = new InternalResourceViewResolver();
         irvr.setPrefix(getPrefix());
         irvr.setSuffix(getSuffix());
-        this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), producesMediaTypes());
+        this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), producedMediaTypes);
     }
 
     @Override
@@ -121,24 +132,11 @@ public class ControllerFilter extends HttpFilter {
         log.debug("Rendering view '{}' for request URI [{}]", vm.getViewName(), request.getRequestURI());
         View view = this.viewResolver.getView(vm, request);
         if (view != null) {
-            if(view instanceof JacksonView) {
+            if (view instanceof JacksonView) {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             }
             view.render(request, response, vm);
         }
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-    }
-
-    /** @since 1.0.0 */
-    protected List<MediaType> producesMediaTypes() {
-        String mediaTypes = Strings.clean(getConfig().getProducesMediaTypes());
-        Assert.notNull(mediaTypes, "stormpath.web.produces property value cannot be null or empty.");
-
-        try {
-            return MediaType.parseMediaTypes(mediaTypes);
-        } catch (InvalidMediaTypeException e) {
-            String msg = "Unable to parse value in stormpath.web.produces property: " + e.getMessage();
-            throw new IllegalArgumentException(msg, e);
-        }
     }
 }

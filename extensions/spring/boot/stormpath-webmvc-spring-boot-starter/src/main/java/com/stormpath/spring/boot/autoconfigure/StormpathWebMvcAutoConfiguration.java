@@ -22,17 +22,19 @@ import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationLoader;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.client.ClientLoader;
-import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEventListener;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
+import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
@@ -50,11 +52,12 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import com.stormpath.spring.config.AccessTokenCookieProperties;
 import com.stormpath.spring.config.RefreshTokenCookieProperties;
-import com.stormpath.spring.mvc.ChangePasswordControllerConfigResolver;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -87,7 +90,6 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -267,6 +269,13 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @Override
+    public RequestFieldValueResolver stormpathFieldValueResolver() {
+        return super.stormpathFieldValueResolver();
     }
 
     @Bean
@@ -502,12 +511,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathInternalConfig")
-    public Config stormpathInternalConfig() {
-        return super.stormpathInternalConfig();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathIdSiteResultController")
     public Controller stormpathIdSiteResultController() {
         return super.stormpathIdSiteResultController();
@@ -595,9 +598,17 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean
     @Override
     public FilterChainResolver stormpathFilterChainResolver() {
         return super.stormpathFilterChainResolver();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @Override
+    public FilterChainManager stormpathFilterChainManager() {
+        return super.stormpathFilterChainManager();
     }
 
     public Collection<String> stormpathFilterUrlPatterns() {
@@ -623,20 +634,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @Bean
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter() {
-
-        StormpathFilter filter = new StormpathFilter() {
-            @Override
-            protected void onInit() throws ServletException {
-                //no op - we apply dependencies via setters below
-            }
-        };
-
-        filter.setEnabled(stormpathFilterEnabled);
-        filter.setClientRequestAttributeNames(stormpathRequestClientAttributeNames());
-        filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
-        filter.setFilterChainResolver(stormpathFilterChainResolver());
-        filter.setWrappedServletRequestFactory(stormpathWrappedServletRequestFactory());
-
+        StormpathFilter filter = newStormpathFilter();
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(filter);
         bean.setEnabled(stormpathFilterEnabled);
@@ -654,40 +652,53 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathAccountResolverFilter();
     }
 
-
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathLoginControllerConfigResolver")
-    public ControllerConfigResolver stormpathLoginControllerConfigResolver() {
-        return super.stormpathLoginControllerConfigResolver();
+    @ConditionalOnMissingBean
+    @Override
+    public AccountResolver stormpathAccountResolver() {
+        return super.stormpathAccountResolver();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathForgotPasswordControllerConfigResolver")
-    public ControllerConfigResolver stormpathForgotPasswordControllerConfigResolver() {
-        return super.stormpathForgotPasswordControllerConfigResolver();
+    @ConditionalOnMissingBean
+    @Override
+    public ContentNegotiationResolver stormpathContentNegotiationResolver() {
+        return super.stormpathContentNegotiationResolver();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathRegisterControllerConfigResolver")
-    public ControllerConfigResolver stormpathRegisterControllerConfigResolver() {
-        return super.stormpathRegisterControllerConfigResolver();
+    @ConditionalOnMissingBean(name = "stormpathLoginConfig")
+    public ControllerConfig stormpathLoginConfig() {
+        return super.stormpathLoginConfig();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathChangePasswordControllerConfigResolver")
-    public ChangePasswordControllerConfigResolver stormpathChangePasswordControllerConfigResolver() {
-        return super.stormpathChangePasswordControllerConfigResolver();
+    @ConditionalOnMissingBean(name = "stormpathForgotPasswordConfig")
+    public ControllerConfig stormpathForgotPasswordConfig() {
+        return super.stormpathForgotPasswordConfig();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathLogoutControllerConfigResolver")
-    public ControllerConfigResolver stormpathLogoutControllerConfigResolver() {
-        return super.stormpathLogoutControllerConfigResolver();
+    @ConditionalOnMissingBean(name = "stormpathRegisterConfig")
+    public ControllerConfig stormpathRegisterConfig() {
+        return super.stormpathRegisterConfig();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathVerifyControllerConfigResolver")
-    public ControllerConfigResolver stormpathVerifyControllerConfigResolver() {
-        return super.stormpathVerifyControllerConfigResolver();
+    @ConditionalOnMissingBean(name = "stormpathChangePasswordConfig")
+    public ChangePasswordControllerConfig stormpathChangePasswordConfig() {
+        return super.stormpathChangePasswordConfig();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathLogoutConfig")
+    public ControllerConfig stormpathLogoutConfig() {
+        return super.stormpathLogoutConfig();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathVerifyConfig")
+    public ControllerConfig stormpathVerifyConfig() {
+        return super.stormpathVerifyConfig();
     }
 }

@@ -16,8 +16,6 @@
 package com.stormpath.sdk.servlet.saml;
 
 import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationContext;
-import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

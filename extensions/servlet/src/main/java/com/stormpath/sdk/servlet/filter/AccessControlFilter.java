@@ -15,10 +15,9 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.config.UriCleaner;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,21 +26,34 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class AccessControlFilter extends HttpFilter {
 
-    protected String loginUrl;
-    protected String accessTokenUrl;
-
-    protected static final String UNAUTHENTICATED_HANDLER = "stormpath.web.authc.unauthenticatedHandler";
-    protected static final String UNAUTHORIZED_HANDLER = "stormpath.web.authz.unauthorizedHandler";
+    private String loginUrl;
+    private String accessTokenUrl;
     private UnauthenticatedHandler unauthenticatedHandler;
     private UnauthorizedHandler unauthorizedHandler;
 
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+    }
+
+    public void setAccessTokenUrl(String accessTokenUrl) {
+        this.accessTokenUrl = accessTokenUrl;
+    }
+
+    public void setUnauthenticatedHandler(UnauthenticatedHandler unauthenticatedHandler) {
+        this.unauthenticatedHandler = unauthenticatedHandler;
+    }
+
+    public void setUnauthorizedHandler(UnauthorizedHandler unauthorizedHandler) {
+        this.unauthorizedHandler = unauthorizedHandler;
+    }
+
     @Override
-    protected void onInit() throws ServletException {
+    protected void onInit() throws Exception {
         super.onInit();
-        this.loginUrl = UriCleaner.INSTANCE.clean(getConfig().getLoginControllerConfig().getUri());
-        this.accessTokenUrl = UriCleaner.INSTANCE.clean(getConfig().getAccessTokenUrl());
-        this.unauthenticatedHandler = getConfig().getInstance(UNAUTHENTICATED_HANDLER);
-        this.unauthorizedHandler = getConfig().getInstance(UNAUTHORIZED_HANDLER);
+        Assert.hasText(loginUrl, "loginUrl cannot be null or empty.");
+        Assert.hasText(accessTokenUrl, "accessTokenUrl cannot be null or empty.");
+        Assert.notNull(this.unauthenticatedHandler, "unauthenticatedHandler cannot be null.");
+        Assert.notNull(this.unauthorizedHandler, "unauthorizedHandler cannot be null.");
     }
 
     public UnauthenticatedHandler getUnauthenticatedHandler() {

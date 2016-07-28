@@ -18,7 +18,6 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
@@ -30,12 +29,8 @@ public class IdSiteLogoutController extends LogoutController {
 
     private ServerUriResolver serverUriResolver;
     private String idSiteResultUri;
-    private Controller idSiteController; //not injected - created during init()
     private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
-
-    public IdSiteLogoutController(ControllerConfigResolver logoutControllerConfigResolver, String produces) {
-        super(logoutControllerConfigResolver, produces);
-    }
+    private Controller idSiteController; //not injected - created during init()
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
@@ -50,15 +45,19 @@ public class IdSiteLogoutController extends LogoutController {
     }
 
     public void init() {
+        super.init();
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
+        Assert.hasText(idSiteResultUri, "idSiteResultUri must be configured.");
+        Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationController must be configured.");
+
         IdSiteController controller = new LogoutIdSiteController();
+        controller.setAlreadyLoggedInUri(nextUri); //this will not really have any affect on logout but we need to set it otherwise controller#init() will throw
         controller.setServerUriResolver(serverUriResolver);
         controller.setCallbackUri(idSiteResultUri);
         controller.setIdSiteOrganizationResolver(idSiteOrganizationResolver);
-        controller.setAlreadyLoggedInUri(nextUri); //this will not really have any affect on logout but we need to set it otherwise controller#init() will throw
         controller.init();
+
         this.idSiteController = controller;
-        super.init();
     }
 
     @Override
