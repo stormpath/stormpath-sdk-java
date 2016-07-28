@@ -15,10 +15,20 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
+import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.AccountStoreVisitor;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.http.HttpMethod;
+import com.stormpath.sdk.impl.provider.DefaultGithubProvider;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
@@ -26,6 +36,13 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +50,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +62,8 @@ import java.util.Map;
  */
 public abstract class AbstractController implements Controller {
 
+    private static final String GITHUB_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
+    private static final String GITHUB_ACCESS_TOKEN_FIELD = "access_token";
     private static final Logger log = LoggerFactory.getLogger(AbstractController.class);
 
     private static final HttpServlet DEFAULT_HANDLER = new HttpServlet() {
@@ -54,6 +75,7 @@ public abstract class AbstractController implements Controller {
     protected MessageSource messageSource;
     protected Publisher<RequestEvent> eventPublisher;
     protected List<MediaType> produces;
+    protected ApplicationResolver applicationResolver;
 
     private String controllerKey;
     private Resolver<Locale> localeResolver;
@@ -138,6 +160,10 @@ public abstract class AbstractController implements Controller {
 
     public void setContentNegotiationResolver(ContentNegotiationResolver contentNegotiationResolver) {
         this.contentNegotiationResolver = contentNegotiationResolver;
+    }
+
+    public void setApplicationResolver(ApplicationResolver applicationResolver) {
+        this.applicationResolver = applicationResolver;
     }
 
     public void init() throws Exception {
@@ -252,6 +278,69 @@ public abstract class AbstractController implements Controller {
                 String msg = "Unable to publish registered account request event: " + ex.getMessage();
                 throw new ServletException(msg, ex);
             }
+        }
+    }
+
+    protected Application getApplication(HttpServletRequest request) {
+        return applicationResolver.getApplication(request);
+    }
+
+    /**
+     * This method is for exchanging a code for an access token with GitHub. Needed by LoginController
+     * and GithubCallbackController, hence the reason it's in a common parent class.
+     * @param code The code from GitHub
+     * @param request The current request
+     * @return an access token
+     */
+    protected String exchangeGithubCodeForAccessToken(String code, HttpServletRequest request) {
+        final DefaultGithubProvider[] githubProvider = new DefaultGithubProvider[1];
+
+        for (ApplicationAccountStoreMapping mapping : getApplication(request).getAccountStoreMappings()) {
+            AccountStore accountStore = mapping.getAccountStore();
+
+            AccountStoreVisitor accountStoreVisitor = new AccountStoreVisitor() {
+                @Override
+                public void visit(Group group) {
+                }
+
+                @Override
+                public void visit(Directory directory) {
+                    if ("github".equals(directory.getProvider().getProviderId())) {
+                        githubProvider[0] = (DefaultGithubProvider) directory.getProvider();
+                    }
+                }
+
+                @Override
+                public void visit(Organization organization) {
+
+                }
+            };
+            accountStore.accept(accountStoreVisitor);
+        }
+
+        Assert.notNull(githubProvider[0], "githubProvider cannot be null.");
+
+        HttpClient client = HttpClientBuilder.create().build();
+
+        try {
+            HttpPost httpPost = new HttpPost(GITHUB_ACCESS_TOKEN_URL);
+            List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+            nvps.add(new BasicNameValuePair("code", code));
+            nvps.add(new BasicNameValuePair("client_id", githubProvider[0].getClientId()));
+            nvps.add(new BasicNameValuePair("client_secret", githubProvider[0].getClientSecret()));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8.displayName()));
+            httpPost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+            HttpResponse response = client.execute(httpPost);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            //noinspection unchecked
+            Map<String, String> result = objectMapper.readValue(response.getEntity().getContent(), Map.class);
+            return result.get(GITHUB_ACCESS_TOKEN_FIELD);
+        } catch (Exception e) {
+            log.error("Couldn't exchange GitHub oAuth code for an access token", e);
+            throw new RuntimeException(e);
         }
     }
 }
