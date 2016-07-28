@@ -40,7 +40,7 @@ public class DefaultLoginPageRedirector implements LoginPageRedirector {
         //automatically execute automatically (not idempotent, etc), so we just return to the default login 'nextUrl'
         //if not a GET
 
-        String loginUri = config.getLoginControllerConfig().getUri();
+        String loginUri = config.getLoginConfig().getUri();
 
         String method = request.getMethod();
         if (method.equalsIgnoreCase("GET")) {

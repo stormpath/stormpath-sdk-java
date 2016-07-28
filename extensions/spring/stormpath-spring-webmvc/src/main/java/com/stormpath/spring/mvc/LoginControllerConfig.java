@@ -15,49 +15,55 @@
  */
 package com.stormpath.spring.mvc;
 
+import com.stormpath.sdk.servlet.mvc.FormFieldsFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @since 1.0.0
  */
-public class LogoutControllerConfigResolver extends AbstractSpringControllerConfigResolver {
+public class LoginControllerConfig extends AbstractSpringControllerConfig implements FormFieldsFactory {
 
-    @Value("#{ @environment['stormpath.web.logout.enabled'] ?: true }")
-    protected boolean logoutEnabled;
+    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"login", "password"};
 
-    @Value("#{ @environment['stormpath.web.logout.uri'] ?: '/logout' }")
-    protected String logoutUri;
+    @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
+    private boolean loginEnabled;
 
-    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/' }")
-    protected String logoutNextUri;
+    @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
+    private String loginUri;
+
+    @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
+    private String loginNextUri;
+
+    @Value("#{ @environment['stormpath.web.login.view'] ?: 'stormpath/login' }")
+    private String loginView;
 
     @Override
     public String getView() {
-        return null;
+        return loginView;
     }
 
     @Override
     public String getUri() {
-        return logoutUri;
+        return loginUri;
     }
 
     @Override
     public String getNextUri() {
-        return logoutNextUri;
+        return loginNextUri;
     }
 
     @Override
     public boolean isEnabled() {
-        return logoutEnabled;
+        return loginEnabled;
     }
 
     @Override
     public String getControllerKey() {
-        return "logout";
+        return "login";
     }
 
     @Override
     protected String[] getDefaultFieldOrder() {
-        return new String[0];
+        return DEFAULT_FIELD_NAMES;
     }
 }

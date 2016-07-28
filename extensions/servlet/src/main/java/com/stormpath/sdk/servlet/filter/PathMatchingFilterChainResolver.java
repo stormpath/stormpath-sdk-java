@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,7 +37,7 @@ public class PathMatchingFilterChainResolver implements FilterChainResolver {
 
     private PatternMatcher pathMatcher;
 
-    public PathMatchingFilterChainResolver(ServletContext servletContext) throws ServletException {
+    public PathMatchingFilterChainResolver(ServletContext servletContext) {
         this.pathMatcher = new AntPathMatcher();
         this.filterChainManager = new DefaultFilterChainManager(servletContext);
     }
@@ -49,7 +48,7 @@ public class PathMatchingFilterChainResolver implements FilterChainResolver {
      * default implementation is an {@link AntPathMatcher AntPathMatcher}.
      *
      * @return the {@code PatternMatcher} used when determining if an incoming request's path
-     *         matches a configured filter chain.
+     * matches a configured filter chain.
      */
     public PatternMatcher getPathMatcher() {
         return pathMatcher;
@@ -71,7 +70,6 @@ public class PathMatchingFilterChainResolver implements FilterChainResolver {
         return filterChainManager;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public void setFilterChainManager(FilterChainManager filterChainManager) {
         this.filterChainManager = filterChainManager;
     }
@@ -93,7 +91,7 @@ public class PathMatchingFilterChainResolver implements FilterChainResolver {
             if (pathMatches(pathPattern, requestUri)) {
                 if (log.isTraceEnabled()) {
                     log.trace("Matched path pattern [" + pathPattern + "] for requestUri [" + requestUri + "].  " +
-                              "Utilizing corresponding filter chain...");
+                        "Utilizing corresponding filter chain...");
                 }
                 return filterChainManager.proxy(originalChain, pathPattern);
             }
@@ -115,7 +113,7 @@ public class PathMatchingFilterChainResolver implements FilterChainResolver {
      * @param pattern the pattern to match against
      * @param path    the value to match with the specified {@code pattern}
      * @return {@code true} if the request {@code path} matches the specified filter chain url {@code pattern},
-     *         {@code false} otherwise.
+     * {@code false} otherwise.
      */
     protected boolean pathMatches(String pattern, String path) {
         PatternMatcher pathMatcher = getPathMatcher();

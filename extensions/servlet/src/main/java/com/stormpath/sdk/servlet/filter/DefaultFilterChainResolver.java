@@ -15,26 +15,17 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
-
-import javax.servlet.ServletException;
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @since 1.0.0
  */
-public class FacebookCallbackFilter extends ControllerFilter {
+public class DefaultFilterChainResolver implements FilterChainResolver {
 
     @Override
-    protected void onInit() throws ServletException {
-        FacebookCallbackController facebookCallbackController = new FacebookCallbackController(
-                getConfig().getLoginControllerConfig().getNextUri(),
-                getConfig().getAuthenticationResultSaver(),
-                getConfig().getRequestEventPublisher()
-        );
-
-        setController(facebookCallbackController);
-
-        super.onInit();
+    public FilterChain getChain(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+        return chain;
     }
 }

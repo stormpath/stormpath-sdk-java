@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.config.filter;
 
-import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
-
-import javax.servlet.ServletException;
+import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
 
 /**
- * @since 1.0.RC3
+ * @since 1.0.0
  */
-public class ChangePasswordFilter extends ControllerFilter {
+public class GithubCallbackFilterFactory extends SocialCallbackControllerFilterFactory<GithubCallbackController> {
 
     @Override
-    protected void onInit() throws ServletException {
-
-        ChangePasswordController controller = new ChangePasswordController(getConfig());
-
-        setController(controller);
-
-        super.onInit();
+    protected GithubCallbackController newController() {
+        return new GithubCallbackController();
     }
 }
-
-

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.config.filter;
 
-import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
-
-import javax.servlet.ServletException;
+import com.stormpath.sdk.servlet.mvc.provider.LinkedinCallbackController;
 
 /**
- * @since 1.0.RC3
+ * @since 1.0.0
  */
-public class ForgotPasswordFilter extends ControllerFilter {
+public class LinkedInCallbackFilterFactory extends SocialCallbackControllerFilterFactory<LinkedinCallbackController> {
 
     @Override
-    protected void onInit() throws ServletException {
-        ForgotPasswordController controller = new ForgotPasswordController(getConfig());
-
-        setController(controller);
-
-        super.onInit();
+    protected LinkedinCallbackController newController() {
+        return new LinkedinCallbackController();
     }
 }

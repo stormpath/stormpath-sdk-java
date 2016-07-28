@@ -30,27 +30,26 @@ import javax.servlet.ServletRequest;
  */
 public class DefaultApplicationResolver implements ApplicationResolver {
 
-    public static final String STORMPATH_APPLICATION_HREF =
-        DefaultServletContextClientFactory.STORMPATH_APPLICATION_HREF;
+    public static final String STORMPATH_APPLICATION_HREF = DefaultServletContextClientFactory.STORMPATH_APPLICATION_HREF;
 
     private static final String APP_HREF_ERROR =
         "The application's stormpath.properties configuration does not have a " + STORMPATH_APPLICATION_HREF +
-        " property defined.  This property is required when looking up an application by ServletContext and " +
-        "you have more than one application registered in Stormpath.  For example:\n\n" +
-        " # in stormpath.properties:\n" +
-        " " + STORMPATH_APPLICATION_HREF + " = YOUR_STORMPATH_APPLICATION_HREF_HERE\n";
+            " property defined.  This property is required when looking up an application by ServletContext and " +
+            "you have more than one application registered in Stormpath.  For example:\n\n" +
+            " # in stormpath.properties:\n" +
+            " " + STORMPATH_APPLICATION_HREF + " = YOUR_STORMPATH_APPLICATION_HREF_HERE\n";
 
     protected Client getClient(ServletContext sc) {
-        Client client = (Client)sc.getAttribute(Client.class.getName());
+        Client client = (Client) sc.getAttribute(Client.class.getName());
         Assert.notNull(client, "Stormpath Client instance is not available in the ServletContext.  Ensure the " +
-                               "ClientLoaderListener is defined before the ApplicationLoaderListener.");
+            "ClientLoaderListener is defined before the ApplicationLoaderListener.");
         return client;
     }
 
     protected Config getConfig(ServletContext servletContext) {
-        Config config = (Config)servletContext.getAttribute(Config.class.getName());
+        Config config = (Config) servletContext.getAttribute(Config.class.getName());
         Assert.notNull(config, "Stormpath Config instance is not available in the ServletContext.  Ensure the " +
-                               "ConfigLoaderListener is defined before the ApplicationLoaderListener.");
+            "ConfigLoaderListener is defined before the ApplicationLoaderListener.");
         return config;
     }
 
@@ -60,7 +59,7 @@ public class DefaultApplicationResolver implements ApplicationResolver {
         Object attribute = servletRequest.getAttribute(Application.class.getName());
         if (attribute != null) {
             Assert.isInstanceOf(Application.class, attribute);
-            return (Application)attribute;
+            return (Application) attribute;
         }
 
         return getApplication(servletRequest.getServletContext());
@@ -70,6 +69,15 @@ public class DefaultApplicationResolver implements ApplicationResolver {
     public Application getApplication(final ServletContext servletContext) {
 
         Assert.notNull(servletContext, "ServletContext argument cannot be null.");
+
+        //see if it has been added to the servlet context yet:
+        Object attribute = servletContext.getAttribute(Application.class.getName());
+        if (attribute != null) {
+            Assert.isInstanceOf(Application.class, attribute);
+            return (Application) attribute;
+        }
+
+        //otherwise we have to do a lookup via the client and cache the result in the app context:
 
         //get the client:
         Client client = getClient(servletContext);
@@ -82,6 +90,8 @@ public class DefaultApplicationResolver implements ApplicationResolver {
             Config config = getConfig(servletContext);
             href = config.get(STORMPATH_APPLICATION_HREF);
         }
+
+        Application application;
 
         if (href == null) {
 
@@ -108,20 +118,25 @@ public class DefaultApplicationResolver implements ApplicationResolver {
                 servletContext.setAttribute(STORMPATH_APPLICATION_HREF, single.getHref());
             }
 
-            return single;
+            application = single;
 
         } else {
             Assert.hasText(href, "The specified " + STORMPATH_APPLICATION_HREF + " property value cannot be empty.");
 
             //now lookup the app (will be cached when caching is turned on in the SDK):
             try {
-                return client.getResource(href, Application.class);
+                application = client.getResource(href, Application.class);
             } catch (Exception e) {
                 String msg = "Unable to lookup Stormpath application reference by " + STORMPATH_APPLICATION_HREF +
-                             " [" + href + "].  Please ensure this href is accurate and reflects an application " +
-                             "registered in Stormpath.";
+                    " [" + href + "].  Please ensure this href is accurate and reflects an application " +
+                    "registered in Stormpath.";
                 throw new IllegalArgumentException(msg, e);
             }
         }
+
+        //cache for future lookups:
+        servletContext.setAttribute(Application.class.getName(), application);
+
+        return application;
     }
 }

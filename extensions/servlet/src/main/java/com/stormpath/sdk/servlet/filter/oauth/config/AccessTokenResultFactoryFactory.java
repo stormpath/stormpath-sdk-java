@@ -17,7 +17,6 @@ package com.stormpath.sdk.servlet.filter.oauth.config;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationJwtFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenResultFactory;
 

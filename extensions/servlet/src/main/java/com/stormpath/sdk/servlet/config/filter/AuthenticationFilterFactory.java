@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.config.filter;
 
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.impl.ConfigReader;
+import com.stormpath.sdk.servlet.filter.AuthenticationFilter;
 
 /**
  * @since 1.0.0
  */
-public class ChangePasswordServletControllerConfigResolver extends ServletControllerConfigResolver implements ChangePasswordConfigResolver {
+public class AuthenticationFilterFactory extends AccessControlFilterFactory<AuthenticationFilter> {
 
-    public ChangePasswordServletControllerConfigResolver(Config config, ConfigReader configReader, String controllerKey) {
-        super(config, configReader, controllerKey);
+    @Override
+    protected AuthenticationFilter newInstance() {
+        return new AuthenticationFilter();
     }
 
-    public String getErrorUri() {
-        return configReader.getString("stormpath.web." + getControllerKey() + ".errorUri");
-    }
-
-    public boolean isAutoLogin() {
-        return configReader.getBoolean("stormpath.web." + getControllerKey() + ".autoLogin");
+    @Override
+    protected void configure(AuthenticationFilter f, Config config) {
+        f.setLoginUrl(config.getLoginConfig().getUri());
+        f.setAccessTokenUrl(config.getAccessTokenUrl());
     }
 }

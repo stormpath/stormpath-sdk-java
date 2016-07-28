@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.config.filter;
 
-import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 
-import javax.servlet.ServletException;
-
 /**
- * @since 1.0.RC3
+ * @since 1.0.0
  */
-public class LogoutFilter extends ControllerFilter {
+public class LogoutFilterFactory extends ControllerFilterFactory<LogoutController> {
 
     @Override
-    protected void onInit() throws ServletException {
-        LogoutController c = new LogoutController(getConfig().getLogoutControllerConfig(), getConfig().getProducesMediaTypes());
-        c.setLogoutInvalidateHttpSession(getConfig().isLogoutInvalidateHttpSession())
-            .setLogoutNextUri(getConfig().getLogoutControllerConfig().getNextUri());
-        setController(c);
-        super.onInit();
+    protected LogoutController newController() {
+        return new LogoutController();
+    }
+
+    @Override
+    protected void configure(LogoutController c, Config config) throws Exception {
+        c.setNextUri(config.getLogoutConfig().getNextUri());
+        //c.setInvalidateHttpSession(); support this in plain servlet mode?
     }
 }

@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.config.filter;
 
-import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 
-import javax.servlet.ServletException;
-
 /**
  * @since 1.0.0
  */
-public class SamlFilter extends ControllerFilter {
+public class SamlFilterFactory extends ControllerFilterFactory<SamlController> {
 
     @Override
-    protected void onInit() throws ServletException {
+    protected SamlController newController() {
+        return new SamlController();
+    }
+
+    @Override
+    protected void configure(SamlController c, Config config) throws Exception {
+
         SubdomainResolver subdomainResolver = new SubdomainResolver();
-        subdomainResolver.setBaseDomainName(getConfig().get("stormpath.web.application.domain"));
+        subdomainResolver.setBaseDomainName(config.get("stormpath.web.application.domain"));
 
         DefaultOrganizationNameKeyResolver organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
         organizationNameKeyResolver.setSubdomainResolver(subdomainResolver);
@@ -39,14 +44,9 @@ public class SamlFilter extends ControllerFilter {
         DefaultSamlOrganizationResolver samlOrganizationResolver = new DefaultSamlOrganizationResolver();
         samlOrganizationResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
 
-        SamlController controller = new SamlController();
-        controller.setServerUriResolver(new DefaultServerUriResolver());
-        controller.setCallbackUri(getConfig().get("stormpath.web.callback.uri"));
-        controller.setAlreadyLoggedInUri(getConfig().getLoginControllerConfig().getNextUri());
-        controller.setSamlOrganizationResolver(samlOrganizationResolver);
-        controller.init();
-
-        setController(controller);
-        super.onInit();
+        c.setServerUriResolver(new DefaultServerUriResolver());
+        c.setCallbackUri(getConfig().get("stormpath.web.callback.uri"));
+        c.setAlreadyLoggedInUri(getConfig().getLoginConfig().getNextUri());
+        c.setSamlOrganizationResolver(samlOrganizationResolver);
     }
 }

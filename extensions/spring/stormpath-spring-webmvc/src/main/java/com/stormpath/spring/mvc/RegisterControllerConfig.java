@@ -15,55 +15,62 @@
  */
 package com.stormpath.spring.mvc;
 
-import com.stormpath.sdk.servlet.mvc.FormFieldsFactory;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @since 1.0.0
  */
-public class LoginControllerConfigResolver extends AbstractSpringControllerConfigResolver implements FormFieldsFactory {
+public class RegisterControllerConfig extends AbstractSpringControllerConfig {
 
-    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"login", "password"};
+    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"username", "givenName", "middleName", "surname", "email", "password", "confirmPassword"};
 
-    @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
-    private boolean loginEnabled;
+    @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
+    protected boolean registerEnabled;
 
-    @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
-    private String loginUri;
+    @Value("#{ @environment['stormpath.web.register.uri'] ?: '/register' }")
+    protected String registerUri;
 
-    @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
-    private String loginNextUri;
+    @Value("#{ @environment['stormpath.web.register.nextUri'] ?: '/' }")
+    protected String registerNextUri;
 
-    @Value("#{ @environment['stormpath.web.login.view'] ?: 'stormpath/login' }")
-    private String loginView;
+    @Value("#{ @environment['stormpath.web.register.view'] ?: 'stormpath/register' }")
+    protected String registerView;
 
     @Override
     public String getView() {
-        return loginView;
+        return registerView;
     }
 
     @Override
     public String getUri() {
-        return loginUri;
+        return registerUri;
     }
 
     @Override
     public String getNextUri() {
-        return loginNextUri;
+        return registerNextUri;
     }
 
     @Override
     public boolean isEnabled() {
-        return loginEnabled;
+        return registerEnabled;
     }
 
     @Override
     public String getControllerKey() {
-        return "login";
+        return "register";
     }
 
     @Override
     protected String[] getDefaultFieldOrder() {
         return DEFAULT_FIELD_NAMES;
+    }
+
+    @Override
+    protected List<String> getDefaultDisableFields() {
+        return Arrays.asList("username", "middleName", "confirmPassword");
     }
 }

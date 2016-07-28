@@ -17,19 +17,29 @@ package com.stormpath.sdk.servlet.config;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.BiPredicate;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
+import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
+import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 
 import javax.servlet.ServletException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -37,23 +47,37 @@ import java.util.Map;
  */
 public interface Config extends Map<String, String> {
 
+    Client getClient();
+
     ApplicationResolver getApplicationResolver();
 
-    ControllerConfigResolver getLoginControllerConfig();
+    Resolver<Locale> getLocaleResolver();
 
-    ControllerConfigResolver getLogoutControllerConfig();
+    CsrfTokenManager getCsrfTokenManager();
 
-    ControllerConfigResolver getRegisterControllerConfig();
+    RequestFieldValueResolver getFieldValueResolver();
 
-    ControllerConfigResolver getForgotPasswordControllerConfig();
+    MessageSource getMessageSource();
 
-    ControllerConfigResolver getVerifyControllerConfig();
+    ControllerConfig getLoginConfig();
 
-    ChangePasswordConfigResolver getChangePasswordControllerConfig();
+    ControllerConfig getLogoutConfig();
+
+    ControllerConfig getRegisterConfig();
+
+    ControllerConfig getForgotPasswordConfig();
+
+    ControllerConfig getVerifyConfig();
+
+    ChangePasswordConfig getChangePasswordConfig();
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();
 
+    AccountResolver getAccountResolver();
+
     AccountStoreResolver getAccountStoreResolver();
+
+    ContentNegotiationResolver getContentNegotiationResolver();
 
     Publisher<RequestEvent> getRequestEventPublisher();
 
@@ -92,6 +116,10 @@ public interface Config extends Map<String, String> {
 
     Resolver<Boolean> getRegisterEnabledResolver();
 
+    FilterChainManager getFilterChainManager();
+
+    FilterChainResolver getFilterChainResolver();
+
     <T> T getInstance(String classPropertyName) throws ServletException;
 
     <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException;
@@ -100,6 +128,11 @@ public interface Config extends Map<String, String> {
      * @since 1.0.0
      */
     String getProducesMediaTypes();
+
+    /**
+     * @since 1.0.0
+     */
+    List<MediaType> getProducedMediaTypes();
 
     /**
      * @since 1.0.0

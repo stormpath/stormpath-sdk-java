@@ -19,13 +19,10 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
-import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
-import com.stormpath.sdk.servlet.i18n.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,25 +43,20 @@ public class ForgotPasswordController extends FormController {
 
     private String loginUri;
     private AccountStoreResolver accountStoreResolver;
-    private Resolver<Locale> localeResolver;
-    private MessageSource messageSource;
 
-    public ForgotPasswordController() {
-        super();
+    public void setLoginUri(String loginUri) {
+        this.loginUri = loginUri;
     }
 
-    public ForgotPasswordController(Config config) {
-        super(config.getForgotPasswordControllerConfig(), config.getProducesMediaTypes());
+    public void setAccountStoreResolver(AccountStoreResolver accountStoreResolver) {
+        this.accountStoreResolver = accountStoreResolver;
+    }
 
-        this.loginUri = config.getLoginControllerConfig().getUri();
-        this.accountStoreResolver = config.getAccountStoreResolver();
-        this.messageSource = config.getForgotPasswordControllerConfig().getMessageSource();
-        this.localeResolver = config.getForgotPasswordControllerConfig().getLocaleResolver();
-
+    @Override
+    public void init() throws Exception {
+        super.init();
         Assert.hasText(this.loginUri, "loginUri cannot be null.");
         Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");
-        Assert.notNull(this.messageSource, "messageSource cannot be null.");
-        Assert.notNull(this.localeResolver, "localeResolver cannot be null.");
     }
 
     @Override
@@ -73,8 +65,8 @@ public class ForgotPasswordController extends FormController {
     }
 
     protected String i18n(HttpServletRequest request, String key) {
-        Locale locale = localeResolver.get(request, null);
-        return messageSource.getMessage(key, locale);
+        Locale locale = getLocaleResolver().get(request, null);
+        return this.messageSource.getMessage(key, locale);
     }
 
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -94,27 +86,26 @@ public class ForgotPasswordController extends FormController {
             String key = "stormpath.web.forgotPassword.form.status";
             model.put("status", i18n(request, key.concat(".").concat(status)));
         }
-
     }
 
     @Override
     protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
 
-        List<Field> fields = new ArrayList<Field>(1);
+        List<Field> fields = new ArrayList<>(1);
+
+        RequestFieldValueResolver fieldValueResolver = getFieldValueResolver();
 
         String[] fieldNames = new String[]{ "email" };
 
         for (String fieldName : fieldNames) {
-
             DefaultField field = new DefaultField();
             field.setName(fieldName);
-            field.setLabel("stormpath.web.forgotPassword.form.fields." + fieldName + ".label");
-            field.setPlaceholder("stormpath.web.forgotPassword.form.fields." + fieldName + ".placeholder");
+            field.setLabel(i18n(request, "stormpath.web.forgotPassword.form.fields." + fieldName + ".label"));
+            field.setPlaceholder(i18n(request, "stormpath.web.forgotPassword.form.fields." + fieldName + ".placeholder"));
             field.setRequired(true);
             field.setType("text");
             String val = fieldValueResolver.getValue(request, fieldName);
             field.setValue(val != null ? val : "");
-
             fields.add(field);
         }
 
@@ -125,7 +116,7 @@ public class ForgotPasswordController extends FormController {
     protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
         log.debug("Unable to send reset password email.", e);
 
-        List<ErrorModel> errors = new ArrayList<ErrorModel>(1);
+        List<ErrorModel> errors = new ArrayList<>(1);
         errors.add(ErrorModel.builder().setMessage("Invalid email address.").build());
 
         return errors;

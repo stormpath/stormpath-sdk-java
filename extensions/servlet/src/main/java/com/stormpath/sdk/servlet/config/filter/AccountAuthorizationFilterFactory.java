@@ -13,14 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.filter;
+package com.stormpath.sdk.servlet.config.filter;
+
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.filter.account.AccountAuthorizationFilter;
 
 /**
  * @since 1.0.0
  */
-public interface ChangePasswordConfigResolver extends ControllerConfigResolver{
+public class AccountAuthorizationFilterFactory extends AccessControlFilterFactory<AccountAuthorizationFilter> {
 
-    String getErrorUri();
-    boolean isAutoLogin();
+    @Override
+    protected AccountAuthorizationFilter newInstance() {
+        return new AccountAuthorizationFilter();
+    }
 
+    @Override
+    protected void configure(AccountAuthorizationFilter f, Config config) {
+        //currently a no-op
+    }
 }

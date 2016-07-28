@@ -18,12 +18,10 @@ package com.stormpath.sdk.servlet.mvc;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
-import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
@@ -37,10 +35,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * @since 1.0.RC4
  */
 public class ChangePasswordController extends FormController {
+
     private String forgotPasswordUri;
     private String loginUri;
     private String loginNextUri;
@@ -50,26 +50,54 @@ public class ChangePasswordController extends FormController {
     private AccountModelFactory accountModelFactory;
     private Saver<AuthenticationResult> authenticationResultSaver;
 
-    public ChangePasswordController() {
-        super();
+    public void setForgotPasswordUri(String forgotPasswordUri) {
+        this.forgotPasswordUri = forgotPasswordUri;
     }
 
-    public ChangePasswordController(Config config) {
-        super(config.getChangePasswordControllerConfig(), config.getProducesMediaTypes());
-        this.forgotPasswordUri = config.getForgotPasswordControllerConfig().getUri();
-        this.loginUri = config.getLoginControllerConfig().getUri();
-        this.loginNextUri = config.getLoginControllerConfig().getNextUri();
-        this.errorUri = config.getChangePasswordControllerConfig().getErrorUri();
-        this.autoLogin = config.getChangePasswordControllerConfig().isAutoLogin();
-        this.accountModelFactory = new DefaultAccountModelFactory();
-        this.errorModelFactory = new ChangePasswordErrorModelFactory(this.messageSource);
-        this.authenticationResultSaver = config.getAuthenticationResultSaver();
+    public void setLoginUri(String loginUri) {
+        this.loginUri = loginUri;
+    }
 
+    public void setLoginNextUri(String loginNextUri) {
+        this.loginNextUri = loginNextUri;
+    }
+
+    public void setErrorUri(String errorUri) {
+        this.errorUri = errorUri;
+    }
+
+    public void setAutoLogin(boolean autoLogin) {
+        this.autoLogin = autoLogin;
+    }
+
+    public void setErrorModelFactory(ErrorModelFactory errorModelFactory) {
+        this.errorModelFactory = errorModelFactory;
+    }
+
+    public void setAccountModelFactory(AccountModelFactory accountModelFactory) {
+        this.accountModelFactory = accountModelFactory;
+    }
+
+    public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
+        this.authenticationResultSaver = authenticationResultSaver;
+    }
+
+    @Override
+    public void init() throws Exception {
+        super.init();
 
         Assert.hasText(forgotPasswordUri, "forgotPasswordUri cannot be null or empty.");
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(loginNextUri, "loginNextUri cannot be null or empty.");
         Assert.hasText(errorUri, "errorUri cannot be null or empty.");
+        Assert.notNull(authenticationResultSaver, "authenticationResultSaver cannot be null.");
+
+        if (this.accountModelFactory == null) {
+            this.accountModelFactory = new DefaultAccountModelFactory();
+        }
+        if (this.errorModelFactory == null) {
+            this.errorModelFactory = new ChangePasswordErrorModelFactory(this.messageSource);
+        }
     }
 
     @Override
@@ -88,15 +116,13 @@ public class ChangePasswordController extends FormController {
                 model.put("status", HttpServletResponse.SC_BAD_REQUEST);
                 model.put("message", i18n(request, "stormpath.web.changePassword.form.errors.no_token"));
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
-            else {
+            } else {
                 try {
                     Application application = (Application) request.getAttribute(Application.class.getName());
                     application.verifyPasswordResetToken(sptoken);
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                     return null;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     model = errorModelFactory.toError(request, e).toMap();
                     response.setStatus(errorModelFactory.toError(request, e).getStatus());
                 }
@@ -106,13 +132,11 @@ public class ChangePasswordController extends FormController {
 
         if (sptoken == null) {
             return new DefaultViewModel(forgotPasswordUri).setRedirect(true);
-        }
-        else {
+        } else {
             try {
                 Application application = (Application) request.getAttribute(Application.class.getName());
                 application.verifyPasswordResetToken(sptoken);
-            }
-            catch (ResourceException re) {
+            } catch (ResourceException re) {
                 return new DefaultViewModel(errorUri).setRedirect(true);
             }
             return super.doGet(request, response);
@@ -129,6 +153,8 @@ public class ChangePasswordController extends FormController {
     protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
 
         List<Field> fields = new ArrayList<Field>(3);
+
+        RequestFieldValueResolver fieldValueResolver = getFieldValueResolver();
 
         String value = Strings.clean(fieldValueResolver.getValue(request, "sptoken"));
 
@@ -189,16 +215,15 @@ public class ChangePasswordController extends FormController {
             Map<String, Object> model = new HashMap<String, Object>();
             try {
                 Account account = application.resetPassword(sptoken, password);
-                if (autoLogin){
+                if (autoLogin) {
                     final AuthenticationResult result = new TransientAuthenticationResult(account);
                     this.authenticationResultSaver.set(request, response, result);
-                    model.put("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST));                }
-                else {
+                    model.put("account", accountModelFactory.toMap(account, Collections.EMPTY_LIST));
+                } else {
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                     return null;
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 model = errorModelFactory.toError(request, e).toMap();
                 response.setStatus(errorModelFactory.toError(request, e).getStatus());
             }
@@ -209,16 +234,14 @@ public class ChangePasswordController extends FormController {
         String next;
         try {
             Account account = application.resetPassword(sptoken, password);
-            if (autoLogin){
+            if (autoLogin) {
                 final AuthenticationResult result = new TransientAuthenticationResult(account);
                 this.authenticationResultSaver.set(request, response, result);
                 next = loginNextUri;
-            }
-            else{
+            } else {
                 next = this.nextUri;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             next = errorUri;
         }
 
@@ -239,8 +262,7 @@ public class ChangePasswordController extends FormController {
                 String msg = i18n(request, key);
                 throw new ValidationException(msg);
             }
-        }
-        else {
+        } else {
             super.validate(request, response, form);
         }
     }

@@ -15,13 +15,13 @@
  */
 package com.stormpath.spring.mvc;
 
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @since 1.0.0
  */
-public class ChangePasswordControllerConfigResolver extends  AbstractSpringControllerConfigResolver implements ChangePasswordConfigResolver {
+public class ChangePasswordControllerConfig extends AbstractSpringControllerConfig implements ChangePasswordConfig {
 
     @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
     protected boolean changePasswordEnabled;

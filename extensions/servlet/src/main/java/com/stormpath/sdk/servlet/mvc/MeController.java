@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.http.UserAgents;
@@ -35,6 +36,12 @@ public class MeController extends AbstractController {
     public MeController(List<String> expands) {
         this.expands = expands;
         this.accountModelFactory = new DefaultAccountModelFactory();
+    }
+
+    @Override
+    public void init() throws Exception {
+        Assert.hasText(this.uri, "uri cannot be null or empty.");
+        Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
     }
 
     @Override
@@ -68,7 +75,7 @@ public class MeController extends AbstractController {
         // Using UserAgent directly here since super.isHtmlPreferred(request, response) results in NPE b/c producesMediaTypes is null
         if (UserAgents.get(request).isHtmlPreferred()) {
             Config config = (Config) request.getServletContext().getAttribute(Config.class.getName());
-            String loginUri = config.getLoginControllerConfig().getUri();
+            String loginUri = config.getLoginConfig().getUri();
             return new DefaultViewModel(loginUri).setRedirect(true);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

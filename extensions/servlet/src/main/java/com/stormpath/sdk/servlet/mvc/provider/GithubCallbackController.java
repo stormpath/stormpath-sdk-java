@@ -17,7 +17,6 @@ package com.stormpath.sdk.servlet.mvc.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
-import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
@@ -27,9 +26,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
-import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import org.apache.http.HttpResponse;
@@ -39,11 +36,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +54,6 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
 
     private static final String GITHUB_ACCES_TOKEN_URL = "https://github.com/login/oauth/access_token";
     private static final String ACCESS_TOKEN_FIELD = "access_token";
-
-    public GithubCallbackController(String loginNextUri, Saver<AuthenticationResult> authenticationResultSaver, Publisher<RequestEvent> eventPublisher) {
-        super(loginNextUri, authenticationResultSaver, eventPublisher);
-    }
 
     @Override
     protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
@@ -105,8 +98,8 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
             nvps.add(new BasicNameValuePair("client_id", githubProvider[0].getClientId()));
             nvps.add(new BasicNameValuePair("client_secret", githubProvider[0].getClientSecret()));
 
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-            httpPost.addHeader("Accept", "application/json");
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8.displayName()));
+            httpPost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
 
             HttpResponse response = client.execute(httpPost);
             ObjectMapper objectMapper = new ObjectMapper();

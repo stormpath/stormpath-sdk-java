@@ -16,7 +16,6 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,25 +24,20 @@ import javax.servlet.http.HttpServletResponse;
 public class SamlLogoutController extends LogoutController {
 
     private ServerUriResolver serverUriResolver;
-    private String samlResultUri;
-
-    public SamlLogoutController(ControllerConfigResolver logoutControllerConfigResolver, String produces) {
-        super(logoutControllerConfigResolver, produces);
-    }
-
+    private String resultUri;
     // not implemented yet
-    //private Resolver<SamlOrganizationContext> samlOrganizationResolver;
+    // private Resolver<SamlOrganizationContext> samlOrganizationResolver;
 
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
     }
 
-    public void setSamlResultUri(String samlResultUri) {
-        this.samlResultUri = samlResultUri;
+    public void setResultUri(String resultUri) {
+        this.resultUri = resultUri;
     }
 
-    // not implemented yet
     /*
+    // not implemented yet
     public void setSamlOrganizationResolver(Resolver<SamlOrganizationContext> SamlOrganizationResolver) {
         this.samlOrganizationResolver = samlOrganizationResolver;
     }
@@ -52,6 +46,7 @@ public class SamlLogoutController extends LogoutController {
     @Override
     public void init() {
         Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
+        Assert.hasText(resultUri, "resultUri must be configured.");
         //not implemented yet
         //controller.setSamlOrganizationResolver(idSiteOrganizationResolver);
         super.init();

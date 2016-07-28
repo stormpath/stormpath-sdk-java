@@ -15,26 +15,23 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.mvc.provider.GoogleCallbackController;
-
-import javax.servlet.ServletException;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.impl.ConfigReader;
 
 /**
  * @since 1.0.0
  */
-public class GoogleCallbackFilter extends ControllerFilter {
+public class ChangePasswordServletControllerConfig extends ServletControllerConfig implements ChangePasswordConfig {
 
-    @Override
-    protected void onInit() throws ServletException {
-        GoogleCallbackController googleCallbackController = new GoogleCallbackController(
-                getConfig().getLoginControllerConfig().getNextUri(),
-                getConfig().getAuthenticationResultSaver(),
-                getConfig().getRequestEventPublisher()
-        );
+    public ChangePasswordServletControllerConfig(Config config, ConfigReader configReader, String controllerKey) {
+        super(config, configReader, controllerKey);
+    }
 
-        setController(googleCallbackController);
+    public String getErrorUri() {
+        return configReader.getString("stormpath.web." + getControllerKey() + ".errorUri");
+    }
 
-        super.onInit();
+    public boolean isAutoLogin() {
+        return configReader.getBoolean("stormpath.web." + getControllerKey() + ".autoLogin");
     }
 }
