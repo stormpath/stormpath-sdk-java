@@ -479,16 +479,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
     @Bean
     public Filter stormpathFilter() throws ServletException {
-
-        StormpathFilter filter = new StormpathFilter();
-        filter.setClient(client);
-        filter.setApplication(application);
-        filter.setEnabled(stormpathFilterEnabled);
-        filter.setClientRequestAttributeNames(stormpathRequestClientAttributeNames());
-        filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
-        filter.setFilterChainResolver(stormpathFilterChainResolver());
-        filter.setWrappedServletRequestFactory(stormpathWrappedServletRequestFactory());
-
+        StormpathFilter filter = newStormpathFilter();
         return new DefaultFilterBuilder()
             .setFilter(filter)
             .setServletContext(servletContext)

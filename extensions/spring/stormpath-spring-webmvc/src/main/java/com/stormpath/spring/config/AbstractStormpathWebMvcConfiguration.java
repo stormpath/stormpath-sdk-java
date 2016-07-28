@@ -59,6 +59,7 @@ import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.filter.PathMatchingFilterChainResolver;
 import com.stormpath.sdk.servlet.filter.PrioritizedFilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
+import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
@@ -1373,6 +1374,19 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         filter.setOauthEndpointUri(accessTokenUri);
         return filter;
     }
+
+    protected StormpathFilter newStormpathFilter() {
+        StormpathFilter filter = new StormpathFilter();
+        filter.setClient(client);
+        filter.setApplication(application);
+        filter.setEnabled(stormpathFilterEnabled);
+        filter.setClientRequestAttributeNames(stormpathRequestClientAttributeNames());
+        filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
+        filter.setFilterChainResolver(stormpathFilterChainResolver());
+        filter.setWrappedServletRequestFactory(stormpathWrappedServletRequestFactory());
+        return filter;
+    }
+
 
     protected static class DisabledAuthenticationResultSaver implements Saver<AuthenticationResult> {
 

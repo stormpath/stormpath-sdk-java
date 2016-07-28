@@ -634,15 +634,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @Bean
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter() {
-
-        StormpathFilter filter = new StormpathFilter();
-
-        filter.setEnabled(stormpathFilterEnabled);
-        filter.setClientRequestAttributeNames(stormpathRequestClientAttributeNames());
-        filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
-        filter.setFilterChainResolver(stormpathFilterChainResolver());
-        filter.setWrappedServletRequestFactory(stormpathWrappedServletRequestFactory());
-
+        StormpathFilter filter = newStormpathFilter();
         FilterRegistrationBean bean = new FilterRegistrationBean();
         bean.setFilter(filter);
         bean.setEnabled(stormpathFilterEnabled);
