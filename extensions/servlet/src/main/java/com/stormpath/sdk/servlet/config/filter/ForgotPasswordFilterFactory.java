@@ -31,14 +31,12 @@ public class ForgotPasswordFilterFactory extends FormControllerFilterFactory<For
 
     @Override
     protected ControllerConfig getResolver(Config config) {
-        return config.getLoginConfig();
+        return config.getForgotPasswordConfig();
     }
 
     @Override
     protected void doConfigure(ForgotPasswordController c, Config config) {
         c.setLoginUri(config.getLoginConfig().getUri());
-        c.setView(config.getForgotPasswordConfig().getView());
-        c.setNextUri(config.getForgotPasswordConfig().getNextUri());
         c.setAccountStoreResolver(config.getAccountStoreResolver());
     }
 }
