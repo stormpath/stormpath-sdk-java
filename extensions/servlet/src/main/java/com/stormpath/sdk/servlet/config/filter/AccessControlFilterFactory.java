@@ -14,7 +14,11 @@ public abstract class AccessControlFilterFactory<T extends AccessControlFilter> 
 
     @Override
     protected T createInstance(ServletContext servletContext, Config config) throws Exception {
+
         T f = newInstance();
+
+        f.setLoginUrl(config.getLoginConfig().getUri());
+        f.setAccessTokenUrl(config.getAccessTokenUrl());
 
         UnauthenticatedHandler authc = config.getInstance(UNAUTHENTICATED_HANDLER);
         f.setUnauthenticatedHandler(authc);

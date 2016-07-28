@@ -37,7 +37,7 @@ public class DefaultFilterChainManagerConfigurer {
         return URI_CLEANER.clean(uri);
     }
 
-    public void configure() throws ServletException {
+    public FilterChainManager configure() throws ServletException {
 
         //Too much copy-and-paste. YUCK.
         //TODO: refactor this method to be more generic
@@ -283,5 +283,7 @@ public class DefaultFilterChainManagerConfigurer {
             String chainDefinition = patternChains.get(pattern);
             mgr.createChain(pattern, chainDefinition);
         }
+
+        return mgr;
     }
 }

@@ -18,6 +18,9 @@ package com.stormpath.sdk.servlet.filter;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.config.Factory;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
+import io.jsonwebtoken.lang.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +48,13 @@ public class DefaultFilterChainManager implements FilterChainManager {
 
     private final ServletContext servletContext;
     private final Map<String, List<Filter>> filterChains; //key: chain name, value: chain
-    private final Map<String, Class<? extends Filter>> configuredFilterClasses;
+    private final Map<String, Object> configuredFilters;
 
     public DefaultFilterChainManager(ServletContext servletContext) {
         Assert.notNull(servletContext, "ServletContext argument cannot be null.");
         this.servletContext = servletContext;
         this.filterChains = new LinkedHashMap<>(); //iteration order is important
-        this.configuredFilterClasses = new LinkedHashMap<>();
+        this.configuredFilters = new LinkedHashMap<>();
     }
 
     //key: filter name, value: filter class
@@ -59,23 +62,55 @@ public class DefaultFilterChainManager implements FilterChainManager {
         if (Collections.isEmpty(classes)) {
             return;
         }
-        this.configuredFilterClasses.putAll(classes);
+        this.configuredFilters.putAll(classes);
     }
 
+    /**
+     * @param name         the name of the filter
+     * @param filteryThing a Filter instance, a Filter implementation class, a Factory&lt;Filter&gt; instance or a Factory&lt;Filter&gt; implementation class.
+     */
+    public void addFilter(String name, Object filteryThing) {
+        if (filteryThing instanceof Class) {
+            Assert.isTrue(!Filter.class.equals(filteryThing), "Cannot specify the Filter class directly.  Specify a class that implements the Filter interface.");
+        }
+        this.configuredFilters.put(name, filteryThing);
+    }
+
+    @SuppressWarnings("unchecked")
     protected Filter createFilter(String name, String config) throws ServletException {
 
-        Class<? extends Filter> clazz = configuredFilterClasses.get(name);
+        Object o = configuredFilters.get(name);
 
-        if (clazz == null) {
-            String msg = "There is no configured filter class for filter name [" + name + "].";
+        if (o == null) {
+            String msg = "There is no configured filter for filter name '" + name + "'";
             throw new IllegalArgumentException(msg);
         }
 
-        FilterBuilder builder =
-            Filters.builder().setFilterClass(clazz).setName(name).setServletContext(this.servletContext);
+        if (o instanceof Filter) {
+            return (Filter) o;
+        }
 
+        FilterBuilder builder = Filters.builder().setServletContext(servletContext).setName(name);
         if (Strings.hasText(config)) {
             builder.setPathConfig(config);
+        }
+
+        if (o instanceof Class) {
+            Class c = (Class) o;
+            if (Filter.class.isAssignableFrom(c)) {
+                builder.setFilterClass((Class<? extends Filter>) c);
+            } else if (Factory.class.isAssignableFrom(c)) {
+                o = Classes.newInstance(c);
+            }
+        }
+
+        if (o instanceof Factory) {
+            Factory<Filter> factory = (Factory<Filter>) o;
+            if (factory instanceof ServletContextInitializable) {
+                ((ServletContextInitializable) factory).init(servletContext);
+            }
+            Filter filter = factory.getInstance();
+            builder.setFilter(filter);
         }
 
         return builder.build();
