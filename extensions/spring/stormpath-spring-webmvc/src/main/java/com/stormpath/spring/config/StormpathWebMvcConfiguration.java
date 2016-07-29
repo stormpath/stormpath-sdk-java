@@ -51,6 +51,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
@@ -61,14 +62,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -135,8 +134,8 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
      */
     @Bean
     @Override
-    public List<MediaType> stormpathProducesMediaTypes() {
-        return super.stormpathProducesMediaTypes();
+    public List<MediaType> stormpathProducedMediaTypes() {
+        return super.stormpathProducedMediaTypes();
     }
 
     @Bean
@@ -149,11 +148,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Override
     public ViewResolver stormpathJsonViewResolver() {
         return super.stormpathJsonViewResolver();
-    }
-
-    @Bean
-    public HandlerMapping stormpathHandlerMapping() throws Exception {
-        return super.stormpathHandlerMapping();
     }
 
     @Bean
@@ -364,6 +358,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public Controller stormpathForgotPasswordController() {
         return super.stormpathForgotPasswordController();
     }
@@ -457,11 +452,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
-        return super.stormpathMvcLogoutController();
-    }
-
-    @Bean
     public Controller stormpathLogoutController() {
         return super.stormpathLogoutController();
     }
@@ -497,11 +487,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Override
     public ContentNegotiationResolver stormpathContentNegotiationResolver() {
         return super.stormpathContentNegotiationResolver();
-    }
-
-    @Bean
-    public Filter stormpathAccountResolverFilter() {
-        return super.stormpathAccountResolverFilter();
     }
 
     @Bean
