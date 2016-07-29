@@ -36,6 +36,7 @@ public abstract class ControllerFilterFactory<T extends AbstractController> exte
         c.setLocaleResolver(config.getLocaleResolver());
         c.setMessageSource(config.getMessageSource());
         c.setProduces(config.getProducedMediaTypes());
+        c.setApplicationResolver(config.getApplicationResolver());
 
         configure(c, config);
 
