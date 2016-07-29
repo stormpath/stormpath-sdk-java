@@ -66,9 +66,7 @@ public class DefaultApiRequestAuthenticator implements ApiRequestAuthenticator {
         this.application = application;
     }
 
-    // TODO Make this method protected or private once it's removed from the interface
-    @Override
-    public ApiAuthenticationResult execute() {
+    protected ApiAuthenticationResult execute() {
         AuthenticationRequest request = FACTORY.createFrom(httpRequest);
         AuthenticationResult result = application.authenticateAccount(request);
         Assert.isInstanceOf(ApiAuthenticationResult.class, result);

@@ -79,20 +79,6 @@ public class DefaultOAuthApiRequestAuthenticator implements OAuthApiRequestAuthe
         return new DefaultResourceRequestAuthenticator(application).inLocation(locations);
     }
 
-    @Override
-    public OAuthAuthenticationResult execute() {
-
-        OAuthAuthenticationRequestFactory factory = new OAuthAuthenticationRequestFactory();
-
-        AuthenticationRequest request = factory.createFrom(httpServletRequest);
-
-        AuthenticationResult result = application.authenticateAccount(request);
-
-        Assert.isInstanceOf(OAuthAuthenticationResult.class, result);
-
-        return (OAuthAuthenticationResult) result;
-    }
-
     /**
      * @since 1.0.RC4.6
      */

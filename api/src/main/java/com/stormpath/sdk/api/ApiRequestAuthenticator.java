@@ -15,33 +15,17 @@
  */
 package com.stormpath.sdk.api;
 
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.http.HttpRequest;
 
 /**
  * Authenticates an API HTTP Request and returns a {@link ApiAuthenticationResult result}.
  *
- * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
- * @see #execute()
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)
+ * @see #authenticate(HttpRequest)
  * @since 1.0.RC
  */
 public interface ApiRequestAuthenticator {
-
-    /**
-     * Returns an {@link ApiAuthenticationResult ApiAuthenticationResult} after a successful authentication to an
-     * HTTP API endpoint.
-     *
-     * <p>The concrete type of the authentication result will depend on the request type, and can be resolved to the
-     * specific type using a {@link com.stormpath.sdk.authc.AuthenticationResultVisitor}.
-     *
-     * @return ApiAuthenticationResult if the API request was authenticated successfully.
-     *
-     * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
-     * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
-     *
-     * @deprecated this method will be removed soon. Use {@link #authenticate(HttpRequest)} instead
-     */
-    @Deprecated
-    ApiAuthenticationResult execute();
 
     /**
      * Authenticates an HTTP request submitted to your application's API, returning a result that reflects the

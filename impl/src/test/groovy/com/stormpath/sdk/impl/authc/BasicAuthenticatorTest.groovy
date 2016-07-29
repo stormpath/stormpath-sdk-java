@@ -55,7 +55,7 @@ class BasicAuthenticatorTest {
             basicAuthenticator.authenticate(appHref, request)
             fail("Should have thrown")
         } catch (IllegalArgumentException ex) {
-            assertTrue(ex.getMessage().contains("Only UsernamePasswordRequest or DefaultUsernamePasswordRequest instances are supported."))
+            assertTrue(ex.getMessage().contains("Only DefaultUsernamePasswordRequest instances are supported."))
         }
     }
 

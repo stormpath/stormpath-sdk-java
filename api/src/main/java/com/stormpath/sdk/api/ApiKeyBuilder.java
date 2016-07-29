@@ -107,10 +107,10 @@ import java.util.Properties;
  * </pre>
  *
  * @see #setFileLocation(String)
- * @see ClientBuilder#setApiKey(com.stormpath.sdk.api.ApiKey)
+ * @see ClientBuilder#setApiKey(ApiKey) 
  * @since 1.0.RC
  */
-public interface ApiKeyBuilder extends com.stormpath.sdk.client.ApiKeyBuilder{ // temporarily extending the client package's ApiKeyBuilder before deleting it
+public interface ApiKeyBuilder {
 
     public static final String DEFAULT_ID_PROPERTY_NAME = "apiKey.id";
     public static final String DEFAULT_SECRET_PROPERTY_NAME = "apiKey.secret";

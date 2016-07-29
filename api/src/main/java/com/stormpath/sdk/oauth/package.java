@@ -70,7 +70,7 @@
  * </pre>
  *
  * <p><b>Note:</b> you do not need to use the {@code HttpServletRequest} API.  A translation {@code HttpRequest} builder
- * is available.  See {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * is available.  See {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
  * application.authenticateOauthRequest(httpRequest)} for more information.</p>
  *
  * <h3>Resource Endpoint</h3>
@@ -113,20 +113,16 @@
  *
  * <p><b>Note:</b> Again, you do not need to use the {@code HttpServletRequest} API.  A translation {@code HttpRequest}
  * builder is available for those that do not depend on the {@code Servlet} API.  See
- * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
  * application.authenticateOauthRequest(httpRequest)} for more information.</p>
  *
  * <h2>More Information</h2>
  *
- * <p>The {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
- * application.authenticateApiRequest(httpRequest)} and
- * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
- * application.authenticateOauthRequest(httpRequest) application.authenticateOauthRequest(httpRequest)} JavaDoc has
- * much more information and sample use cases.  Please see those methods' JavaDoc for more.</p>
+ * <p>The {@link com.stormpath.sdk.application.Application#authenticateAccount(com.stormpath.sdk.authc.AuthenticationRequest)}
+ * JavaDoc has much more information and sample use cases. Please see JavaDoc for more information.</p>
  *
  * @see com.stormpath.sdk.application.Application Application
- * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
- * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
  * @since 1.0.RC
  */
 package com.stormpath.sdk.oauth;

@@ -476,9 +476,7 @@
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
             </dependency>
-
         </dependencies>
-
     </dependencyManagement>
 
     <build>
@@ -635,6 +633,14 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- Speed up dependency report by skipping check to see if resources are in specified repos -->
+                <plugin>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.9</version>
+                    <configuration>
+                        <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -749,6 +755,9 @@
             </build>
             <reporting>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-project-info-reports-plugin</artifactId>
+                    </plugin>
                     <plugin>
                         <groupId>com.atlassian.maven.plugins</groupId>
                         <artifactId>clover-maven-plugin</artifactId>
