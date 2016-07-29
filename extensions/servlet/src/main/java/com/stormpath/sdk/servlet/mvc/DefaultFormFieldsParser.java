@@ -25,7 +25,9 @@ import java.util.List;
 
 /**
  * @since 1.0.RC4
+ * @deprecated since 1.0.0
  */
+@Deprecated
 public class DefaultFormFieldsParser implements FormFieldParser {
 
     private final String CONFIG_PROPERTY_NAME;
