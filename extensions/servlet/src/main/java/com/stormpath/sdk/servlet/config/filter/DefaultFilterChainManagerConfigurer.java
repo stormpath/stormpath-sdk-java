@@ -99,6 +99,7 @@ public class DefaultFilterChainManagerConfigurer {
         String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
         boolean unauthorizedChainSpecified = false;
 
+        //TODO 542: what is this?
         String samlUrl = "/saml";
         String samlUrlPattern = cleanUri(samlUrl);
         boolean samlChainSpecified = false;
@@ -109,8 +110,11 @@ public class DefaultFilterChainManagerConfigurer {
         boolean meChainSpecified = false;
         boolean meEnabled = config.isMeEnabled();
 
-        // todo: figure out where idsite is added to the filter chain and allow disabling
-        boolean isIdSiteEnabled = config.isIdSiteEnabled();
+        boolean idSiteEnabled = config.isIdSiteEnabled();
+
+        //IDSite Result
+        String idSiteResultUrl = config.getCallbackUri();
+        String idSiteResultUrlPattern = cleanUri(idSiteResultUrl);
 
         String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
         String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
@@ -254,19 +258,36 @@ public class DefaultFilterChainManagerConfigurer {
             mgr.createChain(unauthorizedUrlPattern, DefaultFilter.unauthorized.name());
         }
         if (!loginChainSpecified && loginEnabled) {
-            mgr.createChain(loginUrlPattern, DefaultFilter.login.name());
+            if (!idSiteEnabled) {
+                mgr.createChain(loginUrlPattern, DefaultFilter.login.name());
+            } else {
+                mgr.createChain(loginUrlPattern, DefaultFilter.idSite.name());
+                mgr.createChain(idSiteResultUrlPattern, DefaultFilter.idSiteResult.name());
+            }
         }
         if (!logoutChainSpecified && logoutEnabled) {
-            mgr.createChain(logoutUrlPattern, DefaultFilter.logout.name());
+            if (!idSiteEnabled) {
+                mgr.createChain(logoutUrlPattern, DefaultFilter.logout.name());
+            } else {
+                mgr.createChain(logoutUrlPattern, DefaultFilter.idSiteLogout.name());
+            }
         }
         if (!forgotChainSpecified && forgotPasswordEnabled) {
-            mgr.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
+            if (!idSiteEnabled) {
+                mgr.createChain(forgotUrlPattern, DefaultFilter.forgot.name());
+            } else {
+                mgr.createChain(forgotUrlPattern, DefaultFilter.idSiteForgot.name());
+            }
         }
         if (!changeChainSpecified && changePasswordEnabled) {
             mgr.createChain(changeUrlPattern, DefaultFilter.change.name());
         }
         if (!registerChainSpecified && registerEnabled) {
-            mgr.createChain(registerUrlPattern, DefaultFilter.register.name());
+            if (!idSiteEnabled) {
+                mgr.createChain(registerUrlPattern, DefaultFilter.register.name());
+            } else {
+                mgr.createChain(registerUrlPattern, DefaultFilter.idSiteRegister.name());
+            }
         }
         if (!verifyChainSpecified) {
             mgr.createChain(verifyUrlPattern, DefaultFilter.verify.name());

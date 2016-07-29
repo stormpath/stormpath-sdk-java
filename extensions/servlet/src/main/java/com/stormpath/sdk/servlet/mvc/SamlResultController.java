@@ -38,49 +38,11 @@ import java.util.List;
 /**
  * @since 1.0.RC8
  */
-public class SamlResultController extends AbstractController {
-
-    private String loginNextUri;
-    private Controller logoutController;
-    private Saver<AuthenticationResult> authenticationResultSaver;
-    private Publisher<RequestEvent> eventPublisher;
+public class SamlResultController extends CallbackController {
 
     private List<SamlResultListener> samlResultListeners = new ArrayList<SamlResultListener>();
 
-    public void setLoginNextUri(String loginNextUri) {
-        this.loginNextUri = loginNextUri;
-    }
-
-    public void setLogoutController(Controller logoutController) {
-        this.logoutController = logoutController;
-    }
-
-    public Publisher<RequestEvent> getEventPublisher() {
-        return eventPublisher;
-    }
-
-    public void setEventPublisher(Publisher<RequestEvent> eventPublisher) {
-        this.eventPublisher = eventPublisher;
-    }
-
-    public Saver<AuthenticationResult> getAuthenticationResultSaver() {
-        return authenticationResultSaver;
-    }
-
-    public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
-        this.authenticationResultSaver = authenticationResultSaver;
-    }
-
-    public void addSamlResultListener(SamlResultListener resultListener) {
-        Assert.notNull(resultListener, "resultListener cannot be null");
-        samlResultListeners.add(resultListener);
-    }
-
-    public void init() {
-        Assert.hasText(loginNextUri, "loginNextUri must be configured.");
-        Assert.notNull(logoutController, "logoutController must be configured.");
-        Assert.notNull(authenticationResultSaver, "authenticationResultSaver must be configured.");
-        Assert.notNull(eventPublisher, "request event publisher must be configured.");
+    public void doInit() {
     }
 
     @Override
@@ -119,45 +81,6 @@ public class SamlResultController extends AbstractController {
         samlCallbackHandler.getAccountResult();
 
         return viewModel[0];
-    }
-
-    protected ViewModel onAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                         Application application,
-                                         com.stormpath.sdk.idsite.AuthenticationResult result) {
-
-        //simulate a result for the benefit of the 'saveResult' method signature:
-        AuthenticationResult authcResult = new TransientAuthenticationResult(result.getAccount());
-        saveResult(request, response, authcResult);
-
-        return new DefaultViewModel(loginNextUri).setRedirect(true);
-    }
-
-    protected ViewModel onLogout(HttpServletRequest request, HttpServletResponse response, Application application,
-                                 LogoutResult result) {
-
-        //let the IdSiteLogoutController know this is a reply from ID site and to not redirect to ID site again:
-        request.setAttribute(LogoutResult.class.getName(), result);
-
-        try {
-            return logoutController.handleRequest(request, response);
-        } catch (Exception e) {
-            String msg = "Unable to successfully handle logout: " + e.getMessage();
-            throw new RuntimeException(msg, e);
-        }
-    }
-
-    protected RegisteredAccountRequestEvent createRegisteredEvent(HttpServletRequest request,
-                                                                  HttpServletResponse response, Account account) {
-        return new DefaultRegisteredAccountRequestEvent(request, response, account);
-    }
-
-    protected void publish(RequestEvent e) {
-        try {
-            getEventPublisher().publish(e);
-        } catch (Exception ex) {
-            String msg = "Unable to publish registered account request event: " + ex.getMessage();
-            throw new RuntimeException(msg, ex);
-        }
     }
 
     protected void saveResult(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result) {

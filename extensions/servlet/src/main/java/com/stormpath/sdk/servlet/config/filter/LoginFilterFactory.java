@@ -36,9 +36,8 @@ public class LoginFilterFactory extends FormControllerFilterFactory<LoginControl
 
     @Override
     protected void doConfigure(LoginController c, Config config) {
-        c.setApplicationResolver(config.getApplicationResolver());
         c.setForgotPasswordEnabled(config.getForgotPasswordConfig().isEnabled());
-        c.setForgotLoginUri(config.getForgotPasswordConfig().getUri());
+        c.setForgotPasswordUri(config.getForgotPasswordConfig().getUri());
         c.setVerifyEnabled(config.getVerifyConfig().isEnabled());
         c.setVerifyUri(config.getVerifyConfig().getUri());
         c.setRegisterEnabledResolver(config.getRegisterEnabledResolver());

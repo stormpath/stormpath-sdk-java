@@ -1817,6 +1817,30 @@ class ApplicationIT extends ClientIT {
         }
     }
 
+    /** @since 1.0.0 */
+    @Test(expectedExceptions = [ ResourceException.class ], expectedExceptionsMessageRegExp = ".* Login attempt failed because there is no Account in the Application's associated Account Stores .*")
+    void testCreateTokenWithWrongAccountStore() {
+
+        def app = createTempApp()
+
+        def email = uniquify('testCreateToken+') + '@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DELETEME'
+        account.email = email
+        account.password = 'Change&45+me1!'
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testCreateTokenWithWrongAccountStore")
+        dir = client.currentTenant.createDirectory(dir);
+        app.addAccountStore(dir)
+        deleteOnTeardown(dir)
+
+        OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setAccountStore(dir).setLogin(email).setPassword("Change&45+me1!").build();
+        Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
+    }
+
     /** @since 1.0.RC8 **/
     @Test
     void testDefaultSAMLPolicyAndProvider() {
