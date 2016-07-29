@@ -52,6 +52,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
@@ -78,12 +79,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.mvc.Controller;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
@@ -118,23 +117,26 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathHandlerMapping")
-    public HandlerMapping stormpathHandlerMapping() throws Exception {
-        return super.stormpathHandlerMapping();
+    @ConditionalOnMissingBean(name="stormpathControllerView")
+    @Override
+    public com.stormpath.sdk.servlet.mvc.View stormpathControllerView() {
+        return super.stormpathControllerView();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathLayoutInterceptor")
-    public HandlerInterceptor stormpathLayoutInterceptor() throws Exception {
+    public HandlerInterceptor stormpathLayoutInterceptor() {
         return super.stormpathLayoutInterceptor();
     }
 
-    /** @since 1.0.0 */
+    /**
+     * @since 1.0.0
+     */
     @Bean
     @ConditionalOnMissingBean(name = "stormpathProducedMediaTypes")
     @Override
-    public List<MediaType> stormpathProducesMediaTypes() {
-        return super.stormpathProducesMediaTypes();
+    public List<MediaType> stormpathProducedMediaTypes() {
+        return super.stormpathProducedMediaTypes();
     }
 
     @Bean
@@ -386,7 +388,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathLoginController();
     }
 
-//    @Bean
+    //    @Bean
 //    @ConditionalOnMissingBean(name="stormpathSpaController")
 //    @Override
 //    public Controller stormpathSpaController() {
@@ -496,12 +498,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean
     public ServerUriResolver stormpathServerUriResolver() {
         return super.stormpathServerUriResolver();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathMvcLogoutController")
-    public com.stormpath.sdk.servlet.mvc.Controller stormpathMvcLogoutController() {
-        return super.stormpathMvcLogoutController();
     }
 
     @Bean
@@ -644,12 +640,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         bean.setDispatcherTypes(EnumSet.copyOf(stormpathFilterDispatcherTypes()));
         bean.setMatchAfter(stormpathFilterMatchAfter);
         return bean;
-    }
-
-    @Bean
-    @DependsOn("stormpathServletContextListener")
-    public Filter stormpathAccountResolverFilter() {
-        return super.stormpathAccountResolverFilter();
     }
 
     @Bean

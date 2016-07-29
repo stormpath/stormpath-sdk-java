@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class ChangePasswordControllerConfig extends AbstractSpringControllerConfig implements ChangePasswordConfig {
 
+    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"password", "sptoken"};
+
     @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
     protected boolean changePasswordEnabled;
 
@@ -76,6 +78,6 @@ public class ChangePasswordControllerConfig extends AbstractSpringControllerConf
 
     @Override
     protected String[] getDefaultFieldOrder() {
-        return new String[0];
+        return DEFAULT_FIELD_NAMES;
     }
 }

@@ -58,6 +58,5 @@ public class DefaultViewResolver implements ViewResolver {
         }
 
         return null;
-
     }
 }
