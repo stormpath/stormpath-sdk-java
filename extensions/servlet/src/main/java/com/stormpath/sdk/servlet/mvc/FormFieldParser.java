@@ -24,7 +24,9 @@ import java.util.List;
  * that reflects that string definition.
  *
  * @since 1.0.RC4
+ * @deprecated since 1.0.0
  */
+@Deprecated
 public interface FormFieldParser {
 
     /**

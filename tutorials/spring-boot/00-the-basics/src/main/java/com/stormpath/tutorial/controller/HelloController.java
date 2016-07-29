@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class HelloController {
+
     @RequestMapping("/")
     public String hello(HttpServletRequest req) {
         Application app = ApplicationResolver.INSTANCE.getApplication(req);

@@ -20,8 +20,7 @@
  * {@link com.stormpath.sdk.http.HttpRequests HttpRequests} factory class helps constructs relevant instances.
  *
  * @see com.stormpath.sdk.http.HttpRequests HttpRequests
- * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
- * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(com.stormpath.sdk.authc.AuthenticationRequest)
  *
  * @since 1.0.RC
  */

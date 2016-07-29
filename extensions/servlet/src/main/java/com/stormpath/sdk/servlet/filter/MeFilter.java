@@ -16,9 +16,11 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
-import com.stormpath.sdk.servlet.mvc.MeController;
 
-import javax.servlet.ServletException;
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @since 1.0.0
@@ -26,12 +28,26 @@ import javax.servlet.ServletException;
 public class MeFilter extends ControllerFilter {
 
     @Override
-    protected void onInit() throws ServletException {
+    protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws Exception {
+        // addresses https://github.com/stormpath/stormpath-sdk-java/issues/784
+        request = new MeHttpServletRequestWrapper(request);
+        super.filter(request, response, chain);
+    }
 
-        MeController controller = new MeController(getConfig().getMeExpandedProperties());
+    private class MeHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
-        setController(controller);
+        public MeHttpServletRequestWrapper(HttpServletRequest request) {
+            super(request);
+        }
 
-        super.onInit();
+        // per spec: https://github.com/stormpath/stormpath-framework-spec/blob/1.0/user-context.md#endpoint-response
+        // /me always responds with json
+        @Override
+        public String getHeader(String headerName) {
+            if ("Accept".equals(headerName)) {
+                return "application/json";
+            }
+            return super.getHeader(headerName);
+        }
     }
 }

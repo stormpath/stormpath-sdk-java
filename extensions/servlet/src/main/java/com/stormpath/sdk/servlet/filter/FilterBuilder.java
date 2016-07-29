@@ -26,6 +26,8 @@ public interface FilterBuilder {
 
     FilterBuilder setFilterClass(Class<? extends Filter> filterClass);
 
+    FilterBuilder setFilter(Filter filter);
+
     FilterBuilder setServletContext(ServletContext sc);
 
     ServletContext getServletContext();

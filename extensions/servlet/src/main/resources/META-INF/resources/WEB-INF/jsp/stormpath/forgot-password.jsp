@@ -39,6 +39,13 @@
                                 <p><sp:message key="stormpath.web.forgotPassword.form.instructions"/></p>
                             </div>
 
+                            <c:if test="${!empty status and empty errors}">
+                                <div class="alert alert-dismissable alert-success">
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    <p>${status}</p>
+                                </div>
+                            </c:if>
+
                             <c:if test="${!empty errors}">
                                 <div class="alert alert-dismissable alert-danger bad-login">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -56,10 +63,10 @@
                                         </c:when>
                                         <c:otherwise>
                                             <div form-group="true" class="form-group group-${field.name}">
-                                                <label class="col-sm-4"><sp:message key="${field.label}"/></label>
+                                                <label class="col-sm-4">${field.label}</label>
                                                 <div class="col-sm-8">
                                                     <input name="${field.name}" value="${field.value}" type="${field.type}"
-                                                           placeholder="<sp:message key="${field.placeholder}"/>"
+                                                           placeholder="${field.placeholder}"
                                                            <c:if test="${field.required}">required="required" </c:if>
                                                            class="form-control">
                                                 </div>

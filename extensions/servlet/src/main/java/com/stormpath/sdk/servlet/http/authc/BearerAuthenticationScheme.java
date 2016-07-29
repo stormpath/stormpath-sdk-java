@@ -25,11 +25,11 @@ import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthRequests;
-import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
@@ -107,7 +107,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             // and https://github.com/stormpath/stormpath-sdk-java/issues/674
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            response.setHeader("Cache-Control", "no-store");
+            response.setHeader("Cache-Control", "no-store, no-cache");
             response.setHeader("Pragma", "no-cache");
 
             try {

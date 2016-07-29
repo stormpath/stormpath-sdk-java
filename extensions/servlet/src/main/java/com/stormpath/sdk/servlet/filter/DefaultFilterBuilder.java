@@ -34,17 +34,24 @@ public class DefaultFilterBuilder implements FilterBuilder {
     private static final String PATH_CONFIG_INIT_PARAM_NAME = "pathConfig";
 
     private Class<? extends Filter> filterClass;
+    private Filter instance;
     private ServletContext servletContext;
     private String name;
     private final Map<String,String> initParams;
 
     public DefaultFilterBuilder() {
-        this.initParams = new LinkedHashMap<String, String>();
+        this.initParams = new LinkedHashMap<>();
     }
 
     @Override
     public FilterBuilder setFilterClass(Class<? extends Filter> filterClass) {
         this.filterClass = filterClass;
+        return this;
+    }
+
+    @Override
+    public FilterBuilder setFilter(Filter filter) {
+        this.instance = filter;
         return this;
     }
 
@@ -98,11 +105,14 @@ public class DefaultFilterBuilder implements FilterBuilder {
 
     @Override
     public Filter build() throws ServletException {
-        Assert.notNull(this.filterClass, "filterClass must be specified.");
+
+        Assert.isTrue(this.instance != null || this.filterClass != null,
+            "Either a filter instance or a filterClass must be specified.");
+
         Assert.notNull(this.servletContext, "servletContext must be specified.");
         Assert.notNull(this.name, "A non-null/non-empty name must be specified.");
 
-        Filter filter = Classes.newInstance(this.filterClass);
+        Filter filter = instance != null ? instance : Classes.newInstance(this.filterClass);
         FilterConfig filterConfig = new DefaultFilterConfig(this.servletContext, this.name, this.initParams);
         filter.init(filterConfig);
         return filter;

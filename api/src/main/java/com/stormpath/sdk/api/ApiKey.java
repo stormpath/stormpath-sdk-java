@@ -37,7 +37,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * @see #getAccount()
  * @since 1.0.RC
  */
-public interface ApiKey extends Resource, Saveable, Deletable, com.stormpath.sdk.client.ApiKey {
+public interface ApiKey extends Resource, Saveable, Deletable {
     // temporarily extending com.stormpath.sdk.client.ApiKey before deleting it in 1.0 final
 
     /**

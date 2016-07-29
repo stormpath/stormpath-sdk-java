@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.oauth;
 
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.http.HttpRequest;
 
 /**
@@ -56,10 +57,10 @@ import com.stormpath.sdk.http.HttpRequest;
  * }
  * </pre>
  *
- * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)
  * @see #using(ScopeFactory)
  * @see #withTtl(long)
- * @see #execute()
+ * @see #authenticate(HttpRequest)
  * @since 1.0.RC
  */
 public interface AccessTokenRequestAuthenticator {
@@ -74,7 +75,7 @@ public interface AccessTokenRequestAuthenticator {
      * @param scopeFactory the {@link ScopeFactory} to be used for this authentication request.
      * @return this instance for method chaining.
      */
-    public AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory);
+    AccessTokenRequestAuthenticator using(ScopeFactory scopeFactory);
 
     /**
      * Specifies the generated access token's <a href="http://en.wikipedia.org/wiki/Time_to_live">time to live</a>
@@ -85,17 +86,7 @@ public interface AccessTokenRequestAuthenticator {
      * @param ttl the time to live (in seconds) of this authentication request.
      * @return this instance for method chaining.
      */
-    public AccessTokenRequestAuthenticator withTtl(long ttl);
-
-    /**
-     * Executes this authentication request.
-     *
-     * @return the result of the authentication request in the form of a {@link AccessTokenResult}.
-     *
-     * @deprecated this method will be removed soon. Use {@link com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator#authenticate(HttpRequest)} instead
-     */
-    @Deprecated
-    public AccessTokenResult execute();
+    AccessTokenRequestAuthenticator withTtl(long ttl);
 
     /**
      * Authenticates an OAuth-based HTTP request submitted to your application's API, returning the result of the authentication attempt.
@@ -107,6 +98,6 @@ public interface AccessTokenRequestAuthenticator {
      *                    instance if it does not.  An argument not of either type will throw an IllegalArgumentException.
      * @return an {@link AccessTokenResult} that represents the result of the authentication attempt.
      */
-    public AccessTokenResult authenticate(HttpRequest httpRequest);
+    AccessTokenResult authenticate(HttpRequest httpRequest);
 
 }

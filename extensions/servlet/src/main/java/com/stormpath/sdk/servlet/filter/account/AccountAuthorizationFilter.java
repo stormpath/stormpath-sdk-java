@@ -43,7 +43,7 @@ public class AccountAuthorizationFilter extends AccessControlFilter {
     }
 
     @Override
-    protected void onInit() throws ServletException {
+    protected void onInit() throws Exception {
         super.onInit();
         String pathConfig = Strings.clean(getPathConfig());
         if (pathConfig != null) {

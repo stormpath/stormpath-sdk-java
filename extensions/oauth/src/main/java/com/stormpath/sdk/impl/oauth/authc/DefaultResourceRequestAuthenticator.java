@@ -59,28 +59,6 @@ public class DefaultResourceRequestAuthenticator implements ResourceRequestAuthe
     }
 
     @Override
-    public OAuthAuthenticationResult execute() {
-
-        RequestLocation[] locations = this.locations != null ? this.locations :
-                                      new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};
-
-        AuthenticationRequest request;
-
-        try {
-            request = new ResourceAuthenticationRequest(httpServletRequest, locations);
-        } catch (Exception e) {
-            throw ApiAuthenticationExceptionFactory.newOAuthException(OAuthAuthenticationException.class,
-                    OAuthAuthenticationException.INVALID_REQUEST);
-        }
-
-        AuthenticationResult result = application.authenticateAccount(request);
-
-        Assert.isInstanceOf(OAuthAuthenticationResult.class, result);
-
-        return (OAuthAuthenticationResult) result;
-    }
-
-    @Override
     public OAuthAuthenticationResult authenticate(HttpRequest httpRequest) {
         RequestLocation[] locations = this.locations != null ? this.locations :
                 new RequestLocation[]{RequestLocation.HEADER, RequestLocation.BODY};

@@ -15,11 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +35,10 @@ import java.io.IOException;
  * {@link #filter} method with HttpServletRequest and HttpServletResponse arguments.  Can also be enabled/disabled
  * at runtime via the {@link #isEnabled(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
  * implementation that can be overridden by subclasses.
- *
+ * <p>
  * <p>The {@link #getFilteredAttributeName} method determines how to identify that a request is already
  * filtered. The default implementation is based on the configured name of the concrete filter instance.</p>
- *
+ * <p>
  * This class was initially borrowed from the Apache Shiro and Spring Framework projects with additional
  * modifications.
  *
@@ -59,12 +55,9 @@ public abstract class HttpFilter implements Filter {
      */
     public static final String ALREADY_FILTERED_SUFFIX = ".FILTERED";
 
-    private FilterConfig   filterConfig;
+    private FilterConfig filterConfig;
     private ServletContext servletContext;
-    private String         name;
-    private Client client;
-    private Application application;
-
+    private String name;
 
     /**
      * Determines generally if this filter should execute or let requests fall through to the next chain element.
@@ -78,11 +71,11 @@ public abstract class HttpFilter implements Filter {
      * {@code false} if it should let the request/response pass through immediately to the next
      * element in the {@link javax.servlet.FilterChain}.  The default value is {@code true}, as most filters would
      * inherently need to execute when configured.
-     *
+     * <p>
      * <p>If this value is set to {@code true}, the filter implementation can make a request-specific decision by
      * overriding the {@link #isEnabled(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
      * method.</p>
-     *
+     * <p>
      * <p>If this value is {@code false}, the filter will not be executed and next element in the filter chain will
      * be executed immediately.</p>
      *
@@ -119,48 +112,27 @@ public abstract class HttpFilter implements Filter {
         this.name = name;
     }
 
-    public Config getConfig() {
-        return ConfigResolver.INSTANCE.getConfig(this.servletContext);
-    }
-
-    public Client getClient() {
-        return this.client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public Application getApplication() {
-        return this.application;
-    }
-
-    public void setApplication(Application application) {
-        this.application = application;
-    }
-
     @Override
     public final void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
         this.servletContext = filterConfig.getServletContext();
         this.name = filterConfig.getFilterName();
-        applyConfigAttributes();
-        onInit();
+        try {
+            onInit();
+        } catch (Exception e) {
+            String msg = "Unable to initialize '" + name + "' filter of type " + getClass().getName() + ": " + e.getMessage();
+            throw new ServletException(msg, e);
+        }
     }
 
-    protected void applyConfigAttributes() {
-        this.client = (Client)getServletContext().getAttribute(Client.class.getName());
-        this.application = (Application)getServletContext().getAttribute(Application.class.getName());
-    }
-
-    protected void onInit() throws ServletException {
+    protected void onInit() throws Exception {
         //no op, can be overridden by subclasses
     }
 
     /**
      * Returns {@code true} if this filter should filter the specified request, {@code false} if it should let the
      * request/response pass through immediately to the next element in the {@code FilterChain}.
-     *
+     * <p>
      * <p>This default implementation merely returns the value of {@link #isEnabled() isEnabled()}, which is
      * {@code true} by default (to ensure the filter always executes by default), but it can be overridden by
      * subclasses for request-specific behavior if necessary.  For example, a filter could be enabled or disabled
@@ -182,7 +154,7 @@ public abstract class HttpFilter implements Filter {
      * filter will commit and/or render the response directly.  This method is only invoked if
      * {@link #isEnabled(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)} is
      * {@code true}.
-     *
+     * <p>
      * <p>This default implementation always returns {@code true} and can be overridden by subclasses for custom
      * logic.</p>
      *
@@ -198,7 +170,7 @@ public abstract class HttpFilter implements Filter {
 
     /**
      * Return name of the request attribute that identifies that a request has already been filtered.
-     *
+     * <p>
      * <p>The default implementation takes the configured {@link #getName() name} and appends
      * &quot;{@code .FILTERED}&quot;.  If the filter is not fully initialized, it falls back to the implementation's
      * class name.</p>

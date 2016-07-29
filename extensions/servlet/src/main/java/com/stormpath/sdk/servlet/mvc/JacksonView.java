@@ -3,6 +3,7 @@ package com.stormpath.sdk.servlet.mvc;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stormpath.sdk.servlet.http.MediaType;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ public class JacksonView implements View {
 
     private JsonEncoding encoding = JsonEncoding.UTF8;
 
-    private String contentType = "application/json";
+    private String contentType = MediaType.APPLICATION_JSON_VALUE;
 
     private boolean updateContentLength = false;
 
@@ -59,6 +60,8 @@ public class JacksonView implements View {
     @Override
     public void render(HttpServletRequest request, HttpServletResponse response, ViewModel model) throws Exception {
 
+        response.setContentType(getContentType());
+
         OutputStream stream = (this.updateContentLength ? createTemporaryOutputStream() : response.getOutputStream());
 
         Object value = finalizeContent(model, request);
@@ -79,8 +82,7 @@ public class JacksonView implements View {
      * @throws IOException if writing/flushing failed
      */
     protected void writeToResponse(HttpServletResponse response, ByteArrayOutputStream baos) throws IOException {
-        // Write content type and also length (determined via byte array).
-        response.setContentType(getContentType());
+        // Write content length (determined via byte array).
         response.setContentLength(baos.size());
 
         // Flush byte array to servlet output stream.

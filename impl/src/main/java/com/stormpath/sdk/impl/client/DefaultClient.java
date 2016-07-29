@@ -134,7 +134,7 @@ public class DefaultClient implements Client {
             throw new RuntimeException(msg);
         }
 
-        Constructor<RequestExecutor> ctor = Classes.getConstructor(requestExecutorClass, com.stormpath.sdk.api.ApiKey.class, Proxy.class, AuthenticationScheme.class, Integer.class);
+        Constructor<RequestExecutor> ctor = Classes.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class, AuthenticationScheme.class, Integer.class);
 
         return Classes.instantiate(ctor, apiKey, proxy, authenticationScheme, connectionTimeout);
     }

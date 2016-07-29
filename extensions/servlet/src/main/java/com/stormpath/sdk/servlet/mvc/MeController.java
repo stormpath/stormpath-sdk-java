@@ -16,8 +16,10 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.http.UserAgents;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +36,12 @@ public class MeController extends AbstractController {
     public MeController(List<String> expands) {
         this.expands = expands;
         this.accountModelFactory = new DefaultAccountModelFactory();
+    }
+
+    @Override
+    public void init() throws Exception {
+        Assert.hasText(this.uri, "uri cannot be null or empty.");
+        Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
     }
 
     @Override
@@ -60,15 +68,21 @@ public class MeController extends AbstractController {
         response.setHeader("Cache-Control", "no-store, no-cache");
         response.setHeader("Pragma", "no-cache");
 
-        if(account != null) {
-            return new DefaultViewModel("stormpathJsonView", java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
+        if (account != null) {
+            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
         }
 
-        Application application = (Application) request.getServletContext().getAttribute(Application.class.getName());
-        String bearerRealm = String.format("Bearer realm=\"%s\"", application.getName());
-        response.addHeader("WWW-Authenticate", bearerRealm);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-        return new DefaultViewModel("stormpathJsonView", null);
+        // Using UserAgent directly here since super.isHtmlPreferred(request, response) results in NPE b/c producesMediaTypes is null
+        if (UserAgents.get(request).isHtmlPreferred()) {
+            Config config = (Config) request.getServletContext().getAttribute(Config.class.getName());
+            String loginUri = config.getLoginConfig().getUri();
+            return new DefaultViewModel(loginUri).setRedirect(true);
+        } else {
+            Application application = (Application) request.getServletContext().getAttribute(Application.class.getName());
+            String bearerRealm = String.format("Bearer realm=\"%s\"", application.getName());
+            response.addHeader("WWW-Authenticate", bearerRealm);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, null);
+        }
     }
 }

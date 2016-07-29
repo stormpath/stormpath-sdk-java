@@ -1,10 +1,21 @@
 package com.stormpath.sdk.servlet.http;
 
-import org.springframework.util.*;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedCaseInsensitiveMap;
+import org.springframework.util.MimeTypeUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Represents a MIME Type, as originally defined in RFC 2046 and subsequently used in

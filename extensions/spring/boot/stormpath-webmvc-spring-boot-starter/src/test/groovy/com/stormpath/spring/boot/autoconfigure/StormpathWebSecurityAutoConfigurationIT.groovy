@@ -19,7 +19,7 @@ import autoconfigure.StormpathWebSecurityAutoConfigurationTestApplication
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.testng.annotations.Test
@@ -29,7 +29,7 @@ import static org.testng.Assert.assertEquals
 /**
  * @since 1.0.RC5.2
  */
-@SpringApplicationConfiguration(classes = [StormpathWebSecurityAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
+@SpringBootTest(classes = [StormpathWebSecurityAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
 @WebAppConfiguration
 class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
