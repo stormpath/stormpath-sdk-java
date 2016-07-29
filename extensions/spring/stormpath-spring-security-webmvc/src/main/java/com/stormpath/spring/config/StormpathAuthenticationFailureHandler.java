@@ -17,6 +17,7 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultFailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEvent;
@@ -30,13 +31,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
+
+import static com.stormpath.sdk.servlet.mvc.Controller.NEXT_QUERY_PARAM;
 
 /**
  * A simple {@link AuthenticationFailureHandler} implementation that delegates to an actual/delegate handler for
@@ -49,29 +55,34 @@ import java.util.List;
 public class StormpathAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
-    protected String meUri;
+    private String meUri;
 
     private static final Logger log = LoggerFactory.getLogger(StormpathAuthenticationFailureHandler.class);
 
-    private final AuthenticationFailureHandler delegate;
-
     private final Publisher<RequestEvent> publisher;
+
+    private final String defaultFailureUrl;
 
     private final ErrorModelFactory errorModelFactory;
 
     private final List<MediaType> supportedMediaTypes;
 
+    private ContentNegotiationResolver contentNegotiationResolver;
+
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
     public StormpathAuthenticationFailureHandler(
-        AuthenticationFailureHandler delegate, Publisher<RequestEvent> publisher,
-        ErrorModelFactory errorModelFactory, String produces
+            String defaultFailureUrl, Publisher<RequestEvent> publisher,
+            ErrorModelFactory errorModelFactory, String produces
     ) {
-        Assert.notNull(delegate, "Delegate AuthenticationFailureHandler argument cannot be null.");
+        Assert.hasText(defaultFailureUrl, "defaultFailureUrl argument cannot be null.");
         Assert.notNull(publisher, "RequestEvent Publisher argument cannot be null.");
         Assert.notNull(errorModelFactory, "Error Model Factory argument cannot be null.");
-        this.delegate = delegate;
+        this.defaultFailureUrl = defaultFailureUrl;
         this.publisher = publisher;
         this.errorModelFactory = errorModelFactory;
         this.supportedMediaTypes = MediaType.parseMediaTypes(produces);
+        this.contentNegotiationResolver = ContentNegotiationResolver.INSTANCE;
     }
 
     @Override
@@ -80,8 +91,7 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
 
         // Content Negotiation per https://github.com/stormpath/stormpath-sdk-java/issues/682
         try {
-            MediaType mediaType =
-                ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
+            MediaType mediaType = contentNegotiationResolver.getContentType(request, response, supportedMediaTypes);
 
             if (MediaType.APPLICATION_JSON.equals(mediaType)) {
                 request.getRequestDispatcher(meUri).forward(request, response);
@@ -90,7 +100,21 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
                 //along the line and that causes the saved attributes to be lost.
                 //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
                 request.getSession().setAttribute(FormController.SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModelFactory.toError(request, exception));
-                this.delegate.onAuthenticationFailure(request, response, exception);
+
+                String redirectUrl = defaultFailureUrl;
+
+                //Don't loose the next param if present
+                String next = request.getParameter(NEXT_QUERY_PARAM);
+
+                if (Strings.hasText(next)) {
+                    if (redirectUrl.contains("?")) {
+                        redirectUrl += "&" + NEXT_QUERY_PARAM + "=" + URLEncoder.encode(next, "UTF-8");
+                    } else {
+                        redirectUrl += "?" + NEXT_QUERY_PARAM + "=" + URLEncoder.encode(next, "UTF-8");
+                    }
+                }
+
+                redirectStrategy.sendRedirect(request, response, redirectUrl);
             }
         } catch (UnresolvedMediaTypeException ex) {
             log.error("Couldn't resolve media type: {}", ex.getMessage(), ex);
@@ -122,5 +146,20 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
                     "the raw AuthenticationRequest used by the StormpathAuthenticationProvider.";
             throw new UnsupportedOperationException(msg);
         }
+    }
+
+    //For testing purposes
+    public void setRedirectStrategy(RedirectStrategy redirectStrategy) {
+        this.redirectStrategy = redirectStrategy;
+    }
+
+    //For testing purposes
+    public void setContentNegotiationResolver(ContentNegotiationResolver contentNegotiationResolver) {
+        this.contentNegotiationResolver = contentNegotiationResolver;
+    }
+
+    //For testing purposes
+    public void setMeUri(String meUri) {
+        this.meUri = meUri;
     }
 }

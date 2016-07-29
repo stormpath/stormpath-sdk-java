@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
@@ -46,6 +47,8 @@ import java.util.Map;
  * @since 1.0.RC3
  */
 public interface Config extends Map<String, String> {
+
+    ObjectMapper getObjectMapper();
 
     Client getClient();
 
