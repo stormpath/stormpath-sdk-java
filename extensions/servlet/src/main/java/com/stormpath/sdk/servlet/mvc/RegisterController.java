@@ -21,7 +21,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.directory.AccountStoreVisitor;
+import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.lang.Assert;
@@ -233,12 +233,7 @@ public class RegisterController extends FormController {
         } else {
             final Account[] accountHolder = new Account[]{account};
 
-            accountStore.accept(new AccountStoreVisitor() {
-                @Override
-                public void visit(Group group) {
-                    throw new IllegalStateException("Resolved account store cannot be a Group");
-                }
-
+            accountStore.accept(new AccountStoreVisitorAdapter() {
                 @Override
                 public void visit(Directory directory) {
                     Account createdAccount = directory.createAccount(accountHolder[0]);
