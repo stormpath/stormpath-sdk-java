@@ -120,6 +120,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return bean;
     }
 
+    @Bean
+    @Override
+    public com.stormpath.sdk.servlet.mvc.View stormpathControllerView() {
+        return super.stormpathControllerView();
+    }
+
     /**
      * @since 1.0.0
      */
@@ -151,7 +157,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public HandlerInterceptor stormpathLayoutInterceptor() throws Exception {
+    public HandlerInterceptor stormpathLayoutInterceptor() {
         return super.stormpathLayoutInterceptor();
     }
 

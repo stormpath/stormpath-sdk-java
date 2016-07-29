@@ -117,8 +117,15 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name="stormpathControllerView")
+    @Override
+    public com.stormpath.sdk.servlet.mvc.View stormpathControllerView() {
+        return super.stormpathControllerView();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "stormpathLayoutInterceptor")
-    public HandlerInterceptor stormpathLayoutInterceptor() throws Exception {
+    public HandlerInterceptor stormpathLayoutInterceptor() {
         return super.stormpathLayoutInterceptor();
     }
 

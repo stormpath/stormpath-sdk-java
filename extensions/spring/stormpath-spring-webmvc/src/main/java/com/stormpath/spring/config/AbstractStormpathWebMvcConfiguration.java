@@ -104,6 +104,7 @@ import com.stormpath.sdk.servlet.mvc.AccessTokenController;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
 import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
@@ -111,6 +112,7 @@ import com.stormpath.sdk.servlet.mvc.FormController;
 import com.stormpath.sdk.servlet.mvc.IdSiteController;
 import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
 import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
+import com.stormpath.sdk.servlet.mvc.JacksonView;
 import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
@@ -120,6 +122,7 @@ import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.ViewModel;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
@@ -142,6 +145,7 @@ import com.stormpath.spring.mvc.ForgotPasswordControllerConfig;
 import com.stormpath.spring.mvc.LoginControllerConfig;
 import com.stormpath.spring.mvc.LogoutControllerConfig;
 import com.stormpath.spring.mvc.RegisterControllerConfig;
+import com.stormpath.spring.mvc.SpringView;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import com.stormpath.spring.mvc.VerifyControllerConfig;
 import com.stormpath.spring.util.SpringPatternMatcher;
@@ -165,6 +169,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
@@ -175,10 +181,15 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -450,6 +461,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Qualifier("registerPostHandler")
     protected WebHandler registerPostHandler = new DisabledWebHandler();
 
+    @Autowired //all view resolvers in the spring app context;
+    private Map<String, org.springframework.web.servlet.ViewResolver> viewResolvers;
+
     private void addRoutes(final DefaultFilterChainManager mgr) throws ServletException {
 
         if (stormpathLoginConfig().isEnabled()) {
@@ -490,19 +504,37 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             addMeFilter(mgr);
         }
 
-        // stormpathHandlerMapping() had the following logic, setting up interceptors and a pathMatcher
+        // stormpathHandlerMapping() had the following logic, setting up interceptors
         // TODO: should we do something similar here?
-        /*
-        mapping.setInterceptors(new Object[]{stormpathLocaleChangeInterceptor(), stormpathLayoutInterceptor()});
+        // mapping.setInterceptors(new Object[]{stormpathLocaleChangeInterceptor(), stormpathLayoutInterceptor()});
+    }
 
-        if (pathMatcher != null) {
-            mapping.setPathMatcher(pathMatcher);
+    public com.stormpath.sdk.servlet.mvc.View stormpathControllerView() {
+        List<ViewResolver> l = new ArrayList<>(viewResolvers.values());
+        ViewResolver vr = stormpathJsonViewResolver();
+        if (!l.contains(vr)) {
+            l.add(vr);
         }
+        return new SpringView(l, stormpathSpringLocaleResolver(), stormpathLayoutInterceptor());
+    }
 
-        if (urlPathHelper != null) {
-            mapping.setUrlPathHelper(urlPathHelper);
-        }
-        */
+    public com.stormpath.sdk.servlet.mvc.View stormpathJacksonView() {
+        JacksonView view = new JacksonView();
+        view.setObjectMapper(objectMapper);
+        return view;
+    }
+
+    public com.stormpath.sdk.servlet.mvc.ViewResolver stormpathControllerViewResolver() {
+
+        com.stormpath.sdk.servlet.mvc.ViewResolver fixed = new com.stormpath.sdk.servlet.mvc.ViewResolver() {
+            @Override
+            public com.stormpath.sdk.servlet.mvc.View getView(ViewModel model, HttpServletRequest request) {
+                return stormpathControllerView();
+            }
+        };
+
+        return new DefaultViewResolver(fixed, stormpathJacksonView(), stormpathProducedMediaTypes());
+
     }
 
     public ApplicationResolver stormpathApplicationResolver() {
@@ -537,14 +569,14 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return configure(new LinkedinCallbackController());
     }
 
-    public HandlerInterceptor stormpathLayoutInterceptor() throws Exception {
+    public HandlerInterceptor stormpathLayoutInterceptor() {
         TemplateLayoutInterceptor interceptor = new TemplateLayoutInterceptor();
         interceptor.setHeadViewName(headView);
         interceptor.setHeadFragmentSelector(headFragmentSelector);
 
         //deal w/ URIs:
         String[] uris = StringUtils.tokenizeToStringArray(headCssUris, " \t");
-        Set<String> uriSet = new LinkedHashSet<String>();
+        Set<String> uriSet = new LinkedHashSet<>();
         if (uris != null && uris.length > 0) {
             java.util.Collections.addAll(uriSet, uris);
         }
@@ -555,12 +587,17 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         if (!Collections.isEmpty(uriSet)) {
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             list.addAll(uriSet);
             interceptor.setHeadCssUris(list);
         }
 
-        interceptor.afterPropertiesSet();
+        try {
+            interceptor.afterPropertiesSet();
+        } catch (Exception e) {
+            String msg = "Unable to initialize stormpathLayoutInterceptor: " + e.getMessage();
+            throw new BeanInitializationException(msg, e);
+        }
 
         return interceptor;
     }
@@ -1346,12 +1383,42 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
     }
 
+    private Filter wrapForSpringLocaleSupport(final Filter filter) {
+        return new Filter() {
+            @Override
+            public void init(FilterConfig filterConfig) throws ServletException {
+            }
+
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+                HttpServletRequest req = (HttpServletRequest) request;
+                HttpServletResponse resp = (HttpServletResponse) response;
+
+                //spring requires these shenanigans:
+                ServletRequestAttributes attributes = new ServletRequestAttributes(req, resp);
+                try {
+                    RequestContextHolder.setRequestAttributes(attributes);
+                    stormpathLocaleChangeInterceptor().preHandle(req, resp, null);
+                    filter.doFilter(req, resp, chain);
+                } finally {
+                    RequestContextHolder.resetRequestAttributes();
+                }
+            }
+
+            @Override
+            public void destroy() {
+            }
+        };
+    }
+
     private Filter createFilter(Controller controller, String name) {
         try {
             ControllerFilter filter = new ControllerFilter();
+            filter.setViewResolver(stormpathControllerViewResolver());
             filter.setProducedMediaTypes(stormpathProducedMediaTypes());
             filter.setController(controller);
-            return Filters.builder().setFilter(filter).setServletContext(servletContext).setName(name).build();
+            Filter f = Filters.builder().setFilter(filter).setServletContext(servletContext).setName(name).build();
+            return wrapForSpringLocaleSupport(f);
         } catch (ServletException e) {
             String msg = "Unable to create filter '" + name + "' to wrap controller [" + controller + "]: " + e.getMessage();
             throw new BeanCreationException(msg, e);
