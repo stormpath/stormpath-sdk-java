@@ -300,8 +300,7 @@ public abstract class AbstractController implements Controller {
 
             AccountStoreVisitor accountStoreVisitor = new AccountStoreVisitor() {
                 @Override
-                public void visit(Group group) {
-                }
+                public void visit(Group group) {}
 
                 @Override
                 public void visit(Directory directory) {
@@ -311,9 +310,7 @@ public abstract class AbstractController implements Controller {
                 }
 
                 @Override
-                public void visit(Organization organization) {
-
-                }
+                public void visit(Organization organization) {}
             };
             accountStore.accept(accountStoreVisitor);
         }
