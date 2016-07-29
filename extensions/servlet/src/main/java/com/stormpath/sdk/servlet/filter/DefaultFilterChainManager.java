@@ -16,10 +16,11 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
-import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
+import com.stormpath.sdk.servlet.config.Factory;
+import com.stormpath.sdk.servlet.util.ServletContextInitializable;
+import io.jsonwebtoken.lang.Classes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,61 +44,73 @@ import java.util.Set;
  */
 public class DefaultFilterChainManager implements FilterChainManager {
 
-    public static final String FILTER_CONFIG_PREFIX = "stormpath.web.filters.";
-
     private static transient final Logger log = LoggerFactory.getLogger(DefaultFilterChainManager.class);
 
-    private final Map<String, List<Filter>> filterChains; //key: chain name, value: chain
-
     private final ServletContext servletContext;
+    private final Map<String, List<Filter>> filterChains; //key: chain name, value: chain
+    private final Map<String, Object> configuredFilters;
 
-    private final Map<String, Class<? extends Filter>> configuredFilterClasses;
-
-    public DefaultFilterChainManager(ServletContext servletContext) throws ServletException {
+    public DefaultFilterChainManager(ServletContext servletContext) {
         Assert.notNull(servletContext, "ServletContext argument cannot be null.");
         this.servletContext = servletContext;
-        this.filterChains = new LinkedHashMap<String, List<Filter>>(); //iteration order is important
-
-        Map<String, Class<? extends Filter>> configuredFilterClasses =
-            new LinkedHashMap<String, Class<? extends Filter>>();
-
-        //add the defaults:
-        for (DefaultFilter defaultFilter : DefaultFilter.values()) {
-            configuredFilterClasses.put(defaultFilter.name(), defaultFilter.getFilterClass());
-        }
-
-        //pick up any user-configured filter classes and allow them to override the defaults:
-        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-
-        Map<String,Class<Filter>> foundClasses =
-            new ImplementationClassResolver<Filter>(config, FILTER_CONFIG_PREFIX, Filter.class)
-                .findImplementationClasses();
-
-        if (!com.stormpath.sdk.lang.Collections.isEmpty(foundClasses)) {
-            configuredFilterClasses.putAll(foundClasses);
-        }
-
-        this.configuredFilterClasses = Collections.unmodifiableMap(configuredFilterClasses);
+        this.filterChains = new LinkedHashMap<>(); //iteration order is important
+        this.configuredFilters = new LinkedHashMap<>();
     }
 
-    protected Config getConfig() {
-        return ConfigResolver.INSTANCE.getConfig(this.servletContext);
+    //key: filter name, value: filter class
+    public void addFilterClasses(Map<String, Class<? extends Filter>> classes) {
+        if (Collections.isEmpty(classes)) {
+            return;
+        }
+        this.configuredFilters.putAll(classes);
     }
 
+    /**
+     * @param name         the name of the filter
+     * @param filteryThing a Filter instance, a Filter implementation class, a Factory&lt;Filter&gt; instance or a Factory&lt;Filter&gt; implementation class.
+     */
+    public void addFilter(String name, Object filteryThing) {
+        if (filteryThing instanceof Class) {
+            Assert.isTrue(!Filter.class.equals(filteryThing), "Cannot specify the Filter class directly.  Specify a class that implements the Filter interface.");
+        }
+        this.configuredFilters.put(name, filteryThing);
+    }
+
+    @SuppressWarnings("unchecked")
     protected Filter createFilter(String name, String config) throws ServletException {
 
-        Class<? extends Filter> clazz = configuredFilterClasses.get(name);
+        Object o = configuredFilters.get(name);
 
-        if (clazz == null) {
-            String msg = "There is no configured filter class for filter name [" + name + "].";
+        if (o == null) {
+            String msg = "There is no configured filter for filter name '" + name + "'";
             throw new IllegalArgumentException(msg);
         }
 
-        FilterBuilder builder =
-            Filters.builder().setFilterClass(clazz).setName(name).setServletContext(this.servletContext);
+        if (o instanceof Filter) {
+            return (Filter) o;
+        }
 
+        FilterBuilder builder = Filters.builder().setServletContext(servletContext).setName(name);
         if (Strings.hasText(config)) {
             builder.setPathConfig(config);
+        }
+
+        if (o instanceof Class) {
+            Class c = (Class) o;
+            if (Filter.class.isAssignableFrom(c)) {
+                builder.setFilterClass((Class<? extends Filter>) c);
+            } else if (Factory.class.isAssignableFrom(c)) {
+                o = Classes.newInstance(c);
+            }
+        }
+
+        if (o instanceof Factory) {
+            Factory<Filter> factory = (Factory<Filter>) o;
+            if (factory instanceof ServletContextInitializable) {
+                ((ServletContextInitializable) factory).init(servletContext);
+            }
+            Filter filter = factory.getInstance();
+            builder.setFilter(filter);
         }
 
         return builder.build();
@@ -186,7 +198,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
                 config = Strings.clean(config);
             }
 
-            return new String[]{ name, config };
+            return new String[]{name, config};
 
         } catch (Exception e) {
             String msg = "Unable to parse filter chain definition token: " + token;
@@ -207,7 +219,7 @@ public class DefaultFilterChainManager implements FilterChainManager {
     protected List<Filter> ensureChain(String chainName) {
         List<Filter> chain = getChain(chainName);
         if (chain == null) {
-            chain = new ArrayList<Filter>();
+            chain = new ArrayList<>();
             this.filterChains.put(chainName, chain);
         }
         return chain;

@@ -17,8 +17,8 @@ package com.stormpath.sdk.servlet.filter.oauth;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.OAuthRequests;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthRequests;
 
 import javax.servlet.http.HttpServletRequest;
 

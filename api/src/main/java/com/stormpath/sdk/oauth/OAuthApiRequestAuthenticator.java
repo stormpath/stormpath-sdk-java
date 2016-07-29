@@ -24,14 +24,14 @@ import com.stormpath.sdk.http.HttpRequest;
  * the authentication attempt is processed.  For example:
  *
  * <pre>
- * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * AuthenticationResult result = {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
  * application.authenticateOauthRequest(httpRequest)}
  *     <b>{@link #using(ScopeFactory) .using(scopeFactory)}
  *     {@link #withTtl(long) .withTtl(3600)}
  *     {@link #execute() .execute()};</b>
  * </pre>
  *
- * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
  * @see #execute()
  * @since 1.0.RC
  */
@@ -78,15 +78,6 @@ public interface OAuthApiRequestAuthenticator extends ApiRequestAuthenticator {
      *         this builder.
      */
     ResourceRequestAuthenticator inLocation(RequestLocation... locations);
-
-    /**
-     * Executes this authentication request.
-     *
-     * @return the result of the authentication request in the form of a {@link OAuthAuthenticationResult}.
-     * @deprecated this method will be removed soon. Use {@link OAuthApiRequestAuthenticator#authenticate(HttpRequest)} instead
-     */
-    @Deprecated
-    OAuthAuthenticationResult execute();
 
     /**
      * Authenticates an OAuth-based HTTP request submitted to your application's API, returning a result that

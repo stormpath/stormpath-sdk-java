@@ -18,9 +18,9 @@ package com.stormpath.sdk.servlet.filter.oauth;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.OAuthRequests;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticationBuilder;
+import com.stormpath.sdk.oauth.OAuthRequests;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 
 import javax.servlet.http.HttpServletRequest;

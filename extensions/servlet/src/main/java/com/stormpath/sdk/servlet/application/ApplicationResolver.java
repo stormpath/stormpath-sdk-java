@@ -25,7 +25,7 @@ import javax.servlet.ServletRequest;
  * Once obtained and saved by the {@link com.stormpath.sdk.servlet.application.ApplicationLoader ApplicationLoader},
  * developers can use the {@code Application} instance to perform any identity operations necessary for
  * the web application, such as login, password reset, etc.  For example:
- *
+ * <p>
  * <pre>
  * Application app = applicationResolver.getApplication(aServletContext);
  * </pre>
@@ -39,7 +39,7 @@ public interface ApplicationResolver {
      * A thread-safe instance to use as desired.  The implementation is a
      * {@link com.stormpath.sdk.servlet.client.DefaultClientResolver DefaultClientResolver}.
      */
-    public static final ApplicationResolver INSTANCE = new DefaultApplicationResolver();
+    ApplicationResolver INSTANCE = new DefaultApplicationResolver();
 
     /**
      * Returns the Stormpath {@link Application} record that reflects the currently running web application.

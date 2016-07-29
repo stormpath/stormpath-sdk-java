@@ -15,17 +15,23 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.provider.ProviderAccountRequest;
+import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.provider.Providers;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
 import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,30 +39,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED_OBJECT;
+
 /**
  * @since 1.0.RC4
  */
 public abstract class FormController extends AbstractController {
 
-    protected CsrfTokenManager csrfTokenManager;
-    protected RequestFieldValueResolver fieldValueResolver;
-    protected List<Field> formFields;
+    private static final Logger log = LoggerFactory.getLogger(FormController.class);
 
     public final static String SPRING_SECURITY_AUTHENTICATION_FAILED_KEY = "SPRING_SECURITY_AUTHENTICATION_FAILED_MESSAGE";
 
-    public FormController() {
+    private CsrfTokenManager csrfTokenManager;
+    private RequestFieldValueResolver fieldValueResolver;
+    private List<Field> formFields;
 
+    public void setCsrfTokenManager(CsrfTokenManager csrfTokenManager) {
+        this.csrfTokenManager = csrfTokenManager;
     }
 
-    public FormController(ControllerConfigResolver configResolver, String produces) {
-        super(configResolver, produces);
-        this.csrfTokenManager = configResolver.getCsrfTokenManager();
-        this.formFields = configResolver.getFormFields();
+    public void setFieldValueResolver(RequestFieldValueResolver fieldValueResolver) {
+        this.fieldValueResolver = fieldValueResolver;
+    }
 
-        this.fieldValueResolver = new ContentNegotiatingFieldValueResolver();
+    protected RequestFieldValueResolver getFieldValueResolver() {
+        return this.fieldValueResolver;
+    }
 
-        Assert.notNull(this.csrfTokenManager, "csrfTokenManager cannot be null.");
-        Assert.notNull(this.fieldValueResolver, "fieldValueResolver cannot be null.");
+    public void setFormFields(List<Field> formFields) {
+        this.formFields = formFields;
+    }
+
+    protected CsrfTokenManager getCsrfTokenManager() {
+        return csrfTokenManager;
+    }
+
+    @Override
+    public void init() throws Exception {
+        super.init();
+        //Assert.notEmpty(formFields, "formFields cannot be null or empty."); some forms do this manually
+        Assert.notNull(csrfTokenManager, "csrfTokenManager cannot be null.");
+        Assert.notNull(fieldValueResolver, "fieldValueResolver cannot be null.");
     }
 
     private boolean isCsrfProtectionEnabled() {
@@ -235,13 +258,27 @@ public abstract class FormController extends AbstractController {
 
         validateCsrfToken(request, response, form);
 
+        // check for request body and no parameters
+        if (request.getParameterMap().size() == 0 && request.getContentLength() > 0) {
+            // Read from request to see if social information exists
+            ProviderAccountRequest accountRequest = getAccountProviderRequest(request);
+            if (accountRequest != null) {
+                ProviderAccountResult result = getApplication(request).getAccount(accountRequest);
+                Account account = result.getAccount();
+                if (account.getStatus().equals(AccountStatus.ENABLED)) {
+                    request.setAttribute(Account.class.getName(), account);
+                    return;
+                }
+            }
+        }
+
         //ensure required fields are present:
         List<Field> fields = form.getFields();
         for (Field field : fields) {
             if (field.isRequired() || field.isEnabled()) {
                 String value = form.getFieldValue(field.getName());
                 if (value == null) {
-                    String key = "stormpath.web." + controllerKey + ".form.fields." + field.getName() + ".required";
+                    String key = "stormpath.web." + getControllerKey() + ".form.fields." + field.getName() + ".required";
                     String msg = i18n(request, key);
                     throw new ValidationException(msg);
                 }
@@ -260,5 +297,46 @@ public abstract class FormController extends AbstractController {
                 }
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
+        Map<String, Object> map = (Map<String, Object>) request.getAttribute(MARSHALLED_OBJECT);
+        Map<String, String> providerData = (Map<String, String>) map.get("providerData");
+
+        if (providerData != null) {
+            String providerId = providerData.get("providerId");
+            ProviderAccountRequest accountRequest = null;
+            switch (providerId) {
+                case "facebook": {
+                    String accessToken = providerData.get("accessToken");
+                    accountRequest = Providers.FACEBOOK.account().setAccessToken(accessToken).build();
+                    break;
+                }
+                case "github": {
+                    String code = providerData.get("code");
+                    accountRequest = Providers.GITHUB.account().setAccessToken(exchangeGithubCodeForAccessToken(code, request)).build();
+                    break;
+                }
+                case "google": {
+                    String code = providerData.get("code");
+                    accountRequest = Providers.GOOGLE.account().setCode(code).build();
+                    break;
+                }
+                case "linkedin": {
+                    String code = providerData.get("code");
+                    accountRequest = Providers.LINKEDIN.account().setCode(code).build();
+                    break;
+                }
+                default: {
+                    log.error("No provider configured for " + providerId);
+                }
+            }
+
+            return accountRequest;
+        }
+
+        log.warn("Provider data not found in request.");
+        return null;
     }
 }

@@ -51,6 +51,11 @@ public class DefaultContentNegotiationResolver implements ContentNegotiationReso
             return MediaType.TEXT_HTML;
         }
 
+        // 781: Add support for application/x-www-form-urlencoded in verify endpoint
+        if (request.getHeader("accept").contains(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+            return MediaType.APPLICATION_JSON;
+        }
+
         throw new UnresolvedMediaTypeException(preferredMediaTypes, producesMediaTypes,
                 "The ContentNegotiationResolver was not able to come up with a valid MediaType.");
     }

@@ -34,7 +34,7 @@
     </listener>
     <filter>
         <filter-name>StormpathFilter</filter-name>
-        <filter-class>com.stormpath.sdk.servlet.filter.StormpathFilter</filter-class>
+        <filter-class>com.stormpath.sdk.servlet.config.filter.SelfConfiguredStormpathFilter</filter-class>
     </filter>
     <!-- Make sure any request you want accessible to Stormpath is filtered. /* catches all
         requests.  This filter mapping is usually defined in front of other filters to ensure

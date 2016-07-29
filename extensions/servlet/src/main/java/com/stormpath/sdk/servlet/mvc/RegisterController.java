@@ -23,7 +23,6 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
-import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -46,6 +45,11 @@ import java.util.Map;
 public class RegisterController extends FormController {
 
     private static final Logger log = LoggerFactory.getLogger(RegisterController.class);
+    public static final List<String> ACCOUNT_PROPERTIES = Collections.unmodifiableList(Arrays.asList("email", "username", "password", "givenName", "middleName", "surname"));
+
+    private boolean autoLogin;
+    private String loginUri;
+    private String verifyViewName;
 
     private Client client;
     //only used if account does not need email verification:
@@ -56,37 +60,69 @@ public class RegisterController extends FormController {
     private WebHandler preRegisterHandler;
     private WebHandler postRegisterHandler;
 
-    private boolean autoLogin;
-
-    private String loginUri;
-    private String verifyViewName;
-
-    public static final List<String> ACCOUNT_PROPERTIES = Collections.unmodifiableList(Arrays.asList("email", "username", "password", "givenName", "middleName", "surname"));
-
-    public RegisterController() {
-        super();
+    public void setAutoLogin(boolean autoLogin) {
+        this.autoLogin = autoLogin;
     }
 
-    public RegisterController(Config config, Client client) {
-        super(config.getRegisterControllerConfig(), config.getProducesMediaTypes());
+    public void setLoginUri(String loginUri) {
+        this.loginUri = loginUri;
+    }
 
+    public void setVerifyViewName(String verifyViewName) {
+        this.verifyViewName = verifyViewName;
+    }
+
+    public void setClient(Client client) {
         this.client = client;
-        this.authenticationResultSaver = config.getAuthenticationResultSaver();
-        this.loginUri = config.getLoginControllerConfig().getUri();
-        this.verifyViewName = config.getVerifyControllerConfig().getView();
-        this.autoLogin = config.isRegisterAutoLoginEnabled();
+    }
 
-        this.preRegisterHandler = config.getRegisterPreHandler();
-        this.postRegisterHandler = config.getRegisterPostHandler();
+    public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
+        this.authenticationResultSaver = authenticationResultSaver;
+    }
 
-        this.accountModelFactory = new DefaultAccountModelFactory();
-        this.accountStoreModelFactory = new ExternalAccountStoreModelFactory();
-        this.errorModelFactory = new RegisterErrorModelFactory(this.messageSource);
+    public void setAccountModelFactory(AccountModelFactory accountModelFactory) {
+        this.accountModelFactory = accountModelFactory;
+    }
+
+    public void setAccountStoreModelFactory(AccountStoreModelFactory accountStoreModelFactory) {
+        this.accountStoreModelFactory = accountStoreModelFactory;
+    }
+
+    public void setErrorModelFactory(ErrorModelFactory errorModelFactory) {
+        this.errorModelFactory = errorModelFactory;
+    }
+
+    public void setPreRegisterHandler(WebHandler preRegisterHandler) {
+        this.preRegisterHandler = preRegisterHandler;
+    }
+
+    public void setPostRegisterHandler(WebHandler postRegisterHandler) {
+        this.postRegisterHandler = postRegisterHandler;
+    }
+
+    @Override
+    public void init() throws Exception {
+        super.init();
+
+        if (this.accountModelFactory == null) {
+            this.accountModelFactory = new DefaultAccountModelFactory();
+        }
+        if (this.accountStoreModelFactory == null) {
+            this.accountStoreModelFactory = new ExternalAccountStoreModelFactory();
+        }
+        if (this.errorModelFactory == null) {
+            this.errorModelFactory = new RegisterErrorModelFactory(this.messageSource);
+        }
 
         Assert.notNull(this.client, "client cannot be null.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver cannot be null.");
         Assert.hasText(this.loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(this.verifyViewName, "verifyViewName cannot be null or empty.");
+        Assert.notNull(this.preRegisterHandler, "preRegisterHandler cannot be null.");
+        Assert.notNull(this.postRegisterHandler, "postRegisterHandler cannot be null.");
+        Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
+        Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
+        Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
     }
 
     @Override
@@ -211,12 +247,12 @@ public class RegisterController extends FormController {
 
         for (Field field : form.getFields()) {
             //Field is not part of the default account properties then is a custom field
-            if (!field.getName().equals(csrfTokenManager.getTokenName()) && !ACCOUNT_PROPERTIES.contains(field.getName())) {
+            if (!field.getName().equals(getCsrfTokenManager().getTokenName()) && !ACCOUNT_PROPERTIES.contains(field.getName())) {
                 result.put(field.getName(), field.getValue());
             }
         }
 
-        Object customData = fieldValueResolver.getAllFields(request).get("customData");
+        Object customData = getFieldValueResolver().getAllFields(request).get("customData");
         if (customData instanceof Map) {
             //noinspection unchecked
             result.putAll((Map<? extends String, ?>) customData);

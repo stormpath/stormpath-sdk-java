@@ -19,9 +19,9 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
 import com.stormpath.sdk.api.ApiKeyOptions;
-import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -37,7 +37,6 @@ import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
-
 
 import java.util.Map;
 
@@ -390,10 +389,8 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Returns all {@link ApiKey}s that belong to this account.  The account can use any of these
      * ApiKeys (that are {@link com.stormpath.sdk.api.ApiKey#getStatus() enabled}) to communicate with your
-     * Application's API (e.g. REST API). See {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
-     * application.authenticateApiRequest(request)} and
-     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
-     * application.authenticateOauthRequest(request)} for more information.
+     * Application's API (e.g. REST API). See {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
+     * for more information.
      *
      * @return all {@link ApiKey}s that belong to this account.
      * @since 1.0.RC
@@ -403,10 +400,8 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Returns a paginated list of the account's api keys that match the specified query criteria.  The account can use
      * any of these ApiKeys (that are {@link com.stormpath.sdk.api.ApiKey#getStatus() enabled}) to communicate with your
-     * Application's API (e.g. REST API). See {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
-     * application.authenticateApiRequest(request)} and
-     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
-     * application.authenticateOauthRequest(request)} for more information.
+     * Application's API (e.g. REST API). See {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
+     *  for more information.
      *
      * <p>This method is mostly provided as a non-type-safe alternative to the
      * {@link #getApiKeys(com.stormpath.sdk.api.ApiKeyCriteria)} method which might be useful in dynamic languages on
@@ -458,10 +453,8 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Creates a new {@link ApiKey} assigned to this account in the Stormpath server and returns the created resource.
      * The account can then use the ApiKey to communicate with your Application's API (e.g. REST API).
-     * See {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
-     * application.authenticateApiRequest(request)} and
-     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
-     * application.authenticateOauthRequest(request)} for more information.
+     * See {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
+     * for more information.
      *
      * <h3>Security Notice</h3>
      *
@@ -479,9 +472,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * Creates a new {@link ApiKey} assigned to this account in the Stormpath server and ensures the returned
      * {@link ApiKey} reflects the specified {@link ApiKeyOptions}.
      * The account can then use the ApiKey to communicate with your Application's API (e.g. REST API).
-     * See {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
-     * application.authenticateApiRequest(request)} and
-     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+     * See {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}
      * application.authenticateOauthRequest(request)} for more information.
      *
      * <h3>Security Notice</h3>

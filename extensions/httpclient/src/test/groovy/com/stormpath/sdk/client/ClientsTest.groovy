@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.Cache
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.cache.Caches
@@ -65,7 +66,7 @@ public class ClientsTest {
     @Test
     void testSetCustomCacheManager() {
 
-        com.stormpath.sdk.api.ApiKey apiKey = createMock(com.stormpath.sdk.api.ApiKey)
+        ApiKey apiKey = createMock(ApiKey)
 
         //dummy implementation:
         def cacheManager = new CacheManager() {
@@ -85,7 +86,7 @@ public class ClientsTest {
     @Test
     void testDefaultCacheManager() {
 
-        com.stormpath.sdk.api.ApiKey apiKey = createMock(com.stormpath.sdk.api.ApiKey)
+        ApiKey apiKey = createMock(ApiKey)
 
         Client client = Clients.builder()
                 .setApiKey(apiKey)
@@ -100,7 +101,7 @@ public class ClientsTest {
     @Test
     void testRequestAuthenticatorNotSet() {
 
-        com.stormpath.sdk.api.ApiKey apiKey = createMock(com.stormpath.sdk.api.ApiKey)
+        ApiKey apiKey = createMock(ApiKey)
 
         Client client = Clients.builder()
                 .setApiKey(apiKey)
@@ -114,7 +115,7 @@ public class ClientsTest {
     @Test
     void testAuthenticationSchemeNull() {
 
-        com.stormpath.sdk.api.ApiKey apiKey = createMock(com.stormpath.sdk.api.ApiKey)
+        ApiKey apiKey = createMock(ApiKey)
 
         Client client = Clients.builder()
                 .setApiKey(apiKey)
@@ -129,7 +130,7 @@ public class ClientsTest {
     @Test
     void testAuthenticationScheme() {
 
-        com.stormpath.sdk.api.ApiKey apiKey = createMock(com.stormpath.sdk.api.ApiKey)
+        ApiKey apiKey = createMock(ApiKey)
 
         Client client = Clients.builder()
                 .setApiKey(apiKey)
@@ -152,7 +153,7 @@ public class ClientsTest {
 
     @Test
     void testSetApiKey() {
-        com.stormpath.sdk.api.ApiKey apiKey = createMock(com.stormpath.sdk.api.ApiKey)
+        ApiKey apiKey = createMock(ApiKey)
 
         def builder = Clients.builder().setApiKey(apiKey)
 
@@ -162,7 +163,7 @@ public class ClientsTest {
     @Test
     void testApiKeyNull() {
         try {
-            Clients.builder().setApiKey((com.stormpath.sdk.api.ApiKey) null)
+            Clients.builder().setApiKey((ApiKey) null)
             fail("Should have thrown because of null ApiKey.")
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "apiKey cannot be null.")
@@ -171,7 +172,7 @@ public class ClientsTest {
 
     @Test
     void testSetProxy() {
-        com.stormpath.sdk.api.ApiKey apiKey = createMock(com.stormpath.sdk.api.ApiKey)
+        ApiKey apiKey = createMock(ApiKey)
         def proxy = new com.stormpath.sdk.client.Proxy("localhost", 8900)
         def builder = Clients.builder().setApiKey(apiKey).setProxy(proxy)
         assertEquals(builder.proxy, proxy)
@@ -179,7 +180,7 @@ public class ClientsTest {
 
     @Test
     void testSetNullProxy() {
-        com.stormpath.sdk.api.ApiKey apiKey = createMock(com.stormpath.sdk.api.ApiKey)
+        ApiKey apiKey = createMock(ApiKey)
         try {
             Clients.builder().setApiKey(apiKey).setProxy(null)
             fail("Should have thrown due to null proxy.")

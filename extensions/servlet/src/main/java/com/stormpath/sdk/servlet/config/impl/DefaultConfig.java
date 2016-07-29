@@ -17,25 +17,36 @@ package com.stormpath.sdk.servlet.config.impl;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.Factory;
 import com.stormpath.sdk.servlet.config.ImplementationClassResolver;
-import com.stormpath.sdk.servlet.filter.ChangePasswordConfigResolver;
-import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfigResolver;
+import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
+import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ControllerConfigResolver;
-import com.stormpath.sdk.servlet.filter.ServletControllerConfigResolver;
+import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
+import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfig;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
+import com.stormpath.sdk.servlet.filter.ControllerConfig;
+import com.stormpath.sdk.servlet.filter.FilterChainManager;
+import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ServletControllerConfig;
+import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
+import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
@@ -46,6 +57,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -55,6 +67,7 @@ import java.util.regex.Pattern;
  * @since 1.0.RC3
  */
 public class DefaultConfig implements Config {
+
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
@@ -98,65 +111,98 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public Client getClient() {
+        return ClientResolver.INSTANCE.getClient(servletContext);
+    }
+
+    @Override
     public ApplicationResolver getApplicationResolver() {
         return ApplicationResolver.INSTANCE; //TODO remove static usage
     }
 
     @Override
-    public ControllerConfigResolver getLoginControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "login");
+    public MessageSource getMessageSource() {
+        return getRuntimeInstance("stormpath.web.message.source");
     }
 
     @Override
-    public ControllerConfigResolver getLogoutControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "logout");
+    public Resolver<Locale> getLocaleResolver() {
+        return getRuntimeInstance("stormpath.web.locale.resolver");
     }
 
     @Override
-    public ControllerConfigResolver getRegisterControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "register");
+    public CsrfTokenManager getCsrfTokenManager() {
+        return getRuntimeInstance("stormpath.web.csrf.token.manager");
     }
 
     @Override
-    public ControllerConfigResolver getForgotPasswordControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "forgotPassword");
+    public RequestFieldValueResolver getFieldValueResolver() {
+        return getRuntimeInstance("stormpath.web.form.fields.valueResolver");
     }
 
     @Override
-    public ControllerConfigResolver getVerifyControllerConfig() {
-        return new ServletControllerConfigResolver(this, CFG, "verifyEmail");
+    public AccountResolver getAccountResolver() {
+        return getRuntimeInstance("stormpath.web.account.resolver");
     }
 
     @Override
-    public ChangePasswordConfigResolver getChangePasswordControllerConfig() {
-        return new ChangePasswordServletControllerConfigResolver(this, CFG, "changePassword");
+    public ContentNegotiationResolver getContentNegotiationResolver() {
+        return getRuntimeInstance("stormpath.web.conneg.resolver");
+    }
+
+    @Override
+    public ControllerConfig getLoginConfig() {
+        return new ServletControllerConfig(this, CFG, "login");
+    }
+
+    @Override
+    public ControllerConfig getLogoutConfig() {
+        return new ServletControllerConfig(this, CFG, "logout");
+    }
+
+    @Override
+    public ControllerConfig getRegisterConfig() {
+        return new ServletControllerConfig(this, CFG, "register");
+    }
+
+    @Override
+    public ControllerConfig getForgotPasswordConfig() {
+        return new ServletControllerConfig(this, CFG, "forgotPassword");
+    }
+
+    @Override
+    public ControllerConfig getVerifyConfig() {
+        return new ServletControllerConfig(this, CFG, "verifyEmail");
+    }
+
+    @Override
+    public ChangePasswordConfig getChangePasswordConfig() {
+        return new ChangePasswordServletControllerConfig(this, CFG, "changePassword");
     }
 
     @Override
     public Saver<AuthenticationResult> getAuthenticationResultSaver() {
-        try {
-            return getInstance("stormpath.web.authc.saver");
-        } catch (ServletException e) {
-            throw new RuntimeException("Couldn't instantiate the default authentication result saver", e);
-        }
+        return getRuntimeInstance("stormpath.web.authc.saver");
     }
 
     @Override
     public AccountStoreResolver getAccountStoreResolver() {
-        try {
-            return getInstance("stormpath.web.accountStoreResolver");
-        } catch (ServletException e) {
-            throw new RuntimeException("Couldn't instantiate " + AccountStoreResolver.class.getName(), e);
-        }
+        return getRuntimeInstance("stormpath.web.accountStoreResolver");
     }
 
     @Override
     public Publisher<RequestEvent> getRequestEventPublisher() {
-        try {
-            return getInstance("stormpath.web.request.event.publisher");
-        } catch (ServletException e) {
-            throw new RuntimeException("Couldn't instantiate the default RequestEventPublisher instance", e);
-        }
+        return getRuntimeInstance("stormpath.web.request.event.publisher");
+    }
+
+    @Override
+    public FilterChainManager getFilterChainManager() {
+        return getRuntimeInstance("stormpath.web.filter.chain.manager");
+    }
+
+    @Override
+    public FilterChainResolver getFilterChainResolver() {
+        return getRuntimeInstance("stormpath.web.filter.chain.resolver");
     }
 
     @Override
@@ -223,38 +269,22 @@ public class DefaultConfig implements Config {
 
     @Override
     public WebHandler getLoginPreHandler() {
-        try {
-            return getInstance("stormpath.web.login.preHandler");
-        } catch (ServletException e) {
-            throw new RuntimeException("Couldn't instantiate login pre handler", e);
-        }
+        return getRuntimeInstance("stormpath.web.login.preHandler");
     }
 
     @Override
     public WebHandler getLoginPostHandler() {
-        try {
-            return getInstance("stormpath.web.login.postHandler");
-        } catch (ServletException e) {
-            throw new RuntimeException("Couldn't instantiate login post handler", e);
-        }
+        return getRuntimeInstance("stormpath.web.login.postHandler");
     }
 
     @Override
     public WebHandler getRegisterPreHandler() {
-        try {
-            return getInstance("stormpath.web.register.preHandler");
-        } catch (ServletException e) {
-            throw new RuntimeException("Couldn't instantiate login pre handler", e);
-        }
+        return getRuntimeInstance("stormpath.web.register.preHandler");
     }
 
     @Override
     public WebHandler getRegisterPostHandler() {
-        try {
-            return getInstance("stormpath.web.register.postHandler");
-        } catch (ServletException e) {
-            throw new RuntimeException("Couldn't instantiate register post handler", e);
-        }
+        return getRuntimeInstance("stormpath.web.register.postHandler");
     }
 
     @Override
@@ -269,7 +299,7 @@ public class DefaultConfig implements Config {
         } else {
             boolean enabled = CFG.getBoolean("stormpath.web.register.enabled");
             ApplicationResolver appResolver = getApplicationResolver();
-            BiPredicate<Boolean,Application> regEnabledPredicate = getRegisterEnabledPredicate();
+            BiPredicate<Boolean, Application> regEnabledPredicate = getRegisterEnabledPredicate();
             RegisterEnabledResolver resolver = new RegisterEnabledResolver(enabled, appResolver, regEnabledPredicate);
             SINGLETONS.put(key, resolver);
             return resolver;
@@ -278,10 +308,14 @@ public class DefaultConfig implements Config {
 
     @Override
     public BiPredicate<Boolean, Application> getRegisterEnabledPredicate() {
+        return getRuntimeInstance("stormpath.web.register.enabled.predicate");
+    }
+
+    private <T> T getRuntimeInstance(String classPropertyName) {
         try {
-            return getInstance("stormpath.web.register.enabled.predicate");
+            return getInstance(classPropertyName);
         } catch (ServletException e) {
-            throw new RuntimeException("Couldn't instantiate stormpath.web.register.enabled.predicate", e);
+            throw new RuntimeException("Couldn't acquire instance for '" + classPropertyName + "': " + e.getMessage());
         }
     }
 
@@ -344,6 +378,19 @@ public class DefaultConfig implements Config {
     public String getProducesMediaTypes() {
         List<String> mediaTypes = CFG.getList(PRODUCES_MEDIA_TYPES);
         return Strings.collectionToCommaDelimitedString(mediaTypes);
+    }
+
+    @Override
+    public List<MediaType> getProducedMediaTypes() {
+        String mediaTypes = Strings.clean(getProducesMediaTypes());
+        Assert.notNull(mediaTypes, "stormpath.web.produces property value cannot be null or empty.");
+
+        try {
+            return MediaType.parseMediaTypes(mediaTypes);
+        } catch (InvalidMediaTypeException e) {
+            String msg = "Unable to parse value in stormpath.web.produces property: " + e.getMessage();
+            throw new IllegalArgumentException(msg, e);
+        }
     }
 
     @Override

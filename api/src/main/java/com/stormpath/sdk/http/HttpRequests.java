@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.http;
 
+import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 
@@ -26,13 +27,10 @@ import java.lang.reflect.Constructor;
  *
  * <p>Once you obtain either a {@code HttpServletRequest} or construct a {@link HttpRequest}, either may be
  * authenticated (presumably to assert an identity for calls to your REST API)
- * using {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
- * application.authenticateApiRequest(httpRequest)} or
- * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
- * application.authenticateOauthRequest(httpRequest)}.</p>
+ * using {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}.
+ * </p>
  *
- * @see com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
- * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)
  * @since 1.0.RC
  */
 public final class HttpRequests {
@@ -42,10 +40,7 @@ public final class HttpRequests {
 
     /**
      * Creates and returns a new {@link HttpRequestBuilder} that builds request instances that will be used for request
-     * authentication via {@link com.stormpath.sdk.application.Application#authenticateApiRequest(Object)
-     * application.authenticateApiRequest(httpRequest)} or
-     * {@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object)
-     * application.authenticateOauthRequest(httpRequest)}.
+     * authentication via {@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)}.
      *
      * <p>This method is only useful for SDK users that do not depend on the {@code HttpServletRequest} API, as
      * the {@code application.authenticate*} methods accept that type natively.</p>

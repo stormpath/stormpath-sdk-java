@@ -15,13 +15,13 @@
  */
 package com.stormpath.sdk.impl.client;
 
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
 import com.stormpath.sdk.cache.Caches;
-import com.stormpath.sdk.client.ApiKey;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
@@ -70,7 +70,7 @@ public class DefaultClientBuilder implements ClientBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultClientBuilder.class);
 
-    private com.stormpath.sdk.api.ApiKey apiKey;
+    private ApiKey               apiKey;
     private Proxy                proxy;
     private CacheManager         cacheManager;
 
@@ -197,11 +197,6 @@ public class DefaultClientBuilder implements ClientBuilder {
 
     @Override
     public ClientBuilder setApiKey(ApiKey apiKey) {
-        return setApiKey((com.stormpath.sdk.api.ApiKey) apiKey);
-    }
-
-    @Override
-    public ClientBuilder setApiKey(com.stormpath.sdk.api.ApiKey apiKey) {
         Assert.notNull(apiKey, "apiKey cannot be null.");
         this.apiKey = apiKey;
         return this;

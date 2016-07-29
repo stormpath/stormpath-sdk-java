@@ -20,9 +20,9 @@ import com.stormpath.sdk.application.Applications;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthAuthenticationResult;
+import com.stormpath.sdk.oauth.RequestLocation;
 import com.stormpath.sdk.oauth.ResourceRequestAuthenticator;
 import com.stormpath.sdk.oauth.ScopeFactory;
-import com.stormpath.sdk.oauth.RequestLocation;
 import com.stormpath.sdk.servlet.oauth.ServletOAuthRequestAuthenticator;
 
 import javax.servlet.http.HttpServletRequest;

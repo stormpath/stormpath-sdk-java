@@ -23,6 +23,7 @@ import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.mvc.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.web.servlet.mvc.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

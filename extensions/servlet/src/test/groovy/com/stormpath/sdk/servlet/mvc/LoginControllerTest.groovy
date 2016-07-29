@@ -1,6 +1,7 @@
 package com.stormpath.sdk.servlet.mvc
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.authc.AuthenticationResult
 import com.stormpath.sdk.directory.AccountStore
@@ -39,9 +40,11 @@ class LoginControllerTest {
         HttpServletRequest request = createMock(HttpServletRequest)
         HttpServletResponse response = createMock(HttpServletResponse)
         Form form = createMock(Form)
-        AccessTokenResult accessTokenResult = new DefaultAccessTokenResult(null, null, null, null)
+        ApiKey apiKey = createMock(ApiKey);
+        AccessTokenResult accessTokenResult = new DefaultAccessTokenResult(null, apiKey, null, null)
 
         expect(loginPreHandler.handle(request, response, null)).andReturn true
+        expect(request.getAttribute(Account.class.getName())).andReturn null
         expect(form.getFieldValue("login")).andReturn "login"
         expect(form.getFieldValue("password")).andReturn "password"
 
@@ -103,6 +106,7 @@ class LoginControllerTest {
         AccessTokenResult accessTokenResult = createMock(AccessTokenResult)
         Account account = createMock(Account)
 
+        expect(request.getAttribute(Account.class.getName())).andReturn null
         expect(form.getFieldValue("login")).andReturn "login"
         expect(form.getFieldValue("password")).andReturn "password"
 
@@ -143,6 +147,7 @@ class LoginControllerTest {
         AccessTokenResult accessTokenResult = createMock(AccessTokenResult)
         Account account = createMock(Account)
 
+        expect(request.getAttribute(Account.class.getName())).andReturn null
         expect(form.getFieldValue("login")).andReturn "login"
         expect(form.getFieldValue("password")).andReturn "password"
 
