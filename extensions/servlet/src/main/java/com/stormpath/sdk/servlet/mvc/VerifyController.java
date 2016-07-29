@@ -97,16 +97,7 @@ public class VerifyController extends FormController {
     @Override
     public void init() throws Exception {
 
-        List<Field> fields = new ArrayList<Field>(1);
-        String fieldName = "email";
-        DefaultField field = new DefaultField();
-        field.setName(fieldName);
-        field.setLabel("stormpath.web.verifyEmail.form.fields." + fieldName + ".label");
-        field.setPlaceholder("stormpath.web.verifyEmail.form.fields." + fieldName + ".placeholder");
-        field.setRequired(true);
-        field.setType("text");
-        fields.add(field);
-        setFormFields(fields);
+        super.init();
 
         if (this.accountModelFactory == null) {
             this.accountModelFactory = new DefaultAccountModelFactory();
@@ -114,8 +105,6 @@ public class VerifyController extends FormController {
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new VerifyErrorModelFactory(this.messageSource);
         }
-
-        super.init();
 
         Assert.hasText(loginUri, "loginUri cannot be null or empty.");
         Assert.hasText(loginNextUri, "logoutUri cannot be null or empty.");
