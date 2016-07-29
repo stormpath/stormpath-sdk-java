@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.config.filter;
 
 import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.filter.DefaultLoginPageRedirector;
 import com.stormpath.sdk.servlet.filter.MeFilter;
 import com.stormpath.sdk.servlet.mvc.MeController;
 
@@ -29,9 +30,12 @@ public class MeFilterFactory extends FilterFactory<MeFilter> {
     @Override
     protected MeFilter createInstance(ServletContext servletContext, Config config) throws Exception {
 
-        MeController c = new MeController(config.getMeExpandedProperties());
+        MeController c = new MeController();
         c.setUri(config.getMeUrl());
         c.setProduces(config.getProducedMediaTypes());
+        c.setExpands(config.getMeExpandedProperties());
+        c.setObjectMapper(config.getObjectMapper());
+        c.setLoginPageRedirector(new DefaultLoginPageRedirector(config.getLoginConfig().getUri()));
         c.init();
 
         MeFilter filter = new MeFilter();

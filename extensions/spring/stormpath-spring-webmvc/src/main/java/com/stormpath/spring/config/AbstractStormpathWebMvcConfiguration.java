@@ -50,6 +50,7 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.DefaultContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.DefaultFilterChainManager;
+import com.stormpath.sdk.servlet.filter.DefaultLoginPageRedirector;
 import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
@@ -201,6 +202,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.stormpath.sdk.servlet.mvc.View.STORMPATH_JSON_VIEW_NAME;
 
 /**
  * @since 1.0.RC4
@@ -369,12 +372,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
     protected String meUri;
 
-    @Value("#{ @environment['stormpath.web.me.nextUri'] ?: '/' }")
-    protected String meNextUri;
-
-    @Value("#{ @environment['stormpath.web.me.expand.groups'] ?: true }")
-    protected boolean meExpandGroups;
-
     // ================  Content negotiation support properties  ===================
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
@@ -394,9 +391,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
-
-    @Value("#{ @environment['stormpath.web.json.view'] ?: 'stormpathJsonView' }")
-    protected String jsonView;
 
     //Spring's ThymeleafViewResolver defaults to an order of Ordered.LOWEST_PRECEDENCE - 5.  We want to ensure that this
     //JSON view resolver has a slightly higher precedence to ensure that JSON is rendered and not a Thymeleaf template.
@@ -640,7 +634,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
             @Override
             public View resolveViewName(String viewName, Locale locale) throws Exception {
-                if (viewName.equals(jsonView)) {
+                if (viewName.equals(STORMPATH_JSON_VIEW_NAME)) {
                     return stormpathJsonView();
                 }
                 return null;
@@ -1264,8 +1258,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathMeController() {
-
-        List<String> results = new ArrayList<>();
+        List<String> expandedAccountAttributes = new ArrayList<>();
 
         getPropertiesStartingWith((ConfigurableEnvironment) environment, "stormpath.web.me.expand");
 
@@ -1275,14 +1268,18 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             Matcher matcher = pattern.matcher(key);
             if (matcher.find()) {
                 if (environment.getProperty(key, Boolean.class, false)) {
-                    results.add(matcher.group(1));
+                    expandedAccountAttributes.add(matcher.group(1));
                 }
             }
         }
 
-        MeController controller = new MeController(results);
-        controller.setUri(meUri);
+        MeController controller = new MeController();
+
+        controller.setExpands(expandedAccountAttributes);
+        controller.setObjectMapper(objectMapper);
         controller.setProduces(stormpathProducedMediaTypes());
+        controller.setUri(meUri);
+        controller.setLoginPageRedirector(new DefaultLoginPageRedirector(stormpathLoginConfig().getUri()));
 
         init(controller);
 

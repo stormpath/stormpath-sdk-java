@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.config.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
@@ -118,6 +119,15 @@ public class DefaultConfig implements Config {
     @Override
     public ApplicationResolver getApplicationResolver() {
         return ApplicationResolver.INSTANCE; //TODO remove static usage
+    }
+
+    @Override
+    public ObjectMapper getObjectMapper() {
+        try {
+            return getInstance("stormpath.web.json.objectMapperFactory", ObjectMapper.class);
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate the default ObjectMapper", e);
+        }
     }
 
     @Override

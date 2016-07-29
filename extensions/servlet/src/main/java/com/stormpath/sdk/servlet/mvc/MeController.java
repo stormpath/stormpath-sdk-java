@@ -15,11 +15,11 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.http.UserAgents;
+import com.stormpath.sdk.servlet.filter.LoginPageRedirector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,9 +32,10 @@ public class MeController extends AbstractController {
 
     private List<String> expands;
     private AccountModelFactory accountModelFactory;
+    private ObjectMapper objectMapper;
+    private LoginPageRedirector loginPageRedirector;
 
-    public MeController(List<String> expands) {
-        this.expands = expands;
+    public MeController() {
         this.accountModelFactory = new DefaultAccountModelFactory();
     }
 
@@ -42,6 +43,32 @@ public class MeController extends AbstractController {
     public void init() throws Exception {
         Assert.hasText(this.uri, "uri cannot be null or empty.");
         Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
+        Assert.notNull(this.objectMapper, "objectMapper cannot be null.");
+        Assert.notEmpty(this.produces, "produces cannot be null or empty");
+    }
+
+    public LoginPageRedirector getLoginPageRedirector() {
+        return loginPageRedirector;
+    }
+
+    public void setLoginPageRedirector(LoginPageRedirector loginPageRedirector) {
+        this.loginPageRedirector = loginPageRedirector;
+    }
+
+    public List<String> getExpands() {
+        return expands;
+    }
+
+    public void setExpands(List<String> expands) {
+        this.expands = expands;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -51,7 +78,7 @@ public class MeController extends AbstractController {
 
     /**
      * Successful JSON login will forward here as a POST so that the account model is returned.
-     *
+     * <p>
      * See: https://github.com/stormpath/stormpath-sdk-java/issues/682
      *
      * @since 1.0.0
@@ -67,19 +94,25 @@ public class MeController extends AbstractController {
 
         response.setHeader("Cache-Control", "no-store, no-cache");
         response.setHeader("Pragma", "no-cache");
+        response.setHeader("Content-Type", "application/json");
 
-        if (account != null) {
-            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
+        //Since we don't have a restrict authentication mechanism for spring-webmvc we check if the account is there and redirect to login as per spec
+        if (account == null) {
+            if (isHtmlPreferred(request, response)) {
+                loginPageRedirector.redirectToLoginPage(request, response);
+            }
+            if (isJsonPreferred(request, response)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+            return null;
         }
 
-        // Using UserAgent directly here since super.isHtmlPreferred(request, response) results in NPE b/c producesMediaTypes is null
-        if (UserAgents.get(request).isHtmlPreferred()) {
-            Config config = (Config) request.getServletContext().getAttribute(Config.class.getName());
-            String loginUri = config.getLoginConfig().getUri();
-            return new DefaultViewModel(loginUri).setRedirect(true);
-        } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, null);
-        }
+        //There is an issue with spring boot webmvc, it register ContentNegotiatingViewResolver with the highest priority,
+        //and this view resolver doesn't allow to override the view to force JSON even if the Accept header has a different content type
+        //for example if the user goes to the /me in a browser it would try to render a thymeleaf view, so instead of returning a view
+        //we write directly to the response since no matter what we always return JSON for this controller.
+        //This way we don't introduce any custom view resolver that might have issues with the user application.
+        objectMapper.writeValue(response.getOutputStream(), java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
+        return null;
     }
 }
