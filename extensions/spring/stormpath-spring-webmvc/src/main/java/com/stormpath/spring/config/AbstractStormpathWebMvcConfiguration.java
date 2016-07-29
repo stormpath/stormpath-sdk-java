@@ -1282,7 +1282,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         MeController controller = new MeController(results);
         controller.setUri(meUri);
+        controller.setLoginUri(stormpathLoginConfig().getUri());
         controller.setProduces(stormpathProducedMediaTypes());
+        controller.setApplicationResolver(stormpathApplicationResolver());
 
         init(controller);
 

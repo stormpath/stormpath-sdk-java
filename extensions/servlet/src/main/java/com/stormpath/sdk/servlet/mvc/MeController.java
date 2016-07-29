@@ -16,11 +16,13 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
-import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.http.UserAgent;
 import com.stormpath.sdk.servlet.http.UserAgents;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -32,6 +34,7 @@ public class MeController extends AbstractController {
 
     private List<String> expands;
     private AccountModelFactory accountModelFactory;
+    private String loginUri;
 
     public MeController(List<String> expands) {
         this.expands = expands;
@@ -41,7 +44,13 @@ public class MeController extends AbstractController {
     @Override
     public void init() throws Exception {
         Assert.hasText(this.uri, "uri cannot be null or empty.");
+        Assert.hasText(this.loginUri, "loginUri cannot be null or empty.");
         Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
+        Assert.notNull(this.applicationResolver, "applicationResolver cannot be null.");
+    }
+
+    public void setLoginUri(String loginUri) {
+        this.loginUri = loginUri;
     }
 
     @Override
@@ -72,13 +81,12 @@ public class MeController extends AbstractController {
             return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
         }
 
-        // Using UserAgent directly here since super.isHtmlPreferred(request, response) results in NPE b/c producesMediaTypes is null
-        if (UserAgents.get(request).isHtmlPreferred()) {
-            Config config = (Config) request.getServletContext().getAttribute(Config.class.getName());
-            String loginUri = config.getLoginConfig().getUri();
+        ServletContext servletContext = request.getServletContext();
+        UserAgent userAgent = UserAgents.get(request);
+        if (userAgent.isBrowser() || userAgent.isHtmlPreferred()) {
             return new DefaultViewModel(loginUri).setRedirect(true);
         } else {
-            Application application = (Application) request.getServletContext().getAttribute(Application.class.getName());
+            Application application = applicationResolver.getApplication(servletContext);
             String bearerRealm = String.format("Bearer realm=\"%s\"", application.getName());
             response.addHeader("WWW-Authenticate", bearerRealm);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

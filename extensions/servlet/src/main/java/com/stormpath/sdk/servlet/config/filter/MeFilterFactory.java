@@ -31,6 +31,8 @@ public class MeFilterFactory extends FilterFactory<MeFilter> {
 
         MeController c = new MeController(config.getMeExpandedProperties());
         c.setUri(config.getMeUrl());
+        c.setLoginUri(config.getLoginConfig().getUri());
+        c.setApplicationResolver(config.getApplicationResolver());
         c.setProduces(config.getProducedMediaTypes());
         c.init();
 
