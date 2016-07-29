@@ -17,15 +17,10 @@ package com.stormpath.spring.mvc;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * @since 1.0.0
  */
 public class RegisterControllerConfig extends AbstractSpringControllerConfig {
-
-    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"username", "givenName", "middleName", "surname", "email", "password", "confirmPassword"};
 
     @Value("#{ @environment['stormpath.web.register.enabled'] ?: true }")
     protected boolean registerEnabled;
@@ -38,6 +33,12 @@ public class RegisterControllerConfig extends AbstractSpringControllerConfig {
 
     @Value("#{ @environment['stormpath.web.register.view'] ?: 'stormpath/register' }")
     protected String registerView;
+
+    public RegisterControllerConfig() {
+        super("register");
+        setDefaultFieldNames("username", "givenName", "middleName", "surname", "email", "password", "confirmPassword");
+        setDisabledFieldNames("username", "middleName", "confirmPassword");
+    }
 
     @Override
     public String getView() {
@@ -57,20 +58,5 @@ public class RegisterControllerConfig extends AbstractSpringControllerConfig {
     @Override
     public boolean isEnabled() {
         return registerEnabled;
-    }
-
-    @Override
-    public String getControllerKey() {
-        return "register";
-    }
-
-    @Override
-    protected String[] getDefaultFieldOrder() {
-        return DEFAULT_FIELD_NAMES;
-    }
-
-    @Override
-    protected List<String> getDefaultDisableFields() {
-        return Arrays.asList("username", "middleName", "confirmPassword");
     }
 }
