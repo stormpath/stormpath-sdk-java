@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
+import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.impl.provider.DefaultGithubProvider;
@@ -67,21 +68,12 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
         for (ApplicationAccountStoreMapping mapping : getApplication(request).getAccountStoreMappings()) {
             AccountStore accountStore = mapping.getAccountStore();
 
-            AccountStoreVisitor accountStoreVisitor = new AccountStoreVisitor() {
-                @Override
-                public void visit(Group group) {
-                }
-
+            AccountStoreVisitor accountStoreVisitor = new AccountStoreVisitorAdapter() {
                 @Override
                 public void visit(Directory directory) {
                     if ("github".equals(directory.getProvider().getProviderId())) {
                         githubProvider[0] = (DefaultGithubProvider) directory.getProvider();
                     }
-                }
-
-                @Override
-                public void visit(Organization organization) {
-
                 }
             };
             accountStore.accept(accountStoreVisitor);
