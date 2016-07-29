@@ -23,8 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class LoginControllerConfig extends AbstractSpringControllerConfig implements FormFieldsFactory {
 
-    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"login", "password"};
-
     @Value("#{ @environment['stormpath.web.login.enabled'] ?: true }")
     private boolean loginEnabled;
 
@@ -36,6 +34,11 @@ public class LoginControllerConfig extends AbstractSpringControllerConfig implem
 
     @Value("#{ @environment['stormpath.web.login.view'] ?: 'stormpath/login' }")
     private String loginView;
+
+    public LoginControllerConfig() {
+        super("login");
+        setDefaultFieldNames("login", "password");
+    }
 
     @Override
     public String getView() {
@@ -55,15 +58,5 @@ public class LoginControllerConfig extends AbstractSpringControllerConfig implem
     @Override
     public boolean isEnabled() {
         return loginEnabled;
-    }
-
-    @Override
-    public String getControllerKey() {
-        return "login";
-    }
-
-    @Override
-    protected String[] getDefaultFieldOrder() {
-        return DEFAULT_FIELD_NAMES;
     }
 }

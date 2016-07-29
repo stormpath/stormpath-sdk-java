@@ -1499,7 +1499,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
     }
 
-    //The code bellow is taken out of http://stackoverflow.com/questions/23506471/spring-access-all-environment-properties-as-a-map-or-properties-object
+    //The code below is taken out of http://stackoverflow.com/questions/23506471/spring-access-all-environment-properties-as-a-map-or-properties-object
     public static Map<String, Object> getPropertiesStartingWith(ConfigurableEnvironment aEnv, String aKeyPrefix) {
         Map<String, Object> result = new HashMap<String, Object>();
 

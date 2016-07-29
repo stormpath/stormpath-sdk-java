@@ -162,32 +162,32 @@ public class DefaultConfig implements Config {
 
     @Override
     public ControllerConfig getLoginConfig() {
-        return new ServletControllerConfig(this, CFG, "login");
+        return new ServletControllerConfig("login", this);
     }
 
     @Override
     public ControllerConfig getLogoutConfig() {
-        return new ServletControllerConfig(this, CFG, "logout");
+        return new ServletControllerConfig("logout", this);
     }
 
     @Override
     public ControllerConfig getRegisterConfig() {
-        return new ServletControllerConfig(this, CFG, "register");
+        return new ServletControllerConfig("register", this);
     }
 
     @Override
     public ControllerConfig getForgotPasswordConfig() {
-        return new ServletControllerConfig(this, CFG, "forgotPassword");
+        return new ServletControllerConfig("forgotPassword", this);
     }
 
     @Override
     public ControllerConfig getVerifyConfig() {
-        return new ServletControllerConfig(this, CFG, "verifyEmail");
+        return new ServletControllerConfig("verifyEmail", this);
     }
 
     @Override
     public ChangePasswordConfig getChangePasswordConfig() {
-        return new ChangePasswordServletControllerConfig(this, CFG, "changePassword");
+        return new ChangePasswordServletControllerConfig(this, "changePassword");
     }
 
     @Override

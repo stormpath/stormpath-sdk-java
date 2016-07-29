@@ -31,6 +31,10 @@ public class LogoutControllerConfig extends AbstractSpringControllerConfig {
     @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/' }")
     protected String logoutNextUri;
 
+    public LogoutControllerConfig() {
+        super("logout");
+    }
+
     @Override
     public String getView() {
         return null;
@@ -49,15 +53,5 @@ public class LogoutControllerConfig extends AbstractSpringControllerConfig {
     @Override
     public boolean isEnabled() {
         return logoutEnabled;
-    }
-
-    @Override
-    public String getControllerKey() {
-        return "logout";
-    }
-
-    @Override
-    protected String[] getDefaultFieldOrder() {
-        return new String[0];
     }
 }
