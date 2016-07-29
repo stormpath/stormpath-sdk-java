@@ -50,7 +50,6 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.DefaultContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.DefaultFilterChainManager;
-import com.stormpath.sdk.servlet.filter.DefaultFilterChainResolver;
 import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
@@ -1133,6 +1132,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setAutoLogin(registerAutoLogin);
         c.setPreRegisterHandler(registerPreHandler);
         c.setPostRegisterHandler(registerPostHandler);
+        c.setAccountStoreResolver(stormpathAccountStoreResolver());
 
         return createSpaAwareSpringController(init(c));
     }
