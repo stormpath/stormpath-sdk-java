@@ -941,6 +941,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setRegisterEnabledResolver(stormpathRegisterEnabledResolver());
         c.setRegisterUri(stormpathRegisterConfig().getUri());
         c.setLogoutUri(stormpathLogoutConfig().getUri());
+        c.setApplicationResolver(stormpathApplicationResolver());
         c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         c.setPreLoginHandler(loginPreHandler);
         c.setPostLoginHandler(loginPostHandler);
