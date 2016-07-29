@@ -68,7 +68,7 @@ class SpecConfigVersusWebPropertiesTest {
             println "Or you could adjust the assertEquals statement in this method to allow for this missing key as a temporary solution."
         }
 
-        assertEquals diff.size(), 0, "Missing keys in default config: ${diff}"
+        assertEquals 0, diff.size(), "Missing keys in default config: ${diff}"
     }
 
     @Test
@@ -77,7 +77,7 @@ class SpecConfigVersusWebPropertiesTest {
             specProperties.containsKey(k) ? null : k
         }
 
-        def expected_diff_size = 66
+        def expected_diff_size = 78
 
         if (diff.size != expected_diff_size) {
             println "It looks like a property was added or removed from the Framework Spec or web.stormpath.properties."
