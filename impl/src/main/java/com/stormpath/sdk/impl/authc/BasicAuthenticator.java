@@ -18,7 +18,6 @@ package com.stormpath.sdk.impl.authc;
 import com.stormpath.sdk.authc.AuthenticationOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.UsernamePasswordRequest;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
@@ -39,8 +38,8 @@ public class BasicAuthenticator {
 
     public AuthenticationResult authenticate(String parentHref, AuthenticationRequest request) {
         Assert.notNull(parentHref, "href argument must be specified");
-        if (! (request instanceof UsernamePasswordRequest || request instanceof DefaultUsernamePasswordRequest)) {
-           throw new IllegalArgumentException("Only UsernamePasswordRequest or DefaultUsernamePasswordRequest instances are supported.");
+        if (! (request instanceof DefaultUsernamePasswordRequest)) {
+           throw new IllegalArgumentException("Only DefaultUsernamePasswordRequest instances are supported.");
         }
 
         String username = (String) request.getPrincipals();

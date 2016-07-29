@@ -31,11 +31,11 @@ import java.util.Set;
  *
  * <p>Application-specific scope values may be assigned to an OAuth Access Token when the token is created.
  * Implement the {@link ScopeFactory ScopeFactory} interface and provide your
- * {@code ScopeFactory} instance to the {@code application.}{@link com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) authenticateOauthRequest(request)}
+ * {@code ScopeFactory} instance to the {@code application.}{@link com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)} authenticateOauthRequest(request)}
  * method at the time a new token is being requested (typically when a client requests a new token via your
  * application's oauth token endpoint, e.g. {@code /oauth/token}).</p>
  *
- * @see com.stormpath.sdk.application.Application#authenticateOauthRequest(Object) application.authenticateOauthRequest(request)
+ * @see com.stormpath.sdk.application.Application#authenticateAccount(AuthenticationRequest)} application.authenticateOauthRequest(request)
  * @see AccessTokenResult
  * @since 1.0.RC
  */

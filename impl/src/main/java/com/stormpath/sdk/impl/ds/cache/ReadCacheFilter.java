@@ -74,7 +74,7 @@ public class ReadCacheFilter extends AbstractCacheFilter {
         if (isApiKeyCollectionQuery(request)) {
 
             String cacheHref = baseUrl + "/apiKeys/" + query.get(ID.getName());
-            Class<ApiKey> cacheClass = com.stormpath.sdk.api.ApiKey.class;
+            Class<ApiKey> cacheClass = ApiKey.class;
 
             Map<String, ?> apiKeyData = getCachedValue(cacheHref, cacheClass);
 
