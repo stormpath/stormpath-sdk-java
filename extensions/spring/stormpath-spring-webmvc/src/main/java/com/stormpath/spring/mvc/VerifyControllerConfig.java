@@ -22,8 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class VerifyControllerConfig extends AbstractSpringControllerConfig {
 
-    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"email"};
-
     @Value("#{ @environment['stormpath.web.verifyEmail.enabled'] ?: true }")
     protected boolean verifyEnabled;
 
@@ -35,6 +33,11 @@ public class VerifyControllerConfig extends AbstractSpringControllerConfig {
 
     @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
+
+    public VerifyControllerConfig() {
+        super("verifyEmail");
+        setDefaultFieldNames("email");
+    }
 
     @Override
     public String getView() {
@@ -54,15 +57,5 @@ public class VerifyControllerConfig extends AbstractSpringControllerConfig {
     @Override
     public boolean isEnabled() {
         return verifyEnabled;
-    }
-
-    @Override
-    public String getControllerKey() {
-        return "verifyEmail";
-    }
-
-    @Override
-    protected String[] getDefaultFieldOrder() {
-        return DEFAULT_FIELD_NAMES;
     }
 }

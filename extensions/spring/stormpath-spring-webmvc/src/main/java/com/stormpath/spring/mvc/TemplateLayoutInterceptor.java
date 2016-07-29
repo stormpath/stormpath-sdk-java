@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.stormpath.sdk.servlet.mvc.View.STORMPATH_JSON_VIEW_NAME;
+
 /**
  * @since 1.0.RC4
  */
@@ -73,7 +75,7 @@ public class TemplateLayoutInterceptor extends HandlerInterceptorAdapter impleme
     protected boolean shouldExecute(HttpServletRequest request, HttpServletResponse response,
                                     Object handler, ModelAndView modelAndView) {
 
-        if (modelAndView == null || !modelAndView.isReference() || Controller.STORMPATH_JSON_VIEW_NAME.equals(modelAndView.getViewName())) {
+        if (modelAndView == null || !modelAndView.isReference() || STORMPATH_JSON_VIEW_NAME.equals(modelAndView.getViewName())) {
             return false;
         }
 

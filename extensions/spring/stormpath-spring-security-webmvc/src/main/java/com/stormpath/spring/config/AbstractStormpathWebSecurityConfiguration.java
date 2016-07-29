@@ -38,10 +38,10 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 
 
 /**
@@ -68,6 +68,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
     protected String loginUri;
 
+    @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
+    protected String meUri;
+
     @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
     protected String loginNextUri;
 
@@ -92,15 +95,14 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
             new StormpathLoginSuccessHandler(client, authenticationResultSaver, produces);
         loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
         loginSuccessHandler.setTargetUrlParameter("next");
+        loginSuccessHandler.setRequestCache(new NullRequestCache());
         return loginSuccessHandler;
     }
 
     public AuthenticationFailureHandler stormpathAuthenticationFailureHandler() {
         String loginFailureUri = loginUri + "?error";
-        SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler(loginFailureUri);
-        handler.setAllowSessionCreation(false); //not necessary
         return new StormpathAuthenticationFailureHandler(
-            handler, stormpathRequestEventPublisher,
+            loginFailureUri, stormpathRequestEventPublisher,
             stormpathLoginErrorModelFactory(), produces
         );
     }
@@ -148,6 +150,6 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
-        return new StormpathAuthenticationEntryPoint(loginUri);
+        return new StormpathAuthenticationEntryPoint(loginUri, produces, meUri);
     }
 }

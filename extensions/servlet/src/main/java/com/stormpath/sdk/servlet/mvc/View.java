@@ -23,5 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface View {
 
+    String STORMPATH_JSON_VIEW_NAME = "stormpathJsonView";
+
     void render(HttpServletRequest request, HttpServletResponse response, ViewModel model) throws Exception;
 }

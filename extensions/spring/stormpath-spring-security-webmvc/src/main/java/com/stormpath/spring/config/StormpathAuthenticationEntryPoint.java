@@ -16,7 +16,14 @@
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
+import com.stormpath.sdk.servlet.filter.DefaultLoginPageRedirector;
+import com.stormpath.sdk.servlet.filter.LoginPageRedirector;
+import com.stormpath.sdk.servlet.http.MediaType;
+import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -27,6 +34,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
@@ -35,16 +43,27 @@ import java.io.IOException;
  */
 public class StormpathAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    protected String loginUri;
+    private static final Logger log = LoggerFactory.getLogger(StormpathAuthenticationEntryPoint.class);
 
-    public StormpathAuthenticationEntryPoint(String loginUri) {
-        Assert.notNull(loginUri, "loginUri cannot be null");
+    private String loginUri;
+    private String meUri;
+    private final List<MediaType> supportedMediaTypes;
+    private final LoginPageRedirector loginPageRedirector;
+
+    public StormpathAuthenticationEntryPoint(String loginUri, String produces, String meUri) {
+        Assert.hasText(loginUri, "loginUri cannot be null or empty");
+        Assert.hasText(produces, "produces cannot be null or empty");
+        Assert.hasText(meUri, "meUri cannot be null or empty");
+
         this.loginUri = loginUri;
+        this.meUri = meUri;
+        this.supportedMediaTypes = MediaType.parseMediaTypes(produces);
+        this.loginPageRedirector = new DefaultLoginPageRedirector(loginUri);
     }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                  AuthenticationException authException) throws IOException, ServletException {
+                         AuthenticationException authException) throws IOException, ServletException {
         sendRedirect(request, response);
     }
 
@@ -63,8 +82,21 @@ public class StormpathAuthenticationEntryPoint implements AuthenticationEntryPoi
     private void sendRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         if (!isAuthenticated()) {
-            response.sendRedirect(this.loginUri);
-            response.setStatus(HttpStatus.SC_TEMPORARY_REDIRECT);
+            try {
+                MediaType mediaType = ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
+
+                //Me is a special case, if the content type was application/json it should return empty response with 401 status
+                //TCK test MeIT#meFailsOnUnauthenticatedRequest()
+                if (MediaType.APPLICATION_JSON.equals(mediaType) && request.getRequestURI().startsWith(meUri)) {
+                    response.setStatus(HttpStatus.SC_UNAUTHORIZED);
+                } else {
+                    loginPageRedirector.redirectToLoginPage(request, response);
+                }
+            } catch (UnresolvedMediaTypeException e) {
+                log.error("Couldn't resolve media type: {}", e.getMessage(), e);
+            } catch (Exception e) {
+                throw new RuntimeException("Couldn't redirect to login", e);
+            }
         }
     }
 

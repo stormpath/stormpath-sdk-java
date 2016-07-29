@@ -17,16 +17,19 @@ package com.stormpath.sdk.servlet.mvc
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver
-import com.stormpath.sdk.servlet.filter.ControllerConfig
-import com.stormpath.sdk.servlet.i18n.DefaultLocaleResolver
-import com.stormpath.sdk.servlet.i18n.MessageSource
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import static org.easymock.EasyMock.*
-import static org.testng.Assert.*
+import static org.easymock.EasyMock.createStrictMock
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.easymock.EasyMock.verify
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
 
 /**
  *
@@ -166,7 +169,7 @@ class ControllerTest {
                 new IdSiteController(),
                 new IdSiteLogoutController(),
                 new ChangePasswordController(),
-                new MeController([])
+                new MeController()
         ].each {
             assertFalse it.isNotAllowedIfAuthenticated()
         }

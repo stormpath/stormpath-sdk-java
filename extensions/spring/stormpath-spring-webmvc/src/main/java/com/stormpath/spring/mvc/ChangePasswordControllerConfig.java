@@ -15,15 +15,16 @@
  */
 package com.stormpath.spring.mvc;
 
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.List;
 
 /**
  * @since 1.0.0
  */
 public class ChangePasswordControllerConfig extends AbstractSpringControllerConfig implements ChangePasswordConfig {
-
-    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"password", "sptoken"};
 
     @Value("#{ @environment['stormpath.web.changePassword.enabled'] ?: true }")
     protected boolean changePasswordEnabled;
@@ -42,6 +43,11 @@ public class ChangePasswordControllerConfig extends AbstractSpringControllerConf
 
     @Value("#{ @environment['stormpath.web.changePassword.autoLogin'] ?: false }")
     protected boolean autoLogin;
+
+    public ChangePasswordControllerConfig() {
+        super("changePassword");
+        setDefaultFieldNames("password", "sptoken");
+    }
 
     @Override
     public String getView() {
@@ -69,15 +75,5 @@ public class ChangePasswordControllerConfig extends AbstractSpringControllerConf
 
     public boolean isAutoLogin() {
         return autoLogin;
-    }
-
-    @Override
-    public String getControllerKey() {
-        return "changePassword";
-    }
-
-    @Override
-    protected String[] getDefaultFieldOrder() {
-        return DEFAULT_FIELD_NAMES;
     }
 }

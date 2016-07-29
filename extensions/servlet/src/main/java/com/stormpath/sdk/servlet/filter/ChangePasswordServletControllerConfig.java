@@ -16,22 +16,26 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.impl.ConfigReader;
 
 /**
  * @since 1.0.0
  */
 public class ChangePasswordServletControllerConfig extends ServletControllerConfig implements ChangePasswordConfig {
 
-    public ChangePasswordServletControllerConfig(Config config, ConfigReader configReader, String controllerKey) {
-        super(config, configReader, controllerKey);
+    private final String errorUri;
+    private final boolean autoLogin;
+
+    public ChangePasswordServletControllerConfig(Config config, String controllerKey) {
+        super(controllerKey, config);
+        this.errorUri = getControllerPropertyValue("errorUri");
+        this.autoLogin = Boolean.parseBoolean(getControllerPropertyValue("autoLogin"));
     }
 
     public String getErrorUri() {
-        return configReader.getString("stormpath.web." + getControllerKey() + ".errorUri");
+        return this.errorUri;
     }
 
     public boolean isAutoLogin() {
-        return configReader.getBoolean("stormpath.web." + getControllerKey() + ".autoLogin");
+        return this.autoLogin;
     }
 }
