@@ -17,12 +17,8 @@ package com.stormpath.sdk.servlet.i18n;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
@@ -38,9 +34,6 @@ import java.util.Locale;
  * @since 1.0.RC3
  */
 public class MessageTag extends TagSupport {
-
-    public static final String MESSAGE_SOURCE_CONFIG_KEY = "stormpath.web.message.source";
-    public static final String LOCALE_RESOLVER_CONFIG_KEY = "stormpath.web.locale.resolver";
 
     private String key;
     private String var;
@@ -58,6 +51,7 @@ public class MessageTag extends TagSupport {
 
     /**
      * Set PageContext attribute name under which to expose a variable that contains the resolved message.
+     *
      * @see #setScope
      * @see javax.servlet.jsp.PageContext#setAttribute
      */
@@ -67,6 +61,7 @@ public class MessageTag extends TagSupport {
 
     /**
      * Set the scope to export the variable to.  Default is <code>page</code>.
+     *
      * @see #setVar
      * @see javax.servlet.jsp.PageContext#setAttribute
      */
@@ -74,31 +69,28 @@ public class MessageTag extends TagSupport {
         this.scope = scope;
     }
 
-    protected Config getConfig() throws JspException {
-        ServletRequest request = pageContext.getRequest();
-        return ConfigResolver.INSTANCE.getConfig(request.getServletContext());
+    protected MessageContext getI18nContext() throws JspException {
+        Object o = pageContext.getServletContext().getAttribute(MessageContext.class.getName());
+        if (!(o instanceof MessageContext)) {
+            String msg = "ServletContext does not contain an MessageContext instance under servlet attribute " +
+                "key '" + MessageContext.class.getName() + "'.  This is required for the " +
+                getClass().getName() + " implementation to function.  This is a bug - please report it to " +
+                "the project's issue tracker at https://github.com/stormpath/stormpath-sdk-java/issues";
+            throw new JspException(msg);
+        }
+        return (MessageContext) o;
     }
 
     protected MessageSource getMessageSource() throws JspException {
-        Config config = getConfig();
-        try {
-            return config.getInstance(MESSAGE_SOURCE_CONFIG_KEY);
-        } catch (ServletException e) {
-            throw new JspException(e.getMessage(), e);
-        }
+        return getI18nContext().getMessageSource();
     }
 
     protected Resolver<Locale> getLocaleResolver() throws JspException {
-        Config config = getConfig();
-        try {
-            return config.getInstance(LOCALE_RESOLVER_CONFIG_KEY);
-        } catch (ServletException e) {
-            throw new JspException(e.getMessage(), e);
-        }
+        return getI18nContext().getLocaleResolver();
     }
 
     public int doStartTag() throws JspException {
-        this.nestedArguments = new LinkedList<Object>();
+        this.nestedArguments = new LinkedList<>();
         return EVAL_BODY_INCLUDE;
     }
 
