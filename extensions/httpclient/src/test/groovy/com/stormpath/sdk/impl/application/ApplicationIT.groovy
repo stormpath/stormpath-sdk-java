@@ -71,6 +71,7 @@ import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base64
+import org.testng.Assert
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
@@ -1818,7 +1819,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /** @since 1.0.0 */
-    @Test(expectedExceptions = [ ResourceException.class ], expectedExceptionsMessageRegExp = ".* Login attempt failed because there is no Account in the Application's associated Account Stores .*")
+    @Test
     void testCreateTokenWithWrongAccountStore() {
 
         def app = createTempApp()
@@ -1837,8 +1838,13 @@ class ApplicationIT extends ClientIT {
         app.addAccountStore(dir)
         deleteOnTeardown(dir)
 
-        OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setAccountStore(dir).setLogin(email).setPassword("Change&45+me1!").build();
-        Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
+        try {
+            OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setAccountStore(dir).setLogin(email).setPassword("Change&45+me1!").build()
+            Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
+            throw new Exception("Should have thrown. Expected Error code: 7104.");
+        } catch (ResourceException e) {
+            assertEquals(e.getCode(), 7104)
+        }
     }
 
     /** @since 1.0.RC8 **/
