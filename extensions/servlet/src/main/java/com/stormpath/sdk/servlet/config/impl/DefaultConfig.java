@@ -46,6 +46,8 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
+import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
@@ -138,6 +140,13 @@ public class DefaultConfig implements Config {
     @Override
     public Resolver<Locale> getLocaleResolver() {
         return getRuntimeInstance("stormpath.web.locale.resolver");
+    }
+
+    @Override
+    public MessageContext getMessageContext() {
+        MessageSource messageSource = getMessageSource();
+        Resolver<Locale> localeResolver = getLocaleResolver();
+        return new DefaultMessageContext(messageSource, localeResolver);
     }
 
     @Override

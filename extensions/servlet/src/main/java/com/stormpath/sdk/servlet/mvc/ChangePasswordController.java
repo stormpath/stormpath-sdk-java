@@ -127,7 +127,7 @@ public class ChangePasswordController extends FormController {
                     response.setStatus(errorModelFactory.toError(request, e).getStatus());
                 }
             }
-            return new DefaultViewModel("stormpathJsonView", model);
+            return new DefaultViewModel(View.STORMPATH_JSON_VIEW_NAME, model);
         }
 
         if (sptoken == null) {
@@ -228,7 +228,7 @@ public class ChangePasswordController extends FormController {
                 response.setStatus(errorModelFactory.toError(request, e).getStatus());
             }
 
-            return new DefaultViewModel("stormpathJsonView", model);
+            return new DefaultViewModel(View.STORMPATH_JSON_VIEW_NAME, model);
         }
 
         String next;

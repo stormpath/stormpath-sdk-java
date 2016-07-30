@@ -56,6 +56,7 @@ import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
+import com.stormpath.spring.mvc.MessageContextRegistrar;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -63,13 +64,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
@@ -113,11 +111,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
     @Bean
     public InternalResourceViewResolver stormpathJspViewResolver() {
-        InternalResourceViewResolver bean = new InternalResourceViewResolver();
-        bean.setViewClass(JstlView.class);
-        bean.setPrefix("/WEB-INF/jsp/");
-        bean.setSuffix(".jsp");
-        return bean;
+        return super.stormpathJspViewResolver();
     }
 
     @Bean
@@ -146,13 +140,13 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
     @Bean
     @Override
-    public View stormpathJsonView() {
+    public org.springframework.web.servlet.View stormpathJsonView() {
         return super.stormpathJsonView();
     }
 
     @Bean
     @Override
-    public ViewResolver stormpathJsonViewResolver() {
+    public org.springframework.web.servlet.ViewResolver stormpathJsonViewResolver() {
         return super.stormpathJsonViewResolver();
     }
 
@@ -387,6 +381,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public MessageSource stormpathSpringMessageSource() {
         return super.stormpathSpringMessageSource();
+    }
+
+    @Bean
+    @Override
+    public MessageContextRegistrar stormpathMessageContextRegistrar() {
+        return super.stormpathMessageContextRegistrar();
     }
 
     @Bean
