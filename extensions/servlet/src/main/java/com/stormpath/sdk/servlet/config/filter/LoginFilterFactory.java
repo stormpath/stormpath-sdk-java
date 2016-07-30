@@ -48,5 +48,6 @@ public class LoginFilterFactory extends FormControllerFilterFactory<LoginControl
         c.setPostLoginHandler(config.getLoginPostHandler());
         c.setIdSiteEnabled(config.isIdSiteEnabled());
         c.setCallbackEnabled(config.isCallbackEnabled());
+        c.setApplicationResolver(config.getApplicationResolver());
     }
 }
