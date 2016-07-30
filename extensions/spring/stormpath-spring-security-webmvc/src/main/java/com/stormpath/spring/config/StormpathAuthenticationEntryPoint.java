@@ -15,12 +15,16 @@
  */
 package com.stormpath.spring.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.DefaultLoginPageRedirector;
 import com.stormpath.sdk.servlet.filter.LoginPageRedirector;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.spring.errors.Error;
+import com.stormpath.spring.errors.ErrorConstants;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,24 +51,48 @@ public class StormpathAuthenticationEntryPoint implements AuthenticationEntryPoi
 
     private String loginUri;
     private String meUri;
+    private String applicationName;
     private final List<MediaType> supportedMediaTypes;
     private final LoginPageRedirector loginPageRedirector;
+    private final ObjectMapper om;
 
-    public StormpathAuthenticationEntryPoint(String loginUri, String produces, String meUri) {
+    public StormpathAuthenticationEntryPoint(String loginUri, String produces, String meUri, String applicationName) {
         Assert.hasText(loginUri, "loginUri cannot be null or empty");
         Assert.hasText(produces, "produces cannot be null or empty");
         Assert.hasText(meUri, "meUri cannot be null or empty");
 
         this.loginUri = loginUri;
         this.meUri = meUri;
+        this.applicationName = applicationName;
         this.supportedMediaTypes = MediaType.parseMediaTypes(produces);
         this.loginPageRedirector = new DefaultLoginPageRedirector(loginUri);
+        this.om = new ObjectMapper();
     }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        sendRedirect(request, response);
+        log.debug("Pre-authenticated entry point called. Rejecting access");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        String bearerRealm = String.format("Bearer realm=\"%s\"", applicationName);
+        response.addHeader("WWW-Authenticate", bearerRealm);
+        if (isJsonPreferred(request, response)) {
+            om.writeValue(response.getOutputStream(),
+               new Error(ErrorConstants.ERR_ACCESS_DENIED, authException.getMessage()));
+        } else {
+            sendRedirect(request, response);
+        }
+    }
+
+    private boolean isJsonPreferred(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            MediaType mediaType =
+                ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
+            return MediaType.APPLICATION_JSON.equals(mediaType);
+        } catch (UnresolvedMediaTypeException e) {
+            log.error("Couldn't resolve content type", e);
+            return false;
+        }
     }
 
     private boolean isAuthenticated() {
@@ -83,11 +111,9 @@ public class StormpathAuthenticationEntryPoint implements AuthenticationEntryPoi
 
         if (!isAuthenticated()) {
             try {
-                MediaType mediaType = ContentNegotiationResolver.INSTANCE.getContentType(request, response, supportedMediaTypes);
-
                 //Me is a special case, if the content type was application/json it should return empty response with 401 status
                 //TCK test MeIT#meFailsOnUnauthenticatedRequest()
-                if (MediaType.APPLICATION_JSON.equals(mediaType) && request.getRequestURI().startsWith(meUri)) {
+                if (isJsonPreferred(request, response) && request.getRequestURI().startsWith(meUri)) {
                     response.setStatus(HttpStatus.SC_UNAUTHORIZED);
                 } else {
                     loginPageRedirector.redirectToLoginPage(request, response);
