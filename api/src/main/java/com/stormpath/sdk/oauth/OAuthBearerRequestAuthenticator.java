@@ -39,33 +39,38 @@ public interface OAuthBearerRequestAuthenticator extends OAuthRequestAuthenticat
      * Flags the authenticator to carry out a local validation rather than a validation against Stormpath's backend.
      * <p>Doing a local validation will for sure be faster since there is no network traffic involved. However, using Stormpath
      * to validate the token through the REST API ensures that the token can actually be validated against the state of your application
-     * and account. To illustrate the difference</p>:
+     * and account. To illustrate the difference:
+     * </p>
      * <table summary="JWT validation">
+     *   <col align="left">
+     *   <col align="center">
+     *   <col align="center">
      *   <tr>
-     *      <td>Validation Criteria</td><td>Locally</td><td>Stormpath</td>
+     *      <td>Validation Criteria</td><td align="center">Locally</td><td align="center">Stormpath</td>
      *   <tr/>
      *   <tr>
-     *      <td>Token hasn’t been tampered with</td><td>yes</td><td>yes</td>
+     *      <td>Token hasn’t been tampered with</td><td align="center">yes</td><td align="center">yes</td>
      *   </tr>
      *   <tr>
-     *      <td>Token hasn’t expired</td><td>yes</td><td>yes</td>
+     *      <td>Token hasn’t expired</td><td align="center">yes</td><td align="center">yes</td>
      *   </tr>
      *   <tr>
-     *      <td>Token hasn’t been revoked</td><td>no</td><td>yes</td>
+     *      <td>Token hasn’t been revoked</td><td align="center">no</td><td align="center">yes</td>
      *   </tr>
      *   <tr>
-     *      <td>Account hasn’t been disabled, and hasn’t been deleted</td><td>no</td><td>yes</td>
+     *      <td>Account hasn’t been disabled, and hasn’t been deleted</td><td align="center">no</td><td align="center">yes</td>
      *   </tr>
      *   <tr>
-     *      <td>Issuer is Stormpath</td><td>yes</td><td>yes</td>
+     *      <td>Issuer is Stormpath</td><td align="center">yes</td><td align="center">yes</td>
      *   </tr>
      *   <tr>
-     *      <td>Issuing application is still enabled, and hasn’t been deleted</td><td>no</td><td>yes</td>
+     *      <td>Issuing application is still enabled, and hasn’t been deleted</td><td align="center">no</td><td align="center">yes</td>
      *   </tr>
      *   <tr>
-     *      <td>Account is still in an account store for the issuing application</td><td>no</td><td>yes</td>
+     *      <td>Account is still in an account store for the issuing application</td><td align="center">no</td><td align="center">yes</td>
      *   </tr>
      * </table>
+
      * @return This instance for method chaining.
      */
     OAuthBearerRequestAuthenticator withLocalValidation();

@@ -48,13 +48,22 @@ public class LogoutController extends AbstractController {
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        //This Logout Controller does not respond to GET requests (only POST) but
+        //IDSIte Logout is a GET request, therefore we need to respond to it.
+        if (request.getAttribute("idSiteResult.FILTERED") != null) {
+            return processRequest(request, response);
+        }
         response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         return null;
     }
 
     @Override
-    public ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return processRequest(request, response);
 
+    }
+
+    protected ViewModel processRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         //clear out any authentication/account state:
         request.logout();
 

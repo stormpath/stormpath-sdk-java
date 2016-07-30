@@ -129,7 +129,6 @@ public class CookieAccountResolver implements Resolver<Account> {
             OAuthRefreshTokenRequestAuthentication refreshGrantRequest = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder()
                     .setRefreshToken(val)
                     .build();
-            OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder().setRefreshToken(refreshTokenCookieResolver.get(request, response).getValue());
 
             OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR
                     .forApplication(ApplicationResolver.INSTANCE.getApplication(request))

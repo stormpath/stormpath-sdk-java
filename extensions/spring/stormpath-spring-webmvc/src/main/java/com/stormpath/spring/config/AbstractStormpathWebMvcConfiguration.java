@@ -931,7 +931,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         //otherwise standard login controller:
         LoginController c = configure(new LoginController(), stormpathLoginConfig());
         c.setForgotPasswordEnabled(stormpathForgotPasswordConfig().isEnabled());
-        c.setForgotLoginUri(stormpathForgotPasswordConfig().getUri());
+        c.setForgotPasswordUri(stormpathForgotPasswordConfig().getUri());
         c.setVerifyEnabled(stormpathVerifyConfig().isEnabled());
         c.setVerifyUri(stormpathVerifyConfig().getUri());
         c.setRegisterEnabledResolver(stormpathRegisterEnabledResolver());
