@@ -324,6 +324,29 @@ public abstract class Collections {
     }
 
     /**
+     * Find the first single value of the given type in the given Collection or {@code null} if none was found
+     *
+     * @param collection the Collection to search
+     * @param type       the type to look for
+     * @return a value of the given type found or {@code null} if none found.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T findFirstValueOfType(Collection<?> collection, Class<T> type) {
+
+        Assert.notNull(type, "type argument cannot be null.");
+
+        if (!isEmpty(collection)) {
+            for (Object element : collection) {
+                if (element != null && type.isInstance(element)) {
+                    return (T) element;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Find a single value of one of the given types in the given Collection:
      * searching the Collection for a value of the first type, then
      * searching for a value of the second type, etc.
