@@ -17,6 +17,7 @@ package com.stormpath.sdk.servlet.mvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.LoginPageRedirector;
@@ -45,6 +46,7 @@ public class MeController extends AbstractController {
         Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
         Assert.notNull(this.objectMapper, "objectMapper cannot be null.");
         Assert.notEmpty(this.produces, "produces cannot be null or empty");
+        Assert.notNull(this.applicationResolver, "applicationResolver cannot be null.");
     }
 
     public LoginPageRedirector getLoginPageRedirector() {
@@ -102,6 +104,9 @@ public class MeController extends AbstractController {
                 loginPageRedirector.redirectToLoginPage(request, response);
             }
             if (isJsonPreferred(request, response)) {
+                Application application = applicationResolver.getApplication(request.getServletContext());
+                String bearerRealm = String.format("Bearer realm=\"%s\"", application.getName());
+                response.addHeader("WWW-Authenticate", bearerRealm);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
             return null;

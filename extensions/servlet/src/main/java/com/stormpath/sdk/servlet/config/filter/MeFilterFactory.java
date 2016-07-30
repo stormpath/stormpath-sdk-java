@@ -36,6 +36,7 @@ public class MeFilterFactory extends FilterFactory<MeFilter> {
         c.setExpands(config.getMeExpandedProperties());
         c.setObjectMapper(config.getObjectMapper());
         c.setLoginPageRedirector(new DefaultLoginPageRedirector(config.getLoginConfig().getUri()));
+        c.setApplicationResolver(config.getApplicationResolver());
         c.init();
 
         MeFilter filter = new MeFilter();

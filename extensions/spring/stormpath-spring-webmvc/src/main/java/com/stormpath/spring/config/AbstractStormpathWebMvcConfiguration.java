@@ -1280,6 +1280,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setProduces(stormpathProducedMediaTypes());
         controller.setUri(meUri);
         controller.setLoginPageRedirector(new DefaultLoginPageRedirector(stormpathLoginConfig().getUri()));
+        controller.setApplicationResolver(stormpathApplicationResolver());
 
         init(controller);
 
