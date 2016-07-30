@@ -15,116 +15,41 @@
  */
 package com.stormpath.spring.mvc;
 
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.filter.ControllerConfig;
-import com.stormpath.sdk.servlet.form.DefaultField;
-import com.stormpath.sdk.servlet.form.Field;
-import com.stormpath.sdk.servlet.mvc.FormFieldsFactory;
+import com.stormpath.sdk.servlet.mvc.AbstractControllerConfig;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 /**
  * @since 1.0.0
  */
-abstract class AbstractSpringControllerConfig implements ControllerConfig, FormFieldsFactory {
-
-    protected abstract String[] getDefaultFieldOrder();
+abstract class AbstractSpringControllerConfig extends AbstractControllerConfig implements InitializingBean {
 
     @Autowired
-    protected Environment env;
+    protected ConfigurableEnvironment env;
 
-    private Map<String, Field> getDefaultFields() {
-        Map<String, Field> fields = new LinkedHashMap<String, Field>();
-
-        for (String fieldName : Arrays.asList(getDefaultFieldOrder())) {
-            fields.put(fieldName,
-                    new DefaultField.Builder()
-                            .setName(fieldName)
-                            .setRequired(true)
-                            .setPlaceholder("stormpath.web." + getControllerKey() + ".form.fields." + fieldName + ".placeholder")
-                            .setLabel("stormpath.web." + getControllerKey() + ".form.fields." + fieldName + ".label")
-                            .setEnabled(!getDefaultDisableFields().contains(fieldName))
-                            .setVisible(true)
-                            .setType(getFieldType(fieldName))
-                            .build());
-        }
-
-        return fields;
+    public AbstractSpringControllerConfig(String controllerKey) {
+        super(controllerKey);
     }
 
     @Override
-    public List<Field> getFormFields() {
-        List<Field> fields = new ArrayList<Field>();
+    public void afterPropertiesSet() throws Exception {
 
-        for (String fieldName : getFormFieldNames()) {
-            String trimmedFieldName = Strings.trimAllWhitespace(fieldName);
-
-            //Could be null if no default field is defined for that name
-            Field defaultField = getDefaultFields().get(trimmedFieldName);
-
-            DefaultField field = DefaultField.builder()
-                    .setName(trimmedFieldName)
-                    .setType(env.getProperty(getFieldPropertyKey(trimmedFieldName, "type"), defaultField != null ? defaultField.getType() : null))
-                    .setLabel(env.getProperty(getFieldPropertyKey(trimmedFieldName, "label"), defaultField != null ? defaultField.getLabel() : null))
-                    .setPlaceholder(env.getProperty(getFieldPropertyKey(trimmedFieldName, "placeholder"), defaultField != null ? defaultField.getPlaceholder() : null))
-                    .setRequired(env.getProperty(getFieldPropertyKey(trimmedFieldName, "required"), Boolean.class, defaultField != null ? defaultField.isRequired() : null))
-                    .setEnabled(env.getProperty(getFieldPropertyKey(trimmedFieldName, "enabled"), Boolean.class, defaultField != null ? defaultField.isEnabled() : null))
-                    .setVisible(env.getProperty(getFieldPropertyKey(trimmedFieldName, "visible"), Boolean.class, defaultField != null ? defaultField.isVisible() : null))
-                    .build();
-            fields.add(field);
-        }
-
-
-        return fields;
-    }
-
-    private List<String> getFormFieldNames() {
-        List<String> fieldNames = new ArrayList<String>(
-                Arrays.asList(env.getProperty("stormpath.web." + getControllerKey() + ".form.fields.fieldOrder", String[].class, getDefaultFieldOrder()))
-        );
-
-        Pattern pattern = Pattern.compile("^stormpath.web." + getControllerKey() + ".form.fields." + "(\\w+)");
-
-        //Find any other fields that are not in the fieldOrder prop and add them to the end of the list as define in the spec
-        for (String key : AbstractStormpathWebMvcConfiguration.getPropertiesStartingWith((ConfigurableEnvironment) env, "stormpath.web." + getControllerKey() + ".form.fields").keySet()) {
-            Matcher matcher = pattern.matcher(key);
-            if (matcher.find()) {
-                String fieldName = matcher.group(1);
-                if (!"fieldOrder".equals(fieldName) && !fieldNames.contains(fieldName)) {
-                    fieldNames.add(fieldName);
-                }
+        setPropertyResolver(new AbstractPropertyResolver() {
+            @Override
+            public String getValue(String key) {
+                return env.getProperty(key);
             }
-        }
 
-        return fieldNames;
-    }
+            @Override
+            public Set<String> getKeys(String prefix) {
+                return AbstractStormpathWebMvcConfiguration.getPropertiesStartingWith(env, prefix).keySet();
+            }
+        });
 
-    private String getFieldPropertyKey(String fieldName, String property) {
-        return "stormpath.web." + getControllerKey() + ".form.fields." + fieldName + "." + property;
-    }
-
-    private String getFieldType(String fieldName) {
-        if (fieldName.toLowerCase().contains("password")) {
-            return "password";
-        } else if (fieldName.toLowerCase().contains("email")) {
-            return "email";
-        } else {
-            return "text";
-        }
-    }
-
-    protected List getDefaultDisableFields() {
-        return Collections.emptyList();
+        super.init();
     }
 }

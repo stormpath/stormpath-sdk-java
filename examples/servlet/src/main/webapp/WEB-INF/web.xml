@@ -10,7 +10,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>WelcomeController</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/welcome</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>DashboardController</servlet-name>
@@ -30,13 +30,18 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>default</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
         <url-pattern>/assets/*</url-pattern>
     </servlet-mapping>
-
-
     <session-config>
         <cookie-config>
             <max-age>3600</max-age>
         </cookie-config>
     </session-config>
+    <welcome-file-list>
+        <welcome-file>welcome</welcome-file>
+    </welcome-file-list>
 </web-app>

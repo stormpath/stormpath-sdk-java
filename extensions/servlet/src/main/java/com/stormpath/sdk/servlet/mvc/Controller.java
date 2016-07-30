@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
  * @since 1.0.RC4
  */
 public interface Controller {
+    String NEXT_QUERY_PARAM = "next";
 
     String STORMPATH_JSON_VIEW_NAME = "stormpathJsonView";
 

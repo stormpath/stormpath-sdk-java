@@ -22,8 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class ForgotPasswordControllerConfig extends AbstractSpringControllerConfig {
 
-    private static final String[] DEFAULT_FIELD_NAMES = new String[]{"email"};
-
     @Value("#{ @environment['stormpath.web.forgotPassword.enabled'] ?: true }")
     protected boolean forgotEnabled;
 
@@ -35,6 +33,11 @@ public class ForgotPasswordControllerConfig extends AbstractSpringControllerConf
 
     @Value("#{ @environment['stormpath.web.forgotPassword.view'] ?: 'stormpath/forgot-password' }")
     protected String forgotView;
+
+    public ForgotPasswordControllerConfig() {
+        super("forgotPassword");
+        setDefaultFieldNames("email");
+    }
 
     @Override
     public String getView() {
@@ -54,15 +57,5 @@ public class ForgotPasswordControllerConfig extends AbstractSpringControllerConf
     @Override
     public boolean isEnabled() {
         return forgotEnabled;
-    }
-
-    @Override
-    public String getControllerKey() {
-        return "forgotPassword";
-    }
-
-    @Override
-    protected String[] getDefaultFieldOrder() {
-        return DEFAULT_FIELD_NAMES;
     }
 }

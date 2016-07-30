@@ -50,6 +50,7 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.DefaultContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.DefaultFilterChainManager;
+import com.stormpath.sdk.servlet.filter.DefaultLoginPageRedirector;
 import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
 import com.stormpath.sdk.servlet.filter.DefaultUsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
@@ -96,6 +97,8 @@ import com.stormpath.sdk.servlet.http.authc.BearerAuthenticationScheme;
 import com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
+import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
+import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.AbstractController;
@@ -122,7 +125,9 @@ import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.View;
 import com.stormpath.sdk.servlet.mvc.ViewModel;
+import com.stormpath.sdk.servlet.mvc.ViewResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
@@ -142,9 +147,11 @@ import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.spring.context.CompositeMessageSource;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.ForgotPasswordControllerConfig;
+import com.stormpath.spring.mvc.MessageContextRegistrar;
 import com.stormpath.spring.mvc.LoginControllerConfig;
 import com.stormpath.spring.mvc.LogoutControllerConfig;
 import com.stormpath.spring.mvc.RegisterControllerConfig;
+import com.stormpath.spring.mvc.SingleNamedViewResolver;
 import com.stormpath.spring.mvc.SpringView;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import com.stormpath.spring.mvc.VerifyControllerConfig;
@@ -161,7 +168,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DelegatingMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.Ordered;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -173,10 +179,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -369,12 +375,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
     protected String meUri;
 
-    @Value("#{ @environment['stormpath.web.me.nextUri'] ?: '/' }")
-    protected String meNextUri;
-
-    @Value("#{ @environment['stormpath.web.me.expand.groups'] ?: true }")
-    protected boolean meExpandGroups;
-
     // ================  Content negotiation support properties  ===================
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
@@ -395,13 +395,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
 
-    @Value("#{ @environment['stormpath.web.json.view'] ?: 'stormpathJsonView' }")
-    protected String jsonView;
-
     //Spring's ThymeleafViewResolver defaults to an order of Ordered.LOWEST_PRECEDENCE - 5.  We want to ensure that this
     //JSON view resolver has a slightly higher precedence to ensure that JSON is rendered and not a Thymeleaf template.
     @Value("#{ @environment['stormpath.web.json.view.resolver.order'] ?: T(org.springframework.core.Ordered).LOWEST_PRECEDENCE - 10 }")
     protected int jsonViewResolverOrder;
+
+    @Value("#{ @environment['stormpath.web.jsp.view.resolver.order'] ?: T(org.springframework.core.Ordered).LOWEST_PRECEDENCE}")
+    protected int jspViewResolverOrder;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -461,7 +461,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Qualifier("registerPostHandler")
     protected WebHandler registerPostHandler = new DisabledWebHandler();
 
-    @Autowired //all view resolvers in the spring app context;
+    @Autowired //all view resolvers in the spring app context. key: bean name, value: resolver
     private Map<String, org.springframework.web.servlet.ViewResolver> viewResolvers;
 
     private void addRoutes(final DefaultFilterChainManager mgr) throws ServletException {
@@ -509,26 +509,30 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         // mapping.setInterceptors(new Object[]{stormpathLocaleChangeInterceptor(), stormpathLayoutInterceptor()});
     }
 
-    public com.stormpath.sdk.servlet.mvc.View stormpathControllerView() {
-        List<ViewResolver> l = new ArrayList<>(viewResolvers.values());
-        ViewResolver vr = stormpathJsonViewResolver();
+    public View stormpathControllerView() {
+        List<org.springframework.web.servlet.ViewResolver> l = new ArrayList<>(viewResolvers.values());
+        org.springframework.web.servlet.ViewResolver vr = stormpathJsonViewResolver();
         if (!l.contains(vr)) {
             l.add(vr);
+        }
+        InternalResourceViewResolver irvr = stormpathJspViewResolver();
+        if (!l.contains(irvr)) {
+            l.add(irvr);
         }
         return new SpringView(l, stormpathSpringLocaleResolver(), stormpathLayoutInterceptor());
     }
 
-    public com.stormpath.sdk.servlet.mvc.View stormpathJacksonView() {
+    public View stormpathJacksonView() {
         JacksonView view = new JacksonView();
         view.setObjectMapper(objectMapper);
         return view;
     }
 
-    public com.stormpath.sdk.servlet.mvc.ViewResolver stormpathControllerViewResolver() {
+    public ViewResolver stormpathControllerViewResolver() {
 
-        com.stormpath.sdk.servlet.mvc.ViewResolver fixed = new com.stormpath.sdk.servlet.mvc.ViewResolver() {
+        ViewResolver fixed = new ViewResolver() {
             @Override
-            public com.stormpath.sdk.servlet.mvc.View getView(ViewModel model, HttpServletRequest request) {
+            public View getView(ViewModel model, HttpServletRequest request) {
                 return stormpathControllerView();
             }
         };
@@ -626,26 +630,18 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return jsonView;
     }
 
-    interface OrderedViewResolver extends ViewResolver, Ordered {
+    //Requires a bean named 'stormpathJsonView' to be available:
+    public org.springframework.web.servlet.ViewResolver stormpathJsonViewResolver() {
+        return new SingleNamedViewResolver(View.STORMPATH_JSON_VIEW_NAME, stormpathJsonView(), jsonViewResolverOrder);
     }
 
-    public ViewResolver stormpathJsonViewResolver() {
-
-        return new OrderedViewResolver() {
-
-            @Override
-            public int getOrder() {
-                return jsonViewResolverOrder;
-            }
-
-            @Override
-            public View resolveViewName(String viewName, Locale locale) throws Exception {
-                if (viewName.equals(jsonView)) {
-                    return stormpathJsonView();
-                }
-                return null;
-            }
-        };
+    public InternalResourceViewResolver stormpathJspViewResolver() {
+        InternalResourceViewResolver bean = new InternalResourceViewResolver();
+        bean.setOrder(jspViewResolverOrder);
+        bean.setViewClass(JstlView.class);
+        bean.setPrefix("/WEB-INF/jsp/");
+        bean.setSuffix(".jsp");
+        return bean;
     }
 
     public AccountStoreResolver stormpathAccountStoreResolver() {
@@ -1100,6 +1096,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return messageSource;
     }
 
+    public MessageContextRegistrar stormpathMessageContextRegistrar() {
+        MessageContext ctx = new DefaultMessageContext(stormpathMessageSource(), stormpathLocaleResolver());
+        return new MessageContextRegistrar(ctx, servletContext);
+    }
+
     /**
      * At ApplicationContext startup, Spring creates a placeholder in the ApplicationContext to await a 'real' message
      * source.  This method returns {@code true} if the specified message source is just a placeholder (and not relevant
@@ -1264,8 +1265,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathMeController() {
-
-        List<String> results = new ArrayList<>();
+        List<String> expandedAccountAttributes = new ArrayList<>();
 
         getPropertiesStartingWith((ConfigurableEnvironment) environment, "stormpath.web.me.expand");
 
@@ -1275,14 +1275,18 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             Matcher matcher = pattern.matcher(key);
             if (matcher.find()) {
                 if (environment.getProperty(key, Boolean.class, false)) {
-                    results.add(matcher.group(1));
+                    expandedAccountAttributes.add(matcher.group(1));
                 }
             }
         }
 
-        MeController controller = new MeController(results);
-        controller.setUri(meUri);
+        MeController controller = new MeController();
+
+        controller.setExpands(expandedAccountAttributes);
+        controller.setObjectMapper(objectMapper);
         controller.setProduces(stormpathProducedMediaTypes());
+        controller.setUri(meUri);
+        controller.setLoginPageRedirector(new DefaultLoginPageRedirector(stormpathLoginConfig().getUri()));
 
         init(controller);
 
@@ -1502,7 +1506,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
     }
 
-    //The code bellow is taken out of http://stackoverflow.com/questions/23506471/spring-access-all-environment-properties-as-a-map-or-properties-object
+    //The code below is taken out of http://stackoverflow.com/questions/23506471/spring-access-all-environment-properties-as-a-map-or-properties-object
     public static Map<String, Object> getPropertiesStartingWith(ConfigurableEnvironment aEnv, String aKeyPrefix) {
         Map<String, Object> result = new HashMap<String, Object>();
 

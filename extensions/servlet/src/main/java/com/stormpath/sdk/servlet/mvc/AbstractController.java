@@ -261,7 +261,7 @@ public abstract class AbstractController implements Controller {
     }
 
     protected String getNextUri(HttpServletRequest request) {
-        String nextQueryParam = request.getParameter("next");
+        String nextQueryParam = request.getParameter(NEXT_QUERY_PARAM);
 
         if (Strings.hasText(nextQueryParam)) {
             return nextQueryParam;

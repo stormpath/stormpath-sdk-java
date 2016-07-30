@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.config.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
@@ -48,6 +49,11 @@ import com.stormpath.sdk.servlet.filter.FilterChainResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfig;
 import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
 import com.stormpath.sdk.servlet.http.MediaType;
+import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
+import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
@@ -145,6 +151,15 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public ObjectMapper getObjectMapper() {
+        try {
+            return getInstance("stormpath.web.json.objectMapperFactory", ObjectMapper.class);
+        } catch (ServletException e) {
+            throw new RuntimeException("Couldn't instantiate the default ObjectMapper", e);
+        }
+    }
+
+    @Override
     public MessageSource getMessageSource() {
         return getRuntimeInstance("stormpath.web.message.source");
     }
@@ -152,6 +167,13 @@ public class DefaultConfig implements Config {
     @Override
     public Resolver<Locale> getLocaleResolver() {
         return getRuntimeInstance("stormpath.web.locale.resolver");
+    }
+
+    @Override
+    public MessageContext getMessageContext() {
+        MessageSource messageSource = getMessageSource();
+        Resolver<Locale> localeResolver = getLocaleResolver();
+        return new DefaultMessageContext(messageSource, localeResolver);
     }
 
     @Override
@@ -176,32 +198,32 @@ public class DefaultConfig implements Config {
 
     @Override
     public ControllerConfig getLoginConfig() {
-        return new ServletControllerConfig(this, CFG, "login");
+        return new ServletControllerConfig("login", this);
     }
 
     @Override
     public ControllerConfig getLogoutConfig() {
-        return new ServletControllerConfig(this, CFG, "logout");
+        return new ServletControllerConfig("logout", this);
     }
 
     @Override
     public ControllerConfig getRegisterConfig() {
-        return new ServletControllerConfig(this, CFG, "register");
+        return new ServletControllerConfig("register", this);
     }
 
     @Override
     public ControllerConfig getForgotPasswordConfig() {
-        return new ServletControllerConfig(this, CFG, "forgotPassword");
+        return new ServletControllerConfig("forgotPassword", this);
     }
 
     @Override
     public ControllerConfig getVerifyConfig() {
-        return new ServletControllerConfig(this, CFG, "verifyEmail");
+        return new ServletControllerConfig("verifyEmail", this);
     }
 
     @Override
     public ChangePasswordConfig getChangePasswordConfig() {
-        return new ChangePasswordServletControllerConfig(this, CFG, "changePassword");
+        return new ChangePasswordServletControllerConfig(this, "changePassword");
     }
 
     @Override

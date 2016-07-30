@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
@@ -34,6 +35,7 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
@@ -49,9 +51,13 @@ import java.util.Map;
  */
 public interface Config extends Map<String, String> {
 
+    ObjectMapper getObjectMapper();
+
     Client getClient();
 
     ApplicationResolver getApplicationResolver();
+
+    MessageContext getMessageContext();
 
     Resolver<Locale> getLocaleResolver();
 

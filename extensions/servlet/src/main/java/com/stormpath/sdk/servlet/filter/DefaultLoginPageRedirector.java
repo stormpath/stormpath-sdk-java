@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
@@ -29,18 +30,29 @@ import java.net.URLEncoder;
  */
 public class DefaultLoginPageRedirector implements LoginPageRedirector {
 
+    private String loginUri;
+
+    public DefaultLoginPageRedirector() {}
+
+    public DefaultLoginPageRedirector(String loginUri) {
+        Assert.hasText(loginUri, "loginUri cannot be null or empty.");
+        this.loginUri = loginUri;
+    }
+
     @Override
     public void redirectToLoginPage(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
-        Config config = ConfigResolver.INSTANCE.getConfig(request.getServletContext());
+        if (loginUri == null) {
+            Config config = ConfigResolver.INSTANCE.getConfig(request.getServletContext());
 
-        //not authenticated, so we'll redirect the user the login url and the 'next' parameter will be equal
-        //to the currently requested URL *if* the request is a GET request.  POST requests are rarely safe to
-        //automatically execute automatically (not idempotent, etc), so we just return to the default login 'nextUrl'
-        //if not a GET
+            //not authenticated, so we'll redirect the user the login url and the 'next' parameter will be equal
+            //to the currently requested URL *if* the request is a GET request.  POST requests are rarely safe to
+            //automatically execute automatically (not idempotent, etc), so we just return to the default login 'nextUrl'
+            //if not a GET
 
-        String loginUri = config.getLoginConfig().getUri();
+            loginUri = config.getLoginConfig().getUri();
+        }
 
         String method = request.getMethod();
         if (method.equalsIgnoreCase("GET")) {

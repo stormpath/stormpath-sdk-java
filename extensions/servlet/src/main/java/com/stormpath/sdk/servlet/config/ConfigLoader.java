@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.lang.UnknownClassException;
 import com.stormpath.sdk.servlet.config.impl.DefaultConfigFactory;
+import com.stormpath.sdk.servlet.i18n.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,35 +30,35 @@ import javax.servlet.ServletContext;
  * startup and making it available in the {@code ServletContext} as a {@link Config} instance.  Other ServletContext
  * aware instances loaded after this one can access the config instance by using the Config interface name as
  * the servlet context attribute key:
- *
+ * <p>
  * <pre>
  * Config config = (Config)servletContext.getAttribute(Config.class.getName());
  * </pre>
- *
+ * <p>
  * <h4>ConfigFactory</h4>
- *
+ * <p>
  * <p>The {@code ConfigLoader} will delegate config creation to a
  * {@link com.stormpath.sdk.servlet.config.ConfigFactory ConfigFactory} instance to actually create the {@link Config}
  * that will be made available to the application.  By default, the
  * {@link com.stormpath.sdk.servlet.config.impl.DefaultConfigFactory} implementation will be used to create the
  * {@link Config} instance from a number of {@code .properties} file locations, system properties and environment
  * variables.</p>
- *
+ * <p>
  * <h4>Custom ConfigFactory Implementation</h4>
- *
+ * <p>
  * <p>If you need to create a custom ConfigFactory implementation, you can implement the
  * {@link com.stormpath.sdk.servlet.config.ConfigFactory} interface yourself and specify that implementation class name
  * as follows:</p>
- *
+ * <p>
  * <pre>
  * &lt;context-param&gt;
  *     &lt;param-name&gt;stormpathConfigFactoryClass&lt;/param-name&gt;
  *     &lt;param-value&gt;<b>com.mycompany.myapp.stormpath.MyCustomConfigFactory</b>&lt;/param-value&gt;
  * &lt;/context-param&gt;
  * </pre>
- *
+ * <p>
  * <p>And that class will be instantiated and used to create the Config instance.</p>
- *
+ * <p>
  * <p>If you do not specify this context-param, {@link com.stormpath.sdk.servlet.config.impl.DefaultConfigFactory
  * com.stormpath.sdk.servlet.config.impl.DefaultConfigFactory}
  * is assumed by default.</p>
@@ -95,7 +96,7 @@ public class ConfigLoader {
 
         if (servletContext.getAttribute(CONFIG_ATTRIBUTE_NAME) != null) {
             String msg = "There is already a Stormpath Config instance associated with the current ServletContext.  " +
-                         "Check if you have multiple ConfigLoader* definitions in your web.xml or annotation config!";
+                "Check if you have multiple ConfigLoader* definitions in your web.xml or annotation config!";
             throw new IllegalStateException(msg);
         }
 
@@ -109,6 +110,8 @@ public class ConfigLoader {
             Config config = doCreateConfig(servletContext);
 
             servletContext.setAttribute(CONFIG_ATTRIBUTE_NAME, config);
+            //needed for MessageTag implementation:
+            servletContext.setAttribute(MessageContext.class.getName(), config.getMessageContext());
 
             log.debug("Published Config as ServletContext attribute with name [{}]", CONFIG_ATTRIBUTE_NAME);
 
@@ -174,10 +177,10 @@ public class ConfigLoader {
 
         if (!ConfigFactory.class.isAssignableFrom(clazz)) {
             throw new IllegalStateException("Custom ConfigFactory class [" + clazz.getName() +
-                                            "] is not of required type [" + ConfigFactory.class.getName() + "]");
+                "] is not of required type [" + ConfigFactory.class.getName() + "]");
         }
 
-        ConfigFactory factory = (ConfigFactory)Classes.newInstance(clazz);
+        ConfigFactory factory = (ConfigFactory) Classes.newInstance(clazz);
 
         return factory.createConfig(sc);
     }
@@ -190,6 +193,7 @@ public class ConfigLoader {
     public void destroyConfig(ServletContext servletContext) {
         servletContext.log("Cleaning up Stormpath config.");
         servletContext.removeAttribute(CONFIG_ATTRIBUTE_NAME);
+        servletContext.removeAttribute(MessageContext.class.getName());
     }
 }
 
