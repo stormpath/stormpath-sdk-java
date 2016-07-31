@@ -16,20 +16,25 @@
 package com.stormpath.sdk.servlet.config.filter;
 
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.mvc.SamlResultController;
+import com.stormpath.sdk.servlet.filter.DefaultServerUriResolver;
+import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
+import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
+import com.stormpath.sdk.servlet.util.SubdomainResolver;
 
 /**
  * @since 1.0.0
  */
-public class SamlResultFilterFactory extends CallbackControllerFilterFactory<SamlResultController> {
+public class IDSiteLoginFilterFactory extends IDSiteFilterFactory {
 
     @Override
-    protected SamlResultController newController() {
-        return new SamlResultController();
+    protected IdSiteController newController() {
+        return new IdSiteController();
     }
 
-    @Override
-    public void doConfigure(SamlResultController c, Config config) {
+    public void doConfigure(IdSiteController c, Config config) {
+        c.setIdSiteUri(config.get("stormpath.web.idSite.loginUri"));
+        c.setNextUri(config.get("stormpath.web.login.nextUri"));
     }
-
 }

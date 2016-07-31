@@ -130,7 +130,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
 
     private List<String> getFormFieldNames() {
 
-        List<String> fieldNames = propertyResolver.getValues(getFieldKey("fieldOrder"), getDefaultFieldNames());
+        List<String> fieldNames = propertyResolver.getValues(getFormKey("fieldOrder"), getDefaultFieldNames());
         //returned propertyResolver value could be immutable and we might need to append to the list, so wrap it:
         fieldNames = new ArrayList<>(fieldNames);
 
@@ -162,8 +162,16 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
         return "stormpath.web." + getControllerKey();
     }
 
+    protected String getFormConfigPrefix() {
+        return getConfigPrefix() + ".form";
+    }
+
     protected String getFieldConfigPrefix() {
-        return getConfigPrefix() + ".form.fields";
+        return getFormConfigPrefix() + ".fields";
+    }
+
+    protected String getFormKey(String fieldName) {
+        return getFormConfigPrefix() + "." + fieldName;
     }
 
     protected String getFieldKey(String fieldName) {
