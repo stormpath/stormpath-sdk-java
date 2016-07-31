@@ -43,5 +43,6 @@ public class RegisterFilterFactory extends FormControllerFilterFactory<RegisterC
         c.setAutoLogin(config.isRegisterAutoLoginEnabled());
         c.setPreRegisterHandler(config.getRegisterPreHandler());
         c.setPostRegisterHandler(config.getRegisterPostHandler());
+        c.setAccountStoreResolver(config.getAccountStoreResolver());
     }
 }
