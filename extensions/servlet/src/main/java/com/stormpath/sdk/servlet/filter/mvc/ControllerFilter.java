@@ -86,14 +86,21 @@ public class ControllerFilter extends HttpFilter {
         this.producedMediaTypes = producedMediaTypes;
     }
 
+    public void setViewResolver(ViewResolver viewResolver) {
+        this.viewResolver = viewResolver;
+    }
+
     @Override
     protected void onInit() throws Exception {
         Assert.notNull(controller, "Controller instance must be configured.");
         Assert.notEmpty(producedMediaTypes, "producedMediaTypes property cannot be null or empty.");
-        InternalResourceViewResolver irvr = new InternalResourceViewResolver();
-        irvr.setPrefix(getPrefix());
-        irvr.setSuffix(getSuffix());
-        this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), producedMediaTypes);
+
+        if (this.viewResolver == null) {
+            InternalResourceViewResolver irvr = new InternalResourceViewResolver();
+            irvr.setPrefix(getPrefix());
+            irvr.setSuffix(getSuffix());
+            this.viewResolver = new DefaultViewResolver(irvr, new JacksonView(), producedMediaTypes);
+        }
     }
 
     @Override
@@ -129,14 +136,19 @@ public class ControllerFilter extends HttpFilter {
     }
 
     protected void render(HttpServletRequest request, HttpServletResponse response, ViewModel vm) throws Exception {
+
         log.debug("Rendering view '{}' for request URI [{}]", vm.getViewName(), request.getRequestURI());
         View view = this.viewResolver.getView(vm, request);
-        if (view != null) {
-            if (view instanceof JacksonView) {
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            }
-            view.render(request, response, vm);
+
+        if (view == null) {
+            // since the filter method above asserts that view name is always non-null/empty, that implies we always
+            // need a corresponding view instance.  If we don't find one, that's a config error:
+            log.warn("Unable to find view instance for named view '{}' for request URI [{}]",
+                vm.getViewName(), request.getRequestURI());
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        view.render(request, response, vm);
     }
 }

@@ -19,8 +19,6 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.form.DefaultField;
-import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import org.slf4j.Logger;
@@ -33,6 +31,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import static com.stormpath.sdk.servlet.mvc.View.STORMPATH_JSON_VIEW_NAME;
 
 /**
  * @since 1.0.RC4
@@ -86,30 +86,6 @@ public class ForgotPasswordController extends FormController {
             String key = "stormpath.web.forgotPassword.form.status";
             model.put("status", i18n(request, key.concat(".").concat(status)));
         }
-    }
-
-    @Override
-    protected List<Field> createFields(HttpServletRequest request, boolean retainPassword) {
-
-        List<Field> fields = new ArrayList<>(1);
-
-        RequestFieldValueResolver fieldValueResolver = getFieldValueResolver();
-
-        String[] fieldNames = new String[]{ "email" };
-
-        for (String fieldName : fieldNames) {
-            DefaultField field = new DefaultField();
-            field.setName(fieldName);
-            field.setLabel(i18n(request, "stormpath.web.forgotPassword.form.fields." + fieldName + ".label"));
-            field.setPlaceholder(i18n(request, "stormpath.web.forgotPassword.form.fields." + fieldName + ".placeholder"));
-            field.setRequired(true);
-            field.setType("text");
-            String val = fieldValueResolver.getValue(request, fieldName);
-            field.setValue(val != null ? val : "");
-            fields.add(field);
-        }
-
-        return fields;
     }
 
     @Override

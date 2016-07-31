@@ -15,11 +15,14 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
+import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -43,7 +46,7 @@ import java.util.UUID;
 public class LoginController extends FormController {
 
     private static final Logger log = LoggerFactory.getLogger(LoginController.class);
-    private String forgotLoginUri;
+    private String forgotPasswordUri;
     private String verifyUri;
     private String registerUri;
     private String logoutUri;
@@ -60,8 +63,8 @@ public class LoginController extends FormController {
     private WebHandler postLoginHandler;
     private Resolver<Boolean> registerEnabledResolver;
 
-    public void setForgotLoginUri(String forgotLoginUri) {
-        this.forgotLoginUri = forgotLoginUri;
+    public void setForgotPasswordUri(String forgotPasswordUri) {
+        this.forgotPasswordUri = forgotPasswordUri;
     }
 
     public void setVerifyUri(String verifyUri) {
@@ -142,7 +145,7 @@ public class LoginController extends FormController {
             this.accountModelFactory = new DefaultAccountModelFactory();
         }
 
-        Assert.hasText(this.forgotLoginUri, "forgotLoginUri property cannot be null or empty.");
+        Assert.hasText(this.forgotPasswordUri, "forgotPasswordUri property cannot be null or empty.");
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
         Assert.notNull(this.registerEnabledResolver, "registerEnabledResolver cannot be null.");
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
@@ -153,6 +156,7 @@ public class LoginController extends FormController {
         Assert.notNull(this.loginFormStatusResolver, "loginFormStatusResolver cannot be null.");
         Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
         Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
+        Assert.notNull(this.applicationResolver, "applicationResolver cannot be null.");
     }
 
     @Override
@@ -184,7 +188,7 @@ public class LoginController extends FormController {
 
         if (isHtmlPreferred(request, response)) {
             model.put("forgotPasswordEnabled", forgotPasswordEnabled);
-            model.put("forgotLoginUri", forgotLoginUri);
+            model.put("forgotPasswordUri", forgotPasswordUri);
             model.put("verifyEnabled", verifyEnabled);
             model.put("verifyUri", verifyUri);
             model.put("registerEnabled", registerEnabledResolver.get(request, response));
@@ -229,22 +233,31 @@ public class LoginController extends FormController {
             }
         }
 
-        String usernameOrEmail = form.getFieldValue("login");
-        String password = form.getFieldValue("password");
+        // check to see if account already exists in request
+        Account account = (Account) req.getAttribute(Account.class.getName());
+        if (account != null) {
+            AuthenticationResult authcResult = new TransientAuthenticationResult(account);
+            authenticationResultSaver.set(req, resp, authcResult);
+            eventPublisher.publish(new DefaultSuccessfulAuthenticationRequestEvent(req, resp, null, authcResult));
+        } else {
+            String usernameOrEmail = form.getFieldValue("login");
+            String password = form.getFieldValue("password");
 
-        req.login(usernameOrEmail, password);
+            req.login(usernameOrEmail, password);
 
-        AccessTokenResult result = (AccessTokenResult) req.getAttribute(OAuthTokenResolver.REQUEST_ATTR_NAME);
-        saveResult(req, resp, result);
+            AccessTokenResult result = (AccessTokenResult) req.getAttribute(OAuthTokenResolver.REQUEST_ATTR_NAME);
+            account = result.getAccount();
+            saveResult(req, resp, result);
+        }
 
         if (postLoginHandler != null) {
-            if (!postLoginHandler.handle(req, resp, result.getAccount())) {
+            if (!postLoginHandler.handle(req, resp, account)) {
                 return null;
             }
         }
 
         if (isJsonPreferred(req, resp)) {
-            return new DefaultViewModel(view, java.util.Collections.singletonMap("account", accountModelFactory.toMap(result.getAccount(), java.util.Collections.<String>emptyList())));
+            return new DefaultViewModel(view, java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, java.util.Collections.<String>emptyList())));
         }
 
         //otherwise HTML view:

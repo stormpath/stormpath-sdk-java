@@ -30,7 +30,7 @@ import static org.testng.Assert.assertEquals
  * A test that downloads the <a href="https://github.com/stormpath/stormpath-framework-spec/blob/master/example-config.yaml">web config
  * from the stormpath-framework-spec</a> and compares it with <code>com/stormpath/sdk/servlet/config/web.stormpath.properties</code>.
  *
- * This test will fail when a new property is added to the the spec's example-config.yaml but
+ * This test will fail when a new property is added to the spec's example-config.yaml but
  * it does not exist in <code>web.stormpath.properties</code>.
  *
  * @since 1.0.0
@@ -68,7 +68,7 @@ class SpecConfigVersusWebPropertiesTest {
             println "Or you could adjust the assertEquals statement in this method to allow for this missing key as a temporary solution."
         }
 
-        assertEquals diff.size(), 0, "Missing keys in default config: ${diff}"
+        assertEquals 0, diff.size(), "Missing keys in default config: ${diff}"
     }
 
     @Test
@@ -77,7 +77,7 @@ class SpecConfigVersusWebPropertiesTest {
             specProperties.containsKey(k) ? null : k
         }
 
-        def expected_diff_size = 66
+        def expected_diff_size = 79
 
         if (diff.size != expected_diff_size) {
             println "It looks like a property was added or removed from the Framework Spec or web.stormpath.properties."

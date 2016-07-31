@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
@@ -29,11 +30,14 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 
@@ -47,9 +51,13 @@ import java.util.Map;
  */
 public interface Config extends Map<String, String> {
 
+    ObjectMapper getObjectMapper();
+
     Client getClient();
 
     ApplicationResolver getApplicationResolver();
+
+    MessageContext getMessageContext();
 
     Resolver<Locale> getLocaleResolver();
 
@@ -148,4 +156,19 @@ public interface Config extends Map<String, String> {
      * @since 1.0.0
      */
     boolean isCallbackEnabled();
+
+    /**
+     * @since 1.0.0
+     */
+    String getCallbackUri();
+
+    /**
+     * @since 1.0.0
+     */
+    String getWebApplicationDomain();
+
+    ServerUriResolver getServerUriResolver();
+
+    Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver();
+
 }

@@ -49,11 +49,11 @@
                                     <input th:name="${field.name}" th:type="${field.type}" th:value="${field.value}"/>
                                 </th:block>
                                 <th:block th:if="${field.type != 'hidden'}">
-                                    <label class="col-sm-4" th:text="#{${field.label}}">|Field label|</label>
+                                    <label class="col-sm-4" th:text="${field.label}">|Field label|</label>
 
                                     <div class="col-sm-8">
                                         <input th:name="${field.name}" th:value="${field.value}" th:type="${field.type}"
-                                               th:placeholder="#{${field.placeholder}}"
+                                               th:placeholder="${field.placeholder}"
                                                th:required="${field.required}" class="form-control"/>
                                     </div>
                                 </th:block>

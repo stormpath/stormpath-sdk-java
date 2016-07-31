@@ -61,7 +61,7 @@ public class IdSiteController extends AbstractController {
     }
 
     public void init() {
-        Assert.notNull(serverUriResolver, "Application must be configured.");
+        Assert.notNull(serverUriResolver, "serverUriResolver must be configured.");
         Assert.notNull(callbackUri, "callbackUri must be configured.");
         Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
         Assert.notNull(alreadyLoggedInUri, "alreadyLoggedInUri must be configured.");

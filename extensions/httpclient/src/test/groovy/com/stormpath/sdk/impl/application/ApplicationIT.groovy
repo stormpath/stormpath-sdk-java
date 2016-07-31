@@ -1817,6 +1817,35 @@ class ApplicationIT extends ClientIT {
         }
     }
 
+    /** @since 1.0.0 */
+    @Test
+    void testCreateTokenWithWrongAccountStore() {
+
+        def app = createTempApp()
+
+        def email = uniquify('testCreateToken+') + '@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DELETEME'
+        account.email = email
+        account.password = 'Change&45+me1!'
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testCreateTokenWithWrongAccountStore")
+        dir = client.currentTenant.createDirectory(dir);
+        app.addAccountStore(dir)
+        deleteOnTeardown(dir)
+
+        try {
+            OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setAccountStore(dir).setLogin(email).setPassword("Change&45+me1!").build()
+            Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
+            throw new Exception("Should have thrown. Expected Error code: 7104.");
+        } catch (ResourceException e) {
+            assertEquals(e.getCode(), 7104)
+        }
+    }
+
     /** @since 1.0.RC8 **/
     @Test
     void testDefaultSAMLPolicyAndProvider() {

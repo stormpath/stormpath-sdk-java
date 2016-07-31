@@ -34,6 +34,11 @@ public class VerifyControllerConfig extends AbstractSpringControllerConfig {
     @Value("#{ @environment['stormpath.web.verifyEmail.view'] ?: 'stormpath/verify' }")
     protected String verifyView;
 
+    public VerifyControllerConfig() {
+        super("verifyEmail");
+        setDefaultFieldNames("email");
+    }
+
     @Override
     public String getView() {
         return verifyView;
@@ -52,15 +57,5 @@ public class VerifyControllerConfig extends AbstractSpringControllerConfig {
     @Override
     public boolean isEnabled() {
         return verifyEnabled;
-    }
-
-    @Override
-    public String getControllerKey() {
-        return "verifyEmail";
-    }
-
-    @Override
-    protected String[] getDefaultFieldOrder() {
-        return new String[]{"email"};
     }
 }

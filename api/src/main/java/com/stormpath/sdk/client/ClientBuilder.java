@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.client;
 
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
 
 /**
@@ -232,23 +233,8 @@ public interface ClientBuilder {
      * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
      * @return the ClientBuilder instance for method chaining.
      * @see com.stormpath.sdk.api.ApiKeyBuilder
-     * @deprecated in 1.0.RC and will be removed before 1.0 final. Use {@link #setApiKey(com.stormpath.sdk.api.ApiKey)} instead.
      */
-    @Deprecated
     ClientBuilder setApiKey(ApiKey apiKey);
-
-    /**
-     * Allows specifying an {@code ApiKey} instance directly instead of relying on the
-     * default location + override/fallback behavior defined in the {@link ClientBuilder documentation above}.
-     *
-     * <p>Consider using an {@link com.stormpath.sdk.api.ApiKeyBuilder ApiKeyBuilder} to construct your
-     * {@code ApiKey} instance.</p>
-     *
-     * @param apiKey the ApiKey to use to authenticate requests to the Stormpath API server.
-     * @return the ClientBuilder instance for method chaining.
-     * @see com.stormpath.sdk.api.ApiKeyBuilder
-     */
-    ClientBuilder setApiKey(com.stormpath.sdk.api.ApiKey apiKey);
 
     /**
      * Sets the HTTP proxy to be used when communicating with the Stormpath API server.  For example:

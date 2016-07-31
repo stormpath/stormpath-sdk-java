@@ -24,6 +24,11 @@ import com.stormpath.sdk.servlet.config.filter.FacebookCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.ForgotPasswordFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.GithubCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.GoogleCallbackFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.IDSiteForgotFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.IDSiteLoginFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.IDSiteRegisterFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.IdSiteLogoutFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.IDSiteResultFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LinkedInCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LoginFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LogoutFilterFactory;
@@ -61,7 +66,12 @@ public enum DefaultFilter {
     saml(ControllerFilter.class, SamlFilterFactory.class),
     samlResult(ControllerFilter.class, SamlResultFilterFactory.class),
     unauthorized(UnauthorizedFilter.class, null),
-    verify(ControllerFilter.class, VerifyFilterFactory.class);
+    verify(ControllerFilter.class, VerifyFilterFactory.class),
+    idSite(ControllerFilter.class, IDSiteLoginFilterFactory.class),
+    idSiteResult(ControllerFilter.class, IDSiteResultFilterFactory.class),
+    idSiteLogout(ControllerFilter.class, IdSiteLogoutFilterFactory.class),
+    idSiteRegister(ControllerFilter.class, IDSiteRegisterFilterFactory.class),
+    idSiteForgot(ControllerFilter.class, IDSiteForgotFilterFactory.class);
 
     private final Class<? extends Filter> filterClass;
 

@@ -22,7 +22,6 @@ import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.VerificationEmailRequest;
-import com.stormpath.sdk.api.ApiAuthenticationResult;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -53,7 +52,6 @@ import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest;
 import com.stormpath.sdk.impl.api.DefaultApiKeyCriteria;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
-import com.stormpath.sdk.impl.authc.DefaultApiRequestAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteCallbackHandler;
 import com.stormpath.sdk.impl.idsite.DefaultIdSiteUrlBuilder;
@@ -98,7 +96,6 @@ import com.stormpath.sdk.tenant.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -473,16 +470,6 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return getDataStore().getResource(accountStoreMappings.getHref(), ApplicationAccountStoreMappingList.class, (Criteria<ApplicationAccountStoreMappingCriteria>) criteria);
     }
 
-    /**
-     *  @since 0.9
-     *  @deprecated in 1.0.RC9 and will be removed before 1.0 final. Use {@link #getAccountStoreMappings(ApplicationAccountStoreMappingCriteria)} instead.
-     */
-    @Override
-    @Deprecated
-    public ApplicationAccountStoreMappingList getApplicationAccountStoreMappings(ApplicationAccountStoreMappingCriteria criteria) {
-        return getAccountStoreMappings(criteria);
-    }
-
     /** @since 0.9 */
     @Override
     public AccountStore getDefaultAccountStore() {
@@ -621,25 +608,6 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         //        AccountStoreMappingList accountStoreMappingList = getAccountStoreMappings();
         //        return accountStoreMappingList.getHref();
         return href;
-    }
-
-    @Override
-    @Deprecated
-    public ApiAuthenticationResult authenticateApiRequest(Object httpRequest) {
-        validateHttpRequest(httpRequest);
-        return new DefaultApiRequestAuthenticator(this, (HttpRequest) httpRequest).execute();
-    }
-
-    @Override
-    @Deprecated
-    public OAuthApiRequestAuthenticator authenticateOauthRequest(Object httpRequest) {
-        if (OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS == null) {
-            throw new IllegalStateException(OAUTH_BUILDER_NOT_AVAILABLE_MSG);
-        }
-        validateHttpRequest(httpRequest);
-        Constructor<OAuthApiRequestAuthenticator> ctor =
-            Classes.getConstructor(OAUTH_AUTHENTICATION_REQUEST_BUILDER_CLASS, Application.class, Object.class);
-        return Classes.instantiate(ctor, this, httpRequest);
     }
 
     /** @since 1.0.RC */

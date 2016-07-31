@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.impl.api.ClientApiKeyBuilder
 import org.testng.annotations.Test
 
@@ -30,6 +31,4 @@ public class ApiKeysTest {
         def builder = ApiKeys.builder();
         assertTrue(builder instanceof ClientApiKeyBuilder)
     }
-
-
 }

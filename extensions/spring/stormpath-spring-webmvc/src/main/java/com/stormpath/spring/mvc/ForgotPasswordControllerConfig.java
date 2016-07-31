@@ -34,6 +34,11 @@ public class ForgotPasswordControllerConfig extends AbstractSpringControllerConf
     @Value("#{ @environment['stormpath.web.forgotPassword.view'] ?: 'stormpath/forgot-password' }")
     protected String forgotView;
 
+    public ForgotPasswordControllerConfig() {
+        super("forgotPassword");
+        setDefaultFieldNames("email");
+    }
+
     @Override
     public String getView() {
         return forgotView;
@@ -52,15 +57,5 @@ public class ForgotPasswordControllerConfig extends AbstractSpringControllerConf
     @Override
     public boolean isEnabled() {
         return forgotEnabled;
-    }
-
-    @Override
-    public String getControllerKey() {
-        return "forgotPassword";
-    }
-
-    @Override
-    protected String[] getDefaultFieldOrder() {
-        return new String[]{"email"};
     }
 }
