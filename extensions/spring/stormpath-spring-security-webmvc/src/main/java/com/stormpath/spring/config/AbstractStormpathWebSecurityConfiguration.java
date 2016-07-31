@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.config;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
@@ -52,6 +53,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     @Autowired
     protected Client client;
+
+    @Autowired
+    protected Application application;
 
     @Autowired
     @Qualifier("stormpathAuthenticationProvider")
@@ -150,6 +154,6 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
-        return new StormpathAuthenticationEntryPoint(loginUri, produces, meUri);
+        return new StormpathAuthenticationEntryPoint(loginUri, produces, meUri, application.getName());
     }
 }

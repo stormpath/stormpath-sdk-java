@@ -20,12 +20,19 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
+import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import org.slf4j.Logger;
@@ -61,6 +68,7 @@ public class RegisterController extends FormController {
     private ErrorModelFactory errorModelFactory;
     private WebHandler preRegisterHandler;
     private WebHandler postRegisterHandler;
+    private AccountStoreResolver accountStoreResolver;
 
     public void setAutoLogin(boolean autoLogin) {
         this.autoLogin = autoLogin;
@@ -102,6 +110,14 @@ public class RegisterController extends FormController {
         this.postRegisterHandler = postRegisterHandler;
     }
 
+    public AccountStoreResolver getAccountStoreResolver() {
+        return accountStoreResolver;
+    }
+
+    public void setAccountStoreResolver(AccountStoreResolver accountStoreResolver) {
+        this.accountStoreResolver = accountStoreResolver;
+    }
+
     @Override
     public void init() throws Exception {
         super.init();
@@ -125,6 +141,7 @@ public class RegisterController extends FormController {
         Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
         Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
+        Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");
     }
 
     @Override
@@ -146,7 +163,7 @@ public class RegisterController extends FormController {
     protected List<ErrorModel> toErrors(HttpServletRequest request, Form form, Exception e) {
         log.debug("Unable to register account.", e);
 
-        return Arrays.asList(errorModelFactory.toError(request, e));
+        return Collections.singletonList(errorModelFactory.toError(request, e));
     }
 
     protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
@@ -202,7 +219,7 @@ public class RegisterController extends FormController {
         account.getCustomData().putAll(getCustomData(req, form));
 
         //Get the Stormpath Application instance corresponding to this web app:
-        Application app = (Application) req.getAttribute(Application.class.getName());
+        Application app = ApplicationResolver.INSTANCE.getApplication(req);
 
         if (preRegisterHandler != null) {
             if (!preRegisterHandler.handle(req, resp, account)) {
@@ -210,8 +227,30 @@ public class RegisterController extends FormController {
             }
         }
 
-        //now persist the new account, and ensure our account reference points to the newly created/returned instance:
-        account = app.createAccount(account);
+        AccountStore accountStore = accountStoreResolver.getAccountStore(req, resp);
+
+        if (accountStore == null) {
+            //now persist the new account, and ensure our account reference points to the newly created/returned instance:
+            account = app.createAccount(account);
+        } else {
+            final Account[] accountHolder = new Account[]{account};
+
+            accountStore.accept(new AccountStoreVisitorAdapter() {
+                @Override
+                public void visit(Directory directory) {
+                    Account createdAccount = directory.createAccount(accountHolder[0]);
+                    accountHolder[0] = createdAccount;
+                }
+
+                @Override
+                public void visit(Organization organization) {
+                    Account createdAccount = organization.createAccount(accountHolder[0]);
+                    accountHolder[0] = createdAccount;
+                }
+            });
+
+            account = accountHolder[0];
+        }
 
         publishRequestEvent(new DefaultRegisteredAccountRequestEvent(req, resp, account));
 

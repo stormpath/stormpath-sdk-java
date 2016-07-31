@@ -35,6 +35,7 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
+import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
@@ -55,6 +56,8 @@ public interface Config extends Map<String, String> {
     Client getClient();
 
     ApplicationResolver getApplicationResolver();
+
+    MessageContext getMessageContext();
 
     Resolver<Locale> getLocaleResolver();
 

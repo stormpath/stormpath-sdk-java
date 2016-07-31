@@ -102,6 +102,8 @@ public class DefaultFilterChainManagerConfigurer {
         //TODO 542: what is this?
         String samlUrl = "/saml";
         String samlUrlPattern = cleanUri(samlUrl);
+        String samlCallbackUrl = config.getCallbackUri();
+        String samlCallbackPattern = cleanUri(samlCallbackUrl);
         boolean samlChainSpecified = false;
         boolean callbackEnabled = config.isCallbackEnabled();
 
@@ -297,6 +299,7 @@ public class DefaultFilterChainManagerConfigurer {
         }
         if (!samlChainSpecified && callbackEnabled) {
             mgr.createChain(samlUrlPattern, DefaultFilter.saml.name());
+            mgr.createChain(samlCallbackPattern, DefaultFilter.samlResult.name());
         }
         if (!meChainSpecified && meEnabled) {
             mgr.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());

@@ -61,7 +61,7 @@ public class FilterChainManagerFactory extends ConfigSingletonFactory<FilterChai
                     continue;
                 }
 
-                String className = config.getInstance(key);
+                String className = config.get(key);
                 Object instance = Classes.newInstance(className);
                 mgr.addFilter(instanceName, instance);
             }
