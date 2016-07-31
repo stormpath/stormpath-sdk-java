@@ -16,7 +16,6 @@
 package com.stormpath.spring.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.DefaultLoginPageRedirector;
@@ -77,6 +76,7 @@ public class StormpathAuthenticationEntryPoint implements AuthenticationEntryPoi
         String bearerRealm = String.format("Bearer realm=\"%s\"", applicationName);
         response.addHeader("WWW-Authenticate", bearerRealm);
         if (isJsonPreferred(request, response)) {
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             om.writeValue(response.getOutputStream(),
                new Error(ErrorConstants.ERR_ACCESS_DENIED, authException.getMessage()));
         } else {

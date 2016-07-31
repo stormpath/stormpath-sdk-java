@@ -21,6 +21,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.LoginPageRedirector;
+import com.stormpath.sdk.servlet.http.MediaType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -96,7 +97,7 @@ public class MeController extends AbstractController {
 
         response.setHeader("Cache-Control", "no-store, no-cache");
         response.setHeader("Pragma", "no-cache");
-        response.setHeader("Content-Type", "application/json");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         //Since we don't have a restrict authentication mechanism for spring-webmvc we check if the account is there and redirect to login as per spec
         if (account == null) {

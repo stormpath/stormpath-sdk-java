@@ -35,6 +35,7 @@ import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -106,7 +107,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             //updated from SC_BAD_REQUEST to SC_UNAUTHORIZED per https://github.com/stormpath/stormpath-sdk-java/issues/681
             // and https://github.com/stormpath/stormpath-sdk-java/issues/674
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setHeader("Cache-Control", "no-store, no-cache");
             response.setHeader("Pragma", "no-cache");
 

@@ -43,6 +43,7 @@ import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderParser;
 import com.stormpath.sdk.servlet.http.authc.DefaultAuthorizationHeaderParser;
@@ -326,7 +327,7 @@ public class AccessTokenController extends AbstractController {
             }
         }
 
-        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setHeader("Cache-Control", "no-store, no-cache");
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Content-Length", String.valueOf(json.length()));
