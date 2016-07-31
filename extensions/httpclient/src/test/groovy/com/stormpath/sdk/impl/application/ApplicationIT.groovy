@@ -71,6 +71,7 @@ import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base64
+import org.testng.Assert
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest

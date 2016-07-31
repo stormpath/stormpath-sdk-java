@@ -352,9 +352,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.idSite.forgotUri'] ?: '/#/forgot' }")
     protected String idSiteForgotUri;
 
-    @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/idSiteResult' }")
-    protected String idSiteResultUri;
-
     @Value("#{ @environment['stormpath.web.idSite.useSubdomain'] }")
     protected Boolean idSiteUseSubdomain;
 
@@ -364,8 +361,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.callback.enabled'] ?: true }")
     protected boolean callbackEnabled;
 
-    @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/samlResult' }")
-    protected String samlResultUri;
+    @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/stormpathCallback' }")
+    protected String callbackUri;
 
     // ================  Me Controller properties ==================
 
@@ -493,11 +490,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             addFilter(mgr, stormpathAccessTokenController(), "accessToken", accessTokenUri);
         }
         if (idSiteEnabled) {
-            addFilter(mgr, stormpathIdSiteResultController(), "idSiteResult", idSiteResultUri);
+            addFilter(mgr, stormpathIdSiteResultController(), "idSiteResult", callbackUri);
         }
         if (callbackEnabled) {
             addFilter(mgr, stormpathSamlController(), "saml", "/saml"); //TODO: why isn't this a configurable uri?
-            addFilter(mgr, stormpathSamlResultController(), "samlResult", samlResultUri);
+            addFilter(mgr, stormpathSamlResultController(), "samlResult", callbackUri);
         }
         if (meEnabled) {
             //me filter is a little different than the others:
@@ -817,7 +814,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Resolver<Account> stormpathAuthorizationHeaderAccountResolver() {
-        return new AuthorizationHeaderAccountResolver(stormpathAuthorizationHeaderAuthenticator(), idSiteResultUri);
+        return new AuthorizationHeaderAccountResolver(stormpathAuthorizationHeaderAuthenticator(), callbackUri);
     }
 
     public Resolver<Account> stormpathCookieAccountResolver() {
@@ -878,9 +875,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         IdSiteController controller = new IdSiteController();
         controller.setServerUriResolver(stormpathServerUriResolver());
         controller.setIdSiteUri(idSiteUri);
-        controller.setCallbackUri(idSiteResultUri);
+        controller.setCallbackUri(callbackUri);
         controller.setAlreadyLoggedInUri(stormpathLoginConfig().getNextUri());
         controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+        controller.setNextUri(stormpathLoginConfig().getNextUri());
         controller.init();
         return controller;
     }
@@ -891,8 +889,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     protected Controller stormpathSamlController() {
         SamlController controller = new SamlController();
         controller.setServerUriResolver(stormpathServerUriResolver());
-        controller.setCallbackUri(samlResultUri);
+        controller.setCallbackUri(callbackUri);
         controller.setAlreadyLoggedInUri(stormpathLoginConfig().getNextUri());
+        controller.setNextUri(stormpathLoginConfig().getNextUri());
         controller.setSamlOrganizationResolver(stormpathSamlOrganizationResolver());
         controller.init();
         return controller;
@@ -965,7 +964,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (idSiteEnabled) {
             IdSiteLogoutController idslc = (IdSiteLogoutController) c;
             idslc.setServerUriResolver(stormpathServerUriResolver());
-            idslc.setIdSiteResultUri(idSiteResultUri);
+            idslc.setIdSiteResultUri(callbackUri);
             idslc.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
             c = idslc;
         }

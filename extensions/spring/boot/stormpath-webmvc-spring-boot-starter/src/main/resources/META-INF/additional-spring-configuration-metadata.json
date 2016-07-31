@@ -404,7 +404,7 @@
       "name": "stormpath.web.idSite.resultUri",
       "type": "java.lang.String",
       "description": "The context-relative path where ID Site will call back into your application in order to inform about the outcome of the Id Site invocation.  Only used when stormpath.web.idSite.enabled is true.",
-      "defaultValue": "/idSiteResult"
+      "defaultValue": "/stormpathCallback"
     },
     {
       "name": "stormpath.web.idSite.useSubdomain",
@@ -428,7 +428,7 @@
       "name": "stormpath.web.callback.uri",
       "type": "java.lang.String",
       "description": "The context-relative path where the SAML provider will call back into your application to inform about the outcome of the authentication attempt. Only relevant when 'stormpath.web.callback.enabled' is true.",
-      "defaultValue": "/samlResult"
+      "defaultValue": "/stormpathCallback"
     },
     {
       "name": "stormpath.web.application.domain",
