@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.filter;
 
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
+import com.stormpath.sdk.servlet.http.MediaType;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +46,7 @@ public class MeFilter extends ControllerFilter {
         @Override
         public String getHeader(String headerName) {
             if ("Accept".equals(headerName)) {
-                return "application/json";
+                return MediaType.APPLICATION_JSON_VALUE;
             }
             return super.getHeader(headerName);
         }

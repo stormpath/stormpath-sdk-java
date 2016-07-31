@@ -366,7 +366,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     }
                 });
             }
-
         }
     }
 
