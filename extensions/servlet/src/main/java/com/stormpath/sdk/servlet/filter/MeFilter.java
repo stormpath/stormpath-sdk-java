@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.servlet.filter;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.http.MediaType;
 
@@ -28,11 +30,21 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class MeFilter extends ControllerFilter {
 
+    private AccountResolver accountResolver = AccountResolver.INSTANCE;
+
     @Override
     protected void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws Exception {
         // addresses https://github.com/stormpath/stormpath-sdk-java/issues/784
-        request = new MeHttpServletRequestWrapper(request);
-        super.filter(request, response, chain);
+        Account account = accountResolver.getAccount(request);
+        if (account != null) {
+            // user logged in, only return JSON
+            request = new MeHttpServletRequestWrapper(request);
+            super.filter(request, response, chain);
+        } else {
+            // user not logged in, allow redirect to login
+            // fixes https://github.com/stormpath/stormpath-sdk-java/issues/835
+            super.filter(request, response, chain);
+        }
     }
 
     private class MeHttpServletRequestWrapper extends HttpServletRequestWrapper {
