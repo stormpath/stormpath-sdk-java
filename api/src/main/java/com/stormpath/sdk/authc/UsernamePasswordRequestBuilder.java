@@ -97,4 +97,13 @@ public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBui
      */
     UsernamePasswordRequestBuilder withResponseOptions(BasicAuthenticationOptions options);
 
+    /**
+     * Sets the {@code Organization} name key to be used as the account store, this property can't be used with the {@code inAccountStore} method.
+     *
+     * @since 1.0.0
+     * @param orgNameKey An organization name key
+     * @return the instance of the method chaining
+     */
+    UsernamePasswordRequestBuilder withOrganizationNameKey(String orgNameKey);
+
 }

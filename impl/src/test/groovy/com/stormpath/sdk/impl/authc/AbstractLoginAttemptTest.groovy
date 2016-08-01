@@ -21,6 +21,9 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createMock
 import static org.easymock.EasyMock.createMockBuilder
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.easymock.EasyMock.verify
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertSame
 
@@ -60,7 +63,7 @@ class AbstractLoginAttemptTest {
         AbstractLoginAttempt attempt = createMockBuilder(AbstractLoginAttempt.class).withConstructor(internalDataStore).createMock();
 
         attempt.setType(null)
-        assertEquals(attempt.getAccountStore(), null)
+        assertEquals(attempt.getProperty(AbstractLoginAttempt.ACCOUNT_STORE.name), null)
     }
 
     @Test
@@ -69,11 +72,17 @@ class AbstractLoginAttemptTest {
         def internalDataStore = createMock(InternalDataStore)
         AbstractLoginAttempt attempt = createMockBuilder(AbstractLoginAttempt.class).withConstructor(internalDataStore).createMock();
 
-        assertEquals(attempt.getAccountStore(), null)
+        expect(accountStore.getHref()).andReturn("http://someurl.com/").times(2)
+
+        replay accountStore
+
+        assertEquals(attempt.getProperty(AbstractLoginAttempt.ACCOUNT_STORE.name), null)
 
         attempt.setAccountStore(accountStore)
 
-        assertSame(attempt.getAccountStore(), accountStore)
+        assertSame(attempt.getProperty(AbstractLoginAttempt.ACCOUNT_STORE.name).href, accountStore.href)
+
+        verify accountStore
     }
 
 }

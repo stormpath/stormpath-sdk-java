@@ -109,4 +109,11 @@ public interface AuthenticationRequest<P, C> {
      */
     AuthenticationOptions getResponseOptions();
 
+    /**
+     * Returns the {@link com.stormpath.sdk.organization.Organization} name key to be used as the account store.
+     *
+     * @return the organization name key
+     */
+    String getOrganizationNameKey();
+
 }

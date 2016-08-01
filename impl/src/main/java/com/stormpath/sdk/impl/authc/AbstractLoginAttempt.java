@@ -18,9 +18,10 @@ package com.stormpath.sdk.impl.authc;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
-import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.MapProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,10 +29,13 @@ import java.util.Map;
  */
 public abstract class AbstractLoginAttempt extends AbstractResource implements LoginAttempt {
 
+    private static final String HREF = "href";
+    private static final String NAME_KEY = "nameKey";
+
     protected static final StringProperty TYPE = new StringProperty("type");
 
     // INSTANCE RESOURCE REFERENCES:
-    protected static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
+    protected static final MapProperty ACCOUNT_STORE = new MapProperty("accountStore");
 
     public AbstractLoginAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -52,13 +56,20 @@ public abstract class AbstractLoginAttempt extends AbstractResource implements L
     }
 
     @Override
-    public AccountStore getAccountStore() {
-        return getResourceProperty(ACCOUNT_STORE);
+    public void setAccountStore(AccountStore accountStore) {
+        Map<String, String> accountStoreRef = new HashMap<>();
+
+        accountStoreRef.put(HREF, accountStore.getHref());
+
+        setProperty(ACCOUNT_STORE, accountStoreRef);
     }
 
     @Override
-    public void setAccountStore(AccountStore accountStore) {
-        setProperty(ACCOUNT_STORE, accountStore);
-    }
+    public void setOrganizationNameKey(String nameKey) {
+        Map<String, String> accountStoreRef = new HashMap<>();
 
+        accountStoreRef.put(NAME_KEY, nameKey);
+
+        setProperty(ACCOUNT_STORE, accountStoreRef);
+    }
 }
