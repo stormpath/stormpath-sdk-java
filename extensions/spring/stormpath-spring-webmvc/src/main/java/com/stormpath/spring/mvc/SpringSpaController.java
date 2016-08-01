@@ -32,7 +32,9 @@ import java.util.Map;
 
 /**
  * @since 1.0.0
+ * @deprecated
  */
+@Deprecated
 public class SpringSpaController extends AbstractController {
 
     private final Controller delegate;

@@ -63,9 +63,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -91,22 +90,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public void afterPropertiesSet() throws Exception {
         servletContext.setAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY, client);
         servletContext.setAttribute(ApplicationLoader.APP_ATTRIBUTE_NAME, application);
-        //servletContext.setAttribute(ConfigLoader.CONFIG_ATTRIBUTE_NAME, stormpathInternalConfig());
     }
 
-    @SuppressWarnings("SpringFacetCodeInspection")
-    @Configuration
-    public static class StormpathWebMvcStaticResourceConfigurer extends WebMvcConfigurerAdapter {
-
-        @Override
-        public void addResourceHandlers(ResourceHandlerRegistry registry) {
-            registry.addResourceHandler("/assets/css/*stormpath.css")
-                //reference the actual files in the stormpath-sdk-servlet .jar:
-                .addResourceLocations("classpath:/META-INF/resources/assets/css/");
-            registry.addResourceHandler("/assets/js/*stormpath.js")
-                //reference the actual files in the stormpath-sdk-servlet .jar:
-                .addResourceLocations("classpath:/META-INF/resources/assets/js/");
-        }
+    @Bean
+    @Override
+    public HandlerMapping stormpathStaticResourceHandlerMapping() {
+        return super.stormpathStaticResourceHandlerMapping();
     }
 
     @Bean

@@ -39,7 +39,9 @@ import java.util.Map;
  * Spring environments.</p>
  *
  * @since 1.0.RC4
+ * @deprecated
  */
+@Deprecated
 public class SpringController extends AbstractController {
 
     private static final Logger log = LoggerFactory.getLogger(SpringController.class);

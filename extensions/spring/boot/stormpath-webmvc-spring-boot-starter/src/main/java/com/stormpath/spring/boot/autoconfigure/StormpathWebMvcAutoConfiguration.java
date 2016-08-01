@@ -79,9 +79,12 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
+import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -114,6 +117,13 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @Override
     public ApplicationResolver stormpathApplicationResolver() {
         return super.stormpathApplicationResolver();
+    }
+
+    @Override
+    @Bean
+    @ConditionalOnProperty(value = "stormpath.web.assets.enabled", matchIfMissing = true)
+    public HandlerMapping stormpathStaticResourceHandlerMapping() {
+        return super.stormpathStaticResourceHandlerMapping();
     }
 
     @Bean

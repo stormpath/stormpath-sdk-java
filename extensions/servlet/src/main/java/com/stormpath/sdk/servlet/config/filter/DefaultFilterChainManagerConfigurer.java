@@ -19,10 +19,13 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.UriCleaner;
+import com.stormpath.sdk.servlet.config.impl.ConfigReader;
 import com.stormpath.sdk.servlet.config.impl.DefaultUriCleaner;
+import com.stormpath.sdk.servlet.config.impl.ExpressionConfigReader;
 import com.stormpath.sdk.servlet.filter.DefaultFilter;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
 
+import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.LinkedHashMap;
@@ -56,6 +59,12 @@ public class DefaultFilterChainManagerConfigurer {
 
         //Too much copy-and-paste. YUCK.
         //TODO: refactor this method to be more generic
+
+        ConfigReader reader = new ExpressionConfigReader(servletContext, config);
+
+        boolean assetsEnabled = reader.getBoolean("stormpath.web.assets.enabled");
+        boolean jsEnabled = reader.getBoolean("stormpath.web.assets.js.enabled");
+        boolean cssEnabled = reader.getBoolean("stormpath.web.assets.css.enabled");
 
         //Ensure handlers are registered:
         String loginUrl = config.getLoginConfig().getUri();
@@ -252,6 +261,18 @@ public class DefaultFilterChainManagerConfigurer {
                 }
 
                 patternChains.put(uriPattern, chainDefinition);
+            }
+        }
+
+        //https://github.com/stormpath/stormpath-sdk-java/issues/765
+        if (assetsEnabled && (jsEnabled || cssEnabled)) {
+            if (jsEnabled) {
+                mgr.createChain("/assets/js/stormpath.js", "staticResource");
+            }
+            if (cssEnabled) {
+                mgr.createChain("/assets/css/stormpath.css", "staticResource");
+                mgr.createChain("/assets/css/custom.stormpath.css", "staticResource");
+                mgr.createChain("/assets/css/override.stormpath.css", "staticResource");
             }
         }
 
