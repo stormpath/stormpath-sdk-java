@@ -190,26 +190,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
     protected String meUri;
 
-    // fix for https://github.com/stormpath/stormpath-sdk-java/issues/822
-    @Value("#{ @environment['stormpath.web.jsp.base.path'] ?: '/WEB-INF/jsp/stormpath/' }")
-    protected String jspBasePath;
-
-    @Value("#{ @environment['stormpath.web.jsp.login.path'] ?: '/login.jsp' }")
-    protected String jspLoginPath;
-
-    @Value("#{ @environment['stormpath.web.jsp.register.path'] ?: '/register.jsp' }")
-    protected String jspRegisterPath;
-
-    @Value("#{ @environment['stormpath.web.jsp.forgot.path'] ?: '/forgot-password.jsp' }")
-    protected String jspForgotPath;
-
-    @Value("#{ @environment['stormpath.web.jsp.change.path'] ?: '/change-password.jsp' }")
-    protected String jspChangePath;
-
-    @Value("#{ @environment['stormpath.web.jsp.verify.path'] ?: '/verify.jsp' }")
-    protected String jspVerifyPath;
-
-
     @Autowired(required = false)
     @Qualifier("loginPreHandler")
     protected WebHandler loginPreHandler;
@@ -289,8 +269,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http
                     .authorizeRequests()
                     .antMatchers(loginUriMatch).permitAll()
-                    // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(jspBasePath + jspLoginPath).permitAll()
                     .antMatchers(googleCallbackUri).permitAll()
                     .antMatchers(githubCallbackUri).permitAll()
                     .antMatchers(facebookCallbackUri).permitAll()
@@ -306,7 +284,10 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http.authorizeRequests()
                 .antMatchers("/assets/css/stormpath.css").permitAll()
                 .antMatchers("/assets/css/custom.stormpath.css").permitAll()
-                .antMatchers("/assets/js/stormpath.js").permitAll();
+                .antMatchers("/assets/js/stormpath.js").permitAll()
+                // fix for https://github.com/stormpath/stormpath-sdk-java/issues/822
+                .antMatchers("/WEB-INF/jsp/stormpath/**").permitAll();
+
         }
 
         if (idSiteEnabled || callbackEnabled || stormpathWebEnabled) {
@@ -327,28 +308,16 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             }
 
             if (forgotEnabled) {
-                http.authorizeRequests()
-                    .antMatchers(forgotUri).permitAll()
-                    // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(jspBasePath + jspForgotPath).permitAll();
+                http.authorizeRequests().antMatchers(forgotUri).permitAll();
             }
             if (changeEnabled) {
-                http.authorizeRequests()
-                    .antMatchers(changeUri).permitAll()
-                    // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(jspBasePath + jspChangePath).permitAll();
+                http.authorizeRequests().antMatchers(changeUri).permitAll();
             }
             if (registerEnabled) {
-                http.authorizeRequests()
-                    .antMatchers(registerUri).permitAll()
-                    // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(jspBasePath + jspRegisterPath).permitAll();
+                http.authorizeRequests().antMatchers(registerUri).permitAll();
             }
             if (verifyEnabled) {
-                http.authorizeRequests()
-                    .antMatchers(verifyUri).permitAll()
-                    // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(jspBasePath + jspVerifyPath).permitAll();
+                http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
             if (accessTokenEnabled) {
                 if (!callbackEnabled && !idSiteEnabled && !loginEnabled) {
