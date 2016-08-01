@@ -36,6 +36,7 @@ import com.stormpath.sdk.servlet.config.filter.MeFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.RegisterFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.SamlFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.SamlResultFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.StaticResourceFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.VerifyFilterFactory;
 import com.stormpath.sdk.servlet.filter.account.AccountAuthorizationFilter;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
@@ -65,6 +66,7 @@ public enum DefaultFilter {
     register(ControllerFilter.class, RegisterFilterFactory.class),
     saml(ControllerFilter.class, SamlFilterFactory.class),
     samlResult(ControllerFilter.class, SamlResultFilterFactory.class),
+    staticResource(StaticResourceFilter.class, StaticResourceFilterFactory.class),
     unauthorized(UnauthorizedFilter.class, null),
     verify(ControllerFilter.class, VerifyFilterFactory.class),
     idSite(ControllerFilter.class, IDSiteLoginFilterFactory.class),

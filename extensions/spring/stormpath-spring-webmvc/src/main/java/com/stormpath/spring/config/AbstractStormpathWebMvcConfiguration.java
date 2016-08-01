@@ -146,10 +146,11 @@ import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
 import com.stormpath.spring.context.CompositeMessageSource;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
+import com.stormpath.spring.mvc.DisabledHandlerMapping;
 import com.stormpath.spring.mvc.ForgotPasswordControllerConfig;
-import com.stormpath.spring.mvc.MessageContextRegistrar;
 import com.stormpath.spring.mvc.LoginControllerConfig;
 import com.stormpath.spring.mvc.LogoutControllerConfig;
+import com.stormpath.spring.mvc.MessageContextRegistrar;
 import com.stormpath.spring.mvc.RegisterControllerConfig;
 import com.stormpath.spring.mvc.SingleNamedViewResolver;
 import com.stormpath.spring.mvc.SpringView;
@@ -164,6 +165,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DelegatingMessageSource;
@@ -173,12 +175,15 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -257,14 +262,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.request.application.attributeNames'] ?: 'application' }")
     protected String requestApplicationAttributeNames;
 
-    //By default, we want the the RequestMappingHandlerMapping to take precedence over this HandlerMapping: this
-    //allows app developers to override any of the Stormpath default controllers by creating their own
-    //@Controller class at the same URI path.
-    //Spring Boot sets the default RequestMappingHandlerMapping's order to be zero, so we'll add a little
-    //(lower numbers have higher precedence):
-    @Value("#{ @environment['stormpath.web.handlerMapping.order'] ?: 10 }")
-    protected int handlerMappingOrder;
-
     @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
     protected boolean csrfTokenEnabled;
 
@@ -299,6 +296,23 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.matchAfter'] ?: false }")
     protected boolean stormpathFilterMatchAfter;
+
+    // ================  Static resources support ===================
+
+    @Value("#{ @environment['stormpath.web.assets.handlerMapping.order'] ?: T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE + 2}")
+    protected int staticResourceHandlerMappingOrder = Integer.MIN_VALUE;
+
+    @Value("#{ @environment['stormpath.web.assets.enabled'] ?: true}")
+    protected boolean assetsEnabled;
+
+    @Value("#{ @environment['stormpath.web.assets.defaultServletName'] ?: null}")
+    protected String defaultServletName;
+
+    @Value("#{ @environment['stormpath.web.assets.js.enabled'] ?: true}")
+    protected boolean jsEnabled;
+
+    @Value("#{ @environment['stormpath.web.assets.css.enabled'] ?: true}")
+    protected boolean cssEnabled;
 
     // ================  'Head' view template properties  ===================
 
@@ -437,6 +451,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     protected ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
+    protected ApplicationContext applicationContext;
+
+    @Autowired
     protected Environment environment;
 
     @Autowired
@@ -460,6 +477,42 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Autowired //all view resolvers in the spring app context. key: bean name, value: resolver
     private Map<String, org.springframework.web.servlet.ViewResolver> viewResolvers;
+
+    private static class AccessibleResourceHandlerRegistry extends ResourceHandlerRegistry {
+        public AccessibleResourceHandlerRegistry(ApplicationContext applicationContext, ServletContext servletContext) {
+            super(applicationContext, servletContext);
+        }
+
+        public HandlerMapping toHandlerMapping() { //make the `getHandlerMapping()` method accessible:
+            return getHandlerMapping();
+        }
+    }
+
+    //https://github.com/stormpath/stormpath-sdk-java/issues/765
+    public HandlerMapping stormpathStaticResourceHandlerMapping() {
+
+        if (!assetsEnabled || (!cssEnabled && !jsEnabled)) {
+            return new DisabledHandlerMapping();
+        }
+
+        AccessibleResourceHandlerRegistry registry =
+            new AccessibleResourceHandlerRegistry(applicationContext, servletContext);
+        registry.setOrder(staticResourceHandlerMappingOrder);
+
+        if (cssEnabled) {
+            registry.addResourceHandler("/assets/css/*stormpath.css")
+                //reference the actual files in the stormpath-sdk-servlet .jar:
+                .addResourceLocations("classpath:/META-INF/resources/assets/css/");
+        }
+
+        if (jsEnabled) {
+            registry.addResourceHandler("/assets/js/*stormpath.js")
+                //reference the actual files in the stormpath-sdk-servlet .jar:
+                .addResourceLocations("classpath:/META-INF/resources/assets/js/");
+        }
+
+        return registry.toHandlerMapping();
+    }
 
     private void addRoutes(final DefaultFilterChainManager mgr) throws ServletException {
 
@@ -1034,7 +1087,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Set<String> stormpathRequestClientAttributeNames() {
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set = new LinkedHashSet<>();
         set.addAll(Strings.commaDelimitedListToSet(requestClientAttributeNames));
         //we always want the client to be available as an attribute by it's own class name:
         set.add(Client.class.getName());
@@ -1042,7 +1095,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Set<String> stormpathRequestApplicationAttributeNames() {
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set = new LinkedHashSet<>();
         set.addAll(Strings.commaDelimitedListToSet(requestApplicationAttributeNames));
         set.add(Application.class.getName());
         return set;

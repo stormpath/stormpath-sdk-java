@@ -91,7 +91,8 @@ public class DefaultFilterChainManager implements FilterChainManager {
         }
 
         FilterBuilder builder = Filters.builder().setServletContext(servletContext).setName(name);
-        if (Strings.hasText(config)) {
+        boolean hasPathConfig = Strings.hasText(config);
+        if (hasPathConfig) {
             builder.setPathConfig(config);
         }
 

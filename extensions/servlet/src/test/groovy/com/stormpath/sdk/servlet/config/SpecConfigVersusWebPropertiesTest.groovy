@@ -77,7 +77,7 @@ class SpecConfigVersusWebPropertiesTest {
             specProperties.containsKey(k) ? null : k
         }
 
-        def expected_diff_size = 79
+        def expected_diff_size = 80
 
         if (diff.size != expected_diff_size) {
             println "It looks like a property was added or removed from the Framework Spec or web.stormpath.properties."
