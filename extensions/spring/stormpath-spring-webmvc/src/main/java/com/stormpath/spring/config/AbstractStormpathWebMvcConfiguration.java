@@ -175,7 +175,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -1170,6 +1169,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     protected MessageSource createI18nPropertiesMessageSource() {
         ResourceBundleMessageSource src = new ResourceBundleMessageSource();
+        // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/811
+        // Force same behavior as servlet i18n - all single quotes need to have double quotes.
+        // http://stackoverflow.com/a/19187306/65681
+        src.setAlwaysUseMessageFormat(true);
         src.setBasename(I18N_PROPERTIES_BASENAME);
         src.setDefaultEncoding("UTF-8");
         return src;
