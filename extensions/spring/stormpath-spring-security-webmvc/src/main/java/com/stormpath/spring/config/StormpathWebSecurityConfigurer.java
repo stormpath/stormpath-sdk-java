@@ -190,6 +190,26 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
     protected String meUri;
 
+    // fix for https://github.com/stormpath/stormpath-sdk-java/issues/822
+    @Value("#{ @environment['stormpath.web.jsp.base.path'] ?: '/WEB-INF/jsp/stormpath/' }")
+    protected String jspBasePath;
+
+    @Value("#{ @environment['stormpath.web.jsp.login.path'] ?: '/login.jsp' }")
+    protected String jspLoginPath;
+
+    @Value("#{ @environment['stormpath.web.jsp.register.path'] ?: '/register.jsp' }")
+    protected String jspRegisterPath;
+
+    @Value("#{ @environment['stormpath.web.jsp.forgot.path'] ?: '/forgot-password.jsp' }")
+    protected String jspForgotPath;
+
+    @Value("#{ @environment['stormpath.web.jsp.change.path'] ?: '/change-password.jsp' }")
+    protected String jspChangePath;
+
+    @Value("#{ @environment['stormpath.web.jsp.verify.path'] ?: '/verify.jsp' }")
+    protected String jspVerifyPath;
+
+
     @Autowired(required = false)
     @Qualifier("loginPreHandler")
     protected WebHandler loginPreHandler;
@@ -197,16 +217,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Autowired(required = false)
     @Qualifier("loginPostHandler")
     protected WebHandler loginPostHandler;
-
-    // fix for https://github.com/stormpath/stormpath-sdk-java/issues/822
-    // values hardcoded below because while the uri used (like /login) can be
-    // changed via config, the jsp templates themselves are fixed
-    private final String JSP_BASE_PATH = "/WEB-INF/jsp/stormpath/";
-    private final String JSP_LOGIN_PATH = "/login.jsp";
-    private final String JSP_REGISTER_PATH = "/register.jsp";
-    private final String JSP_VERIFY_PATH = "/verify.jsp";
-    private final String JSP_FORGOT_PATH = "/forgot-password.jsp";
-    private final String JSP_CHANGE_PATH = "/change-password.jsp";
 
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
@@ -280,7 +290,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                     .authorizeRequests()
                     .antMatchers(loginUriMatch).permitAll()
                     // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(JSP_BASE_PATH + JSP_LOGIN_PATH).permitAll()
+                    .antMatchers(jspBasePath + jspLoginPath).permitAll()
                     .antMatchers(googleCallbackUri).permitAll()
                     .antMatchers(githubCallbackUri).permitAll()
                     .antMatchers(facebookCallbackUri).permitAll()
@@ -320,25 +330,25 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http.authorizeRequests()
                     .antMatchers(forgotUri).permitAll()
                     // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(JSP_BASE_PATH + JSP_FORGOT_PATH).permitAll();
+                    .antMatchers(jspBasePath + jspForgotPath).permitAll();
             }
             if (changeEnabled) {
                 http.authorizeRequests()
                     .antMatchers(changeUri).permitAll()
                     // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(JSP_BASE_PATH + JSP_CHANGE_PATH).permitAll();
+                    .antMatchers(jspBasePath + jspChangePath).permitAll();
             }
             if (registerEnabled) {
                 http.authorizeRequests()
                     .antMatchers(registerUri).permitAll()
                     // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(JSP_BASE_PATH + JSP_REGISTER_PATH).permitAll();
+                    .antMatchers(jspBasePath + jspRegisterPath).permitAll();
             }
             if (verifyEnabled) {
                 http.authorizeRequests()
                     .antMatchers(verifyUri).permitAll()
                     // fixes https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers(JSP_BASE_PATH + JSP_VERIFY_PATH).permitAll();
+                    .antMatchers(jspBasePath + jspVerifyPath).permitAll();
             }
             if (accessTokenEnabled) {
                 if (!callbackEnabled && !idSiteEnabled && !loginEnabled) {
