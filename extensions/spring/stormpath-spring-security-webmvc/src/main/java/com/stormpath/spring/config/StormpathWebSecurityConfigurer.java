@@ -35,9 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -171,7 +169,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/idSiteResult' }")
     protected String idSiteResultUri;
 
-    @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/samlResult' }")
+    @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/stormpathCallback' }")
     protected String samlResultUri;
 
     @Value("#{ @environment['stormpath.web.social.google.uri'] ?: '/callbacks/google' }")
@@ -286,7 +284,10 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             http.authorizeRequests()
                 .antMatchers("/assets/css/stormpath.css").permitAll()
                 .antMatchers("/assets/css/custom.stormpath.css").permitAll()
-                .antMatchers("/assets/js/stormpath.js").permitAll();
+                .antMatchers("/assets/js/stormpath.js").permitAll()
+                // fix for https://github.com/stormpath/stormpath-sdk-java/issues/822
+                .antMatchers("/WEB-INF/jsp/stormpath/**").permitAll();
+
         }
 
         if (idSiteEnabled || callbackEnabled || stormpathWebEnabled) {
@@ -316,8 +317,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http.authorizeRequests().antMatchers(registerUri).permitAll();
             }
             if (verifyEnabled) {
-                http.authorizeRequests()
-                    .antMatchers(verifyUri).permitAll();
+                http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
             if (accessTokenEnabled) {
                 if (!callbackEnabled && !idSiteEnabled && !loginEnabled) {

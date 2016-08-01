@@ -56,12 +56,12 @@ public class SamlResultController extends CallbackController {
         SamlCallbackHandler samlCallbackHandler = app.newSamlCallbackHandler(request).setResultListener(new SamlResultListener() {
             @Override
             public void onAuthenticated(com.stormpath.sdk.idsite.AuthenticationResult result) {
-                viewModel[0] = SamlResultController.this.onAuthentication(request, response, app, result);
+                viewModel[0] = SamlResultController.this.onAuthentication(request, response, result);
             }
 
             @Override
             public void onLogout(LogoutResult result) {
-                viewModel[0] = SamlResultController.this.onLogout(request, response, app, result);
+                viewModel[0] = SamlResultController.this.onLogout(request, response, result);
 
             }
         });

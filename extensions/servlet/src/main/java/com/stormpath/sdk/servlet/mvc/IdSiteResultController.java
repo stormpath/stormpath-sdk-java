@@ -53,8 +53,6 @@ import java.util.List;
 public class IdSiteResultController extends CallbackController {
 
     private String registerNextUri = null;
-
-    private AccessTokenResultFactory resultFactory; //since 1.0.0
     private List<IdSiteResultListener> idSiteResultListeners = new ArrayList<IdSiteResultListener>();
 
     public void addIdSiteResultListener(IdSiteResultListener resultListener) {
@@ -89,17 +87,17 @@ public class IdSiteResultController extends CallbackController {
         IdSiteCallbackHandler idSiteCallbackHandler = app.newIdSiteCallbackHandler(request).setResultListener(new IdSiteResultListener() {
             @Override
             public void onRegistered(RegistrationResult result) {
-                viewModel[0] = IdSiteResultController.this.onRegistration(request, response, app, result);
+                viewModel[0] = IdSiteResultController.this.onRegistration(request, response, result);
             }
 
             @Override
             public void onAuthenticated(com.stormpath.sdk.idsite.AuthenticationResult result) {
-                viewModel[0] = IdSiteResultController.this.onAuthentication(request, response, app, result);
+                viewModel[0] = IdSiteResultController.this.onAuthentication(request, response, result);
             }
 
             @Override
             public void onLogout(LogoutResult result) {
-                viewModel[0] = IdSiteResultController.this.onLogout(request, response, app, result);
+                viewModel[0] = IdSiteResultController.this.onLogout(request, response, result);
 
             }
         });
@@ -113,8 +111,7 @@ public class IdSiteResultController extends CallbackController {
         return viewModel[0];
     }
 
-    protected ViewModel onRegistration(final HttpServletRequest request, final HttpServletResponse response,
-                                       Application application, RegistrationResult result) {
+    private ViewModel onRegistration(final HttpServletRequest request, final HttpServletResponse response, RegistrationResult result) {
 
         final Account account = result.getAccount();
 
@@ -135,87 +132,8 @@ public class IdSiteResultController extends CallbackController {
         return new DefaultViewModel(registerNextUri).setRedirect(true);
     }
 
-    protected RegisteredAccountRequestEvent createRegisteredEvent(HttpServletRequest request,
-                                                                  HttpServletResponse response, Account account) {
+    private RegisteredAccountRequestEvent createRegisteredEvent(HttpServletRequest request,
+                                                                HttpServletResponse response, Account account) {
         return new DefaultRegisteredAccountRequestEvent(request, response, account);
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    private AccessTokenResult getAccessToken(Account account, HttpServletRequest request, HttpServletResponse response)  {
-
-        //code copied from AccessTokenController#clientCredentialsAuthenticationRequest
-
-        Client client = ClientResolver.INSTANCE.getClient(request);
-        Application application = ApplicationResolver.INSTANCE.getApplication(request);
-        JwtBuilder jwtBuilder = Jwts.builder()
-                .setSubject(account.getHref())
-                .setIssuer(application.getHref())
-                .setAudience(client.getApiKey().getId())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60)))
-                .claim("status", "AUTHENTICATED");
-        String secret = client.getApiKey().getSecret();
-        String token = jwtBuilder.signWith(SignatureAlgorithm.HS512, secret.getBytes(Charset.forName("UTF-8"))).compact();
-
-        IdSiteAuthenticationRequest idSiteRequest = OAuthRequests.IDSITE_AUTHENTICATION_REQUEST.builder().setToken(token).build();
-        final OAuthGrantRequestAuthenticationResult origResult = Authenticators.ID_SITE_AUTHENTICATOR.forApplication(application).authenticate(idSiteRequest);
-
-        OAuthGrantRequestAuthenticationResult result = new OAuthGrantRequestAuthenticationResult() {
-            @Override
-            public String getAccessTokenString() {
-                return origResult.getAccessTokenString();
-            }
-            @Override
-            public AccessToken getAccessToken() {
-                return origResult.getAccessToken();
-            }
-            @Override
-            public String getRefreshTokenString() {
-                return origResult.getRefreshTokenString();
-            }
-            @Override
-            public RefreshToken getRefreshToken() {
-                return origResult.getRefreshToken();
-            }
-            @Override
-            public String getAccessTokenHref() {
-                return origResult.getAccessTokenHref();
-            }
-            @Override
-            public String getTokenType() {
-                return origResult.getTokenType();
-            }
-            @Override
-            public long getExpiresIn() {
-                return origResult.getExpiresIn();
-            }
-        };
-
-        return createAccessTokenResult(request, response, result);
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public void setAccessTokenResultFactory(AccessTokenResultFactory resultFactory) {
-        this.resultFactory = resultFactory;
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public AccessTokenResultFactory getAccessTokenResultFactory() {
-        return resultFactory;
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    protected AccessTokenResult createAccessTokenResult(final HttpServletRequest request,
-                                                        final HttpServletResponse response,
-                                                        final OAuthGrantRequestAuthenticationResult result) {
-        return getAccessTokenResultFactory().createAccessTokenResult(request, response, result);
     }
 }

@@ -91,8 +91,8 @@ public abstract class CallbackController extends AbstractController {
         return ApplicationResolver.INSTANCE.getApplication(request);
     }
 
-    protected ViewModel onAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                         Application application,
+    protected ViewModel onAuthentication(HttpServletRequest request,
+                                         HttpServletResponse response,
                                          com.stormpath.sdk.idsite.AuthenticationResult result) {
 
         //simulate a result for the benefit of the 'saveResult' method signature:
@@ -104,7 +104,8 @@ public abstract class CallbackController extends AbstractController {
         return new DefaultViewModel(loginNextUri).setRedirect(true);
     }
 
-    protected ViewModel onLogout(HttpServletRequest request, HttpServletResponse response, Application application,
+    protected ViewModel onLogout(HttpServletRequest request,
+                                 HttpServletResponse response,
                                  LogoutResult result) {
 
         //let the IdSiteLogoutController know this is a reply from ID site and to not redirect to ID site again:
