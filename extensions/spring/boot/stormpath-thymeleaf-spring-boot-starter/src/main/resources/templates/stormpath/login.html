@@ -83,8 +83,8 @@
                         <span th:text="${accountStore.provider.providerId}">|Provider|</span>
                     </th:block>
                     <th:block th:if="${accountStore.provider.providerId == 'saml'}">
-                        <i class="fa fa-lock"></i>
-                        <span th:text="${accountStore.name}">|SAML|</span>
+                        <span class="fa fa-lock"></span>
+                        <span th:text="${accountStore.name}" th:remove="tag">|SAML|</span>
                     </th:block>
                     </button>
                 </div>
