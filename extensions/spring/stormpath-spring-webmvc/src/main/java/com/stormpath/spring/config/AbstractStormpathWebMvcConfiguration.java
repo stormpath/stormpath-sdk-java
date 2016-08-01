@@ -1309,7 +1309,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         controller.setLogoutController(stormpathLogoutController());
         controller.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         controller.setEventPublisher(stormpathRequestEventPublisher());
-        controller.setAccessTokenResultFactory(stormpathAccessTokenResultFactory());
         if (springSecurityIdSiteResultListener != null) {
             controller.addIdSiteResultListener(springSecurityIdSiteResultListener);
         }
