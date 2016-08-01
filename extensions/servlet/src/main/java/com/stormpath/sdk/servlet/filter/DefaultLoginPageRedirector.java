@@ -55,15 +55,17 @@ public class DefaultLoginPageRedirector implements LoginPageRedirector {
         }
 
         String method = request.getMethod();
+        String nextUri = loginUri;
+
         if (method.equalsIgnoreCase("GET")) {
 
             String requestURI = request.getRequestURI() + (Strings.hasText(request.getQueryString()) ? "?" + request.getQueryString() : "");
 
             String encodedCurrentUrlString = URLEncoder.encode(requestURI, "UTF-8");
 
-            loginUri += "?next=" + encodedCurrentUrlString;
+            nextUri += "?next=" + encodedCurrentUrlString;
         }
 
-        ServletUtils.issueRedirect(request, response, loginUri, null, true, true);
+        ServletUtils.issueRedirect(request, response, nextUri, null, true, true);
     }
 }
