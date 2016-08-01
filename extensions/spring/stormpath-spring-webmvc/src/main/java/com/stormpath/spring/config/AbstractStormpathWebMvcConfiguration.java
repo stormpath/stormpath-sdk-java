@@ -175,7 +175,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -1043,27 +1042,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         return init(c);
     }
-
-    /*
-    private Controller createSpaAwareSpringController(com.stormpath.sdk.servlet.mvc.Controller controller) {
-
-        Controller c = createSpringController(controller);
-
-        if (produces.contains(MediaType.APPLICATION_JSON.toString())) {
-            c = new SpringSpaController(c, jsonView, stormpathProducedMediaTypes());
-        }
-
-        return c;
-    }
-
-    private org.springframework.web.servlet.mvc.Controller createSpringController(com.stormpath.sdk.servlet.mvc.Controller controller) {
-        SpringController springController = new SpringController(controller);
-        if (urlPathHelper != null) {
-            springController.setUrlPathHelper(urlPathHelper);
-        }
-        return springController;
-    }
-    */
 
     public LocaleResolver stormpathSpringLocaleResolver() {
         if (localeResolver != null) {
