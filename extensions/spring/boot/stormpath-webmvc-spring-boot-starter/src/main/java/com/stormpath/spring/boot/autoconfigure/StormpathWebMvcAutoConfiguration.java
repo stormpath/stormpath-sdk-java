@@ -69,8 +69,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -79,12 +79,10 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
-import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -564,6 +562,8 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
 
             ResourceBundleMessageSource src = new ResourceBundleMessageSource();
             String[] basenames = list.toArray(new String[list.size()]);
+            // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/811
+            src.setAlwaysUseMessageFormat(true);
             src.setBasenames(basenames);
             src.setDefaultEncoding("UTF-8");
             return src;
@@ -592,6 +592,8 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
 
             ResourceBundleMessageSource src = new ResourceBundleMessageSource();
             String[] basenames = list.toArray(new String[list.size()]);
+            // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/811
+            src.setAlwaysUseMessageFormat(true);
             src.setBasenames(basenames);
             src.setDefaultEncoding("UTF-8");
             return src;
@@ -614,7 +616,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
             }
         };
 
-        return new ServletListenerRegistrationBean<ServletContextListener>(listener);
+        return new ServletListenerRegistrationBean<>(listener);
     }
 
     @Bean
