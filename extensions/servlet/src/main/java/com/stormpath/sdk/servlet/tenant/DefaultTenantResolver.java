@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @since 1.0.0
  */
-public class OrganizationTenantResolver implements TenantResolver<Organization> {
+public class DefaultTenantResolver implements TenantResolver<Organization> {
 
     Resolver<String> organizationNameKeyResolver;
     ApplicationResolver applicationResolver = ApplicationResolver.INSTANCE;

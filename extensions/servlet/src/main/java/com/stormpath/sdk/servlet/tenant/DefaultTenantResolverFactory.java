@@ -25,12 +25,12 @@ import javax.servlet.ServletContext;
 /**
  * @since 1.0.0
  */
-public class DefaultOrganizationTenantResolverFactory extends ConfigSingletonFactory<Resolver<Organization>> {
+public class DefaultTenantResolverFactory extends ConfigSingletonFactory<Resolver<Organization>> {
 
     protected Resolver<Organization> createInstance(ServletContext servletContext) throws Exception {
-        OrganizationTenantResolver organizationTenantResolver = new OrganizationTenantResolver();
+        DefaultTenantResolver defaultTenantResolver = new DefaultTenantResolver();
         DefaultOrganizationNameKeyResolver organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
-        organizationTenantResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
-        return organizationTenantResolver;
+        defaultTenantResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
+        return defaultTenantResolver;
     }
 }

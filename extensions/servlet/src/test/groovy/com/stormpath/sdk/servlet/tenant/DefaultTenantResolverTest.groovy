@@ -36,7 +36,7 @@ import static org.testng.Assert.assertEquals
 /**
  * @since 1.0.0
  */
-class OrganizationTenantResolverTest {
+class DefaultTenantResolverTest {
 
     @Test
     void testOrganizationExistInAccountStores() {
@@ -76,7 +76,7 @@ class OrganizationTenantResolverTest {
 
         def organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
         organizationNameKeyResolver.setSubdomainResolver(new SubdomainResolver())
-        def resolver = new OrganizationTenantResolver();
+        def resolver = new DefaultTenantResolver();
         resolver.setOrganizationNameKeyResolver(organizationNameKeyResolver)
 
         assertEquals(resolver.get(request, null), organization) //expected Organization is 'organization'
@@ -107,7 +107,7 @@ class OrganizationTenantResolverTest {
 
         def organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
         organizationNameKeyResolver.setSubdomainResolver(new SubdomainResolver())
-        def resolver = new OrganizationTenantResolver();
+        def resolver = new DefaultTenantResolver();
         resolver.setOrganizationNameKeyResolver(organizationNameKeyResolver)
 
         assertEquals(resolver.get(request, null), null)  //expected Organization is null
@@ -125,7 +125,7 @@ class OrganizationTenantResolverTest {
 
         def organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
         organizationNameKeyResolver.setSubdomainResolver(new SubdomainResolver())
-        def resolver = new OrganizationTenantResolver();
+        def resolver = new DefaultTenantResolver();
         resolver.setOrganizationNameKeyResolver(organizationNameKeyResolver)
 
         assertEquals(resolver.get(request, null), null)
