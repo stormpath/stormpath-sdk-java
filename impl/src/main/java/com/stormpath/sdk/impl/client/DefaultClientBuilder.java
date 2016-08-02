@@ -23,6 +23,7 @@ import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
 import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.*;
+import com.stormpath.sdk.impl.api.ApiKeyCredentials;
 import com.stormpath.sdk.impl.config.ClientConfiguration;
 import com.stormpath.sdk.impl.config.JSONPropertiesSource;
 import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
@@ -285,7 +286,9 @@ public class DefaultClientBuilder implements ClientBuilder {
             authenticationScheme = AuthenticationSchemes.SAUTHC1;
         }
 
-        return new DefaultClient(this.apiKey, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
+        ClientCredentials clientCredentials = new ApiKeyCredentials(apiKey);
+
+        return new DefaultClient(clientCredentials, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
                 authenticationScheme, this.clientConfig.getConnectionTimeout());
     }
 

@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.saml;
 
-import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.client.ClientCredentials;
+import com.stormpath.sdk.impl.api.ApiKeyCredentials;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.lang.Assert;
@@ -106,7 +106,7 @@ public class DefaultSamlIdpUrlBuilder implements SamlIdpUrlBuilder {
         Date now = new Date();
 
         final ClientCredentials clientCredentials = this.internalDataStore.getClientCredentials();
-        Assert.isInstanceOf(ApiKey.class, clientCredentials);
+        Assert.isInstanceOf(ApiKeyCredentials.class, clientCredentials);
 
         JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setId(jti).setIssuedAt(now).setIssuer(clientCredentials.getId())
                 .setSubject(this.applicationHref);

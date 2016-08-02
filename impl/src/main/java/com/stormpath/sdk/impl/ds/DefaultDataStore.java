@@ -112,16 +112,16 @@ public class DefaultDataStore implements InternalDataStore {
      */
     public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
-    public DefaultDataStore(RequestExecutor requestExecutor, ApiKey apiKey) {
-        this(requestExecutor, DEFAULT_API_VERSION, apiKey);
+    public DefaultDataStore(RequestExecutor requestExecutor, ClientCredentials clientCredentials) {
+        this(requestExecutor, DEFAULT_API_VERSION, clientCredentials);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKey apiKey) {
-        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKey);
+    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ClientCredentials clientCredentials) {
+        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, clientCredentials);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey) {
-        this(requestExecutor, baseUrl, apiKey, new DisabledCacheManager());
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials) {
+        this(requestExecutor, baseUrl, clientCredentials, new DisabledCacheManager());
     }
 
     public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials credentials, CacheManager cacheManager) {

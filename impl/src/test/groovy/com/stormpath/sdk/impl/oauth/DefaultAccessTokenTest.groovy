@@ -17,9 +17,9 @@ package com.stormpath.sdk.impl.oauth
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.impl.account.DefaultAccount
+import com.stormpath.sdk.impl.api.ApiKeyCredentials
 import com.stormpath.sdk.impl.application.DefaultApplication
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.DateProperty
@@ -70,12 +70,12 @@ class DefaultAccessTokenTest {
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
 
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
-        expect(apiKey.getSecret()).andReturn(secret)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
+        expect(apiKeyCredentials.getSecret()).andReturn(secret)
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         def defaultAccessToken = new DefaultAccessToken(internalDataStore, properties)
 
@@ -91,7 +91,7 @@ class DefaultAccessTokenTest {
         assertTrue(propertyDescriptors.get("account") instanceof ResourceReference && propertyDescriptors.get("account").getType().equals(Account))
 
 
-        verify internalDataStore, apiKey
+        verify internalDataStore, apiKeyCredentials
     }
 
     @Test
@@ -119,16 +119,16 @@ class DefaultAccessTokenTest {
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
 
-        expect(apiKey.getSecret()).andReturn(secret)
+        expect(apiKeyCredentials.getSecret()).andReturn(secret)
 
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
         expect(internalDataStore.instantiate(Account, properties.account)).andReturn(new DefaultAccount(internalDataStore, properties.account))
         expect(internalDataStore.instantiate(Application, properties.application)).andReturn(new DefaultApplication(internalDataStore, properties.application))
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         def defaultAccessToken = new DefaultAccessToken(internalDataStore, properties)
 
@@ -177,12 +177,12 @@ class DefaultAccessTokenTest {
             ]
 
             def internalDataStore = createStrictMock(InternalDataStore)
-            def apiKey = createStrictMock(ApiKey)
+            def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
 
-            expect(apiKey.getSecret()).andReturn(secret)
-            expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
+            expect(apiKeyCredentials.getSecret()).andReturn(secret)
+            expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
 
-            replay internalDataStore, apiKey
+            replay internalDataStore, apiKeyCredentials
 
             try {
                 new DefaultAccessToken(internalDataStore, properties)
@@ -212,12 +212,12 @@ class DefaultAccessTokenTest {
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
 
-        expect(apiKey.getSecret()).andReturn(secret)
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
+        expect(apiKeyCredentials.getSecret()).andReturn(secret)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         AccessToken accessToken = new DefaultAccessToken(internalDataStore, properties)
         assertEquals(accessToken.getHref(), href)

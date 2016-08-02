@@ -16,7 +16,6 @@
 package com.stormpath.sdk.api;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.client.ClientCredentials;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
@@ -38,8 +37,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * @see #getAccount()
  * @since 1.0.RC
  */
-public interface ApiKey extends Resource, Saveable, Deletable, ClientCredentials {
-    // temporarily extending com.stormpath.sdk.client.ApiKey before deleting it in 1.0 final
+public interface ApiKey extends Resource, Saveable, Deletable {
 
     /**
      * Returns the ApiKey ID that uniquely identifies this ApiKey among all others.

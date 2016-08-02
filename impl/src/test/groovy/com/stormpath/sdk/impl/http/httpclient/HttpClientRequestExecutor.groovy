@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.http.httpclient
 
-import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.ClientCredentials
 import com.stormpath.sdk.client.Proxy

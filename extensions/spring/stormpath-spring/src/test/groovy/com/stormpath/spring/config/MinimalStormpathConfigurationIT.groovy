@@ -73,7 +73,9 @@ class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
         assertEquals c.connectionTimeout, 0
         assertNull c.authenticationScheme
 
-        assertEquals client.dataStore.clientCredentials, apiKey
+        assertEquals client.dataStore.clientCredentials.getId(), apiKey.getId()
+        assertEquals client.dataStore.clientCredentials.getSecret(), apiKey.getSecret()
+
         assertEquals client.dataStore.cacheManager, stormpathCacheManager
         assertTrue stormpathCacheManager instanceof DefaultCacheManager
 

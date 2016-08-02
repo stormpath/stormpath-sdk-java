@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.saml
 
-import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.impl.api.ApiKeyCredentials
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.lang.Strings
 import io.jsonwebtoken.Claims
@@ -80,15 +80,15 @@ public class DefaultSamlIdpUrlBuilderTest {
     void testOnlyCallbackUri() {
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
-        expect(apiKey.getId()).andReturn(apiKeyId)
-        expect(apiKey.getSecret()).andReturn(apiKeySecret)
-        expect(apiKey.getId()).andReturn(apiKeyId)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
+        expect(apiKeyCredentials.getSecret()).andReturn(apiKeySecret)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         def builder = new DefaultSamlIdpUrlBuilder(internalDataStore, "https://test.stormpath.io/v1/applications/jefoifj93riu23ioj", samlProviderEndpoint)
 
@@ -101,22 +101,22 @@ public class DefaultSamlIdpUrlBuilderTest {
         assertClaims(jwt, [iss   : apiKeyId, sub: "https://test.stormpath.io/v1/applications/jefoifj93riu23ioj",
                 cb_uri: "http://samlIdp:8081/index.do"], ["usd", "sof", "path", "state", "onk"])
 
-        verify internalDataStore, apiKey
+        verify internalDataStore, apiKeyCredentials
     }
 
     @Test
     void testBuilderWithPathAndState() {
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
-        expect(apiKey.getId()).andReturn(apiKeyId)
-        expect(apiKey.getSecret()).andReturn(apiKeySecret)
-        expect(apiKey.getId()).andReturn(apiKeyId)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
+        expect(apiKeyCredentials.getSecret()).andReturn(apiKeySecret)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         def builder = new DefaultSamlIdpUrlBuilder(internalDataStore, "https://enterprise.stormpath.io/v1/applications/jefoifj93riu23ioj", samlProviderEndpoint)
 
@@ -129,22 +129,22 @@ public class DefaultSamlIdpUrlBuilderTest {
         assertClaims(jwt, [iss   : apiKeyId, sub: "https://enterprise.stormpath.io/v1/applications/jefoifj93riu23ioj",
                 cb_uri: "http://fooUrl:8081/index.do", path: "/sso-site", state: "someState"], ["usd", "sof", "onk"])
 
-        verify internalDataStore, apiKey
+        verify internalDataStore, apiKeyCredentials
     }
 
     @Test
     void testBuilderWithOrganization() {
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
-        expect(apiKey.getId()).andReturn(apiKeyId)
-        expect(apiKey.getSecret()).andReturn(apiKeySecret)
-        expect(apiKey.getId()).andReturn(apiKeyId)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
+        expect(apiKeyCredentials.getSecret()).andReturn(apiKeySecret)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         def builder = new DefaultSamlIdpUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj", samlProviderEndpoint)
 
@@ -157,22 +157,22 @@ public class DefaultSamlIdpUrlBuilderTest {
         assertClaims(jwt, [iss   : apiKeyId, sub: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
                 cb_uri: "http://fooUrl:8081/index.do", onk: "my-organization"], ["path", "state"])
 
-        verify internalDataStore, apiKey
+        verify internalDataStore, apiKeyCredentials
     }
 
     @Test
     void testBuilderWithSpToken() {
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
-        expect(apiKey.getId()).andReturn(apiKeyId)
-        expect(apiKey.getSecret()).andReturn(apiKeySecret)
-        expect(apiKey.getId()).andReturn(apiKeyId)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
+        expect(apiKeyCredentials.getSecret()).andReturn(apiKeySecret)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         def builder = new DefaultSamlIdpUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj", samlProviderEndpoint)
 
@@ -185,22 +185,22 @@ public class DefaultSamlIdpUrlBuilderTest {
         assertClaims(jwt, [iss   : apiKeyId, sub: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj", sp_token: "anSpToken", unknown: "xyx",
                 cb_uri: "http://fooUrl:8081/index.do", onk: "my-organization"], ["path", "state"])
 
-        verify internalDataStore, apiKey
+        verify internalDataStore, apiKeyCredentials
     }
 
     @Test
     void testBuilderWithPropertiesToOverride() {
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
-        expect(apiKey.getId()).andReturn(apiKeyId)
-        expect(apiKey.getSecret()).andReturn(apiKeySecret)
-        expect(apiKey.getId()).andReturn(apiKeyId)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
+        expect(apiKeyCredentials.getSecret()).andReturn(apiKeySecret)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         def builder = new DefaultSamlIdpUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj", samlProviderEndpoint)
 
@@ -230,7 +230,7 @@ public class DefaultSamlIdpUrlBuilderTest {
         assertNotNull claims.getIssuer()
         assertNotEquals iss, claims.getIssuer()
 
-        verify internalDataStore, apiKey
+        verify internalDataStore, apiKeyCredentials
     }
 
 
@@ -238,15 +238,15 @@ public class DefaultSamlIdpUrlBuilderTest {
     void testBuilderForLogout() {
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
-        expect(apiKey.getId()).andReturn(apiKeyId)
-        expect(apiKey.getSecret()).andReturn(apiKeySecret)
-        expect(apiKey.getId()).andReturn(apiKeyId)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKeyCredentials)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
+        expect(apiKeyCredentials.getSecret()).andReturn(apiKeySecret)
+        expect(apiKeyCredentials.getId()).andReturn(apiKeyId)
 
-        replay internalDataStore, apiKey
+        replay internalDataStore, apiKeyCredentials
 
         def builder = new DefaultSamlIdpUrlBuilder(internalDataStore, "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj", samlProviderEndpoint)
 
@@ -260,7 +260,7 @@ public class DefaultSamlIdpUrlBuilderTest {
         assertClaims(parseClaims(jwt), [iss   : apiKeyId, sub: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
                 cb_uri: "http://fooUrl:8081/index.do", path: "/sso-site", state: "someState"], ["onk", "usd", "sof"])
 
-        verify internalDataStore, apiKey
+        verify internalDataStore, apiKeyCredentials
     }
 
     private void assertClaims(String jwt, Map expected, List notExpected) {
