@@ -31,7 +31,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @EnableStormpath //Stormpath base beans
 @EnableStormpathWebMvc //Stormpath web mvc beans plus out-of-the-box views
-@ComponentScan(basePackages = {"com.stormpath.spring"}) // add basePackages so com.stormpath.spring.errors is scanned for ControllerAdvice-annotated classes
+@ComponentScan
 @PropertySource("classpath:application.properties")
 public class WebAppConfig {
 
