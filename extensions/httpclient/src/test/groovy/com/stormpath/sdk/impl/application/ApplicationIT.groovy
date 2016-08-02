@@ -1878,7 +1878,7 @@ class ApplicationIT extends ClientIT {
         def jwtBeg = urlString.indexOf("accessToken=") + "accessToken=".length()
         def jwt = urlString.substring(jwtBeg)
 
-        Jws<Claims> claims = Jwts.parser().setSigningKey(client.apiKey.secret.bytes).parseClaimsJws(jwt)
+        Jws<Claims> claims = Jwts.parser().setSigningKey(client.clientCredentials.secret.bytes).parseClaimsJws(jwt)
         String jwtCallbackUri = claims.getBody().get("cb_uri")
 
         assertEquals jwtCallbackUri, callbackUri
