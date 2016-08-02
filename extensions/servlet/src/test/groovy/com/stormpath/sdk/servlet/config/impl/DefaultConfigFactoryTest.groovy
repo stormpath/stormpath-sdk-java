@@ -73,13 +73,13 @@ class DefaultConfigFactoryTest {
 
     @Test
     public void testBaseUrlFromEnvironmentVariable() {
-        assertEquals config.get('stormpath.baseUrl'), 'http://api.stormpath.com/v100'
+        assertEquals config.get('stormpath.client.baseUrl'), 'http://api.stormpath.com/v100'
         Map<String, String> env = new HashMap<>()
         def baseUrl = 'http://env.stormpath.com/v2'
-        env.put('STORMPATH_BASEURL', baseUrl)
+        env.put('STORMPATH_CLIENT_BASEURL', baseUrl)
         setEnv(env)
         config = new ConfigLoader().createConfig(new MockServletContext())
-        assertEquals config.get('stormpath.baseUrl'), baseUrl
+        assertEquals config.get('stormpath.client.baseUrl'), baseUrl
     }
 
     @Test
