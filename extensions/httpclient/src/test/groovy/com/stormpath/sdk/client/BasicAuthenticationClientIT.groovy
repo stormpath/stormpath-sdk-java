@@ -15,7 +15,7 @@ class BasicAuthenticationClientIT extends ClientIT {
     void testCreateAppGroupWithBasicAuthentication() {
 
         //We are creating a new client with BasicAuthentication
-        def client = buildClient(AuthenticationScheme.BASIC)
+        def client = buildClient(AuthenticationSchemes.BASIC)
 
         def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
         assertTrue authenticationScheme instanceof BasicRequestAuthenticator

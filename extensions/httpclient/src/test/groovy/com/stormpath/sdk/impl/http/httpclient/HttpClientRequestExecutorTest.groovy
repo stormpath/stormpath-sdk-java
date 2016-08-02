@@ -19,6 +19,7 @@ package com.stormpath.sdk.impl.http.httpclient
 
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.AuthenticationSchemes
 import org.apache.http.HttpEntity
 import org.apache.http.HttpResponse
 import org.apache.http.StatusLine
@@ -39,7 +40,7 @@ class HttpClientRequestExecutorTest {
         HttpEntity entity = createStrictMock(HttpEntity)
         InputStream entityContent = createStrictMock(InputStream)
 
-        def e = new HttpClientRequestExecutor(apiKey, null, AuthenticationScheme.SAUTHC1, 20000) {
+        def e = new HttpClientRequestExecutor(apiKey, null, AuthenticationSchemes.SAUTHC1, 20000) {
             @Override
             protected byte[] toBytes(HttpEntity he) throws IOException {
                 return null

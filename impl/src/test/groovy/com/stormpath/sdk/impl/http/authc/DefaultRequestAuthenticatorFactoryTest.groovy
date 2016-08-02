@@ -34,13 +34,13 @@ class DefaultRequestAuthenticatorFactoryTest {
         def requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
 
         assertTrue(requestAuthenticatorFactory.create(AuthenticationSchemes.BASIC) instanceof BasicRequestAuthenticator)
-        assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.SAUTHC1) instanceof SAuthc1RequestAuthenticator)
+        assertTrue(requestAuthenticatorFactory.create(AuthenticationSchemes.SAUTHC1) instanceof SAuthc1RequestAuthenticator)
         assertTrue(requestAuthenticatorFactory.create(null) instanceof SAuthc1RequestAuthenticator)
     }
 
     @Test
     public void testException() {
-        def authenticationScheme = AuthenticationScheme.BASIC
+        def authenticationScheme = AuthenticationSchemes.BASIC
 
         //Let's remove the final modifier for requestAuthenticatorClassName attribute
         setNewValue(authenticationScheme, "requestAuthenticatorClassName", "this.package.does.not.exist.FooClass")

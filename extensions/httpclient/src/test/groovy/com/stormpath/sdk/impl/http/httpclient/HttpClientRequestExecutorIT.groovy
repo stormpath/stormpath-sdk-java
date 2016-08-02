@@ -2,6 +2,7 @@ package com.stormpath.sdk.impl.http.httpclient
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.AuthenticationSchemes
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.http.Response
@@ -51,7 +52,7 @@ class HttpClientRequestExecutorIT extends ClientIT {
         // this proves that we are *not* waiting on redirects
         def verifyUri = app.getHref() + "/authTokens/" + result.getAccessTokenString()
 
-        def httpClientRequestExecutor = new HttpClientRequestExecutor(client.getApiKey(), null, AuthenticationScheme.SAUTHC1, 2000)
+        def httpClientRequestExecutor = new HttpClientRequestExecutor(client.getApiKey(), null, AuthenticationSchemes.SAUTHC1, 2000)
         httpClientRequestExecutor.setNumRetries(0)
 
         Callable<Response> callable = new Callable<Response>() {

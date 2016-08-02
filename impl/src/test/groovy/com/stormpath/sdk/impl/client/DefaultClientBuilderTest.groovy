@@ -1,6 +1,7 @@
 package com.stormpath.sdk.impl.client
 
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.AuthenticationSchemes
 import com.stormpath.sdk.client.Clients
 import com.stormpath.sdk.impl.cache.DefaultCache
 import com.stormpath.sdk.lang.Duration
@@ -48,7 +49,7 @@ class DefaultClientBuilderTest {
         DefaultClientBuilder clientBuilder = (DefaultClientBuilder) builder
         assertEquals clientBuilder.clientConfiguration.baseUrl, "https://api.stormpath.com/v42"
         assertEquals clientBuilder.clientConfiguration.connectionTimeout, 10 * 1000
-        assertEquals clientBuilder.clientConfiguration.authenticationScheme, AuthenticationScheme.BASIC
+        assertEquals clientBuilder.clientConfiguration.authenticationScheme, AuthenticationSchemes.BASIC
     }
 
     @Test

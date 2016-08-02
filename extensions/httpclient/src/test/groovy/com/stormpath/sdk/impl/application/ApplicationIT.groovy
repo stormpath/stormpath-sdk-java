@@ -30,6 +30,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.AuthenticationSchemes
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.AccountStore
@@ -249,7 +250,7 @@ class ApplicationIT extends ClientIT {
     void testCreateAppGroupWithSauthc1RequestAuthenticator() {
 
         //We are creating a new client with Digest Authentication
-        def client = buildClient(AuthenticationScheme.SAUTHC1)
+        def client = buildClient(AuthenticationSchemes.SAUTHC1)
 
         def tenant = client.currentTenant
 

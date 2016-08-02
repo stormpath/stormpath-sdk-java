@@ -24,6 +24,7 @@ import com.stormpath.sdk.application.CreateApplicationRequest
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.AuthenticationSchemes
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.CreateDirectoryRequest
 import com.stormpath.sdk.directory.Directory
@@ -62,7 +63,7 @@ class DefaultClientTest {
         String baseUrl = "http://localhost:8080/v1"
         def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createStrictMock(CacheManager)
-        def authcScheme = AuthenticationScheme.SAUTHC1
+        def authcScheme = AuthenticationSchemes.SAUTHC1
         def connectionTimeout = 990011
 
         expect(proxy.getHost()).andReturn("192.168.2.110")
@@ -86,7 +87,7 @@ class DefaultClientTest {
         String baseUrl = "http://localhost:8080/v1"
         def proxy = createMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createMock(CacheManager)
-        def authcScheme = AuthenticationScheme.SAUTHC1
+        def authcScheme = AuthenticationSchemes.SAUTHC1
 
         try {
             new DefaultClient(null, baseUrl, proxy, cacheManager, authcScheme, 10000)
@@ -104,7 +105,7 @@ class DefaultClientTest {
         String baseUrl = "http://localhost:8080/v1"
         def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createStrictMock(CacheManager)
-        def authcScheme = AuthenticationScheme.SAUTHC1
+        def authcScheme = AuthenticationSchemes.SAUTHC1
         def cache = createStrictMock(Cache)
         def map = createStrictMock(Map)
         def set = createStrictMock(Set)
@@ -135,7 +136,7 @@ class DefaultClientTest {
 
         def apiKey = createNiceMock(ApiKey)
         String baseUrl = "http://localhost:8080/v1"
-        def authcScheme = AuthenticationScheme.SAUTHC1
+        def authcScheme = AuthenticationSchemes.SAUTHC1
         def cacheManager = Caches.newDisabledCacheManager();
 
         Client client = new DefaultClient(apiKey, baseUrl, null, cacheManager , authcScheme, 20000)
