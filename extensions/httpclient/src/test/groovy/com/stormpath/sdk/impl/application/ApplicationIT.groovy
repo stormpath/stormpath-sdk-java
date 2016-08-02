@@ -212,7 +212,7 @@ class ApplicationIT extends ClientIT {
 
         def app = client.instantiate(Application)
 
-        def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
+        def authenticationScheme = client.dataStore.requestExecutor.authenticationScheme
 
         //When no authenticationScheme is explicitly defined, SAuthc1RequestAuthenticator is used by default
         assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
@@ -255,7 +255,7 @@ class ApplicationIT extends ClientIT {
 
         def app = client.instantiate(Application)
 
-        def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
+        def authenticationScheme = client.dataStore.requestExecutor.authenticationScheme
 
         assertTrue authenticationScheme instanceof SAuthc1RequestAuthenticator
 
@@ -1892,14 +1892,14 @@ class ApplicationIT extends ClientIT {
 
         // setup result jwt
         def jwt = Jwts.builder()
-            .setHeaderParam(JwsHeader.KEY_ID, client.apiKey.id)
-            .setAudience(client.apiKey.id)
+            .setHeaderParam(JwsHeader.KEY_ID, client.clientCredentials.id)
+            .setAudience(client.clientCredentials.id)
             .setExpiration(new Date(new Date().getTime() + (1000 * 60 * 60 * 24)))
             .setIssuer("my issuer")
             .claim(IdSiteClaims.RESPONSE_ID, "my response id")
             .claim(IdSiteClaims.STATUS, SamlResultStatus.LOGOUT)
             .claim(IdSiteClaims.IS_NEW_SUBJECT, false)
-            .signWith(SignatureAlgorithm.HS256, client.apiKey.secret.getBytes("UTF-8"))
+            .signWith(SignatureAlgorithm.HS256, client.clientCredentials.secret.getBytes("UTF-8"))
         .compact()
 
         def req = createMock(HttpServletRequest)

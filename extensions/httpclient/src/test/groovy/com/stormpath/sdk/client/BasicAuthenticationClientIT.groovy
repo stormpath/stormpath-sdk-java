@@ -17,7 +17,7 @@ class BasicAuthenticationClientIT extends ClientIT {
         //We are creating a new client with BasicAuthentication
         def client = buildClient(AuthenticationSchemes.BASIC)
 
-        def authenticationScheme = client.dataStore.requestExecutor.requestAuthenticator
+        def authenticationScheme = client.dataStore.requestExecutor.authenticationScheme
         assertTrue authenticationScheme instanceof BasicRequestAuthenticator
 
         def tenant = client.currentTenant
