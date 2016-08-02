@@ -74,13 +74,6 @@ class StormpathAuthenticationProviderTest {
 
     void expectAccountBasicAttributes(Account mockAccount) {
         expect(mockAccount.href).andReturn acctHref
-        expect(mockAccount.username).andReturn acctUsername
-        expect(mockAccount.email).andReturn acctEmail
-        expect(mockAccount.givenName).andReturn acctGivenName
-        expect(mockAccount.middleName).andReturn acctMiddleName
-        expect(mockAccount.surname).andReturn acctSurname
-        expect(mockAccount.getStatus()).andReturn acctStatus times 2
-        expect(mockAccount.username).andReturn acctUsername
     }
 
     @Test
@@ -108,6 +101,7 @@ class StormpathAuthenticationProviderTest {
 
         expect(authentication.principal).andReturn username
         expect(authentication.credentials).andReturn password
+        expect(accountGrantedAuthority.getAuthority()).andReturn("").times(2)
         expect(application.authenticateAccount(anyObject() as AuthenticationRequest)).andAnswer(new IAnswer<AuthenticationResult>() {
             AuthenticationResult answer() throws Throwable {
                 def authcRequest = getCurrentArguments()[0] as AuthenticationRequest
@@ -143,11 +137,10 @@ class StormpathAuthenticationProviderTest {
         assertTrue info instanceof UsernamePasswordAuthenticationToken
         assertTrue info.authenticated
 
-        assertEquals acctUsername, ((UserDetails) info.principal).username
-        assertEquals null, ((UserDetails) info.principal).password
+        assertEquals acctHref, ((UserDetails) info.principal).username
+        assertEquals password, ((UserDetails) info.principal).password
         assertEquals 2, info.authorities.size()
         assertTrue info.authorities.contains(accountGrantedAuthority)
-        assertEquals acctHref, info.principal
         assertTrue(((UserDetails) info.principal).enabled)
         assertTrue(((UserDetails) info.principal).accountNonLocked)
         assertTrue(((UserDetails) info.principal).accountNonExpired)
@@ -184,6 +177,8 @@ class StormpathAuthenticationProviderTest {
 
         expect(authentication.principal).andReturn username
         expect(authentication.credentials).andReturn password
+        expect(accountGrantedAuthority.getAuthority()).andReturn("").times(2)
+        expect(groupGrantedAuthority.getAuthority()).andReturn("").times(2)
         expect(application.authenticateAccount(anyObject() as AuthenticationRequest)).andAnswer(new IAnswer<AuthenticationResult>() {
             AuthenticationResult answer() throws Throwable {
                 def authcRequest = getCurrentArguments()[0] as AuthenticationRequest
