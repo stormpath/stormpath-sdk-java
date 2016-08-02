@@ -18,10 +18,10 @@ package com.stormpath.sdk.client;
 /**
  * @since 1.0.0
  */
-public class SAuthc1AuthenticationScheme implements AuthenticationScheme {
+public final class SAuthc1AuthenticationScheme implements AuthenticationScheme {
 
     @Override
-    public String getRequestAuthenticatorClassName() {
+    public final String getRequestAuthenticatorClassName() {
         return "com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator";
     }
 

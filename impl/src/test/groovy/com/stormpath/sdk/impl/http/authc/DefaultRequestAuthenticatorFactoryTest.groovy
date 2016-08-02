@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.http.authc
 
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.AuthenticationSchemes
+import com.stormpath.sdk.client.BasicAuthenticationScheme
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -40,31 +41,21 @@ class DefaultRequestAuthenticatorFactoryTest {
 
     @Test
     public void testException() {
-        def authenticationScheme = AuthenticationSchemes.BASIC
 
-        //Let's remove the final modifier for requestAuthenticatorClassName attribute
-        setNewValue(authenticationScheme, "requestAuthenticatorClassName", "this.package.does.not.exist.FooClass")
+        def someUnexistentAuthenticationScheme = new AuthenticationScheme() {
+            @Override
+            String getRequestAuthenticatorClassName() {
+                return "this.package.does.not.exist.FooClass";
+            }
+        }
 
         def requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
 
         try {
-            requestAuthenticatorFactory.create(authenticationScheme) instanceof BasicRequestAuthenticator
+            requestAuthenticatorFactory.create(someUnexistentAuthenticationScheme) instanceof BasicRequestAuthenticator
             fail("Should have thrown RuntimeException")
         } catch (RuntimeException ex) {
             assertEquals(ex.getMessage(), "There was an error instantiating this.package.does.not.exist.FooClass")
         }
     }
-
-    //Set new value to final field
-    private void setNewValue(Object object, String fieldName, Object value){
-        Field field = object.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        int modifiers = field.getModifiers();
-        Field modifierField = field.getClass().getDeclaredField("modifiers");
-        modifiers = modifiers & ~Modifier.FINAL;
-        modifierField.setAccessible(true);
-        modifierField.setInt(field, modifiers);
-        field.set(object, value);
-    }
-
 }

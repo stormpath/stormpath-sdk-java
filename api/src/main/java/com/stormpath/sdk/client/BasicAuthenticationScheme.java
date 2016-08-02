@@ -18,10 +18,10 @@ package com.stormpath.sdk.client;
 /**
  * @since 1.0.0
  */
-public class BasicAuthenticationScheme implements AuthenticationScheme {
+public final class BasicAuthenticationScheme implements AuthenticationScheme {
 
     @Override
-    public String getRequestAuthenticatorClassName() {
+    public final String getRequestAuthenticatorClassName() {
         return "com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator";
     }
 
