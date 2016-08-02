@@ -79,7 +79,7 @@ public class DefaultIdSiteUrlBuilderTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
 
@@ -107,7 +107,7 @@ public class DefaultIdSiteUrlBuilderTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
 
@@ -135,7 +135,7 @@ public class DefaultIdSiteUrlBuilderTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
 
@@ -163,7 +163,7 @@ public class DefaultIdSiteUrlBuilderTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
 
@@ -191,7 +191,7 @@ public class DefaultIdSiteUrlBuilderTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
 
@@ -237,7 +237,7 @@ public class DefaultIdSiteUrlBuilderTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
 

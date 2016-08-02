@@ -318,7 +318,7 @@ public interface ClientBuilder {
      * <pre>
      * Client client = Clients.builder()...
      *    // setApiKey, etc...
-     *    .setAuthenticationScheme(AuthenticationScheme.BASIC) //set the basic authentication scheme
+     *    .setAuthenticationScheme(AuthenticationSchemes.BASIC) //set the basic authentication scheme
      *    .build(); //build the Client
      * </pre>
      *

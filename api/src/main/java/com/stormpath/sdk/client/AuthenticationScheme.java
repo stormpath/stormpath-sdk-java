@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,32 @@
  */
 package com.stormpath.sdk.client;
 
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.http.Request;
 
 /**
- * Enumeration that defines the available HTTP authentication schemes to be used when communicating with the Stormpath API server.
+ * Authentication scheme to be used when communicating with the Stormpath API server.
  * </pre>
  * The Authentication Scheme setting is helpful in cases where the code is run in a platform where the header information for
  * outgoing HTTP requests is modified and thus causing communication issues. For example, for Google App Engine you
- * need to set {@link AuthenticationScheme#BASIC} in order for your code to properly communicate with Stormpath API server.
+ * need to set {@link AuthenticationSchemes#BASIC} in order for your code to properly communicate with Stormpath API server.
  * </pre>
  * There are currently two authentication schemes available: <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
  * Basic Authentication</a> and <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Digest Authentication</a>
  *
- * @since 0.9.3
+ * @since 1.0.0
  */
-public enum AuthenticationScheme {
+public interface AuthenticationScheme {
 
-    BASIC("com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator"), //HTTP Basic Authentication
-    SAUTHC1("com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator"); //Digest Authentication
+    /**
+     * HTTP Request Authorization Header Name
+     */
+    String AUTHORIZATION_HEADER = "Authorization";
 
-    private final String requestAuthenticatorClassName;
+    /**
+     * Authenticates an HTTP Request using the supplied client credentials and sets the request authorization header.
+     * @param request HTTP Request to authenticate
+     * @param clientCredentials Credentials to be used to authenticate the request.
+     */
+    void authenticate(Request request, ClientCredentials clientCredentials);
 
-    private AuthenticationScheme(String requestAuthenticatorClassName) {
-        Assert.notNull(requestAuthenticatorClassName, "requestAuthenticatorClassName cannot be null");
-        this.requestAuthenticatorClassName = requestAuthenticatorClassName;
-    }
-
-    public String getRequestAuthenticatorClassName() {
-        return this.requestAuthenticatorClassName;
-    }
 }

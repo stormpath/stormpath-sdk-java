@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.client.ClientCredentials;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.ds.api.ApiKeyQueryFilter;
@@ -27,14 +28,14 @@ import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
 import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.HttpHeadersHolder;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.http.MediaType;
+import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.impl.http.QueryStringFactory;
-import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.impl.http.Response;
+import com.stormpath.sdk.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
@@ -66,7 +67,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-import static com.stormpath.sdk.impl.http.HttpHeaders.STORMPATH_AGENT;
+import static com.stormpath.sdk.http.HttpHeaders.STORMPATH_AGENT;
 
 /**
  * @since 0.1
@@ -96,7 +97,7 @@ public class DefaultDataStore implements InternalDataStore {
     private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
 
     private final String baseUrl;
-    private final ApiKey apiKey;
+    private final ClientCredentials credentials;
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
@@ -123,14 +124,14 @@ public class DefaultDataStore implements InternalDataStore {
         this(requestExecutor, baseUrl, apiKey, new DisabledCacheManager());
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey, CacheManager cacheManager) {
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials credentials, CacheManager cacheManager) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
-        Assert.notNull(apiKey, "ApiKey cannot be null.");
+        Assert.notNull(credentials, "credentials cannot be null.");
         Assert.notNull(cacheManager, "CacheManager cannot be null.  Use the DisabledCacheManager if you wish to turn off caching.");
         this.requestExecutor = requestExecutor;
         this.baseUrl = baseUrl;
-        this.apiKey = apiKey;
+        this.credentials = credentials;
         this.cacheManager = cacheManager;
         this.resourceFactory = new DefaultResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
@@ -144,7 +145,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         this.filters.add(new EnlistmentFilter());
 
-        this.filters.add(new DecryptApiKeySecretFilter(apiKey));
+        this.filters.add(new DecryptApiKeySecretFilter(credentials));
 
         if (isCachingEnabled()) {
             this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver, COLLECTION_CACHING_ENABLED));
@@ -162,8 +163,8 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     @Override
-    public ApiKey getApiKey() {
-        return apiKey;
+    public ClientCredentials getClientCredentials() {
+        return credentials;
     }
 
     @Override

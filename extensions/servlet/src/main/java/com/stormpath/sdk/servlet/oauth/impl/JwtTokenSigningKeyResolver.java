@@ -68,7 +68,7 @@ public class JwtTokenSigningKeyResolver implements JwtSigningKeyResolver {
         Client client = (Client) request.getAttribute(Client.class.getName());
         Assert.notNull(client, "Client must be accessible as a request attribute.");
 
-        String apiKeySecret = client.getApiKey().getSecret();
+        String apiKeySecret = client.getClientCredentials().getSecret();
 
         return new SecretKeySpec(apiKeySecret.getBytes(Charset.forName("UTF-8")), alg.getJcaName());
     }

@@ -80,7 +80,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
     public void set(HttpServletRequest request, HttpServletResponse response, AuthenticationResult value) {
 
         Client client = ClientResolver.INSTANCE.getClient(request);
-        byte[] clientSecret = client.getApiKey().getSecret().getBytes();
+        byte[] clientSecret = client.getClientCredentials().getSecret().getBytes();
 
         if (value == null) {
             remove(request, response);
@@ -107,13 +107,13 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             try {
                 //code copied from AccessTokenController#clientCredentialsAuthenticationRequest
                 String jwt = Jwts.builder()
-                        .setHeaderParam(JwsHeader.KEY_ID, client.getApiKey().getId())
+                        .setHeaderParam(JwsHeader.KEY_ID, client.getClientCredentials().getId())
                         .setSubject(account.getHref())
                         .setIssuedAt(new Date())
                         .setIssuer(application.getHref())
-                        .setAudience(client.getApiKey().getId())
+                        .setAudience(client.getClientCredentials().getId())
                         .setExpiration(DateTime.now().plusMinutes(1).toDate())
-                        .claim("status", "AUTHENTICATED").signWith(SignatureAlgorithm.HS256, client.getApiKey().getSecret().getBytes("UTF-8")).compact();
+                        .claim("status", "AUTHENTICATED").signWith(SignatureAlgorithm.HS256, client.getClientCredentials().getSecret().getBytes("UTF-8")).compact();
 
                 OAuthRequestAuthentication authenticationRequest = OAuthRequests.IDSITE_AUTHENTICATION_REQUEST.builder().setToken(jwt).build();
                 OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.ID_SITE_AUTHENTICATOR.forApplication(application).authenticate(authenticationRequest);

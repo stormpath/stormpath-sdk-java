@@ -83,7 +83,7 @@ public class DefaultSamlIdpUrlBuilderTest {
         def apiKey = createStrictMock(ApiKey)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
         expect(apiKey.getId()).andReturn(apiKeyId)
@@ -111,7 +111,7 @@ public class DefaultSamlIdpUrlBuilderTest {
         def apiKey = createStrictMock(ApiKey)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
         expect(apiKey.getId()).andReturn(apiKeyId)
@@ -139,7 +139,7 @@ public class DefaultSamlIdpUrlBuilderTest {
         def apiKey = createStrictMock(ApiKey)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
         expect(apiKey.getId()).andReturn(apiKeyId)
@@ -167,7 +167,7 @@ public class DefaultSamlIdpUrlBuilderTest {
         def apiKey = createStrictMock(ApiKey)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
         expect(apiKey.getId()).andReturn(apiKeyId)
@@ -195,7 +195,7 @@ public class DefaultSamlIdpUrlBuilderTest {
         def apiKey = createStrictMock(ApiKey)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
         expect(apiKey.getId()).andReturn(apiKeyId)
@@ -241,7 +241,7 @@ public class DefaultSamlIdpUrlBuilderTest {
         def apiKey = createStrictMock(ApiKey)
         def samlProviderEndpoint = "https://api.stormpath.com/v1/directories/jefoifj93riu23ioj/provider"
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getId()).andReturn(apiKeyId)
         expect(apiKey.getSecret()).andReturn(apiKeySecret)
         expect(apiKey.getId()).andReturn(apiKeyId)

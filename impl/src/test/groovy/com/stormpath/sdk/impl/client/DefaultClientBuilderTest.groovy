@@ -1,8 +1,8 @@
 package com.stormpath.sdk.impl.client
 
-import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Clients
 import com.stormpath.sdk.impl.cache.DefaultCache
+import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
 import com.stormpath.sdk.lang.Duration
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -39,8 +39,8 @@ class DefaultClientBuilderTest {
     @Test
     void testConfigureApiKey() {
         // remove key.txt from src/test/resources and this test will fail
-        assertEquals client.dataStore.apiKey.id, "12"
-        assertEquals client.dataStore.apiKey.secret, "13"
+        assertEquals client.dataStore.clientCredentials.id, "12"
+        assertEquals client.dataStore.clientCredentials.secret, "13"
     }
 
     @Test
@@ -48,7 +48,7 @@ class DefaultClientBuilderTest {
         DefaultClientBuilder clientBuilder = (DefaultClientBuilder) builder
         assertEquals clientBuilder.clientConfiguration.baseUrl, "https://api.stormpath.com/v42"
         assertEquals clientBuilder.clientConfiguration.connectionTimeout, 10 * 1000
-        assertEquals clientBuilder.clientConfiguration.authenticationScheme, AuthenticationScheme.BASIC
+        assertTrue(clientBuilder.clientConfiguration.authenticationScheme instanceof BasicRequestAuthenticator)
     }
 
     @Test

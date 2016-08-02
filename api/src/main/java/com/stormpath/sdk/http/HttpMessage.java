@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http.authc;
+package com.stormpath.sdk.http;
 
-import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
+import com.stormpath.sdk.http.HttpHeaders;
+
+import java.io.InputStream;
 
 /**
- * Factory interface to create {@link RequestAuthenticator}s out of {@link AuthenticationScheme}s.
- *
- * @since 0.9.3
+ * @since 0.1
  */
-public interface RequestAuthenticatorFactory {
+public interface HttpMessage {
 
-    RequestAuthenticator create(AuthenticationScheme scheme);
+    HttpHeaders getHeaders();
 
+    void setHeaders(HttpHeaders headers);
+
+    boolean hasBody();
+
+    InputStream getBody();
 }

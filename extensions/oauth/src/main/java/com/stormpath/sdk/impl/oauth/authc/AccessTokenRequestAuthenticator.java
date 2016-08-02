@@ -79,7 +79,7 @@ public class AccessTokenRequestAuthenticator {
     public AccessTokenRequestAuthenticator(InternalDataStore internalDataStore) {
         dataStore = internalDataStore;
 
-        jwtSigner = new DefaultJwtSigner(dataStore.getApiKey().getId(), dataStore.getApiKey().getSecret());
+        jwtSigner = new DefaultJwtSigner(dataStore.getClientCredentials().getId(), dataStore.getClientCredentials().getSecret());
     }
 
     public AccessTokenResult authenticate(Application application, AccessTokenAuthenticationRequest request) {

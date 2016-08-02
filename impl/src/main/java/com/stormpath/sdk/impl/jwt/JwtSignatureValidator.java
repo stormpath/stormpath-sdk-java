@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.jwt;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.client.ClientCredentials;
 import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner;
 import com.stormpath.sdk.impl.jwt.signer.JwtSigner;
@@ -28,11 +29,11 @@ public class JwtSignatureValidator {
 
     private final JwtSigner jwtSigner;
 
-    public JwtSignatureValidator(ApiKey apiKey) {
+    public JwtSignatureValidator(ClientCredentials clientCredentials) {
 
-        Assert.notNull(apiKey, "apiKey cannot be null.");
+        Assert.notNull(clientCredentials, "clientCredentials cannot be null.");
 
-        jwtSigner = new DefaultJwtSigner(apiKey.getId(), apiKey.getSecret());
+        jwtSigner = new DefaultJwtSigner(clientCredentials.getId(), clientCredentials.getSecret());
     }
 
     /**

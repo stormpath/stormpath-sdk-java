@@ -62,7 +62,7 @@ public class DefaultJwtSigningKeyResolver implements JwtSigningKeyResolver {
         Client client = (Client) request.getAttribute(Client.class.getName());
         Assert.notNull(client, "Client must be accessible as a request attribute.");
 
-        String apiKeySecret = client.getApiKey().getSecret();
+        String apiKeySecret = client.getClientCredentials().getSecret();
 
         //Stormpath API Keys are base-64-encoded secure random byte arrays:
         byte[] apiKeySecretBytes = Base64.decodeBase64(apiKeySecret);

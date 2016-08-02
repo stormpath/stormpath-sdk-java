@@ -46,7 +46,7 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
         if(isMaterialized()) {
             try {
                 JwsHeader header = Jwts.parser()
-                        .setSigningKey(getDataStore().getApiKey().getSecret().getBytes("UTF-8"))
+                        .setSigningKey(getDataStore().getClientCredentials().getSecret().getBytes("UTF-8"))
                         .parseClaimsJws(getString(JWT)).getHeader();
 
                 String tokenType = (String) header.get("stt");

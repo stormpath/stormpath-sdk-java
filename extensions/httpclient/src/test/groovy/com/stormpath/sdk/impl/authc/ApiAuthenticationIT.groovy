@@ -299,12 +299,12 @@ class ApiAuthenticationIT extends ClientIT {
 
         parameters = convertToParametersMap(["grant_type": "client_credentials", "anyParam": "ignored"])
 
-        //Error: invalid apiKey id.
+        //Error: invalid clientCredentials id.
         headers = createHttpHeaders(createBasicAuthzHeader("unknown", apiKey.secret), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
         verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.INVALID_CLIENT)
 
-        //Error: invalid apiKey secret.
+        //Error: invalid clientCredentials secret.
         headers = createHttpHeaders(createBasicAuthzHeader(apiKey.id, "invalid"), "application/x-www-form-urlencoded")
         httpRequestBuilder = HttpRequests.method(HttpMethod.POST).headers(headers).parameters(parameters)
         verifyOAuthError(httpRequestBuilder.build(), OAuthAuthenticationException.INVALID_CLIENT)

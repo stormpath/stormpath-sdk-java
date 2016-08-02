@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http;
+package com.stormpath.sdk.http;
+
+import com.stormpath.sdk.http.HttpMessage;
 
 /**
  * @since 0.1

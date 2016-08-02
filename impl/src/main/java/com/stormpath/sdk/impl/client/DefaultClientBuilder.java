@@ -22,10 +22,7 @@ import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
 import com.stormpath.sdk.cache.Caches;
-import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.client.ClientBuilder;
-import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.client.*;
 import com.stormpath.sdk.impl.config.ClientConfiguration;
 import com.stormpath.sdk.impl.config.JSONPropertiesSource;
 import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
@@ -175,7 +172,7 @@ public class DefaultClientBuilder implements ClientBuilder {
         }
 
         if (props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME) != null) {
-            clientConfig.setAuthenticationScheme(Enum.valueOf(AuthenticationScheme.class, props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME)));
+            clientConfig.setAuthenticationScheme(AuthenticationSchemes.getAuthenticationScheme(props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME)));
         }
 
         if (props.get(DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME) != null) {
@@ -283,8 +280,13 @@ public class DefaultClientBuilder implements ClientBuilder {
                     this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
+        AuthenticationScheme authenticationScheme = this.clientConfig.getAuthenticationScheme();
+        if (authenticationScheme == null) {
+            authenticationScheme = AuthenticationSchemes.SAUTHC1;
+        }
+
         return new DefaultClient(this.apiKey, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
-                this.clientConfig.getAuthenticationScheme(), this.clientConfig.getConnectionTimeout());
+                authenticationScheme, this.clientConfig.getConnectionTimeout());
     }
 
     @Override

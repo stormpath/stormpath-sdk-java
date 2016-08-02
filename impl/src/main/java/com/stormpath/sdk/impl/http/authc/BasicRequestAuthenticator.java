@@ -16,7 +16,9 @@
 package com.stormpath.sdk.impl.http.authc;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.client.ClientCredentials;
+import com.stormpath.sdk.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.Base64;
 import org.slf4j.Logger;
@@ -28,7 +30,7 @@ import java.util.Date;
 import java.util.SimpleTimeZone;
 
 /**
- * This {@link RequestAuthenticator} implements a <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
+ * This {@link AuthenticationScheme} implements a <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
  * Basic Authentication</a> scheme. This defines the HTTP authentication scheme to be used when communicating with the Stormpath API server.
  * </pre>
  * The `Client` gets the request authenticator configured via
@@ -36,7 +38,7 @@ import java.util.SimpleTimeZone;
  *
  * @since 0.9.3
  */
-public class BasicRequestAuthenticator implements RequestAuthenticator {
+public class BasicRequestAuthenticator implements AuthenticationScheme {
     private static final Logger log = LoggerFactory.getLogger(BasicRequestAuthenticator.class);
 
     public static final String STORMPATH_DATE_HEADER = "X-Stormpath-Date";
@@ -48,7 +50,7 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
     private static final String NL = "\n";
 
     @Override
-    public void authenticate(Request request, ApiKey apiKey) throws RequestAuthenticationException {
+    public void authenticate(Request request, ClientCredentials clientCredentials) {
         Date date = new Date();
 
         SimpleDateFormat timestampFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
@@ -57,7 +59,7 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
 
         request.getHeaders().set(STORMPATH_DATE_HEADER, timestamp);
 
-        String authorizationHeader = apiKey.getId() + ":" + apiKey.getSecret();
+        String authorizationHeader = clientCredentials.getId() + ":" + clientCredentials.getSecret();
         byte[] valueBytes;
         try {
             valueBytes = authorizationHeader.getBytes("UTF-8");
@@ -67,5 +69,4 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
         authorizationHeader = Base64.encodeBase64String(valueBytes);
         request.getHeaders().set(AUTHORIZATION_HEADER, AUTHENTICATION_SCHEME + " " + authorizationHeader);
     }
-
 }

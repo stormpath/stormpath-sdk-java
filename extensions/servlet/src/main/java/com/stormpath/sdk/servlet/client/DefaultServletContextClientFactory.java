@@ -19,11 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.client.ClientBuilder;
-import com.stormpath.sdk.client.Clients;
-import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.client.*;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -174,7 +170,7 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
     protected void applyAuthenticationScheme(ClientBuilder builder) {
         String schemeName = config.get(STORMPATH_AUTHENTICATION_SCHEME);
         if (Strings.hasText(schemeName)) {
-            AuthenticationScheme scheme = AuthenticationScheme.valueOf(schemeName.toUpperCase());
+            AuthenticationScheme scheme = AuthenticationSchemes.getAuthenticationScheme(schemeName.toUpperCase());
             builder.setAuthenticationScheme(scheme);
         }
     }

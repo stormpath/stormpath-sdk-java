@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.http.support;
 
-import com.stormpath.sdk.impl.http.HttpHeaders;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.Response;
+import com.stormpath.sdk.http.HttpHeaders;
+import com.stormpath.sdk.http.MediaType;
+import com.stormpath.sdk.http.Response;
 
 import java.io.InputStream;
 

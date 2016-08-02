@@ -17,6 +17,7 @@ package com.stormpath.sdk.ds;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.client.ClientCredentials;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 
@@ -68,12 +69,12 @@ public interface DataStore {
     <T extends Resource, O extends Options> T getResource(String href, Class<T> clazz, O options);
 
     /**
-     * Returns the ApiKey used to authenticate HTTPS requests sent to the Stormpath API server.
+     * Returns the credentials used to authenticate HTTPS requests sent to the Stormpath API server.
      *
      * @return the ApiKey used to authenticate HTTPS requests sent to the Stormpath API server.
      * @since 1.0.RC3
      */
-    ApiKey getApiKey();
+    ClientCredentials getClientCredentials();
 
     /**
      * Returns the CacheManager used to improve data store performance.

@@ -53,7 +53,7 @@ public class CsrfTokenManagerFactory extends ConfigSingletonFactory<CsrfTokenMan
         CacheManager cacheManager = client.getCacheManager();
         Cache<String,String> usedNonceCache = cacheManager.getCache(usedNonceCacheName);
 
-        String signingKey = client.getApiKey().getSecret();
+        String signingKey = client.getClientCredentials().getSecret();
 
         String tokenName = getConfig().get(CSRF_TOKEN_NAME);
 

@@ -72,7 +72,7 @@ class DefaultAccessTokenTest {
         def internalDataStore = createStrictMock(InternalDataStore)
         def apiKey = createStrictMock(ApiKey)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(apiKey.getSecret()).andReturn(secret)
 
         replay internalDataStore, apiKey
@@ -123,7 +123,7 @@ class DefaultAccessTokenTest {
 
         expect(apiKey.getSecret()).andReturn(secret)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
         expect(internalDataStore.instantiate(Account, properties.account)).andReturn(new DefaultAccount(internalDataStore, properties.account))
         expect(internalDataStore.instantiate(Application, properties.application)).andReturn(new DefaultApplication(internalDataStore, properties.application))
@@ -180,7 +180,7 @@ class DefaultAccessTokenTest {
             def apiKey = createStrictMock(ApiKey)
 
             expect(apiKey.getSecret()).andReturn(secret)
-            expect(internalDataStore.getApiKey()).andReturn(apiKey)
+            expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
 
             replay internalDataStore, apiKey
 
@@ -215,7 +215,7 @@ class DefaultAccessTokenTest {
         def apiKey = createStrictMock(ApiKey)
 
         expect(apiKey.getSecret()).andReturn(secret)
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(internalDataStore.getClientCredentials()).andReturn(apiKey)
 
         replay internalDataStore, apiKey
 

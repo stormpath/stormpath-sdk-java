@@ -103,7 +103,7 @@ abstract class ClientIT {
 
         ApiKey apiKey = ApiKeys.builder().build();
 
-        return new RequestCountingClient(apiKey, baseUrl, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
+        return new RequestCountingClient(apiKey, baseUrl, null, Caches.newCacheManager().build(), AuthenticationSchemes.SAUTHC1, 20000);
     }
 
     //Creates a new Application with an auto-created directory

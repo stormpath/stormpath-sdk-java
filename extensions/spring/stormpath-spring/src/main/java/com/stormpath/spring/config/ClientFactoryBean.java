@@ -17,11 +17,7 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.client.ClientBuilder;
-import com.stormpath.sdk.client.Clients;
-import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.client.*;
 import com.stormpath.spring.cache.SpringCacheManager;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
@@ -84,15 +80,15 @@ public class ClientFactoryBean extends AbstractFactoryBean<Client> {
      * <pre>
      * Client client = Clients.builder()...
      *    // setApiKey, etc...
-     *    .setAuthenticationScheme(AuthenticationScheme.BASIC) //set the basic authentication scheme
+     *    .setAuthenticationScheme(AuthenticationSchemes.BASIC) //set the basic authentication scheme
      *    .build(); //build the Client
      * </pre>
      *
      * @param authenticationScheme the type of authentication to be used for communication with the Stormpath API
      *                             server.
      */
-    public void setAuthenticationScheme(AuthenticationScheme authenticationScheme) {
-        builder.setAuthenticationScheme(authenticationScheme);
+    public void setAuthenticationScheme(String authenticationScheme) {
+        builder.setAuthenticationScheme(AuthenticationSchemes.getAuthenticationScheme(authenticationScheme));
     }
 
     /**

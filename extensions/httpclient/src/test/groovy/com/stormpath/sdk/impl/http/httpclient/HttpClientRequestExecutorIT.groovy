@@ -1,10 +1,10 @@
 package com.stormpath.sdk.impl.http.httpclient
 
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.AuthenticationSchemes
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.http.HttpMethod
-import com.stormpath.sdk.impl.http.Response
+import com.stormpath.sdk.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthRequests
@@ -51,7 +51,7 @@ class HttpClientRequestExecutorIT extends ClientIT {
         // this proves that we are *not* waiting on redirects
         def verifyUri = app.getHref() + "/authTokens/" + result.getAccessTokenString()
 
-        def httpClientRequestExecutor = new HttpClientRequestExecutor(client.getApiKey(), null, AuthenticationScheme.SAUTHC1, 2000)
+        def httpClientRequestExecutor = new HttpClientRequestExecutor(client.getClientCredentials(), null, AuthenticationSchemes.SAUTHC1, 2000)
         httpClientRequestExecutor.setNumRetries(0)
 
         Callable<Response> callable = new Callable<Response>() {

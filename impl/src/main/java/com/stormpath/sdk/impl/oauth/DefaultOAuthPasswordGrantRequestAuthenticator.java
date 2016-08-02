@@ -18,8 +18,8 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.impl.http.HttpHeaders;
-import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.http.HttpHeaders;
+import com.stormpath.sdk.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 
 /**

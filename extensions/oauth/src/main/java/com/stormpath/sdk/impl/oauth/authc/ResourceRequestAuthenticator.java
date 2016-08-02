@@ -57,7 +57,7 @@ public class ResourceRequestAuthenticator {
     public ResourceRequestAuthenticator(InternalDataStore dataStore) {
         Assert.notNull(dataStore, "datastore cannot be null or empty.");
         this.dataStore = dataStore;
-        this.jwtSignatureValidator = new JwtSignatureValidator(dataStore.getApiKey());
+        this.jwtSignatureValidator = new JwtSignatureValidator(dataStore.getClientCredentials());
     }
 
     public OAuthAuthenticationResult authenticate(Application application, ResourceAuthenticationRequest request) {

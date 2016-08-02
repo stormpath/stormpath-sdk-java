@@ -19,7 +19,7 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.impl.application.DefaultApplication
 import com.stormpath.sdk.impl.http.RequestExecutor
-import com.stormpath.sdk.impl.http.Response
+import com.stormpath.sdk.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType

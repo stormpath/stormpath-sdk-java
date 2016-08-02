@@ -16,9 +16,10 @@
 package com.stormpath.sdk.impl.idsite;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.client.ClientCredentials;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import io.jsonwebtoken.JwsHeader;
@@ -116,12 +117,12 @@ public class DefaultIdSiteUrlBuilder implements IdSiteUrlBuilder {
 
         Date now = new Date();
 
-        final ApiKey apiKey = this.internalDataStore.getApiKey();
+        final ClientCredentials clientCredentials = this.internalDataStore.getClientCredentials();
 
-        JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setId(jti).setIssuedAt(now).setIssuer(apiKey.getId())
+        JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setId(jti).setIssuedAt(now).setIssuer(clientCredentials.getId())
                 .setSubject(this.applicationHref);
 
-        byte[] secret = apiKey.getSecret().getBytes(Strings.UTF_8);
+        byte[] secret = clientCredentials.getSecret().getBytes(Strings.UTF_8);
 
         String jwt = jwtBuilder.setHeaderParam(JwsHeader.TYPE, JwsHeader.JWT_TYPE).signWith(SignatureAlgorithm.HS256, secret).compact();
 

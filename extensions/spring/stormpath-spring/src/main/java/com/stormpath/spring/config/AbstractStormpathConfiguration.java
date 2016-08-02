@@ -20,11 +20,7 @@ import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.cache.Caches;
-import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.client.ClientBuilder;
-import com.stormpath.sdk.client.Clients;
-import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.client.*;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.spring.cache.SpringCacheManager;
 import org.springframework.beans.factory.BeanCreationException;
@@ -88,7 +84,7 @@ public abstract class AbstractStormpathConfiguration {
     protected int connectionTimeout;
 
     @Value("#{ @environment['stormpath.client.authenticationScheme'] }")
-    protected AuthenticationScheme authenticationScheme;
+    protected String authenticationScheme;
 
     public ApiKey stormpathClientApiKey() {
 
@@ -185,7 +181,8 @@ public abstract class AbstractStormpathConfiguration {
                                        .setCacheManager(stormpathCacheManager());
 
         if (authenticationScheme != null) {
-            builder.setAuthenticationScheme(authenticationScheme);
+            AuthenticationScheme scheme = AuthenticationSchemes.getAuthenticationScheme(authenticationScheme);
+            builder.setAuthenticationScheme(scheme);
         }
 
         if (Strings.hasText(baseUrl)) {

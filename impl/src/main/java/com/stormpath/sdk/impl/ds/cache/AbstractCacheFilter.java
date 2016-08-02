@@ -19,7 +19,7 @@ import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.impl.ds.Filter;
 import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.resource.CollectionResource;

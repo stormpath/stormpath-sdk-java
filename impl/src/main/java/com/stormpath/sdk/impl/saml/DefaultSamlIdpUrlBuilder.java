@@ -16,9 +16,9 @@
 package com.stormpath.sdk.impl.saml;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.client.ClientCredentials;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.idsite.IdSiteClaims;
+import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
@@ -105,16 +105,17 @@ public class DefaultSamlIdpUrlBuilder implements SamlIdpUrlBuilder {
 
         Date now = new Date();
 
-        final ApiKey apiKey = this.internalDataStore.getApiKey();
+        final ClientCredentials clientCredentials = this.internalDataStore.getClientCredentials();
+        Assert.isInstanceOf(ApiKey.class, clientCredentials);
 
-        JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setId(jti).setIssuedAt(now).setIssuer(apiKey.getId())
+        JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).setId(jti).setIssuedAt(now).setIssuer(clientCredentials.getId())
                 .setSubject(this.applicationHref);
 
-        byte[] secret = apiKey.getSecret().getBytes(Strings.UTF_8);
+        byte[] secret = clientCredentials.getSecret().getBytes(Strings.UTF_8);
 
         String jwt = jwtBuilder
                 .setHeaderParam(JwsHeader.TYPE, JwsHeader.JWT_TYPE)
-                .setHeaderParam(JwsHeader.KEY_ID, apiKey.getId())
+                .setHeaderParam(JwsHeader.KEY_ID, clientCredentials.getId())
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
 
