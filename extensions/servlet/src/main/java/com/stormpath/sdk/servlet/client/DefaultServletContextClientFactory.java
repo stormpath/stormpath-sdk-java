@@ -29,6 +29,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
+import io.jsonwebtoken.lang.Classes;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -174,8 +175,8 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
     protected void applyAuthenticationScheme(ClientBuilder builder) {
         String schemeName = config.get(STORMPATH_AUTHENTICATION_SCHEME);
         if (Strings.hasText(schemeName)) {
-            AuthenticationScheme scheme = AuthenticationScheme.valueOf(schemeName.toUpperCase());
-            builder.setAuthenticationScheme(scheme);
+            AuthenticationScheme authenticationScheme = (AuthenticationScheme) Classes.newInstance(schemeName);
+            builder.setAuthenticationScheme(authenticationScheme);
         }
     }
 }

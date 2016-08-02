@@ -23,6 +23,7 @@ import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
 import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.client.BasicAuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
@@ -175,7 +176,7 @@ public class DefaultClientBuilder implements ClientBuilder {
         }
 
         if (props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME) != null) {
-            clientConfig.setAuthenticationScheme(Enum.valueOf(AuthenticationScheme.class, props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME)));
+            clientConfig.setAuthenticationScheme((AuthenticationScheme) Classes.newInstance(props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME)));
         }
 
         if (props.get(DEFAULT_CLIENT_PROXY_PORT_PROPERTY_NAME) != null) {

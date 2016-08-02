@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.http.authc
 
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.AuthenticationSchemes
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -32,7 +33,7 @@ class DefaultRequestAuthenticatorFactoryTest {
     public void test() {
         def requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
 
-        assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.BASIC) instanceof BasicRequestAuthenticator)
+        assertTrue(requestAuthenticatorFactory.create(AuthenticationSchemes.BASIC) instanceof BasicRequestAuthenticator)
         assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.SAUTHC1) instanceof SAuthc1RequestAuthenticator)
         assertTrue(requestAuthenticatorFactory.create(null) instanceof SAuthc1RequestAuthenticator)
     }

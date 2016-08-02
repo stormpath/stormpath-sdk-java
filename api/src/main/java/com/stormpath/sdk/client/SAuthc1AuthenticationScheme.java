@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,18 @@ package com.stormpath.sdk.client;
  * </pre>
  * The Authentication Scheme setting is helpful in cases where the code is run in a platform where the header information for
  * outgoing HTTP requests is modified and thus causing communication issues. For example, for Google App Engine you
- * need to set {@link AuthenticationScheme#BASIC} in order for your code to properly communicate with Stormpath API server.
+ * need to set {@link SAuthc1AuthenticationScheme#BASIC} in order for your code to properly communicate with Stormpath API server.
  * </pre>
  * There are currently two authentication schemes available: <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
  * Basic Authentication</a> and <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Digest Authentication</a>
  *
  * @since 0.9.3
  */
-public interface AuthenticationScheme {
+public class SAuthc1AuthenticationScheme implements AuthenticationScheme {
 
-    String getRequestAuthenticatorClassName();
+    @Override
+    public String getRequestAuthenticatorClassName() {
+        return "com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator";
+    }
 
 }
