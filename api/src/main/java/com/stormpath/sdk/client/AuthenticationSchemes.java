@@ -21,7 +21,7 @@ package com.stormpath.sdk.client;
 public class AuthenticationSchemes {
 
     public static final AuthenticationScheme BASIC = newBasicAuthenticationScheme();
-    public static final AuthenticationScheme SAUTHC1 = new SAuthc1AuthenticationScheme();
+    public static final AuthenticationScheme SAUTHC1 = newSAuthc1AuthenticationScheme();
 
     private static AuthenticationScheme newBasicAuthenticationScheme() {
         return new BasicAuthenticationScheme();
