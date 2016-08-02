@@ -266,7 +266,7 @@ class ApiKeyIT extends ClientIT {
                 .setBase64Salt(salt.getBytes())
                 .setKeySize(keySize)
                 .setIterations(iterations)
-                .setPassword(client.dataStore.apiKey.secret.toCharArray()).build()
+                .setPassword(client.dataStore.clientCredentials.secret.toCharArray()).build()
 
         def secret = encryptionService.decryptBase64String(cacheMap['secret'])
 

@@ -829,7 +829,7 @@ class ApplicationIT extends ClientIT {
         def jsonPayload = objectMapper.readValue(decodedJsonPayload, Map)
 
         assertEquals jsonPayload.cb_uri, "https://mycallbackuri.com/path"
-        assertEquals jsonPayload.iss, client.dataStore.apiKey.id
+        assertEquals jsonPayload.iss, client.dataStore.clientCredentials.id
         assertEquals jsonPayload.sub, app.href
         assertEquals jsonPayload.state, "anyState"
         assertEquals jsonPayload.path, "/mypath"
@@ -871,7 +871,7 @@ class ApplicationIT extends ClientIT {
 
         assertTrue ssoURL.startsWith(ssoRedirectUrlBuilder.ssoEndpoint + "/logout?jwtRequest=")
         assertEquals jsonPayload.cb_uri, "https://mycallbackuri.com/path"
-        assertEquals jsonPayload.iss, client.dataStore.apiKey.id
+        assertEquals jsonPayload.iss, client.dataStore.clientCredentials.id
         assertEquals jsonPayload.sub, app.href
     }
 
@@ -911,7 +911,7 @@ class ApplicationIT extends ClientIT {
                 .setBase64Salt(salt.getBytes())
                 .setKeySize(keySize)
                 .setIterations(iterations)
-                .setPassword(client.dataStore.apiKey.secret.toCharArray()).build()
+                .setPassword(client.dataStore.clientCredentials.secret.toCharArray()).build()
 
         def secret = encryptionService.decryptBase64String(cacheMap['secret'])
 

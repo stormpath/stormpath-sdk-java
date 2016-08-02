@@ -57,8 +57,8 @@ class IdSiteReplyIT extends ClientIT {
     @Test
     void testHandleSsoResponse() {
 
-        String apiKeyId = client.dataStore.apiKey.id
-        String apiKeySecret = client.dataStore.apiKey.secret
+        String apiKeyId = client.dataStore.clientCredentials.id
+        String apiKeySecret = client.dataStore.clientCredentials.secret
 
         String jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, "anState", IdSiteResultStatus.AUTHENTICATED)
 
@@ -84,8 +84,8 @@ class IdSiteReplyIT extends ClientIT {
     @Test
     void testHandleSsoResponseError() {
 
-        String apiKeyId = client.dataStore.apiKey.id
-        String apiKeySecret = client.dataStore.apiKey.secret
+        String apiKeyId = client.dataStore.clientCredentials.id
+        String apiKeySecret = client.dataStore.clientCredentials.secret
 
         String jwtResponseValue = buildSsoResponse(apiKeyId, apiKeySecret, "https://myapplication.com", 60, "thisIs the expected state", IdSiteResultStatus.AUTHENTICATED)
 
