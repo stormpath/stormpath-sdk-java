@@ -2,10 +2,10 @@ package com.stormpath.spring.filter
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.servlet.account.AccountResolver
-import com.stormpath.spring.security.provider.StormpathUserDetails
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import static org.easymock.EasyMock.*
-
 /**
  * @since 1.0.0
  */
@@ -63,17 +62,13 @@ class SpringSecurityResolvedAccountFilterTest {
 
     @Test
     public void testAuthenticationNotRefreshedWhenHrefInUserDetailsMatchesAccount() {
-        def userDetails = createStrictMock(StormpathUserDetails)
+        def userDetails = createStrictMock(UserDetails)
 
         expect(accountResolver.getAccount(request)).andReturn account
         expect(account.getHref()).andReturn "url"
         expect(filterChain.doFilter(request, response)).times(1)
+        expect(authentication.getPrincipal()).andReturn("url").times(2)
 
-        Map<String, String> props = new HashMap()
-        props.put("href", "url")
-
-        expect(userDetails.getProperties()).andReturn props
-        expect(authentication.getPrincipal()).andReturn(userDetails).times(2)
         SecurityContextHolder.getContext().setAuthentication(authentication)
 
         replay account, accountResolver, authentication, authenticationProvider, filterChain, request, userDetails

@@ -146,12 +146,7 @@ class StormpathAuthenticationProviderTest {
         assertEquals null, ((UserDetails) info.principal).password
         assertEquals 2, info.authorities.size()
         assertTrue info.authorities.contains(accountGrantedAuthority)
-        assertEquals acctHref, ((StormpathUserDetails) info.principal).properties.get("href")
-        assertEquals acctUsername, ((StormpathUserDetails) info.principal).properties.get("username")
-        assertEquals acctEmail, ((StormpathUserDetails) info.principal).properties.get("email")
-        assertEquals acctGivenName, ((StormpathUserDetails) info.principal).properties.get("givenName")
-        assertEquals acctMiddleName, ((StormpathUserDetails) info.principal).properties.get("middleName")
-        assertEquals acctSurname, ((StormpathUserDetails) info.principal).properties.get("surname")
+        assertEquals acctHref, info.principal
         assertTrue(((UserDetails) info.principal).enabled)
         assertTrue(((UserDetails) info.principal).accountNonLocked)
         assertTrue(((UserDetails) info.principal).accountNonExpired)
@@ -230,12 +225,7 @@ class StormpathAuthenticationProviderTest {
         assertEquals 4, info.authorities.size()
         assertTrue info.authorities.contains(groupGrantedAuthority)
         assertTrue info.authorities.contains(accountGrantedAuthority)
-        assertEquals acctHref, ((StormpathUserDetails) info.principal).properties.get("href")
-        assertEquals acctUsername, ((StormpathUserDetails) info.principal).properties.get("username")
-        assertEquals acctEmail, ((StormpathUserDetails) info.principal).properties.get("email")
-        assertEquals acctGivenName, ((StormpathUserDetails) info.principal).properties.get("givenName")
-        assertEquals acctMiddleName, ((StormpathUserDetails) info.principal).properties.get("middleName")
-        assertEquals acctSurname, ((StormpathUserDetails) info.principal).properties.get("surname")
+        assertEquals acctHref, info.principal
         assertTrue(((UserDetails) info.principal).enabled)
         assertTrue(((UserDetails) info.principal).accountNonLocked)
         assertTrue(((UserDetails) info.principal).accountNonExpired)

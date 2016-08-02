@@ -129,14 +129,13 @@ import java.util.Set;
  * <p/>
  * When the given credentials are successfully authenticated an {@link AuthenticationTokenFactory AuthenticationTokenFactory} instance
  * is used to create an authenticated token to be returned to the provider's client. By default, the {@link UsernamePasswordAuthenticationTokenFactory}
- * is used, constructing {@code UsernamePasswordAuthenticationToken} objects. By default, the principal stored in this token is a {@link StormpathUserDetails}
- * containing Stormpath account's properties like href, given name, username, etc. It can be easily modified by creating a new
- * <code>AuthenticationTokenFactory</code> and setting it to this provider via {@link #setAuthenticationTokenFactory(AuthenticationTokenFactory)}.
+ * is used, constructing {@code UsernamePasswordAuthenticationToken} objects. By default, the principal stored in this token is the
+ * Stormpath account's href. It can be easily modified by creating a new <code>AuthenticationTokenFactory</code> and setting
+ * it to this provider via {@link #setAuthenticationTokenFactory(AuthenticationTokenFactory)}.
  *
  * @see AccountGrantedAuthorityResolver
  * @see GroupGrantedAuthorityResolver
  * @see AuthenticationTokenFactory
- * @see StormpathUserDetails
  */
 public class StormpathAuthenticationProvider implements AuthenticationProvider {
 

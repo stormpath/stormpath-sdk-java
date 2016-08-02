@@ -28,13 +28,13 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
-import com.stormpath.spring.security.provider.StormpathUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -107,7 +107,7 @@ public class StormpathLoginSuccessHandler extends SavedRequestAwareAuthenticatio
     }
 
     protected Account getAccount(Authentication authentication) {
-        String accountHref = ((StormpathUserDetails) authentication.getPrincipal()).getProperties().get("href");
+        String accountHref = ((UserDetails) authentication.getPrincipal()).getUsername();
         return stormpathClient.getResource(accountHref, Account.class);
     }
 
