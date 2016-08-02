@@ -121,7 +121,7 @@
                                 key="stormpath.web.login.form.verifyEmail.text"/></a>
                     </c:if>
                     <c:if test="${forgotPasswordEnabled}">
-                        <a href="${pageContext.request.contextPath}${forgotLoginUri}" class="to-login"><sp:message
+                        <a href="${pageContext.request.contextPath}${forgotPasswordUri}" class="to-login"><sp:message
                                 key="stormpath.web.login.form.resetLink.text"/></a>
                     </c:if>
                 </div>
