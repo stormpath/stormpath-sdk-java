@@ -36,8 +36,7 @@ import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpa
  * @since 1.0.RC6
  */
 @Configuration
-// add basePackages so com.stormpath.spring.errors is scanned for ControllerAdvice-annotated classes
-@ComponentScan(basePackages = {"com.stormpath.spring"})
+@ComponentScan
 @PropertySource("classpath:application.properties")
 @EnableStormpathWebSecurity
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
