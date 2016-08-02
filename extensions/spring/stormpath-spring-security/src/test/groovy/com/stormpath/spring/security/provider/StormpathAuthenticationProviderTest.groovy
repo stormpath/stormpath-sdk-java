@@ -125,6 +125,7 @@ class StormpathAuthenticationProviderTest {
         expect(accountCustomData.get("springSecurityPermissions")).andReturn accountSpringSecurityGrantedAuthorities
         expectAccountBasicAttributes(account)
         expect(authentication.principal).andReturn username
+        expect(authentication.credentials).andReturn password
         expect(groupList.iterator()).andReturn iterator
         expect(iterator.hasNext()).andReturn true
         expect(iterator.next()).andReturn group
@@ -202,6 +203,7 @@ class StormpathAuthenticationProviderTest {
         expect(accountCustomData.get("springSecurityPermissions")).andReturn accountSpringSecurityGrantedAuthorities
         expectAccountBasicAttributes(account)
         expect(authentication.principal).andReturn username
+        expect(authentication.credentials).andReturn password
         expect(groupList.iterator()).andReturn iterator
         expect(iterator.hasNext()).andReturn true
         expect(iterator.next()).andReturn group
