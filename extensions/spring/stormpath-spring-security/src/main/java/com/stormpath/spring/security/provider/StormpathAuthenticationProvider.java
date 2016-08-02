@@ -306,7 +306,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
         }
 
         Authentication authToken = this.authenticationTokenFactory.createAuthenticationToken(
-                authentication.getPrincipal(), authentication.getCredentials(), getGrantedAuthorities(account), account
+                authentication.getPrincipal(), null, getGrantedAuthorities(account), account
         );
 
         return authToken;

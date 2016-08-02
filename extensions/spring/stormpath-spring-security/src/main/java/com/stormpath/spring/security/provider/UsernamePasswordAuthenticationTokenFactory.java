@@ -35,7 +35,7 @@ public class UsernamePasswordAuthenticationTokenFactory implements Authenticatio
 
     @Override
     public Authentication createAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, Account account) {
-        UserDetails userDetails = new User(account.getHref(), (String) credentials, authorities);
+        UserDetails userDetails = new User(account.getHref(), "", authorities);
         return new UsernamePasswordAuthenticationToken(userDetails, credentials, userDetails.getAuthorities());
     }
 }
