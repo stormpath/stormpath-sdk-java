@@ -42,7 +42,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
         sc.addListener(new ContextLoaderListener(context));
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
-        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
         ServletRegistration.Dynamic dispatcher = sc.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
