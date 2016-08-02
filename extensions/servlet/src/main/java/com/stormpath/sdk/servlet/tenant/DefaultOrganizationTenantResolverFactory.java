@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.enclave;
+package com.stormpath.sdk.servlet.tenant;
 
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
@@ -25,12 +25,12 @@ import javax.servlet.ServletContext;
 /**
  * @since 1.0.0
  */
-public class DefaultOrganizationEnclaveResolverFactory extends ConfigSingletonFactory<Resolver<Organization>> {
+public class DefaultOrganizationTenantResolverFactory extends ConfigSingletonFactory<Resolver<Organization>> {
 
     protected Resolver<Organization> createInstance(ServletContext servletContext) throws Exception {
-        OrganizationEnclaveResolver organizationEnclaveResolver = new OrganizationEnclaveResolver();
+        OrganizationTenantResolver organizationTenantResolver = new OrganizationTenantResolver();
         DefaultOrganizationNameKeyResolver organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
-        organizationEnclaveResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
-        return organizationEnclaveResolver;
+        organizationTenantResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
+        return organizationTenantResolver;
     }
 }

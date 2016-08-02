@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.enclave;
+package com.stormpath.sdk.servlet.tenant;
 
 import com.stormpath.sdk.servlet.http.Resolver;
 
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @since 1.0.0
  */
-public interface EnclaveResolver<T extends com.stormpath.sdk.resource.Resource> extends Resolver<T> {
+public interface TenantResolver<T extends com.stormpath.sdk.resource.Resource> extends Resolver<T> {
 
     T get(HttpServletRequest request, HttpServletResponse response);
 

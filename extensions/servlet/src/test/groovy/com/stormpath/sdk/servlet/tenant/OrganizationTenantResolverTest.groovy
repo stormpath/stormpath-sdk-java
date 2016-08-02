@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.enclave
+package com.stormpath.sdk.servlet.tenant
 
 import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping
 import com.stormpath.sdk.application.Application
@@ -36,7 +36,7 @@ import static org.testng.Assert.assertEquals
 /**
  * @since 1.0.0
  */
-class OrganizationEnclaveResolverTest {
+class OrganizationTenantResolverTest {
 
     @Test
     void testOrganizationExistInAccountStores() {
@@ -76,7 +76,7 @@ class OrganizationEnclaveResolverTest {
 
         def organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
         organizationNameKeyResolver.setSubdomainResolver(new SubdomainResolver())
-        def resolver = new OrganizationEnclaveResolver();
+        def resolver = new OrganizationTenantResolver();
         resolver.setOrganizationNameKeyResolver(organizationNameKeyResolver)
 
         assertEquals(resolver.get(request, null), organization) //expected Organization is 'organization'
@@ -107,7 +107,7 @@ class OrganizationEnclaveResolverTest {
 
         def organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
         organizationNameKeyResolver.setSubdomainResolver(new SubdomainResolver())
-        def resolver = new OrganizationEnclaveResolver();
+        def resolver = new OrganizationTenantResolver();
         resolver.setOrganizationNameKeyResolver(organizationNameKeyResolver)
 
         assertEquals(resolver.get(request, null), null)  //expected Organization is null
@@ -125,7 +125,7 @@ class OrganizationEnclaveResolverTest {
 
         def organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
         organizationNameKeyResolver.setSubdomainResolver(new SubdomainResolver())
-        def resolver = new OrganizationEnclaveResolver();
+        def resolver = new OrganizationTenantResolver();
         resolver.setOrganizationNameKeyResolver(organizationNameKeyResolver)
 
         assertEquals(resolver.get(request, null), null)

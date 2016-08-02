@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.enclave;
+package com.stormpath.sdk.servlet.tenant;
 
 import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
 import com.stormpath.sdk.application.Application;
@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @since 1.0.0
  */
-public class OrganizationEnclaveResolver implements EnclaveResolver<Organization> {
+public class OrganizationTenantResolver implements TenantResolver<Organization> {
 
     Resolver<String> organizationNameKeyResolver;
     ApplicationResolver applicationResolver = ApplicationResolver.INSTANCE;
