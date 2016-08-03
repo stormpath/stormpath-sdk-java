@@ -59,8 +59,7 @@ class MinimalStormpathConfigurationIT extends AbstractTestNGSpringContextTests {
         assertNotNull stormpathCacheManager
         assertNotNull client
         assertNotNull application
-
-        assertNull c.baseUrl
+        
         assertNull c.apiKeyFile
         assertNull c.apiKeyFileIdPropertyName
         assertNull c.apiKeyFileSecretPropertyName
