@@ -18,6 +18,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.stormpath.sdk</groupId>
+        <artifactId>stormpath-sdk-examples</artifactId>
+        <version>1.0.0.RC-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-security-spring-boot-webmvc</artifactId>
     <version>1.0.0.RC-SNAPSHOT</version>
