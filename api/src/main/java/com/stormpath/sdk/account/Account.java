@@ -560,4 +560,83 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.0.RC7
      */
     RefreshTokenList getRefreshTokens();
+
+    /**
+     * Returns a paginated list of the account's linked accounts.
+     *
+     * <p>Tip: If this list might be large, instead of iterating over all groups, it might be more convenient (and
+     * practical) to execute a search for one or more of the account's linked accounts using the
+     * {@link #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)} or {@link #getLinkedAccounts(java.util.Map)} methods instead
+     * of this one.</p>
+     *
+     * @return a paginated list of all linked accounts to the Account.
+     * @see #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)
+     * @see #getLinkedAccounts(java.util.Map)
+     */
+    AccountList getLinkedAccounts();
+
+    /**
+     * Returns a paginated list of the account's linked accounts that match the specified query criteria.
+     *
+     * <p>This method is mostly provided as a non-type-safe alternative to the
+     * {@link #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)} method which might be useful in dynamic languages on
+     * the
+     * JVM (for example, with Groovy):
+     * <pre>
+     * def linkedAccounts = account.getLinkedAccounts([givenName: '*foo*', orderBy: 'surname desc', limit: 50])
+     * </pre>
+     * The query parameter names and values must be equal to those documented in the Stormpath REST API product guide.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../accounts/accountId/linkedAccounts?param1=value1&param2=value2&...
+     * </pre>
+     * </p>
+     * If in doubt, use {@link #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)} as all possible query options are
+     * available
+     * via type-safe guarantees that can be auto-completed by most IDEs.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the account's linked accounts that match the specified query criteria.
+     * @since 0.8
+     */
+    AccountList getLinkedAccounts(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's linked accounts that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getLinkedAccounts(Accounts.where(
+     *     Accounts.givenName().containsIgnoreCase("foo"))
+     *     .and(Accounts.givenName().startsWithIgnoreCase("bar"))
+     *     .orderBySurname()
+     *     .orderByStatus().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.account.Accounts.*;
+     *
+     * ...
+     *
+     * account.getLinkedAccounts(where(
+     *      givenName().containsIgnoreCase("foo"))
+     *     .and(givenName().startsWithIgnoreCase("bar"))
+     *     .orderBySurname()
+     *     .orderByStatus().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's linked accounts that match the specified query criteria.
+     * @since 0.8
+     */
+    AccountList getLinkedAccounts(AccountCriteria criteria);
 }

@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountOptions;
-import com.stormpath.sdk.account.AccountStatus;
-import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -27,23 +24,13 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupMembershipList;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessToken;
@@ -69,38 +56,42 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final StringProperty GIVEN_NAME = new StringProperty("givenName");
     static final StringProperty MIDDLE_NAME = new StringProperty("middleName");
     static final StringProperty SURNAME = new StringProperty("surname");
-    static final StatusProperty<AccountStatus> STATUS = new StatusProperty<AccountStatus>(AccountStatus.class);
+    static final StatusProperty<AccountStatus> STATUS = new StatusProperty<>(AccountStatus.class);
     static final StringProperty FULL_NAME = new StringProperty("fullName"); //computed property, can't set it or query based on it
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<EmailVerificationToken> EMAIL_VERIFICATION_TOKEN =
-            new ResourceReference<EmailVerificationToken>("emailVerificationToken", EmailVerificationToken.class);
-    static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);
-    static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
-    static final ResourceReference<ProviderData> PROVIDER_DATA = new ResourceReference<ProviderData>("providerData", ProviderData.class);
+            new ResourceReference<>("emailVerificationToken", EmailVerificationToken.class);
+    static final ResourceReference<Directory> DIRECTORY = new ResourceReference<>("directory", Directory.class);
+    static final ResourceReference<Tenant> TENANT = new ResourceReference<>("tenant", Tenant.class);
+    static final ResourceReference<ProviderData> PROVIDER_DATA = new ResourceReference<>("providerData", ProviderData.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<GroupList, Group> GROUPS =
-            new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
+            new CollectionReference<>("groups", GroupList.class, Group.class);
     static final CollectionReference<GroupMembershipList, GroupMembership> GROUP_MEMBERSHIPS =
-            new CollectionReference<GroupMembershipList, GroupMembership>("groupMemberships", GroupMembershipList.class, GroupMembership.class);
+            new CollectionReference<>("groupMemberships", GroupMembershipList.class, GroupMembership.class);
     static final CollectionReference<ApiKeyList, ApiKey> API_KEYS =
-            new CollectionReference<ApiKeyList, ApiKey>("apiKeys", ApiKeyList.class, ApiKey.class);
+            new CollectionReference<>("apiKeys", ApiKeyList.class, ApiKey.class);
     // @since 1.0.RC4
     static final CollectionReference<ApplicationList, Application> APPLICATIONS =
-            new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, Application.class);
+            new CollectionReference<>("applications", ApplicationList.class, Application.class);
 
     // @since 1.0.RC7
     static final CollectionReference<AccessTokenList, AccessToken> ACCESS_TOKENS =
-            new CollectionReference<AccessTokenList, AccessToken>("accessTokens", AccessTokenList.class, AccessToken.class);
+            new CollectionReference<>("accessTokens", AccessTokenList.class, AccessToken.class);
 
     static final CollectionReference<RefreshTokenList, RefreshToken> REFRESH_TOKENS =
-            new CollectionReference<RefreshTokenList, RefreshToken>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
+            new CollectionReference<>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
+
+
+    static final CollectionReference<AccountList, Account> LINKED_ACCOUNTS =
+            new CollectionReference<>("linkedAccounts", AccountList.class, Account.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
-            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS);
+            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -463,5 +454,22 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
      */
     public RefreshTokenList getRefreshTokens() {
         return getResourceProperty(REFRESH_TOKENS);
+    }
+
+    @Override
+    public AccountList getLinkedAccounts() {
+        return getResourceProperty(LINKED_ACCOUNTS);
+    }
+
+    @Override
+    public AccountList getLinkedAccounts(Map<String, Object> queryParams) {
+        AccountList list = getLinkedAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
+    }
+
+    @Override
+    public AccountList getLinkedAccounts(AccountCriteria criteria) {
+        AccountList list = getLinkedAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
     }
 }

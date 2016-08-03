@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountOptions;
-import com.stormpath.sdk.account.AccountStatus;
-import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -27,11 +24,7 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
@@ -308,5 +301,20 @@ public class ImmutableAccount implements Account {
     @Override
     public RefreshTokenList getRefreshTokens() {
         return account.getRefreshTokens();
+    }
+
+    @Override
+    public AccountList getLinkedAccounts() {
+        return account.getLinkedAccounts();
+    }
+
+    @Override
+    public AccountList getLinkedAccounts(Map<String, Object> queryParams) {
+        return account.getLinkedAccounts(queryParams);
+    }
+
+    @Override
+    public AccountList getLinkedAccounts(AccountCriteria criteria) {
+        return account.getLinkedAccounts(criteria);
     }
 }
