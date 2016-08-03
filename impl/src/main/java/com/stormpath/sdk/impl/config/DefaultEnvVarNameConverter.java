@@ -11,6 +11,9 @@ public class DefaultEnvVarNameConverter implements EnvVarNameConverter {
         dottedPropertyName = Strings.trimWhitespace(dottedPropertyName);
 
         //special cases (camel case):
+        if ("stormpath.client.baseUrl".equals(dottedPropertyName)) {
+            return "STORMPATH_CLIENT_BASEURL";
+        }
         if ("stormpath.client.apiKey.id".equals(dottedPropertyName)) {
             return "STORMPATH_API_KEY_ID";
         }
