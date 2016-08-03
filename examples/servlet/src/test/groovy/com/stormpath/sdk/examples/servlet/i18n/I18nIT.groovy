@@ -13,56 +13,60 @@ class I18nIT {
     @Test
     void testLoginPageDefaultLocale() {
         given()
-                .when()
-                .get("http://localhost:8080/login")
-                .then()
-                .body(
-                "html.head.title", equalTo("Login"),
-                "**.findAll { it.@class == 'header' }.span.a", equalTo("Create Account"),
-                "**.findAll { it.@type == 'submit' }", equalTo("Login"),
-                "**.findAll { it.@class == 'to-login' }", equalTo("Forgot Password?")
+            .header("Accept", "text/html")
+        .when()
+            .get("http://localhost:8080/login")
+        .then()
+            .body(
+            "html.head.title", equalTo("Login"),
+            "**.findAll { it.@class == 'header' }.span.a", equalTo("Create Account"),
+            "**.findAll { it.@type == 'submit' }", equalTo("Login"),
+            "**.findAll { it.@class == 'to-login' }", equalTo("Forgot Password?")
         )
     }
 
     @Test
     void testRegisterPageDefaultLocale() {
         given()
-                .when()
+                .header("Accept", "text/html")
+            .when()
                 .get("http://localhost:8080/register")
-                .then()
+            .then()
                 .body(
-                "html.head.title", equalTo("Create Account"),
-                "**.findAll { it.@type == 'submit' }", equalTo("Create Account"),
-                "**.findAll { it.@class == 'to-login' }", equalTo("Back to Login")
-        )
+                    "html.head.title", equalTo("Create Account"),
+                    "**.findAll { it.@type == 'submit' }", equalTo("Create Account"),
+                    "**.findAll { it.@class == 'to-login' }", equalTo("Back to Login")
+                )
     }
 
     @Test
     void testLoginPage() {
         given()
                 .header("Accept-Language", "es")
-                .when()
-                    .get("http://localhost:8080/login")
-                .then()
-                    .body(
-                        "html.head.title", equalTo("Iniciar Sesión"),
-                        "**.findAll { it.@class == 'header' }.span.a", equalTo("Crear Cuenta"),
-                        "**.findAll { it.@type == 'submit' }", equalTo("Iniciar Sesión"),
-                        "**.findAll { it.@class == 'to-login' }", equalTo("Se te olvidó tu contraseña?")
-                    )
+                .header("Accept", "text/html")
+            .when()
+                .get("http://localhost:8080/login")
+            .then()
+                .body(
+                    "html.head.title", equalTo("Iniciar Sesión"),
+                    "**.findAll { it.@class == 'header' }.span.a", equalTo("Crear Cuenta"),
+                    "**.findAll { it.@type == 'submit' }[0]", equalTo("Iniciar Sesión"),
+                    "**.findAll { it.@class == 'to-login' }", equalTo("Se te olvidó tu contraseña?")
+                )
     }
 
     @Test
     void testRegisterPage() {
         given()
                 .header("Accept-Language", "es")
-                .when()
+                .header("Accept", "text/html")
+            .when()
                 .get("http://localhost:8080/register")
-                .then()
+            .then()
                 .body(
-                "html.head.title", equalTo("Crear Cuenta"),
-                "**.findAll { it.@type == 'submit' }", equalTo("Crear Cuenta"),
-                "**.findAll { it.@class == 'to-login' }", equalTo("Regresar a Iniciar Sesión")
-        )
+                    "html.head.title", equalTo("Crear Cuenta"),
+                    "**.findAll { it.@type == 'submit' }", equalTo("Crear Cuenta"),
+                    "**.findAll { it.@class == 'to-login' }", equalTo("Regresar a Iniciar Sesión")
+                )
     }
 }
