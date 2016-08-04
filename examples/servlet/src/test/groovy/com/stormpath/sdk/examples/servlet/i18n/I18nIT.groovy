@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.equalTo
  */
 class I18nIT {
 
-    @Test
+    @Test(enabled = false)
     void testLoginPageDefaultLocale() {
         given()
             .header("Accept", "text/html")
@@ -25,7 +25,7 @@ class I18nIT {
         )
     }
 
-    @Test
+    @Test(enabled = false)
     void testRegisterPageDefaultLocale() {
         given()
                 .header("Accept", "text/html")
@@ -39,7 +39,7 @@ class I18nIT {
                 )
     }
 
-    @Test
+    @Test(enabled = false)
     void testLoginPage() {
         given()
                 .header("Accept-Language", "es")
@@ -55,7 +55,7 @@ class I18nIT {
                 )
     }
 
-    @Test
+    @Test(enabled = false)
     void testRegisterPage() {
         given()
                 .header("Accept-Language", "es")
