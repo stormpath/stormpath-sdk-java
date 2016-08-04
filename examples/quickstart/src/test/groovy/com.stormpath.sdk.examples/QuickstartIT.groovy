@@ -47,7 +47,7 @@ class QuickstartIT {
 
     private Application application;
 
-    @Test
+    @Test(enabled = false)
     void testCode() {
         try {
             String[] args={}
@@ -59,7 +59,7 @@ class QuickstartIT {
         }
     }
 
-    @BeforeTest
+    @BeforeTest(enabled = false)
     void createTestData() {
         ClientBuilder builder = Clients.builder();
         Client client = builder.build();
@@ -71,7 +71,7 @@ class QuickstartIT {
         this.application = tenant.createApplication(newCreateRequestFor(application).createDirectory().build())
     }
 
-    @AfterTest
+    @AfterTest(enabled = false)
     void deleteTestData(){
         //Delete the account created during test
 
