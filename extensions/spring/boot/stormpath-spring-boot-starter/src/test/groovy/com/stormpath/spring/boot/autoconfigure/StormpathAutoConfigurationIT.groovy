@@ -60,7 +60,6 @@ class StormpathAutoConfigurationIT extends AbstractTestNGSpringContextTests {
         assertNotNull client
         assertNotNull application
 
-        assertNull c.baseUrl
         assertNull c.apiKeyId
         assertNull c.apiKeySecret
         assertNull c.apiKeyFile
