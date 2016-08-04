@@ -47,14 +47,6 @@
             <artifactId>stormpath-default-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- Runtime-only dependencies: -->
-        <dependency>
-            <groupId>com.stormpath.sdk</groupId>
-            <artifactId>stormpath-sdk-httpclient</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
