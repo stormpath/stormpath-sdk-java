@@ -317,4 +317,19 @@ public class ImmutableAccount implements Account {
     public AccountList getLinkedAccounts(AccountCriteria criteria) {
         return account.getLinkedAccounts(criteria);
     }
+
+    @Override
+    public AccountLinkList getAccountLinks() {
+        return account.getAccountLinks();
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks(Map<String, Object> queryParams) {
+        return account.getAccountLinks(queryParams);
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks(AccountLinkCriteria criteria) {
+        return account.getAccountLinks(criteria);
+    }
 }

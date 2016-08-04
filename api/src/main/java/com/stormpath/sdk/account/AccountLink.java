@@ -3,6 +3,8 @@ package com.stormpath.sdk.account;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 
+import java.util.Date;
+
 /**
  * A {@code AccountLink} represents the link between 2 accounts {@link Account}
  * <p/>
@@ -18,7 +20,7 @@ public interface AccountLink extends Resource, Deletable {
      *
      * @return the leftAccount {@link Account} resource.
      */
-    Account getleftAccount();
+    Account getLeftAccount();
 
     /**
      * Returns the rightAccount {@link Account} resource.
@@ -26,4 +28,11 @@ public interface AccountLink extends Resource, Deletable {
      * @return the rightAccount {@link Account} resource.
      */
     Account getRightAccount();
+
+    /**
+     * Returns the rightAccount {@link Account} resource.
+     *
+     * @return the rightAccount {@link Account} resource.
+     */
+    Date getCreatedAt();
 }

@@ -37,7 +37,7 @@ public class DefaultAccountLink extends AbstractInstanceResource implements Acco
     }
 
     @Override
-    public Account getleftAccount() {
+    public Account getLeftAccount() {
         return getResourceProperty(LEFT_ACCOUNT);
     }
 
@@ -46,6 +46,7 @@ public class DefaultAccountLink extends AbstractInstanceResource implements Acco
         return getResourceProperty(RIGHT_ACCOUNT);
     }
 
+    @Override
     public Date getCreatedAt() {
         return getDateProperty(CREATED_AT);
     }

@@ -88,10 +88,13 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<AccountList, Account> LINKED_ACCOUNTS =
             new CollectionReference<>("linkedAccounts", AccountList.class, Account.class);
 
+    static final CollectionReference<AccountLinkList, AccountLink> ACCOUNT_LINKS =
+            new CollectionReference<>("accountLinks", AccountLinkList.class, AccountLink.class);
+
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
-            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS);
+            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS, ACCOUNT_LINKS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -471,5 +474,22 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     public AccountList getLinkedAccounts(AccountCriteria criteria) {
         AccountList list = getLinkedAccounts(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks() {
+        return getResourceProperty(ACCOUNT_LINKS);
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks(Map<String, Object> queryParams) {
+        AccountLinkList list = getAccountLinks(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountLinkList.class, queryParams);
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks(AccountLinkCriteria criteria) {
+        AccountLinkList list = getAccountLinks(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountLinkList.class, (Criteria<AccountLinkCriteria>) criteria);
     }
 }
