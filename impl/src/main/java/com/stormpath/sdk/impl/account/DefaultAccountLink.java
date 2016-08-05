@@ -58,7 +58,7 @@ public class DefaultAccountLink extends AbstractInstanceResource implements Acco
      *
      * @param leftAccount   the leftAccount of the AccountLink
      * @param rightAccount     the rightAccount of the AccountLink
-     * @param dataStore the datastore used to create the membership
+     * @param dataStore the dataStore used to create the accountLink
      * @return the created AccountLink instance.
      */
     public static AccountLink create(Account leftAccount, Account rightAccount, InternalDataStore dataStore) {
