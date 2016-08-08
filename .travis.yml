@@ -16,7 +16,7 @@ before_install:
 - export STORMPATH_AUTHORS_URL="$S3_BASE/$STORMPATH_AUTHORS"
 - wget $STORMPATH_AUTHORS_URL
 - if [ -e $STORMPATH_AUTHORS ]; then echo "$STORMPATH_AUTHORS_URL found. Proceeding."; else echo "$STORMPATH_AUTHORS_URL not found. Exiting."; exit 1; fi
-- source $STORMPATH_AUTHORS
+- source $STORMPATH_AUTHORS $AUTHOR
 - wget $ENC_TARBALL_URL
 - if [ -e $ENC_TARBALL ]; then echo "$ENC_TARBALL_URL found. Proceeding."; else echo "$ENC_TARBALL_URL not found. Exiting."; exit 1; fi
 - wget $ENC_ENV_URL
