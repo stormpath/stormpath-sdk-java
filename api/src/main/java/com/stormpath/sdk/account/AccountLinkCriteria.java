@@ -7,10 +7,8 @@ import com.stormpath.sdk.query.Criteria;
  * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  AccountCriteria instances can be
  * constructed by using the {@link Accounts} utility class, for example:
  * <pre>
- * Accounts.where(Accounts.surname().containsIgnoreCase("Smith"))
- *     .and(Accounts.givenName().eqIgnoreCase("John"))
- *     .orderBySurname().descending()
- *     .withGroups(10, 10)
+ * <b>AccountLinks.where(AccountLinks.createdAt()</b>.equals("2016-01-01")<b>)</b>
+ *     .orderByCreatedAt().descending()
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>
@@ -22,20 +20,9 @@ import com.stormpath.sdk.query.Criteria;
  * The default sort order is always {@code ascending}, but can be changed to {@code descending} by calling the
  * {@link #descending()} method <em>immediately</em> after the {@code orderBy} method call.  For example:
  * <pre>
- * ...criteria.orderByEmail()<b>.descending()</b>...
- * </pre>
- * <h3>Multiple Order Statements</h3>
- * You may specify multiple {@code orderBy} clauses and the query results will ordered, reflecting {@code orderBy}
- * statements <em>in the order they are declared</em>.  For example, to order the results first by email (ascending)
- * and then further by surname (descending), you would chain {@code orderBy} statements:
- * <pre>
- * ...criteria
- *     .orderByEmail()
- *     .orderBySurname().descending()
- *     ...
- * </pre>
+ * ...criteria.orderByCreatedAt()<b>.descending()</b>...
  *
- * @since 0.8
+ * @since //TODO
  */
 public interface AccountLinkCriteria extends Criteria<AccountLinkCriteria>, AccountLinkOptions<AccountLinkCriteria> {
 
