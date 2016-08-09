@@ -9,4 +9,4 @@ Default Stormpath Properties
 
 .. literalinclude:: ../../../../stormpath-spring-webmvc/src/main/java/com/stormpath/spring/config/AbstractStormpathWebMvcConfiguration.java
    :language: java
-   :lines: 141-362
+   :lines: 223-406

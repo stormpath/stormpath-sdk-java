@@ -126,7 +126,7 @@ The :ref:`i18n` message keys used in the default register view have names prefix
 
 .. literalinclude:: ../../../../servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
    :language: properties
-   :lines: 42-70
+   :lines: 49-87
 
 For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
 
