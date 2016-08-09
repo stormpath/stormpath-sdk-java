@@ -63,12 +63,13 @@ public class IdSiteLogoutController extends LogoutController {
     @Override
     public ViewModel handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        //ensure the local application user state is cleared no matter what:
-        super.handleRequest(request, response);
-
         if (request.getAttribute(LogoutResult.class.getName()) != null) {
             //We're currently processing a reply from ID site, don't send back to ID site:
             return new DefaultViewModel(nextUri).setRedirect(true);
+        } else {
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/882
+            //Ensure the local application user state is cleared but only once
+            super.handleRequest(request, response);
         }
 
         //redirect to ID Site to perform the SSO logout to effectively log out the user across all applications:
