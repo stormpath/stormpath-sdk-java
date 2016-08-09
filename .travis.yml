@@ -4,26 +4,32 @@ jdk:
 - openjdk7
 - oraclejdk7
 - oraclejdk8
-env:
-  global:
-  - STORMPATH_CLIENT_BASEURL=https://staging-api-a.stormpath.com/v1
-  - STORMPATH_API_KEY_ID=7ATEEQQFCI83UR35F1UOTFEFQ
-  - STORMPATH_API_KEY_ID_TWO_APP=2O2NNY798EWGLPQQFG4CG1EOW
-  - AWS_ACCESS_KEY_ID=AKIAINZJPJUSAC3U7BYQ
-  - PATH=~/usr/local/aws:~/usr/local/aws/bin:$PATH
-  - secure: X4+36zWfAP0ft2i4MVMHTcCQoAVSZ2aD6EXCBTEj8HJz98cu4VTg5SizZC377Xc8fK/Rket3UDAtexlWxP4dS1K9gFvWqWFmVgZv84eUGKoZ2dFRdQT2GZ9aJ+BnTO+Gi1v8dAwQY5XD392rM2I0LJHIiPzgmpmGq70PKCkbQ/o=
-  - secure: f5bbwOCIWv6Ns+nIRUt/Hb9hMuZ+Aud5BmeJnmeHdazfzecFK4GrEgLuXnAoj7cNEfdQBPYhnLiaOgrFKF6XJTmyRGOD/K+J/zgH5VK6BhJhKyvt/LjOmIc4LNgntRQyMYNl0tG4lrKnlRjTtY2FV+2i3fwcfgIgo6QtbqzKQTo=
-  - secure: X1ATGvagtlk+RbCO3rG8ieR+5YCcrXIzlhsOinWdgIMOGf+lojuBlA6mCzQjCu6WrbdddZx+PQBOFP+Z6Ztj8jWunXF+lA5fkcwHB4OWwQ349IFCudfoF3igYkBgJ6LV9iw1St48EZQUOlBUu8Gm7ABgbVSR+S8G6aA0kieKFVg=    
 before_install:
-- openssl aes-256-cbc -K $encrypted_da634cfd642b_key -iv $encrypted_da634cfd642b_iv
-  -in deployKey_stormpath_github_io_id_rsa.enc -out ~/.ssh/id_rsa -d
+- export S3_BASE="http://stormpath-sdk-java-travis-setup.s3-website-us-east-1.amazonaws.com"
+- export ENC_TARBALL="stormpath_travis_setup.tar.enc"
+- export ENC_ENV="stormpath_env.sh.enc"
+- export STORMPATH_AUTHORS="stormpath_authors.sh"
+- export AUTHOR=$(git show --format="%ae" | head -n 1)
+- test $TRAVIS_BRANCH = master && MIDDLE="/" || MIDDLE="/$AUTHOR/"
+- export ENC_TARBALL_URL="$S3_BASE/$ENC_TARBALL"
+- export ENC_ENV_URL="$S3_BASE$MIDDLE$ENC_ENV"
+- export STORMPATH_AUTHORS_URL="$S3_BASE/$STORMPATH_AUTHORS"
+- wget $STORMPATH_AUTHORS_URL
+- if [ -e $STORMPATH_AUTHORS ]; then echo "$STORMPATH_AUTHORS_URL found. Proceeding."; else echo "$STORMPATH_AUTHORS_URL not found. Exiting."; exit 1; fi
+- source $STORMPATH_AUTHORS $AUTHOR
+- wget $ENC_TARBALL_URL
+- if [ -e $ENC_TARBALL ]; then echo "$ENC_TARBALL_URL found. Proceeding."; else echo "$ENC_TARBALL_URL not found. Exiting."; exit 1; fi
+- wget $ENC_ENV_URL
+- if [ -e $ENC_ENV ]; then echo "$ENC_ENV_URL found. Proceeding."; else echo "$ENC_ENV_URL not found. Exiting."; exit 1; fi
+- openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv -in $ENC_TARBALL -out stormpath_travis_setup.tar -d
+- tar xvf stormpath_travis_setup.tar
+- source env.sh
+- openssl aes-256-cbc -K $ENCRYPT_KEY -iv $ENCRYPT_IV -in $ENC_ENV -out stormpath_env.sh -d
+- source stormpath_env.sh
+- cp id_rsa_stormpath.github.io ~/.ssh/id_rsa 
 - chmod 600 ~/.ssh/id_rsa
-- openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv 
-  -in secrets.tar.enc -out secrets.tar -d
-- tar xvf secrets.tar
 - mkdir -p ~/.stormpath/clover
 - cp clover.license ~/.stormpath/clover
-- cp .netrc ~/
 - export RELEASE_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
   -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
 - export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH == 'master' ] && echo 'true')"
