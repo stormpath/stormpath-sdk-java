@@ -112,6 +112,27 @@ You can customize this list with optional directives as necessary, but note:
 
 .. _password strength:
 
+Custom Data
+^^^^^^^^^^^
+
+You can capture `Custom Data`_ fields when users register by adding configuration properties. For example,
+to add a custom field to capture a user's birthday,
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fields.birthday.type = text
+    stormpath.web.register.form.fields.birthday.label = Birthday
+    stormpath.web.register.form.fields.birthday.enabled = true
+    stormpath.web.register.form.fields.birthday.visible = true
+    stormpath.web.register.form.fields.birthday.required = true
+    stormpath.web.register.form.fields.birthday.placeholder = Birthday
+
+When the registration form is rendered, this field will be added to the bottom of the form.
+
+   .. image:: /_static/register-with-birthday.png
+
+When the form is submitted, the field's name and value will be added to the account's custom data.
+
 Password Strength
 ^^^^^^^^^^^^^^^^^
 
@@ -232,3 +253,4 @@ A ``VerifiedAccountRequestEvent`` will be published when processing an HTTP requ
 Naturally, **this event is only published if** :ref:`email verification <email verification>` **is enabled.**
 
 .. _Stormpath Admin Console: https://api.stormpath.com
+.. _Custom Data: http://docs.stormpath.com/java/product-guide/#custom-data
