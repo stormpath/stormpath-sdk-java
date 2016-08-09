@@ -169,17 +169,22 @@ Try it!
 
    .. image:: /_static/register.png
 
-#. Fill out the form and click submit and you'll be shown a success view:
+#. Fill out the form and click submit, your account will be created with ``UNVERIFIED`` or ``ENABLED`` status depending on your `Directory Workflow <http://docs.stormpath.com/console/product-guide/#directory-workflows>`_:
 
-   .. image:: /_static/register-verify.png
+    * Account status ``UNVERIFIED``:
+        You will be redirected to the :ref:`login page <login>` with ``?status=unverified`` and you will receive a verification email.
 
-#. Open your email and, depending on your "Account Email Verification" email template, you should see an email that looks like the following:
+        A) Open your email and, depending on your "Account Email Verification" email template, you should see an email that looks like the following:
 
-   .. image:: /_static/register-verify-email.png
+           .. image:: /_static/register-verify-email.png
 
-#. Click the link in the email and it will take you to a ``/verify`` path.  This will verify your email address and immediately redirect you to the login page, allowing you to login with the new (and verified) account:
+        B) Click the link in the email and it will take you to a ``/verify`` path.  This will verify your email address and redirect you to the :ref:`Verify Next URI`
 
-   .. image:: /_static/login-verified.png
+            .. image:: /_static/login-verified.png
+
+    * Account status ``ENABLED``:
+        If ``autoLogin`` is true the application will log you in and redirect to register 'next' URI.
+        If false you will be redirected to the :ref:`login page <login>` with ``?status=created``.
 
 .. _verify link base url:
 
@@ -204,15 +209,25 @@ You can change the value to reflect a different path if you wish.
 Verify Next URI
 ^^^^^^^^^^^^^^^
 
-When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verifyEmail.uri`` path, the user will be immediately redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.verifyEmail.nextUri`` configuration property:
+When the user clicks the email verification link and the request is processed by the the ``stormpath.web.verifyEmail.uri`` path, the user will be:
 
-.. code-block:: properties
+    * If ``autoLogin`` is false (this is the default), redirected to a 'next' URI.  By default, this URI is the :ref:`login page <login>` as controlled by the ``stormpath.web.verifyEmail.nextUri`` configuration property:
 
-    stormpath.web.verifyEmail.nextUri = /login?status=verified
+        .. code-block:: properties
 
-As you can see, this URI has a ``status=verified`` query parameter.  The default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
+            stormpath.web.verifyEmail.autoLogin = false
+            stormpath.web.verifyEmail.nextUri = /login?status=verified
 
-.. image:: /_static/login-verified.png
+        As you can see, this URI has a ``status=verified`` query parameter.  The plugin's default login view will recognize the query parameter and show the user a nice message explaining that their account has been verified and that they can log in:
+
+        .. image:: /_static/login-verified.png
+
+    * If ``autoLogin`` is true, the verification workflow will login the user and redirect to ``login.nextUri``
+
+        .. code-block:: properties
+
+            stormpath.web.verifyEmail.autoLogin = true
+            stormpath.web.login.nextUri = /
 
 Events
 ------
