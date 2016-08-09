@@ -96,7 +96,7 @@ By default the supported directives are:
 * ``visible``: the field is visible.
 * ``label``: this is the label to display and its value is defined in i18n.properties with the key ``stormpath.web.register.form.fields.givenName.label``.
 * ``placeholder``: this is the placeholder to display and its value is defined in i18n.properties with the key ``stormpath.web.register.form.fields.givenName.placeholder``.
-* ``required``: makes the field required, If the field is blank, the error message is defined in i18n.properties as``stormpath.web.register.form.fields.email.required``. If the input is invalid the error message is in the i18n.properties with the key ``stormpath.web.register.form.fields.email.invalid``.
+* ``required``: makes the field required, If the field is blank, the error message is defined in i18n.properties as ``stormpath.web.register.form.fields.email.required``. If the input is invalid the error message is in the i18n.properties with the key ``stormpath.web.register.form.fields.email.invalid``.
 * ``type``: The input type of the field.
 
 By default the supported fields are: (remember to set the directives for each one)
