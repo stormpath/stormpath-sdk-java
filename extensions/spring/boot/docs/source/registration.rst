@@ -222,7 +222,7 @@ When the user clicks the email verification link and the request is processed by
 
         .. image:: /_static/login-verified.png
 
-    * If ``autoLogin`` is true, the verification workflow will log in the user and redirect to login 'next' URI
+    * If ``autoLogin`` is true, the verification workflow will login the user and redirect to ``login.nextUri``
 
         .. code-block:: properties
 
