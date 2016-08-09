@@ -36,12 +36,21 @@ If you want to change this path, set the ``stormpath.web.register.uri`` configur
 
 Next URI
 --------
+**If** ``stormpath.web.register.autoLogin = false`` **, this is the default**
 
 If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically redirected to the application's context root (home page) by default.  If you want to change this destination, set the ``stormpath.web.register.nextUri`` configuration property:
 
 .. code-block:: properties
 
     stormpath.web.register.nextUri = /
+
+**If** ``stormpath.web.register.autoLogin = true``
+
+If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically logged in to the application and redirected to the page specified in the ``stormpath.web.login.nextUri`` configuration property:
+
+.. code-block:: properties
+
+    stormpath.web.login.nextUri = /
 
 Again, this property is only referenced if email verification is disabled.  If email verification is enabled, a page will be rendered asking the user to check their email.
 
@@ -59,13 +68,27 @@ Again, this functionality is only executed if email verification is disabled.  I
 Form Fields
 -----------
 
-You can specify a which form fields will be displayed by editing the ``stormpath.web.register.form.fields`` configuration property.  For example, the default value:
+You can specify a which form fields will be displayed by editing the ``stormpath.web.register.form.fields`` configuration property.  For example, the default value for ``givenName`` is:
 
 .. code-block:: properties
 
-    stormpath.web.register.form.fields = givenName, surname, email(required), password(required,password)
+    stormpath.web.register.form.fields.givenName.enabled = true
+    stormpath.web.register.form.fields.givenName.visible = true
+    stormpath.web.register.form.fields.givenName.label = stormpath.web.register.form.fields.givenName.label
+    stormpath.web.register.form.fields.givenName.placeholder = stormpath.web.register.form.fields.givenName.placeholder
+    stormpath.web.register.form.fields.givenName.required = true
+    stormpath.web.register.form.fields.givenName.type = text
 
-The value is a comma-delimited list Stormpath ``Account`` field names and optional form field directives.  The currently supported field names:
+By default the supported directives are:
+
+* ``enabled``: the field is enabled for edit.
+* ``visible``: the field is visible.
+* ``label``: this is the label to display and its value is defined in i18n.properties with the key ``stormpath.web.register.form.fields.givenName.label``.
+* ``placeholder``: this is the placeholder to display and its value is defined in i18n.properties with the key ``stormpath.web.register.form.fields.givenName.placeholder``.
+* ``required``: makes the field required, If the field is blank, the error message is defined in i18n.properties as ``stormpath.web.register.form.fields.email.required``. If the input is invalid the error message is in the i18n.properties with the key ``stormpath.web.register.form.fields.email.invalid``.
+* ``type``: The input type of the field.
+
+By default the supported fields are: (remember to set the directives for each one)
 
 * ``givenName``: person's given name, also known as 'first name' in Western countries.
 * ``middleName``: any middle name(s).
@@ -74,30 +97,15 @@ The value is a comma-delimited list Stormpath ``Account`` field names and option
 * ``email``: the user's email address.  This field is always required.
 * ``password``: the user's password.
 
-Field names may also have directives in parenthesis immediately following the field name:
+You can customize this list of fields, those extra fields will be saved as custom data. The order field is defined in
 
-``fieldName(directive1, directive2, ..., directiveN)``
+.. code-block:: properties
 
-The currently supported directives are:
+    stormpath.web.register.form.fieldOrder = username,givenName,middleName,surname,email,password,confirmPassword
 
-* ``required``: the form field must be populated before the form can be submitted
-* ``password``: the form field is a password field; show ``*`` characters instead of raw password characters
+You can also customize additional directives as necessary, but note:
 
-Fields specified without a directive will be optional (displayed, but not required to be filled in).
-
-So, the above default value indicates that:
-
-1. The ``givenName`` form field (first name) will be shown first, but it is optional (no directives)
-2. The ``surname`` form field (last name) will be shown next, but it is optional (no directives)
-3. The ``email`` form field will be shown next and it is required (``required`` directive)
-4. The ``password`` form field will be shown last, and it is required and a password field (show stars instead of raw characters).
-
-You can customize this list with optional directives as necessary, but note:
-
-**The** ``email`` **form field is always required.  If you customize your form fields, ensure that you always have at least an** ``email(required)`` **list entry.**
-
-.. TIP::
-    Re-ordering the comma-delimited list will automatically re-order the fields in the view :)
+**The** ``email`` **form field is always required.  If you customize your form fields, ensure that you always have at least an** ``email`` **and set it as** ``required`` **.**
 
 i18n
 ----
@@ -106,7 +114,7 @@ The :ref:`i18n` message keys used in the default register view have names prefix
 
 .. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
    :language: properties
-   :lines: 42-70
+   :lines: 49-87
 
 For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
 
