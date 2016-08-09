@@ -641,6 +641,60 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     AccountList getLinkedAccounts(AccountCriteria criteria);
 
     /**
+     * Links this account to the otherAccount.
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will interact with the server immediately.</p>
+     *
+     * @param otherAccount the other Account that this account will be linked to
+     * @return the new AccountLink resource created reflecting the link between two accounts.
+     * @since // TODO
+     */
+    AccountLink addLink(Account otherAccount);
+
+    /**
+     * Links this account to the otherAccount represented by its {@code href}
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param otherAccountHref the href of the other account that this account will be linked to
+     * @return the new AccountLink resource created reflecting the link between two accounts.
+     * @throws IllegalStateException if no Account matching {@code otherAccountHref} could be found.
+     *
+     * @since // TODO
+     */
+    AccountLink addLink(String otherAccountHref);
+
+    /**
+     * Removes the link between this account and the otherAccount
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param otherAccount the {@code Group} object from where the account must be removed.
+     * @return the Account object for method chaining
+     * @throws IllegalStateException if this Account is not linked to the otherAccount.
+     *
+     * @since // TODO
+     */
+    Account removeLink(Account otherAccount);
+
+    /**
+     * Removes the link between this account and the otherAccount represented by its {@code href}
+     *                   .
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param otherAccountHref the href href of the other account this account is linked to.
+     * @return the Account object for method chaining
+     * @throws IllegalStateException if this Account is not linked to the otherAccount matching the given {@code href}.
+     *
+     * @since // TODO
+     */
+    Account removeLink(String otherAccountHref);
+
+    /**
      * Returns a paginated list of the AccountLinks for the account.
      *
      * <p>Tip: If this list might be large, instead of iterating over all accountLinks, it might be more convenient (and

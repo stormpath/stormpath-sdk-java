@@ -477,6 +477,44 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     }
 
     @Override
+    public AccountLink addLink(Account otherAccount) {
+        Assert.notNull(otherAccount, "otherAccount cannot be null");
+        return DefaultAccountLink.create(this, otherAccount, getDataStore());
+    }
+
+    @Override
+    public AccountLink addLink(String otherAccountHref) {
+        Assert.hasText(otherAccountHref, "otherAccountHref cannot be null");
+        return DefaultAccountLink.create(this,
+                getDataStore().getResource(otherAccountHref, Account.class), getDataStore());
+    }
+
+    @Override
+    public Account removeLink(Account otherAccount) {
+        Assert.notNull(otherAccount, "otherAccount cannot be null");
+        return  removeLink(otherAccount.getHref());
+    }
+
+    @Override
+    public Account removeLink(String otherAccountHref) {
+        Assert.hasText(otherAccountHref, "otherAccountHref cannot be null or empty");
+        AccountLink accountLink = null;
+        for (AccountLink anAccountLink : getAccountLinks()) {
+            if (anAccountLink.getLeftAccount().getHref().equals(otherAccountHref)
+                    || anAccountLink.getRightAccount().getHref().equals(otherAccountHref)) {
+                accountLink = anAccountLink;
+                break;
+            }
+        }
+        if (accountLink != null){
+            accountLink.delete();
+        } else {
+            throw new IllegalStateException("These accounts are not linked.");
+        }
+        return this;
+    }
+
+    @Override
     public AccountLinkList getAccountLinks() {
         return getResourceProperty(ACCOUNT_LINKS);
     }

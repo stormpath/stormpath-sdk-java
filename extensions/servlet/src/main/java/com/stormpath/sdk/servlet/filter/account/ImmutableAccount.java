@@ -319,6 +319,30 @@ public class ImmutableAccount implements Account {
     }
 
     @Override
+    public AccountLink addLink(Account otherAccount) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public AccountLink addLink(String otherAccountHref) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public Account removeLink(Account otherAccount) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public Account removeLink(String otherAccountHref) {
+        immutable();
+        return null;
+    }
+
+    @Override
     public AccountLinkList getAccountLinks() {
         return account.getAccountLinks();
     }

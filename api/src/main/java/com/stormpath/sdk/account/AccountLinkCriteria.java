@@ -34,5 +34,5 @@ public interface AccountLinkCriteria extends Criteria<AccountLinkCriteria>, Acco
      *
      * @return this instance for method chaining
      */
-    AccountCriteria orderByCreatedAt();
+    AccountLinkCriteria orderByCreatedAt();
 }
