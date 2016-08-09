@@ -46,7 +46,7 @@ If :ref:`email verification <email verification>` is disabled, a successfully re
 
 **If** ``stormpath.web.register.autoLogin = true``
 
-If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically logged in to the application and redirected to the page a successful login redirects, configuration property:
+If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically logged in to the application and redirected to the page specified in the ``stormpath.web.login.nextUri`` configuration property:
 
 .. code-block:: properties
 
@@ -83,9 +83,9 @@ By default the supported directives are:
 
 * ``enabled``: the field is enabled for edit.
 * ``visible``: the field is visible.
-* ``label``: this is the label to display and it points to the i18n properties as ``stormpath.web.register.form.fields.givenName.label``.
-* ``placeholder``: this is the placeholder to display and it points to the i18n properties as ``stormpath.web.register.form.fields.givenName.placeholder``.
-* ``required``: makes the field require, if it is required and not provided the error message is in the i18n properties as ``stormpath.web.register.form.fields.email.required``. If the input is invalid the error message is in the i18n properties as ``stormpath.web.register.form.fields.email.invalid``.
+* ``label``: this is the label to display and its value is defined in i18n.properties with the key ``stormpath.web.register.form.fields.givenName.label``.
+* ``placeholder``: this is the placeholder to display and its value is defined in i18n.properties with the key ``stormpath.web.register.form.fields.givenName.placeholder``.
+* ``required``: makes the field required, If the field is blank, the error message is defined in i18n.properties as``stormpath.web.register.form.fields.email.required``. If the input is invalid the error message is in the i18n.properties with the key ``stormpath.web.register.form.fields.email.invalid``.
 * ``type``: The input type of the field.
 
 By default the supported fields are: (remember to set the directives for each one)
@@ -97,7 +97,13 @@ By default the supported fields are: (remember to set the directives for each on
 * ``email``: the user's email address.  This field is always required.
 * ``password``: the user's password.
 
-You can customize this list of fields, those extra fields will be saved as custom data. Also you can customize additional directives as necessary, but note:
+You can customize this list of fields, those extra fields will be saved as custom data. The order field is defined in
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fieldOrder = username,givenName,middleName,surname,email,password,confirmPassword
+
+You can also customize additional directives as necessary, but note:
 
 **The** ``email`` **form field is always required.  If you customize your form fields, ensure that you always have at least an** ``email`` **and set it as** ``required`` **.**
 
