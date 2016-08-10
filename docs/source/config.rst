@@ -47,7 +47,7 @@ It is often easiest to specifying this at or near the top of your other filter m
 stormpath.properties
 --------------------
 
-If you need to customize behavior, the Stormpath Java Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a  convenient overrides mechanism using various property definition locations.
+If you need to customize behavior, the Stormpath Java Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a convenient overrides mechanism using various property definition locations.
 
 All stormpath configuration properties are prefixed with ``stormpath.`` and take the following form (for example)
 
@@ -75,12 +75,12 @@ If you're just starting out, we recommend that your configuration be specified i
 
 Defining properties in these locations is covered more in detail next.
 
-1. Plugin default.stormpath.properties
+1. Plugin web.stormpath.properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This file resides in the stormpath-servlet-plugin-|version|.jar at:
 
- ``/META-INF/com/stormpath/sdk/servlet/default.stormpath.properties``
+ ``/META-INF/com/stormpath/sdk/servlet/config/web.stormpath.properties``
 
 It includes all of the plugin's default configuration and is not modifiable.  The default values within can be overridden by specifying properties in locations read later during the startup process.
 

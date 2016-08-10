@@ -1,0 +1,393 @@
+.. _authorization:
+
+Authorization
+==============
+
+After an account has authenticated, you can perform standard Spring Security roles checks, e.g.
+``<intercept-url pattern="/**" access="hasAuthority('A_ROLE_NAME')" />`` or
+``<intercept-url pattern="/**" access="isAuthenticated()" />`` or
+``<sec:authorize access="hasPermission('ship:NCC-1701-D', 'command')">``
+
+Roles
+~~~~~
+
+Spring Security's role concept in Stormpath is represented as a Stormpath `Group <http://docs.stormpath.com/java/product-guide/#groups>`__.
+
+Assigning Roles
+^^^^^^^^^^^^^^^
+
+Because Spring Security Granted Authorities are represented as Groups in Stormpath, you assign a role to an account simply by adding an account
+to a group (or by adding a group to an account, depending on how you look at it). For example:
+
+.. code:: java
+
+    Account account = client.getResource(accountHref, Account.class);
+    Group group = client.getResource(groupHref, Group.class);
+
+    //assign the account to the group:
+    group.addAccount(account);
+
+    //this would have achieved the same thing:
+    //account.addGroup(group);
+
+Checking Roles
+^^^^^^^^^^^^^^
+
+Role checks with the Group ``href``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The recommended way to perform a Spring Security role check is to use the Stormpath group's ``href`` property as the Spring Security role 'name'.
+
+While it is possible (and maybe more intuitive) to use the Group name for the role check, this secondary approach is not enabled by default
+and not recommended for most usages: role names can potentially change over time (for example, someone changes the Group name in the Stormpath
+administration console without telling you). If you code a role check in your source code, and that role name changes in the future, your role
+checks will likely fail!
+
+Instead, it is recommended to perform role checks with a stable identifier.
+
+You can use a Stormpath Group's ``href`` property as the role 'name' and check that:
+
+.. code:: java
+
+    @PreAuthorize("hasRole('A_SPECIFIC_GROUP_HREF')")
+    public Account post(Account account, double amount) {
+        //do something
+    }
+
+Role checks with the Group ``name``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you still want to use a Stormpath Group's name as the Spring Security role name for role checks - perhaps because you have a high level of
+confidence that no one will change group names once your software is written - you can still use the Group name if you wish by adding a
+little configuration.
+
+In your ``spring-security.xml``, you can set the supported naming modes of what will be represented as a Spring Security role:
+
+.. code:: xml
+
+    <bean id="groupGrantedAuthorityResolver" class="com.stormpath.spring.security.provider.DefaultGroupGrantedAuthorityResolver">
+        <property name="modeNames" value="NAME" />
+    </bean>
+
+    <bean id="authenticationProvider" class="com.stormpath.spring.security.provider.StormpathAuthenticationProvider">
+        <!-- etc... -->
+        <property name="groupGrantedAuthorityResolver" ref="groupGrantedAuthorityResolver" />
+    </bean>
+
+The modes (or mode names) allow you to specify which Group properties Spring Security will consider as role 'names'. The default is ``href``,
+but you can specify more than one if desired. The supported modes are the following:
+
+-  *HREF*: the Group's ``href`` property will be considered a Spring Security role name. This is the default mode if not configured
+   otherwise. Allows a Spring Security role check to look like the following:
+   ``authentication.getAuthorities().contains(new SimpleGrantedAuthority(group.getHref()))``.
+-  *NAME*: the Group's ``name`` property will be considered a Spring Security role name. This allows a Spring Security role check to look
+   like the following:
+   ``authentication.getAuthorities().contains(new SimpleGrantedAuthority(group.getName()))``.
+   This however has the downside that if you (or someone else on your team or in your company) changes the Group's name, you will have to
+   update your role check code to reflect the new names (otherwise the existing checks are very likely to fail).
+-  *ID*: the Group's unique id will be considered a Spring Security role name. The unique id is the id at the end of the Group's HREF url.
+   This is a deprecated mode and should ideally not be used in new applications.
+
+The GroupGrantedAuthorityResolver Interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the above default role name resolution logic does not meet your needs or if you want full customization of how a Stormpath Group resolves to
+one or more Spring Security role names, you can implement the ``GroupGrantedAuthorityResolver`` interface and configure the
+implementation on the StormpathAuthenticationProvider:
+
+.. code:: xml
+
+    <bean id="groupGrantedAuthorityResolver" class="com.mycompany.my.impl.MyGroupGrantedAuthorityResolver">
+    </bean>
+
+    <bean id="authenticationProvider" class="com.stormpath.spring.security.provider.StormpathAuthenticationProvider">
+        <!-- etc... -->
+        <property name="groupGrantedAuthorityResolver" ref="groupGrantedAuthorityResolver" />
+    </bean>
+
+Permissions
+~~~~~~~~~~~
+
+The 0.2.0 release of the Spring Security plugin for Stormpath enabled the ability to assign ad-hoc sets of permissions directly to Stormpath
+Accounts or Groups using the accounts' or groups' `Custom Data <https://docs.stormpath.com/rest/product-guide/latest/reference.html#custom-data>`__
+resource.
+
+Once assigned, the Stormpath ``AuthenticationProvider`` will automatically check account and group ``CustomData`` for permissions and
+create Spring Security Granted authorities that will be assigned to the authorization principal's authorities.
+
+Assigning Permissions
+^^^^^^^^^^^^^^^^^^^^^
+
+The easiest way to assign permissions to an account or group is to get the account or group's ``CustomData`` resource and use the Spring
+Security Stormpath plugin's ``CustomDataPermissionsEditor`` to assign or remove permissions. The following example uses both the Stormpath Java
+SDK API and the Spring Security Stormpath plugin API:
+
+.. code:: java
+
+    //Instantiate an account (this is the normal Stormpath Java SDK API):
+    Account acct = client.instantiate(Account.class);
+    String password = "Changeme1!";
+    acct.setUsername("jsmith");
+    acct.setPassword(password);
+    acct.setEmail("jsmith@nowhere.com");
+    acct.setGivenName("Joe");
+    acct.setSurname("Smith");
+        
+    //Now let's add some Spring Security granted authorities to the account's customData:
+    //(this class is in the Spring Security Stormpath Plugin API):
+    new CustomDataPermissionsEditor(acct.getCustomData())
+        .append("user:1234:edit")
+        .append("report:create")
+        
+    //Add the new account with its custom data to an application (normal Stormpath Java SDK API):
+    acct = anApplication.createAccount(Accounts.newCreateRequestFor(acct).build());
+
+You can assign permissions to a Group too:
+
+.. code:: java
+
+    Group group = client.instantiate(Group.class);
+    group.setName("Users");
+    new CustomDataPermissionsEditor(group.getCustomData()).append("user:login");
+    group = anApplication.createGroup(group)
+
+You might want to assign that account to the group. *Any permissions
+assigned to a group are automatically inherited by accounts in the
+group*:
+
+.. code:: java
+
+    group.addAccount(acct);
+
+This is very convenient: You can assign permissions to many accounts
+simultaneously by simply adding them once to a group that the accounts
+share. In doing this, the Stormpath ``Group`` is acting much more like a
+role.
+
+Checking Permissions
+^^^^^^^^^^^^^^^^^^^^
+
+So, in order to have Spring Security doing permissions check the way we
+intend, we need to create our own ``PermissionEvaluator``. The plugin
+provides ``WildcardPermissionEvaluator`` that is able to compare
+``WildcardPermission``\ s. In order to use it you need to configure
+Spring this way:
+
+.. code:: xml
+
+    <bean id="permissionEvaluator" class="com.stormpath.spring.security.authz.permission.evaluator.WildcardPermissionEvaluator"/>
+
+    <bean id="methodExpressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+        <!-- Let's use our own permission evaluation for WildcardPermissions -->
+        <property name="permissionEvaluator" ref="permissionEvaluator"/>
+    </bean>
+
+    <bean id="webExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
+        <!-- Let's use our own permission evaluation for WildcardPermissions -->
+        <property name="permissionEvaluator" ref="permissionEvaluator"/>
+    </bean>
+
+and then you can simply evaluate permissions this way using `Method Security Expressions <http://docs.spring.io/spring-security/site/docs/3.0.x/reference/el-access.html>`__:
+
+.. code:: java
+
+    @PreAuthorize("hasPermission(...)")
+
+or using `JSP taglibs <http://docs.spring.io/spring-security/site/docs/3.0.x/reference/taglibs.html>`__
+
+.. code:: xml
+
+    <sec:authorize access="hasPermission(...)" />
+
+That means, that if the ``jsmith`` account logs in, you can perform the following permission check:
+
+.. code:: java
+
+    @PreAuthorize("hasPermission('user', 'login')")
+
+or
+
+.. code:: xml
+
+    <sec:authorize access="hasPermission('user', 'login')" />
+
+And all this will return ``true``, because, while ``user:login`` isn't directly assigned to the account, it *is* assigned to one of the
+account's groups. Very nice.
+
+Our ``PermissionEvaluator`` only customizes the way the ``hasPermissions`` operation behaves. The other Spring Security built-in
+expressions (e.g., hasRole(), isAnonymous(), isAuthenticated(), etc. are not modified). These expressions will carry out their usual operation:
+literal string comparisons. So, for example, if you want to check that a user has a specific role (in other words, it belongs to a specific
+Stormpath group) you can do:
+
+.. code:: java
+
+    @PreAuthorize("hasAuthority('https://api.stormpath.com/v1/groups/upXiVIrPQ7yfA5L1G5ZaSQ')")
+
+The next sections cover the storage and retrieval details in case you're curious how it works, or if you'd like to customize the behavior or
+``CustomData`` field name.
+
+Permission Storage
+^^^^^^^^^^^^^^^^^^
+
+The ``CustomDataPermissionsEditor`` shown above, and the Spring Security Stormpath ``AuthenticationProvider`` default implementation assumes that
+a default field named ``springSecurityPermissions`` in an account's or group's ``CustomData`` resource can be used to store permissions
+assigned directly to the account or group. This implies the ``CustomData`` resource's JSON would look something like this:
+
+.. code:: json
+
+    {
+        "springSecurityPermissions": [
+            "perm1",
+            "perm2",
+            "permN"
+        ]
+    }
+
+If you wanted to change the name to something else, you could specify the ``setFieldName`` property on the ``CustomDataPermissionsEditor``
+instance:
+
+.. code:: java
+
+    new CustomDataPermissionsEditor(group.getCustomData())
+        .setFieldName("whateverYouWantHere")
+        .append("user:login");
+
+and this would result in the following JSON structure instead:
+
+.. code:: json
+
+    {
+        "whateverYouWantHere": [
+            "user:login",
+        ]
+    }
+
+But *NOTE*: While the ``CustomDataPermissionsEditor`` implementation will modify the field name you specify, the, ``ApplicationRealm`` needs
+to read that same field during permission checks. So if you change it as shown above, you must also change the provider's configuration to
+reference the new name as well:
+
+.. code:: xml
+
+    <bean id="groupPermissionResolver" class="com.stormpath.spring.security.provider.GroupCustomDataPermissionResolver">
+        <property name="customDataFieldName" value="whateverYouWantHere" />
+    </bean>
+    <bean id="accountPermissionResolver" class="com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver">
+        <property name="customDataFieldName" value="whateverYouWantHere" />
+    </bean>
+    <bean id="authenticationProvider" class="com.stormpath.spring.security.provider.StormpathAuthenticationProvider">
+        <!-- etc... -->
+        <property name="groupPermissionResolver" ref="groupPermissionResolver" />
+        <property name="accountPermissionResolver" ref="accountPermissionResolver" />
+    </bean>
+
+This section explained the default implementation strategy for storing and checking permissions, using CustomData. You can use this
+immediately, as it is the default behavior, and it should suit 95% of all use cases.
+
+However, if you need another approach, you can fully customize how permissions are resolved for a given account or group by customizing the
+``AuthorizationProvider``'s ``accountPermissionResolver`` and ``groupPermissionResolver`` properties, described next.
+
+How Permission Checks Work
+''''''''''''''''''''''''''
+
+| The Stormpath ``AuthenticationProvider`` will use any configured ``AccountPermissionResolver`` and ``GroupPermissionResolver``
+  instances to create the aggregate of all permissions attributed to an ``Authorization``.
+| Later on, these permissions will be evaluated when doing:
+
+.. code:: java
+
+    @PreAuthorize("hasPermission('aPermission')")
+
+this operation will return ``true`` if the following is true:
+
+-  any of the permissions returned by the ``AccountPermissionResolver`` for the authorization's backing Account implies ``aPermission``
+-  any of the permissions returned by the ``GroupPermissionResolver`` for any of the backing Account's Groups implies ``aPermission``
+
+``false`` will be returned if ``aPermission`` is not implied by any of these permissions.
+
+NOTE: pay attention that we are saying ``implies`` and not ``is equal to``. The ``implies(...)`` method is available through the
+``Permission`` interface which extends Spring Security's ``GrantedAuthority``.
+
+For further clarity, the ``isPermitted`` check works something like this (simplified for brevity):
+
+.. code:: java
+
+    Set<Permission> accountPermissions = accountPermissionResolver.resolvePermissions(account);
+    for (Permission accountPermission : accountPermissions) {
+        if (accountPermission.implies(permissionToCheck)) {
+            return true;
+        }
+    }
+
+    for (Group group : account.getGroups()) {
+        Set<Permission> groupPermissions = resolvePermissions(group);
+        for (Permission groupPermission : groupPermissions) {
+            if (groupPermission.implies(permissionToCheck)) {
+                return true;
+            }
+        }
+    }
+
+    //otherwise not permitted:
+    return false;
+
+AccountPermissionResolver
+
+The StormpathAuthenticationProvider's ``AccountPermissionResolver`` inspects a Stormpath ``Account`` and returns a set of ``Permission``\ s
+that are considered directly assigned to that ``Account``.
+
+This interface is provided to resolve permissions that are *directly* assigned to a Stormpath ``Account``. Permissions that are assigned to an
+account's groups (and therefore implicitly or indirectly associated with an ``Account``) are best provided by a ``GroupPermissionResolver``
+instance instead.
+
+Your ``AccountPermissionResolver`` implementation could then be configured on the StormpathRealm instance. For example::
+
+.. code:: xml
+
+    <bean id="accountPermissionResolver" class="com.mycompany.stormpath.spring.security.MyAccountPermissionResolver" >
+    </bean>
+
+    <bean id="authenticationProvider" class="com.stormpath.spring.security.provider.StormpathAuthenticationProvider">
+        <property name="accountPermissionResolver" ref="accountPermissionResolver" />
+    </bean>
+
+After you've configured this you can perform permission checks. For example, perhaps you want to check if the current account is allowed to
+update their own information:
+
+.. code:: java
+
+    @PreAuthorize("hasPermission(#accountId, 'account', 'update')")
+    public void updateAccount(String accountId) {
+        //do something
+    }
+
+This check would succeed if the ``MyAccountPermissionResolver`` implementation returned that permission for the authorization's backing
+``Account``.
+
+GroupPermissionResolver
+
+The StormpathRealm's ``GroupPermissionResolver`` inspects a Stormpath ``Group`` and returns a set of ``Permission``\ s that are considered
+assigned to that ``Group``.
+
+You can configure a custom ``GroupPermissionResolver`` implementation on the StormpathRealm instance:
+
+.. code:: xml
+
+    <bean id="groupPermissionResolver" class="com.mycompany.stormpath.spring.security.MyAccountPermissionResolver" >
+    </bean>
+
+    <bean id="authenticationProvider" class="com.stormpath.spring.security.provider.StormpathAuthenticationProvider">
+        <property name="accountPermissionResolver" ref="groupPermissionResolver" />
+    </bean>
+
+After you've configured this you can perform group permission checks. For example, perhaps you want to check if the current authentication is
+allowed to edit a specific blog article:
+
+.. code:: java
+
+    @PreAuthorize("hasPermission(#blogArticleId, 'article', 'edit')")
+    public void editBlogArticle(String blogArticleId) {
+        //do something
+    }
+
+This check would succeed if the authorization's direct permissions *or any of its Groups' permissions* (as returned by the
+``MyGroupPermissionResolver`` implementation) implied the `edit article` permission.

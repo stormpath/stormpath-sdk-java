@@ -1,0 +1,1 @@
+.. include:: ../../../boot/docs/source/http-request-authentication.rst
