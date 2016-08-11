@@ -1,1 +1,0 @@
-.. include:: ../../../boot/docs/source/logout.rst

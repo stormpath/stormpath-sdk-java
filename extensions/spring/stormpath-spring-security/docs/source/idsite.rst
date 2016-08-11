@@ -1,1 +1,0 @@
-.. include:: ../../../boot/docs/source/idsite.rst
