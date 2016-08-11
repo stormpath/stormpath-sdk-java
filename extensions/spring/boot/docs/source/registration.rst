@@ -110,13 +110,15 @@ You can customize this list with optional directives as necessary, but note:
 .. TIP::
     Re-ordering the comma-delimited list will automatically re-order the fields in the view :)
 
-.. _password strength:
-
 Custom Data
 ^^^^^^^^^^^
 
-You can capture `Custom Data`_ fields when users register by adding configuration properties. For example,
-to add a custom field to capture a user's birthday,
+The registration form provides the ability to have custom fields defined by the developer. The registration controller will
+automatically figure out which are those fields (i.e not part of the pre-defined properties supported by the Account) and
+they will be added as `Custom Data`_ in the account.
+
+For example, let's suppose we want to add a custom field to capture a user's birthday during registration. Then the
+following properties should be added to the ``stormpath.properties`` file:
 
 .. code-block:: properties
 
@@ -132,6 +134,26 @@ When the registration form is rendered, this field will be added to the bottom o
    .. image:: /_static/register-with-birthday.png
 
 When the form is submitted, the field's name and value will be added to the account's custom data.
+
+If you want to provide user's with a good internationalization experience, then you should define the label property like this:
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fields.birthday.label = stormpath.web.register.form.fields.birthday.label
+
+And then, in your ``i18n_en.properties`` file you would add:
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fields.birthday.label = Birthday
+
+While in your tentative ``i18n_es.properties`` file you would add:
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fields.birthday.label = Fecha de nacimiento
+
+.. _password strength:
 
 Password Strength
 ^^^^^^^^^^^^^^^^^
