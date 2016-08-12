@@ -76,7 +76,7 @@ The :ref:`i18n` message keys used in the default login view have names prefixed 
 
 .. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
    :language: properties
-   :lines: 20-37
+   :lines: 17-48
 
 For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
 

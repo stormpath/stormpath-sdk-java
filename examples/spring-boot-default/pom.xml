@@ -18,9 +18,16 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.stormpath.sdk</groupId>
+        <artifactId>stormpath-sdk-examples</artifactId>
+        <version>1.0.3-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-boot-default</artifactId>
-    <version>1.0.0.RC-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Examples :: Spring Boot Default</name>
     <description>A simple Spring Boot Web MVC application with out-of-the-box login and self-service screens!</description>
@@ -39,14 +46,6 @@
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-default-spring-boot-starter</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <!-- Runtime-only dependencies: -->
-        <dependency>
-            <groupId>com.stormpath.sdk</groupId>
-            <artifactId>stormpath-sdk-httpclient</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -38,7 +38,7 @@ rake setup_github_pages[git@github.com:stormpath/stormpath.github.io.git]
 cd _deploy
 git pull --no-edit -s recursive -X theirs https://github.com/stormpath/stormpath.github.io.git
 cd ..
-rake generate
+rake generate > /tmp/docs_generate.log
 cd _deploy
 git pull --no-edit -s recursive -X theirs https://github.com/stormpath/stormpath.github.io.git
 cd ..

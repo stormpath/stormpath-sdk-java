@@ -61,9 +61,7 @@ class PropertyOverrideStormpathConfigurationIT extends AbstractTestNGSpringConte
         assertTrue stormpathCacheManager instanceof DisabledCacheManager
 
         //assert app href override worked as expected:
-        def expected =
-            System.getenv("STORMPATH_TEST_APPLICATION_HREF") ?:
-            'https://api.stormpath.com/v1/applications/TAuH8ZMkA20STGvXf8iB3'
+        def expected = System.getenv("STORMPATH_TEST_APPLICATION_HREF")
         assertEquals application.href, expected
     }
 }

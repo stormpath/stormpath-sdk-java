@@ -18,10 +18,11 @@ package com.stormpath.spring.security.provider
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
-import org.testng.annotations.Test
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.hamcrest.MatcherAssert.assertThat
@@ -52,34 +53,20 @@ class UsernamePasswordAuthenticationTokenFactoryTest {
         def account = createStrictMock(Account)
 
         expect(account.href).andReturn acctHref
-        expect(account.username).andReturn acctUsername
-        expect(account.email).andReturn acctEmail
-        expect(account.givenName).andReturn acctGivenName
-        expect(account.middleName).andReturn acctMiddleName
-        expect(account.surname).andReturn acctSurname
-        expect(account.status).andReturn acctStatus times 2
-        expect(account.username).andReturn acctUsername
 
         replay account
 
         def token = authenticationTokenFactory.createAuthenticationToken("foo", "bar", gas, account)
         assertNotNull token
         assertThat token, instanceOf(UsernamePasswordAuthenticationToken.class)
-        assertEquals acctUsername, ((StormpathUserDetails)token.principal).getUsername()
+        assertEquals acctHref, ((UserDetails)token.principal).getUsername()
         assertEquals "bar", token.getCredentials()
         assertArrayEquals gas.toArray(), token.getAuthorities().toArray()
         assertEquals gas.size(), token.getAuthorities().size()
-        assertEquals acctHref, ((StormpathUserDetails)token.principal).properties.get("href")
-        assertEquals acctUsername, ((StormpathUserDetails)token.principal).properties.get("username")
-        assertEquals acctEmail, ((StormpathUserDetails)token.principal).properties.get("email")
-        assertEquals acctGivenName, ((StormpathUserDetails)token.principal).properties.get("givenName")
-        assertEquals acctMiddleName, ((StormpathUserDetails)token.principal).properties.get("middleName")
-        assertEquals acctSurname, ((StormpathUserDetails)token.principal).properties.get("surname")
-        assertEquals acctStatus.toString(), ((StormpathUserDetails)token.principal).properties.get("status")
-        assertTrue(((StormpathUserDetails)token.principal).enabled)
-        assertTrue(((StormpathUserDetails)token.principal).accountNonLocked)
-        assertTrue(((StormpathUserDetails)token.principal).accountNonExpired)
-        assertTrue(((StormpathUserDetails)token.principal).credentialsNonExpired)
+        assertTrue(((UserDetails)token.principal).enabled)
+        assertTrue(((UserDetails)token.principal).accountNonLocked)
+        assertTrue(((UserDetails)token.principal).accountNonExpired)
+        assertTrue(((UserDetails)token.principal).credentialsNonExpired)
 
         verify account
 

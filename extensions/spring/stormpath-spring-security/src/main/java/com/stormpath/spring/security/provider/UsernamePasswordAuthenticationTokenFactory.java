@@ -19,14 +19,15 @@ import com.stormpath.sdk.account.Account;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
 /**
  * A {@link com.stormpath.spring.security.provider.AuthenticationTokenFactory} implementation that creates representation
- * of a username and password token. The principal stored in the token is an instance of {@link StormpathUserDetails} which
- * contains information about the Stormpath Account for the authenticated user, such as href, given name, username, etc.
+ * of a username and password token. The principal stored in the token is the href for the Stormpath Account for the
+ * authenticated user.
  *
  * @since 0.2.0
  */
@@ -34,8 +35,7 @@ public class UsernamePasswordAuthenticationTokenFactory implements Authenticatio
 
     @Override
     public Authentication createAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, Account account) {
-        UserDetails userDetails = new StormpathUserDetails(principal.toString(), (String) credentials, authorities, account);
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, credentials, userDetails.getAuthorities());
-        return authToken;
+        UserDetails userDetails = new User(account.getHref(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(userDetails, credentials, userDetails.getAuthorities());
     }
 }

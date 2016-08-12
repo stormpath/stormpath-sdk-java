@@ -29,12 +29,14 @@ public class YAMLPropertiesSource implements PropertiesSource {
     public Map<String, String> getProperties() {
         try (InputStream in = resource.getInputStream()) {
             // check to see if file exists
-            if (in != null && Classes.isAvailable("org.yaml.snakeyaml.Yaml")) {
-                Yaml yaml = new Yaml();
-                Map config = yaml.loadAs(in, Map.class);
-                return getFlattenedMap(config);
-            } else {
-                log.warn("YAML not found in classpath, add 'org.yaml.snakeyaml' to support YAML configuration");
+            if (in != null) { // only check if class is available, if we have a yaml file.
+                if (Classes.isAvailable("org.yaml.snakeyaml.Yaml")) {
+                    Yaml yaml = new Yaml();
+                    Map config = yaml.loadAs(in, Map.class);
+                    return getFlattenedMap(config);
+                } else {
+                    log.warn("YAML not found in classpath, add 'org.yaml.snakeyaml' to support YAML configuration");
+                }
             }
         } catch (IOException e) {
             throw new IllegalArgumentException("Unable to read resource [" + resource + "]: " + e.getMessage(), e);

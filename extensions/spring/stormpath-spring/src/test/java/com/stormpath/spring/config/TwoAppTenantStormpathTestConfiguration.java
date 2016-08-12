@@ -44,7 +44,7 @@ public class TwoAppTenantStormpathTestConfiguration {
     @Value("#{ @environment['stormpath.twoApp.apiKey.secret.envName'] ?: 'STORMPATH_API_KEY_SECRET_TWO_APP' }")
     protected String twoAppApiKeySecretEnvName;
 
-    @Value("#{ @environment['STORMPATH_BASE_URL'] ?: 'https://api.stormpath.com/v1' }")
+    @Value("#{ @environment['stormpath.client.baseUrl'] ?: 'https://api.stormpath.com/v1' }")
     protected String baseUrl;
 
     @Autowired

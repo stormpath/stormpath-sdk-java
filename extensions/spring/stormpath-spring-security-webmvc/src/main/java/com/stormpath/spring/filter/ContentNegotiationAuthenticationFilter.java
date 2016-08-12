@@ -62,8 +62,8 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
             throw new AuthenticationServiceException("Unresolved media type: " + umt.getMessage(), umt);
         }
 
-        System.out.println("mediaType: " + mediaType);
-        System.out.println("request.getContentType(): " + request.getContentType());
+        log.debug("mediaType: {}", mediaType);
+        log.debug("request.getContentType(): {}", request.getContentType());
         // the || is to handle an edge case where an Accept: */* is set but the content-type is application/x-www-form-urlencoded
         // a browser would not do this, but this guards against command line tomfoolery.
         if (!MediaType.APPLICATION_JSON.equals(mediaType) ||

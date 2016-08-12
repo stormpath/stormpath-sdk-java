@@ -42,13 +42,7 @@ import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
-import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver
-import com.stormpath.spring.security.provider.DefaultGroupGrantedAuthorityResolver
-import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolver
-import com.stormpath.spring.security.provider.GroupCustomDataPermissionResolver
-import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
-import com.stormpath.spring.security.provider.StormpathUserDetails
-import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
+import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.SpringApplicationConfiguration
@@ -58,6 +52,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.servlet.HandlerInterceptor
@@ -70,13 +65,8 @@ import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import static org.easymock.EasyMock.createStrictMock
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.replay
-import static org.easymock.EasyMock.verify
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertNotNull
-import static org.testng.Assert.assertTrue
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.*
 
 /**
  * @since 1.0.RC5
@@ -218,7 +208,7 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(account.getEmail(), password))
         assertTrue authentication.authenticated
-        assertTrue (((StormpathUserDetails)authentication.principal).getUsername().equals(account.getUsername()))
+        assertTrue (((UserDetails)authentication.principal).getUsername().equals(account.getHref()))
         assertTrue hasRole(authentication, ["user:edit"] as String[])
     }
 

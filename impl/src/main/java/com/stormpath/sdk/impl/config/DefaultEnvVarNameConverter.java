@@ -11,6 +11,9 @@ public class DefaultEnvVarNameConverter implements EnvVarNameConverter {
         dottedPropertyName = Strings.trimWhitespace(dottedPropertyName);
 
         //special cases (camel case):
+        if ("stormpath.client.baseUrl".equals(dottedPropertyName)) {
+            return "STORMPATH_CLIENT_BASEURL";
+        }
         if ("stormpath.client.apiKey.id".equals(dottedPropertyName)) {
             return "STORMPATH_API_KEY_ID";
         }
@@ -58,8 +61,8 @@ public class DefaultEnvVarNameConverter implements EnvVarNameConverter {
         if ("STORMPATH_AUTHENTICATION_SCHEME".equals(envVarName)) {
             return "stormpath.client.authenticationScheme";
         }
-        if ("STORMPATH_BASEURL".equals(envVarName)) {
-            return "stormpath.baseUrl";
+        if ("STORMPATH_CLIENT_BASEURL".equals(envVarName)) {
+            return "stormpath.client.baseUrl";
         }
         if ("STORMPATH_WEB_VERIFYEMAIL_ENABLED".equals((envVarName))) {
             return "stormpath.web.verifyEmail.enabled";

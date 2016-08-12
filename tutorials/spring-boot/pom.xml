@@ -18,9 +18,9 @@
 
     <parent>
         <groupId>com.stormpath.sdk</groupId>
-        <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.0.RC-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <artifactId>stormpath-sdk-tutorials</artifactId>
+        <version>1.0.3-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>

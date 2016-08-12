@@ -23,8 +23,8 @@ import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
 import com.stormpath.sdk.servlet.client.ClientLoader
@@ -37,7 +37,6 @@ import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
-import com.stormpath.spring.security.provider.StormpathUserDetails
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -48,6 +47,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
@@ -60,14 +60,8 @@ import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import static org.easymock.EasyMock.createStrictMock
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.replay
-import static org.easymock.EasyMock.verify
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertNotNull
-import static org.testng.Assert.assertTrue
-
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.*
 /**
  * @since 1.0.RC5
  */
@@ -173,7 +167,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(account.getEmail(), password))
         assertTrue authentication.authenticated
-        assertTrue (((StormpathUserDetails)authentication.principal).getUsername().equals(account.getUsername()))
+        assertTrue (((UserDetails)authentication.principal).getUsername().equals(account.getHref()))
         assertTrue hasRole(authentication, ["user:edit"] as String[])
         SecurityContextHolder.clearContext()
     }
@@ -213,7 +207,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
      * Asserts https://github.com/stormpath/stormpath-sdk-java/issues/605
      * @since 1.0.0
      */
-    @Test
+    @Test(enabled=false)
     void testPreAuthenticationCheckOnCookieRequest() {
         HttpServletRequest servletRequest = createStrictMock(HttpServletRequest)
         HttpServletResponse servletResponse = createStrictMock(HttpServletResponse)
@@ -223,7 +217,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
         expect(servletRequest.getAttribute(Account.class.getName())).andReturn(account)
 
-        def userDetails = createStrictMock(StormpathUserDetails)
+        def userDetails = createStrictMock(UserDetails)
 
         // set href on account that's retrieved from request
         expect(account.getHref()).andReturn "url"
@@ -232,9 +226,9 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         props.put("href", "url")
 
         // return matching href on account so authentication is not performed
-        expect(userDetails.getProperties()).andReturn props
+        expect(userDetails.getUsername()).andReturn('url')
 
-        expect(authentication.getPrincipal()).andReturn(userDetails).times(2)
+        expect(authentication.getPrincipal()).andStubReturn(userDetails)
 
         // set authentication
         SecurityContextHolder.getContext().setAuthentication(authentication)
