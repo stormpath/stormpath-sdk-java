@@ -75,12 +75,12 @@ If you're just starting out, we recommend that your configuration be specified i
 
 Defining properties in these locations is covered more in detail next.
 
-1. Plugin default.stormpath.properties
+1. Plugin web.stormpath.properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This file resides in the stormpath-servlet-plugin-|version|.jar at:
 
- ``/META-INF/com/stormpath/sdk/servlet/default.stormpath.properties``
+ ``/com/stormpath/sdk/servlet/config/web.stormpath.properties``
 
 It includes all of the plugin's default configuration and is not modifiable.  The default values within can be overridden by specifying properties in locations read later during the startup process.
 
@@ -95,7 +95,7 @@ If a ``stormpath.properties`` file exists at the root of your web application's 
 3. /WEB-INF/stormpath.properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If a file ``/WEB-INF/stormpath.properties`` exists in your web application, properties will be read from this file and override any indentically-named properties discovered in previous locations.
+If a file ``/WEB-INF/stormpath.properties`` exists in your web application, properties will be read from this file and override any identically-named properties discovered in previous locations.
 
 .. TIP::
    This is the recommended primary configuration location for most web applications.
