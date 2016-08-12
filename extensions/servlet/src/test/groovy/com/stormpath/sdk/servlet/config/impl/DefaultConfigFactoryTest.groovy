@@ -144,7 +144,7 @@ class DefaultConfigFactoryTest {
     }
 
     /**
-     * @since 1.0.2
+     * @since 1.0.3
      */
     @Test
     public void testPutPropertyUpdatesConfigMap() {
@@ -160,7 +160,7 @@ class DefaultConfigFactoryTest {
     }
 
     /**
-     * @since 1.0.2
+     * @since 1.0.3
      */
     @Test
     public void testPutAllPropertiesUpdatesConfigMap() {
@@ -185,7 +185,7 @@ class DefaultConfigFactoryTest {
     }
 
     /**
-     * @since 1.0.2
+     * @since 1.0.3
      */
     @Test
     public void testRemovePropertyUpdatesConfigMap() {
@@ -205,7 +205,7 @@ class DefaultConfigFactoryTest {
     }
 
     /**
-     * @since 1.0.2
+     * @since 1.0.3
      */
     @Test
     public void testClearPropertiesUpdatesConfigMap() {
