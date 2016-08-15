@@ -35,5 +35,5 @@ That's it, a standard Spring Security authentication attempt. If the authenticat
 
 In Stormpath, you can add, remove and enable accounts for your application and Spring Security will reflect these changes instantly!
 
-.. _UsernamePasswordAuthenticationFilter: http://docs.spring.io/spring-security/site/docs/3.1.x/apidocs/org/springframework/security/web/authentication/UsernamePasswordAuthenticationFilter.html
-.. _BasicAuthenticationFilter: http://docs.spring.io/spring-security/site/docs/3.1.x/apidocs/org/springframework/security/web/authentication/www/BasicAuthenticationFilter.html
+.. _UsernamePasswordAuthenticationFilter: http://docs.spring.io/spring-security/site/docs/current/apidocs/org/springframework/security/web/authentication/UsernamePasswordAuthenticationFilter.html
+.. _BasicAuthenticationFilter: http://docs.spring.io/spring-security/site/docs/current/apidocs/org/springframework/security/web/authentication/www/BasicAuthenticationFilter.html
