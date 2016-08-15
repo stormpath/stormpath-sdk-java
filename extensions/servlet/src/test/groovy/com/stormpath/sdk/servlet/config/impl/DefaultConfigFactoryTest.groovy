@@ -28,6 +28,7 @@ import java.lang.reflect.Field
 
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
 import static org.testng.Assert.assertNotNull
 
@@ -140,6 +141,85 @@ class DefaultConfigFactoryTest {
         env.put('STORMPATH_WEB_CALLBACK_ENABLED', 'false')
         setEnv(env)
         config = new ConfigLoader().createConfig(new MockServletContext())
+    }
+
+    /**
+     * @since 1.0.3
+     */
+    @Test
+    public void testPutPropertyUpdatesConfigMap() {
+
+        String key = "stormpath.test.value"
+        String value = "test.value.result"
+        int initialSize = config.size()
+
+        config.put(key, value)
+
+        assertEquals value, config.get(key)
+        assertEquals initialSize+1, config.size()
+    }
+
+    /**
+     * @since 1.0.3
+     */
+    @Test
+    public void testPutAllPropertiesUpdatesConfigMap() {
+
+        String key1 = "stormpath.test.value1"
+        String value1 = "test.value.result1"
+
+        String key2 = "stormpath.test.value2"
+        String value2 = "test.value.result2"
+
+        Map<String, String> additionalProperties = new HashMap<>()
+        additionalProperties.put(key1, value1)
+        additionalProperties.put(key2, value2)
+
+        int initialSize = config.size()
+
+        config.putAll(additionalProperties)
+
+        assertEquals value1, config.get(key1)
+        assertEquals value2, config.get(key2)
+        assertEquals initialSize+2, config.size()
+    }
+
+    /**
+     * @since 1.0.3
+     */
+    @Test
+    public void testRemovePropertyUpdatesConfigMap() {
+
+        String key = "stormpath.test.value"
+        String value = "test.value.result"
+        int initialSize = config.size()
+
+        // add a key (tested above)
+        config.put(key, value)
+
+        // remove the key
+        assertEquals value, config.remove(key)
+
+        assertNull config.get(key)
+        assertEquals initialSize, config.size()
+    }
+
+    /**
+     * @since 1.0.3
+     */
+    @Test
+    public void testClearPropertiesUpdatesConfigMap() {
+
+        String key = "stormpath.test.value"
+        String value = "test.value.result"
+
+        // add a key (tested above)
+        config.put(key, value)
+
+        // clear everything
+        config.clear()
+
+        assertEquals 0, config.size()
     }
 
     @AfterTest

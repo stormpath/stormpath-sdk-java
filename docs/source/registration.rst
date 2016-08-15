@@ -107,6 +107,49 @@ You can also customize additional directives as necessary, but note:
 
 **The** ``email`` **form field is always required.  If you customize your form fields, ensure that you always have at least an** ``email`` **and set it as** ``required`` **.**
 
+Custom Data
+^^^^^^^^^^^
+
+The registration form provides the ability to have custom fields defined by the developer. The registration controller will
+automatically figure out which are those fields (i.e not part of the pre-defined properties supported by the Account) and
+they will be added as `Custom Data`_ in the account.
+
+For example, let's suppose we want to add a custom field to capture a user's birthday during registration. Then the
+following properties should be added to the ``stormpath.properties`` file:
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fields.birthday.type = text
+    stormpath.web.register.form.fields.birthday.label = Birthday
+    stormpath.web.register.form.fields.birthday.enabled = true
+    stormpath.web.register.form.fields.birthday.visible = true
+    stormpath.web.register.form.fields.birthday.required = true
+    stormpath.web.register.form.fields.birthday.placeholder = Birthday
+
+When the registration form is rendered, this field will be added to the bottom of the form.
+
+   .. image:: /_static/register-with-birthday.png
+
+When the form is submitted, the field's name and value will be added to the account's custom data.
+
+If you want to provide user's with a good internationalization experience, then you should define the label property like this:
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fields.birthday.label = stormpath.web.register.form.fields.birthday.label
+
+And then, in your ``i18n_en.properties`` file you would add:
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fields.birthday.label = Birthday
+
+While in your tentative ``i18n_es.properties`` file you would add:
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fields.birthday.label = Fecha de nacimiento
+
 i18n
 ----
 
@@ -235,3 +278,4 @@ A ``VerifiedAccountRequestEvent`` will be published when processing an HTTP requ
 Naturally, **this event is only published if** :ref:`email verification <email verification>` **is enabled.**
 
 .. _Stormpath Admin Console: https://api.stormpath.com
+.. _Custom Data: http://docs.stormpath.com/java/product-guide/#custom-data

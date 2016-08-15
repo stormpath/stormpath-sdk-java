@@ -146,7 +146,7 @@ The :ref:`i18n` message keys used in the forgot password view have names prefixe
 
 .. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
    :language: properties
-   :lines: 75-83
+   :lines: 88-101
 
 For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
 

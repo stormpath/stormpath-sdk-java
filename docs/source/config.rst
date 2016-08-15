@@ -95,7 +95,7 @@ If a ``stormpath.properties`` file exists at the root of your web application's 
 3. /WEB-INF/stormpath.properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If a file ``/WEB-INF/stormpath.properties`` exists in your web application, properties will be read from this file and override any indentically-named properties discovered in previous locations.
+If a file ``/WEB-INF/stormpath.properties`` exists in your web application, properties will be read from this file and override any identically-named properties discovered in previous locations.
 
 .. TIP::
    This is the recommended primary configuration location for most web applications.
