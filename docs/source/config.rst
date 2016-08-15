@@ -80,7 +80,7 @@ Defining properties in these locations is covered more in detail next.
 
 This file resides in the stormpath-servlet-plugin-|version|.jar at:
 
- ``/META-INF/com/stormpath/sdk/servlet/config/web.stormpath.properties``
+ ``/com/stormpath/sdk/servlet/config/web.stormpath.properties``
 
 It includes all of the plugin's default configuration and is not modifiable.  The default values within can be overridden by specifying properties in locations read later during the startup process.
 
