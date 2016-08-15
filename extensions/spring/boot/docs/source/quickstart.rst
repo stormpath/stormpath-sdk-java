@@ -131,7 +131,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
           <properties>
               <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
               <java.version>1.8</java.version>
-              <spring-security.version>4.1.1.RELEASE</spring-security.version>
+              <spring-security.version>4.1.2.RELEASE</spring-security.version>
           </properties>
 
           <dependencies>

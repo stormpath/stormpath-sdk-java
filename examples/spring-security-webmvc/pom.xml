@@ -40,7 +40,7 @@
         <servlet.version>3.1.0</servlet.version>
         <slf4j.version>1.7.21</slf4j.version>
         <spring.version>4.3.2.RELEASE</spring.version>
-        <spring.security.version>4.1.1.RELEASE</spring.security.version>
+        <spring.security.version>4.1.2.RELEASE</spring.security.version>
         <tomcat.version>7.0.59</tomcat.version>
     </properties>
 
