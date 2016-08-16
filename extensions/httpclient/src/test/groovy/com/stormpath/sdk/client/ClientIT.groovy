@@ -22,6 +22,7 @@ import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.impl.api.ApiKeyCredentials
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.resource.Deletable
@@ -102,8 +103,9 @@ abstract class ClientIT {
     protected RequestCountingClient buildCountingClient() {
 
         ApiKey apiKey = ApiKeys.builder().build();
+        ApiKeyCredentials apiKeyCredentials = new ApiKeyCredentials(apiKey);
 
-        return new RequestCountingClient(apiKey, baseUrl, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
+        return new RequestCountingClient(apiKeyCredentials, baseUrl, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
     }
 
     //Creates a new Application with an auto-created directory
