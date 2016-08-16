@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.ds.directory.CustomDataCacheMapCreator;
-import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;

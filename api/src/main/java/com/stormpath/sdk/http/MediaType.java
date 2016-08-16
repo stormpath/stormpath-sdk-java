@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http;
+package com.stormpath.sdk.http;
 
-import com.stormpath.sdk.impl.util.LinkedCaseInsensitiveMap;
+import com.stormpath.sdk.lang.LinkedCaseInsensitiveMap;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;

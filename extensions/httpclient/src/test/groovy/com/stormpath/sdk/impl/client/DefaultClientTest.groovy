@@ -31,10 +31,11 @@ import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.impl.api.ApiKeyCredentials
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.ds.ResourceFactory
-import com.stormpath.sdk.impl.http.Request
+import com.stormpath.sdk.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
@@ -58,7 +59,7 @@ class DefaultClientTest {
     @Test
     void testConstructorOK() {
 
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         String baseUrl = "http://localhost:8080/v1"
         def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createStrictMock(CacheManager)
@@ -69,15 +70,15 @@ class DefaultClientTest {
         expect(proxy.getPort()).andReturn(777)
         expect(proxy.isAuthenticationRequired()).andReturn(false)
 
-        replay(apiKey, proxy, cacheManager)
+        replay(apiKeyCredentials, proxy, cacheManager)
 
-        Client client = new DefaultClient(apiKey, baseUrl, proxy, cacheManager, authcScheme, connectionTimeout)
+        Client client = new DefaultClient(apiKeyCredentials, baseUrl, proxy, cacheManager, authcScheme, null, connectionTimeout)
 
-        assertEquals(client.dataStore.requestExecutor.apiKey, apiKey)
+        assertEquals(client.dataStore.requestExecutor.clientCredentials, apiKeyCredentials)
         assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), connectionTimeout * 1000)
         assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), connectionTimeout * 1000)
 
-        verify(apiKey, proxy, cacheManager)
+        verify(apiKeyCredentials, proxy, cacheManager)
     }
 
     @Test
@@ -89,56 +90,22 @@ class DefaultClientTest {
         def authcScheme = AuthenticationScheme.SAUTHC1
 
         try {
-            new DefaultClient(null, baseUrl, proxy, cacheManager, authcScheme, 10000)
+            new DefaultClient(null, baseUrl, proxy, cacheManager, authcScheme, null, 10000)
             fail("Should have thrown due to null ApiKey")
         } catch (IllegalArgumentException ex) {
-            assertEquals(ex.getMessage(), "apiKey argument cannot be null.")
+            assertEquals(ex.getMessage(), "apiKeyCredentials argument cannot be null.")
         }
     }
-
-/*    @Test
-    // commenting out this test since the data store implementation changed and Integration Tests are passing with the changes
-    void testGetCurrentTenant() {
-
-        def apiKey = createStrictMock(ApiKey)
-        String baseUrl = "http://localhost:8080/v1"
-        def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
-        def cacheManager = createStrictMock(CacheManager)
-        def authcScheme = AuthenticationScheme.SAUTHC1
-        def cache = createStrictMock(Cache)
-        def map = createStrictMock(Map)
-        def set = createStrictMock(Set)
-        def iterator = createNiceMock(Iterator)
-        def currentTenantHref = "https://api.stormpath.com/v1/tenants/3cFOIsPgvKwsGjAeIiWV6d"
-
-        expect(proxy.getHost()).andReturn("192.168.2.110")
-        expect(proxy.getPort()).andReturn(777)
-        expect(proxy.isAuthenticationRequired()).andReturn(false)
-        expect(cacheManager.getCache("com.stormpath.sdk.tenant.Tenant")).andReturn(cache)
-        expect(cache.get("http://localhost:8080/v1/tenants/current")).andReturn(map)
-        expect(map.isEmpty()).andReturn(false).times(2)
-        expect(map.get("href")).andReturn(currentTenantHref).times(2)
-        expect(map.size()).andReturn(1)
-        expect(map.entrySet()).andReturn(set)
-        expect(set.iterator()).andReturn(iterator)
-
-        replay(apiKey, proxy, cacheManager, cache, map, set, iterator)
-
-        Client client = new DefaultClient(apiKey, baseUrl, proxy, cacheManager, authcScheme)
-        client.getCurrentTenant()
-
-        verify(apiKey, proxy, cacheManager, cache, map, set, iterator)
-    }*/
 
     @Test
     void testGetDataStore() {
 
-        def apiKey = createNiceMock(ApiKey)
+        def apiKeyCredentials = createNiceMock(ApiKeyCredentials)
         String baseUrl = "http://localhost:8080/v1"
         def authcScheme = AuthenticationScheme.SAUTHC1
         def cacheManager = Caches.newDisabledCacheManager();
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, cacheManager , authcScheme, 20000)
+        Client client = new DefaultClient(apiKeyCredentials, baseUrl, null, cacheManager , authcScheme, null,  20000)
 
         assertNotNull(client.getDataStore())
         assertEquals(client.getDataStore().baseUrl, baseUrl)
@@ -147,7 +114,7 @@ class DefaultClientTest {
     //@since 1.0.RC3
     @Test
     void testDirtyPropertiesNotSharedAmongDifferentResourcesWithSameHref() {
-        def apiKey = createNiceMock(ApiKey)
+        def apiKeyCredentials = createNiceMock(ApiKeyCredentials)
         def requestExecutor = createStrictMock(RequestExecutor)
         def resourceFactory = createStrictMock(ResourceFactory)
         def response = createStrictMock(Response)
@@ -183,7 +150,7 @@ class DefaultClientTest {
         InputStream is02 = new ByteArrayInputStream(mapMarshaller.marshal(properties).getBytes());
         InputStream is01AfterSave = new ByteArrayInputStream(mapMarshaller.marshal(propertiesAfterSave).getBytes());
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", createNiceMock(ApiKey))
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials)
 
         //Server call for Resource01
         expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.GET, properties.href))))).andReturn(response)
@@ -206,7 +173,7 @@ class DefaultClientTest {
         replay requestExecutor, response, resourceFactory
 
         //Let's start
-        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, Caches.newDisabledCacheManager(), null, 20000)
+        def client = new DefaultClient(apiKeyCredentials, "https://api.stormpath.com/v1/accounts/", null, Caches.newDisabledCacheManager(), null, null, 20000)
         setNewValue(client, "dataStore", dataStore)
         def account01 = client.getResource(properties.href, Account)
         def account02 = client.getResource(properties.href, Account)
@@ -265,6 +232,8 @@ class DefaultClientTest {
     void testTenantActions() {
 
         def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+
         def dataStore = createStrictMock(DataStore)
         String baseUrl = "http://localhost:8080/v1"
 
@@ -341,10 +310,10 @@ class DefaultClientTest {
         expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.verifyAccountEmail(token)).andReturn(account)
 
-        replay(apiKey, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
+        replay(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
                 map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, Caches.newDisabledCacheManager(), null, 20000)
+        Client client = new DefaultClient(apiKeyCredentials, baseUrl, null, Caches.newDisabledCacheManager(), null, null, 20000)
         setNewValue(client, "dataStore", dataStore)
         assertSame(client.createApplication(application), returnedApplication)
         assertSame(client.createApplication(createApplicationRequest), returnedApplication)
@@ -358,7 +327,7 @@ class DefaultClientTest {
         assertSame(client.getDirectories(directoryCriteria), directoryList)
         assertSame(client.verifyAccountEmail(token), account)
 
-        verify(apiKey, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
+        verify(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
                 map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
     }
 

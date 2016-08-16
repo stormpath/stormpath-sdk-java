@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.http;
 
+import com.stormpath.sdk.http.QueryString;
+
 /**
  * A canonical representation of a <a href="http://tools.ietf.org/html/rfc3986">Uniform Resource Identifier (URI)</a>
  * suitable for the SDK's needs.

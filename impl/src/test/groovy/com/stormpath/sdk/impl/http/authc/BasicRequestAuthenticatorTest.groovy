@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.impl.http.authc
 
-import com.stormpath.sdk.api.ApiKey
-import com.stormpath.sdk.impl.http.HttpHeaders
-import com.stormpath.sdk.impl.http.Request
+import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.http.HttpHeaders
+import com.stormpath.sdk.http.Request
 import org.testng.annotations.Test
 
 import java.text.SimpleDateFormat
@@ -43,20 +43,20 @@ class BasicRequestAuthenticatorTest {
         String authorizationHeader = com.stormpath.sdk.impl.util.Base64.encodeBase64String((id + ":" + secret).getBytes("UTF-8"));
 
         def request = createStrictMock(Request)
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
 
         HttpHeaders headers = new HttpHeaders()
 
         assertNull(headers.get(AUTHORIZATION_HEADER))
 
         expect(request.getHeaders()).andReturn(headers) times(2)
-        expect(apiKey.getId()).andReturn(id)
-        expect(apiKey.getSecret()).andReturn(secret)
+        expect(apiKeyCredentials.getId()).andReturn(id)
+        expect(apiKeyCredentials.getSecret()).andReturn(secret)
 
-        replay(request, apiKey)
+        replay(request, apiKeyCredentials)
 
         def requestAuthenticator = new BasicRequestAuthenticator();
-        requestAuthenticator.authenticate(request, apiKey)
+        requestAuthenticator.authenticate(request, apiKeyCredentials)
 
         assertEquals(headers.get(AUTHORIZATION_HEADER).size(), 1)
         assertEquals(headers.get(AUTHORIZATION_HEADER).get(0), "Basic " + authorizationHeader)
@@ -73,7 +73,7 @@ class BasicRequestAuthenticatorTest {
             fail("Exception validating generated date in header: " + e.getMessage())
         }
 
-        verify(request, apiKey)
+        verify(request, apiKeyCredentials)
 
     }
 

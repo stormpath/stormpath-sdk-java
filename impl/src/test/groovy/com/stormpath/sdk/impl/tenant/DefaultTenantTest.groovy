@@ -26,11 +26,12 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.impl.api.ApiKeyCredentials
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
-import com.stormpath.sdk.impl.http.Request
+import com.stormpath.sdk.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
@@ -205,6 +206,8 @@ class DefaultTenantTest {
 
         String token = "fooVerificationEmail"
         def apiKey = ApiKeys.builder().setId('foo').setSecret('bar').build()
+        def apiKeyCredentials = new ApiKeyCredentials(apiKey)
+
         def cacheManager = Caches.newCacheManager().build()
         def requestExecutor = createStrictMock(RequestExecutor)
         def response = createStrictMock(Response)
@@ -219,7 +222,7 @@ class DefaultTenantTest {
 
         replay requestExecutor, response
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey, cacheManager)
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, cacheManager)
 
         //assert that the account is not already cached
         assertNull cacheManager.getCache(Account.name).get(returnedProperties.href)

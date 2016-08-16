@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.http.httpclient;
 
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.http.MediaType;
+import com.stormpath.sdk.http.Request;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.InputStreamEntity;
 

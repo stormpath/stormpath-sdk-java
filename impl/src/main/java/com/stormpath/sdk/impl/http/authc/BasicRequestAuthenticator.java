@@ -15,9 +15,10 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
+import com.stormpath.sdk.authc.RequestAuthenticator;
+import com.stormpath.sdk.client.ClientCredentials;
+import com.stormpath.sdk.http.Request;
+import com.stormpath.sdk.authc.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
     private static final String NL = "\n";
 
     @Override
-    public void authenticate(Request request, ApiKey apiKey) throws RequestAuthenticationException {
+    public void authenticate(Request request, ClientCredentials clientCredentials) throws RequestAuthenticationException {
         Date date = new Date();
 
         SimpleDateFormat timestampFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
@@ -57,7 +58,7 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
 
         request.getHeaders().set(STORMPATH_DATE_HEADER, timestamp);
 
-        String authorizationHeader = apiKey.getId() + ":" + apiKey.getSecret();
+        String authorizationHeader = clientCredentials.getId() + ":" + clientCredentials.getSecret();
         byte[] valueBytes;
         try {
             valueBytes = authorizationHeader.getBytes("UTF-8");

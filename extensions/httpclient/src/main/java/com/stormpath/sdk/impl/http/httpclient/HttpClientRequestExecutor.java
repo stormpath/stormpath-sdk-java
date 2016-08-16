@@ -15,19 +15,19 @@
  */
 package com.stormpath.sdk.impl.http.httpclient;
 
-import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.client.ClientCredentials;
 import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.impl.http.HttpHeaders;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.http.HttpHeaders;
+import com.stormpath.sdk.http.MediaType;
+import com.stormpath.sdk.http.QueryString;
+import com.stormpath.sdk.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
-import com.stormpath.sdk.impl.http.RestException;
+import com.stormpath.sdk.http.RestException;
 import com.stormpath.sdk.impl.http.authc.DefaultRequestAuthenticatorFactory;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.authc.RequestAuthenticator;
+import com.stormpath.sdk.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.impl.http.support.BackoffStrategy;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.DefaultResponse;
@@ -91,7 +91,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private int numRetries = DEFAULT_MAX_RETRIES;
 
-    private final ApiKey apiKey;
+    private final ClientCredentials clientCredentials;
 
     private final RequestAuthenticator requestAuthenticator;
 
@@ -101,7 +101,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private HttpClientRequestFactory httpClientRequestFactory;
 
-    private final RequestAuthenticatorFactory requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
+    private final RequestAuthenticatorFactory requestAuthenticatorFactory;
 
     //doesn't need to be SecureRandom: only used in backoff strategy, not for crypto:
     private final Random random = new Random();
@@ -139,18 +139,22 @@ public class HttpClientRequestExecutor implements RequestExecutor {
     /**
      * Creates a new {@code HttpClientRequestExecutor} using the specified {@code ApiKey} and optional {@code Proxy}
      * configuration.
-     * @param apiKey the Stormpath account API Key that will be used to authenticate the client with Stormpath's API sever
+     * @param clientCredentials the Stormpath account API Key that will be used to authenticate the client with Stormpath's API sever
      * @param proxy the HTTP proxy to be used when communicating with the Stormpath API server (can be null)
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API server.
      *                             If null, then Sauthc1 will be used.
      */
-    public HttpClientRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme, Integer connectionTimeout) {
-        Assert.notNull(apiKey, "apiKey argument is required.");
+    public HttpClientRequestExecutor(ClientCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
+        Assert.notNull(clientCredentials, "clientCredentials argument is required.");
         Assert.isTrue(connectionTimeout >= 0, "Timeout cannot be a negative number.");
 
-        this.apiKey = apiKey;
+        this.clientCredentials = clientCredentials;
 
-        this.requestAuthenticator = requestAuthenticatorFactory.create(authenticationScheme);
+        this.requestAuthenticatorFactory = (requestAuthenticatorFactory != null)
+                ? requestAuthenticatorFactory
+                : new DefaultRequestAuthenticatorFactory();
+
+        this.requestAuthenticator = this.requestAuthenticatorFactory.create(authenticationScheme);
 
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 
@@ -255,9 +259,10 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 request.setHeaders(originalHeaders);
             }
 
+            //TODO ???
             // Sign the request
-            if (this.apiKey != null) {
-                this.requestAuthenticator.authenticate(request, this.apiKey);
+            if (this.clientCredentials != null) {
+                this.requestAuthenticator.authenticate(request, this.clientCredentials);
             }
 
             HttpRequestBase httpRequest = this.httpClientRequestFactory.createHttpClientRequest(request, entity);

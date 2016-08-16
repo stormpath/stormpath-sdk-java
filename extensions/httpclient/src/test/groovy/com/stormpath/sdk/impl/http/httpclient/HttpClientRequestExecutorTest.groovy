@@ -19,6 +19,7 @@ package com.stormpath.sdk.impl.http.httpclient
 
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.impl.api.ApiKeyCredentials
 import org.apache.http.HttpEntity
 import org.apache.http.HttpResponse
 import org.apache.http.StatusLine
@@ -32,14 +33,14 @@ class HttpClientRequestExecutorTest {
     @Test //asserts https://github.com/stormpath/stormpath-sdk-java/issues/124
     void testToSdkResponseWithNullContentString() {
 
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
 
         HttpResponse httpResponse = createStrictMock(HttpResponse)
         StatusLine statusLine = createStrictMock(StatusLine)
         HttpEntity entity = createStrictMock(HttpEntity)
         InputStream entityContent = createStrictMock(InputStream)
 
-        def e = new HttpClientRequestExecutor(apiKey, null, AuthenticationScheme.SAUTHC1, 20000) {
+        def e = new HttpClientRequestExecutor(apiKeyCredentials, null, AuthenticationScheme.SAUTHC1, null, 20000) {
             @Override
             protected byte[] toBytes(HttpEntity he) throws IOException {
                 return null
@@ -54,13 +55,13 @@ class HttpClientRequestExecutorTest {
         expect(entity.getContent()).andStubReturn(entityContent)
         expect(entity.getContentLength()).andStubReturn(-1)
 
-        replay apiKey, httpResponse, statusLine, entity, entityContent
+        replay apiKeyCredentials, httpResponse, statusLine, entity, entityContent
 
         def sdkResponse = e.toSdkResponse(httpResponse)
 
         assertNull sdkResponse.body
 
-        verify apiKey, httpResponse, statusLine, entity, entityContent
+        verify apiKeyCredentials, httpResponse, statusLine, entity, entityContent
 
     }
 }

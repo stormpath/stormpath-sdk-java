@@ -1,6 +1,8 @@
 package com.stormpath.sdk.impl.http
 
+import com.stormpath.sdk.http.HttpHeaders
 import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.http.MediaType
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 

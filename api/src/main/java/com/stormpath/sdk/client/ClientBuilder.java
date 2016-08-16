@@ -16,6 +16,7 @@
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.cache.CacheManager;
 
 /**
@@ -349,6 +350,10 @@ public interface ClientBuilder {
      * @since 1.0.RC4
      */
     ClientBuilder setBaseUrl(String baseUrl);
+
+    ClientBuilder setRequestAuthenticatorFactory(RequestAuthenticatorFactory factory);
+
+    ClientBuilder setClientCredentials(ClientCredentials clientCredentials);
 
     /**
      * Constructs a new {@link Client} instance based on the ClientBuilder's current configuration state.

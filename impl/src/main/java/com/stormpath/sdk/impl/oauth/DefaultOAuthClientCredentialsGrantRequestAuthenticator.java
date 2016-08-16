@@ -2,16 +2,10 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.impl.http.HttpHeaders;
-import com.stormpath.sdk.impl.http.MediaType;
-import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
-import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
-import com.stormpath.sdk.impl.util.Base64;
+import com.stormpath.sdk.http.HttpHeaders;
+import com.stormpath.sdk.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.*;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * @since 1.0.0

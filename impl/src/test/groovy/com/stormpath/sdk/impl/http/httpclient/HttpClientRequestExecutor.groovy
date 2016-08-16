@@ -15,13 +15,14 @@
  */
 package com.stormpath.sdk.impl.http.httpclient
 
-import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.client.ClientCredentials
 import com.stormpath.sdk.client.Proxy
-import com.stormpath.sdk.impl.http.Request
+import com.stormpath.sdk.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
-import com.stormpath.sdk.impl.http.RestException
+import com.stormpath.sdk.http.RestException
+import com.stormpath.sdk.authc.RequestAuthenticatorFactory
 
 /**
  *
@@ -38,7 +39,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         return null;
     }
 
-    public HttpClientRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme, Integer connectionTimeout) {
+    public HttpClientRequestExecutor(ClientCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
 
     }
 }

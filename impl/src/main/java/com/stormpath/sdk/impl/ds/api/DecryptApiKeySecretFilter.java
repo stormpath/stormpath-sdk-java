@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds.api;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.impl.api.ApiKeyCredentials;
 import com.stormpath.sdk.impl.api.ApiKeyParameter;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyList;
@@ -47,13 +48,13 @@ public class DecryptApiKeySecretFilter implements Filter {
     private static String ENCRYPTION_KEY_ITERATIONS = ApiKeyParameter.ENCRYPTION_KEY_ITERATIONS.getName();
     private static String ENCRYPTION_METADATA = ApiKeyParameter.ENCRYPTION_METADATA.getName();
 
-    private final ApiKey clientApiKey;
+    private final ApiKeyCredentials apiKeyCredentials;
 
     private final String SECRET_PROPERTY_NAME = DefaultApiKey.SECRET.getName();
 
-    public DecryptApiKeySecretFilter(ApiKey clientApiKey) {
-        Assert.notNull(clientApiKey);
-        this.clientApiKey = clientApiKey;
+    public DecryptApiKeySecretFilter(ApiKeyCredentials apiKeyCredentials) {
+        Assert.notNull(apiKeyCredentials);
+        this.apiKeyCredentials = apiKeyCredentials;
     }
 
     @Override
@@ -109,7 +110,7 @@ public class DecryptApiKeySecretFilter implements Filter {
         Integer iterations = (Integer) metadata.get(ENCRYPTION_KEY_ITERATIONS);
         Integer size = (Integer) metadata.get(ENCRYPTION_KEY_SIZE);
 
-        EncryptionService service = new ApiKeySecretEncryptionService.Builder().setPassword(clientApiKey.getSecret().toCharArray()).setKeySize(size)
+        EncryptionService service = new ApiKeySecretEncryptionService.Builder().setPassword(apiKeyCredentials.getSecret().toCharArray()).setKeySize(size)
                 .setIterations(iterations).setBase64Salt(base64Salt).build();
 
         String encryptedSecret = (String) input.get(SECRET_PROPERTY_NAME);

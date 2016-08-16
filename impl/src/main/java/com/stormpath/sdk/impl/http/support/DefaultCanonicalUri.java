@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.http.support;
 
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;

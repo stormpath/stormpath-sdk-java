@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http.support;
+package com.stormpath.sdk.http;
 
-import com.stormpath.sdk.impl.http.RestException;
+import java.io.InputStream;
 
 /**
- * @since 0.9.3
+ * @since 0.1
  */
-public class RequestAuthenticationException extends RestException {
+public interface HttpMessage {
 
-    public RequestAuthenticationException (String s) {
-        super(s);
-    }
+    HttpHeaders getHeaders();
 
-    public RequestAuthenticationException (Throwable cause) {
-        super(cause);
-    }
+    void setHeaders(HttpHeaders headers);
 
-    public RequestAuthenticationException (String s, Throwable cause) {
-        super(s, cause);
-    }
+    boolean hasBody();
+
+    InputStream getBody();
 }

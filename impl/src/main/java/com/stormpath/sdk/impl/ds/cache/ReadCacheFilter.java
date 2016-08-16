@@ -24,7 +24,7 @@ import com.stormpath.sdk.impl.ds.ResourceAction;
 import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess;
 import com.stormpath.sdk.impl.resource.CollectionProperties;
 import com.stormpath.sdk.lang.Assert;

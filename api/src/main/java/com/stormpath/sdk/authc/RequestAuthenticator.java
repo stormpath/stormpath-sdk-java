@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http.authc;
+package com.stormpath.sdk.authc;
 
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.impl.http.Request;
-import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
+import com.stormpath.sdk.client.ClientCredentials;
+import com.stormpath.sdk.http.Request;
 
 /**
  * Interface to be implemented by HTTP authentication schemes. Such scheme defines the way the communication with
  * the Stormpath API server will be authenticated.
  *
- * @see BasicRequestAuthenticator
- * @see SAuthc1RequestAuthenticator
  * @see com.stormpath.sdk.client.AuthenticationScheme
  * @since 0.9.3
  */
@@ -36,10 +33,10 @@ public interface RequestAuthenticator {
      *
      * @param request the request that will be sent to Stormpath API server, it shall be modified by the implementating classes
      *                in order to insert here the authentication information
-     * @param apiKey provides the authentication data that will be used to create the proper authentication information for
+     * @param clientCredentials provides the authentication data that will be used to create the proper authentication information for
      *               the specific scheme the implementation defines.
      * @throws RequestAuthenticationException when the authentication request cannot be created
      */
-    void authenticate(Request request, ApiKey apiKey) throws RequestAuthenticationException;
+    void authenticate(Request request, ClientCredentials clientCredentials) throws RequestAuthenticationException;
 
 }

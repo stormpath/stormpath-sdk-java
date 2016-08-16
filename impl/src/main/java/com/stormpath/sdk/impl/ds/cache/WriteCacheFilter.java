@@ -31,7 +31,7 @@ import com.stormpath.sdk.impl.ds.FilterChain;
 import com.stormpath.sdk.impl.ds.ResourceAction;
 import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
-import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;

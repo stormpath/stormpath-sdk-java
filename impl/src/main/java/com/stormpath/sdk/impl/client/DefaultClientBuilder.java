@@ -22,16 +22,15 @@ import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
 import com.stormpath.sdk.cache.Caches;
-import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.client.ClientBuilder;
-import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.client.*;
+import com.stormpath.sdk.impl.api.ApiKeyCredentials;
 import com.stormpath.sdk.impl.config.ClientConfiguration;
 import com.stormpath.sdk.impl.config.JSONPropertiesSource;
 import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
 import com.stormpath.sdk.impl.config.PropertiesSource;
 import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
 import com.stormpath.sdk.impl.config.YAMLPropertiesSource;
+import com.stormpath.sdk.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.io.Resource;
@@ -52,16 +51,16 @@ import java.util.concurrent.TimeUnit;
  * <p>The default {@link ClientBuilder} implementation. This looks for configuration files
  * in the following locations and order of precedence (last one wins).</p>
  * <ul>
- *     <li>classpath:com/stormpath/sdk/config/stormpath.properties</li>
- *     <li>classpath:stormpath.properties</li>
- *     <li>classpath:stormpath.json</li>
- *     <li>classpath:stormpath.yaml</li>
- *     <li>~/.stormpath/stormpath.properties</li>
- *     <li>~/.stormpath/stormpath.json</li>
- *     <li>~/.stormpath/stormpath.yaml</li>
- *     <li>~/stormpath.properties</li>
- *     <li>~/stormpath.json</li>
- *     <li>~/stormpath.yaml</li>
+ * <li>classpath:com/stormpath/sdk/config/stormpath.properties</li>
+ * <li>classpath:stormpath.properties</li>
+ * <li>classpath:stormpath.json</li>
+ * <li>classpath:stormpath.yaml</li>
+ * <li>~/.stormpath/stormpath.properties</li>
+ * <li>~/.stormpath/stormpath.json</li>
+ * <li>~/.stormpath/stormpath.yaml</li>
+ * <li>~/stormpath.properties</li>
+ * <li>~/stormpath.json</li>
+ * <li>~/stormpath.yaml</li>
  * </ul>
  *
  * @since 1.0.alpha
@@ -70,9 +69,9 @@ public class DefaultClientBuilder implements ClientBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultClientBuilder.class);
 
-    private ApiKey               apiKey;
-    private Proxy                proxy;
-    private CacheManager         cacheManager;
+    private ApiKey apiKey;
+    private Proxy proxy;
+    private CacheManager cacheManager;
 
     private static final String USER_HOME = System.getProperty("user.home") + File.separatorChar;
     private static final String STORMPATH_PROPERTIES = "stormpath.properties";
@@ -232,6 +231,19 @@ public class DefaultClientBuilder implements ClientBuilder {
     }
 
     @Override
+    public ClientBuilder setRequestAuthenticatorFactory(RequestAuthenticatorFactory factory) {
+        this.clientConfig.setRequestAuthenticatorFactory(factory);
+        return this;
+    }
+
+    @Override
+    public ClientBuilder setClientCredentials(ClientCredentials clientCredentials) {
+        Assert.notNull(clientCredentials, "clientCredentials argument cannot be null");
+        this.clientConfig.setClientCredentials(clientCredentials);
+        return this;
+    }
+
+    @Override
     public Client build() {
         if (this.apiKey == null) {
             log.debug("No API Key configured. Attempting to acquire an API Key found from well-known locations ($HOME/.stormpath/apiKey.properties < environment variables < system properties)...");
@@ -253,8 +265,17 @@ public class DefaultClientBuilder implements ClientBuilder {
             }
         }
 
-        Assert.state(this.apiKey != null,
-                "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
+        Assert.isTrue(this.apiKey == null || this.clientConfig.getClientCredentials() == null, "Only one of ApiKey or ClientCredentials may be set, but not both.");
+
+        ClientCredentials clientCredentials;
+
+        if (this.clientConfig.getClientCredentials() != null) {
+            clientCredentials = this.clientConfig.getClientCredentials();
+        } else {
+            Assert.state(this.apiKey != null,
+                    "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
+            clientCredentials = new ApiKeyCredentials(this.apiKey);
+        }
 
         if (!this.clientConfig.isCacheManagerEnabled()) {
             log.debug("CacheManager disabled. Defaulting to DisabledCacheManager");
@@ -283,8 +304,8 @@ public class DefaultClientBuilder implements ClientBuilder {
                     this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
-        return new DefaultClient(this.apiKey, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
-                this.clientConfig.getAuthenticationScheme(), this.clientConfig.getConnectionTimeout());
+        return new DefaultClient(clientCredentials, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
+                this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout());
     }
 
     @Override

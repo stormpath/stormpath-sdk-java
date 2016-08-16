@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http;
+package com.stormpath.sdk.http;
 
-import com.stormpath.sdk.http.HttpMethod;
-import com.stormpath.sdk.impl.util.LinkedCaseInsensitiveMap;
-import com.stormpath.sdk.impl.util.MultiValueMap;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.LinkedCaseInsensitiveMap;
+import com.stormpath.sdk.lang.MultiValueMap;
 import com.stormpath.sdk.lang.Strings;
 
 import java.net.URI;
@@ -97,7 +96,7 @@ public class HttpHeaders implements MultiValueMap<String, String> {
         if (readOnly) {
             Map<String, List<String>> map =
                     new LinkedCaseInsensitiveMap<List<String>>(headers.size(), Locale.ENGLISH);
-            for (Entry<String, List<String>> entry : headers.entrySet()) {
+            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
                 List<String> values = Collections.unmodifiableList(entry.getValue());
                 map.put(entry.getKey(), values);
             }
@@ -569,14 +568,14 @@ public class HttpHeaders implements MultiValueMap<String, String> {
     }
 
     public void setAll(Map<String, String> values) {
-        for (Entry<String, String> entry : values.entrySet()) {
+        for (Map.Entry<String, String> entry : values.entrySet()) {
             set(entry.getKey(), entry.getValue());
         }
     }
 
     public Map<String, String> toSingleValueMap() {
         LinkedHashMap<String, String> singleValueMap = new LinkedHashMap<String, String>(this.headers.size());
-        for (Entry<String, List<String>> entry : headers.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
             singleValueMap.put(entry.getKey(), entry.getValue().get(0));
         }
         return singleValueMap;
@@ -628,7 +627,7 @@ public class HttpHeaders implements MultiValueMap<String, String> {
         return this.headers.values();
     }
 
-    public Set<Entry<String, List<String>>> entrySet() {
+    public Set<Map.Entry<String, List<String>>> entrySet() {
         return this.headers.entrySet();
     }
 
