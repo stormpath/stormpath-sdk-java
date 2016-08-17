@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -129,6 +130,13 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @Override
     public View stormpathControllerView() {
         return super.stormpathControllerView();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @Override
+    public ObjectMapper stormpathObjectMapper() {
+        return super.stormpathObjectMapper();
     }
 
     @Bean

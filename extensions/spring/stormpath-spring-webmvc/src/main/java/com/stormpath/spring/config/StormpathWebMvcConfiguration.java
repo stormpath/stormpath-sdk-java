@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -107,6 +108,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Override
     public com.stormpath.sdk.servlet.mvc.View stormpathControllerView() {
         return super.stormpathControllerView();
+    }
+
+    @Bean
+    @Override
+    public ObjectMapper stormpathObjectMapper() {
+        return super.stormpathObjectMapper();
     }
 
     /**

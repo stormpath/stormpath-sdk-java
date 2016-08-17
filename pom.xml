@@ -108,6 +108,7 @@
         <spring.version>4.3.2.RELEASE</spring.version>
         <spring.boot.version>1.4.0.RELEASE</spring.boot.version>
         <spring.security.version>4.1.1.RELEASE</spring.security.version>
+        <zuul.version>1.2.2</zuul.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>2.4.7</groovy.version>
@@ -200,6 +201,11 @@
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-servlet-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.stormpath.sdk</groupId>
+                <artifactId>stormpath-sdk-zuul</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -303,6 +309,11 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netflix.zuul</groupId>
+                <artifactId>zuul-core</artifactId>
+                <version>${zuul.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>

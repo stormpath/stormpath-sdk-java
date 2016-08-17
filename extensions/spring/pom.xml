@@ -37,6 +37,7 @@
         <module>stormpath-spring-security-webmvc</module>
         <module>stormpath-spring-webmvc</module>
         <module>boot</module>
+        <module>cloud</module>
     </modules>
 
 </project>

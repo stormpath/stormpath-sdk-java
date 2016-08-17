@@ -571,9 +571,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new SpringView(l, stormpathSpringLocaleResolver(), stormpathLayoutInterceptor());
     }
 
+    public ObjectMapper stormpathObjectMapper() {
+        return objectMapper;
+    }
+
     public View stormpathJacksonView() {
         JacksonView view = new JacksonView();
-        view.setObjectMapper(objectMapper);
+        view.setObjectMapper(stormpathObjectMapper());
         return view;
     }
 
@@ -672,7 +676,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public org.springframework.web.servlet.View stormpathJsonView() {
-        MappingJackson2JsonView jsonView = new MappingJackson2JsonView(objectMapper);
+        MappingJackson2JsonView jsonView = new MappingJackson2JsonView(stormpathObjectMapper());
         // 786: Suppress Jackson's setting a Cache-Control, since they're set in individual controllers
         // Without this, we'll end up with duplicate Cache-Control headers
         jsonView.setDisableCaching(false);
@@ -1314,7 +1318,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         MeController controller = new MeController();
 
         controller.setExpands(expandedAccountAttributes);
-        controller.setObjectMapper(objectMapper);
+        controller.setObjectMapper(stormpathObjectMapper());
         controller.setProduces(stormpathProducedMediaTypes());
         controller.setUri(meUri);
         controller.setLoginPageRedirector(new DefaultLoginPageRedirector(stormpathLoginConfig().getUri()));
