@@ -17,6 +17,7 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,13 +56,30 @@ public class StormpathLogoutHandler implements LogoutHandler {
     @Qualifier("stormpathLogoutController")
     protected Controller logoutController;
 
+    @Autowired
+    protected Client client;
+
+    @Autowired
+    protected AccountResolver accountResolver;
+
     public StormpathLogoutHandler(Saver<AuthenticationResult> authenticationResultSaver) {
         this.authenticationResultSaver = authenticationResultSaver;
     }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Account account = AccountResolver.INSTANCE.getAccount(request);
+        Account account = null;
+
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof User) {
+                String accountHref = ((User) principal).getUsername();
+                if (accountHref != null && accountHref.contains("/accounts/")) {
+                    account = client.getResource(accountHref, Account.class);
+                }
+            }
+        }
+
         authenticationResultSaver.set(request, response, null);
 
         if (idSiteEnabled) {

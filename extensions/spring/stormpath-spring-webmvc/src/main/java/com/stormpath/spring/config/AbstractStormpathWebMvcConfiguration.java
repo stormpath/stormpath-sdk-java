@@ -281,7 +281,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.enabled'] ?: true }")
     protected boolean stormpathFilterEnabled;
 
-    @Value("#{ @environment['stormpath.web.stormpathFilter.order'] ?: T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE }")
+    @Value("#{ @environment['stormpath.web.stormpathFilter.order'] ?: 1}") //Spring Security uses order 0, we want to be behind it, so we set it to 1
     protected int stormpathFilterOrder;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
