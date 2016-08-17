@@ -107,7 +107,7 @@
         <servlet.version>3.1.0</servlet.version>
         <spring.version>4.3.2.RELEASE</spring.version>
         <spring.boot.version>1.4.0.RELEASE</spring.boot.version>
-        <spring.security.version>4.1.1.RELEASE</spring.security.version>
+        <spring.security.version>4.1.2.RELEASE</spring.security.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
         <groovy.version>2.4.7</groovy.version>
