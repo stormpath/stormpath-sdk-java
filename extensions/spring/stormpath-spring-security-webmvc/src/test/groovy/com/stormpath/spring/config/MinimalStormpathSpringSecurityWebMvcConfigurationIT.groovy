@@ -27,7 +27,6 @@ import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
-import com.stormpath.sdk.servlet.client.ClientLoader
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
@@ -186,9 +185,10 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
-        expect(httpServletRequest.getServletContext()).andReturn(servletContext)
-        expect(httpServletRequest.getAttribute(Client.class.getName())).andReturn(client)
-        expect(servletContext.getAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY)).andReturn(client)
+        expect(httpServletRequest.getServletContext()).andReturn(servletContext).times(2)
+        expect(servletContext.getAttribute("com.stormpath.sdk.client.Client")).andReturn(client).times(2)
+        //expect(httpServletRequest.getAttribute(Client.class.getName())).andReturn(client)
+        //expect(servletContext.getAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY)).andReturn(client)
 
         replay(httpServletRequest, httpServletResponse, servletContext)
 
