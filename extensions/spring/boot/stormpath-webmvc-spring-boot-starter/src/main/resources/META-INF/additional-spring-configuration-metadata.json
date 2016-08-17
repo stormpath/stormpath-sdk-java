@@ -904,6 +904,54 @@
       "defaultValue": "/me"
     },
     {
+      "name": "stormpath.web.me.expand.apiKeys",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.me.expand.applications",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.me.expand.customData",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.me.expand.directory",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.me.expand.groupMemberships",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.me.expand.groups",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.me.expand.providerData",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "name": "stormpath.web.me.expand.tenant",
+      "type": "java.lang.Boolean",
+      "description": "",
+      "defaultValue": false
+    },
+    {
       "name": "stormpath.web.http.authc.challenge",
       "type": "java.lang.Boolean",
       "description": "Whether or not a failed HTTP Authentication attempt (via the Authorization header) should result in a HTTP 401 authentication challenge response, setting the WWW-Authenticate header.  This is expected behavior for HTTP Authentication, so the default value is true, but may be set to false you desire an exception be thrown instead.  This is mostly useful in certain testing scenarios, and it is strongly recommended to keep this value set to true to retain HTTP-compliant behavior.",

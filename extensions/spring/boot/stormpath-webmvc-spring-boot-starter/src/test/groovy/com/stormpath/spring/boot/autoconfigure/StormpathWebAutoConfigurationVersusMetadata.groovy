@@ -84,7 +84,7 @@ class StormpathWebAutoConfigurationVersusMetadata {
         def props = getPropertiesFromMetadata()
         def names = new HashSet()
         props.each {
-            if (!it.name.contains("form.fields")) {
+            if (!it.name.contains("form.fields") && !it.name.contains("me.expand")) {
                 names << it.name
             }
         }
@@ -123,8 +123,9 @@ class StormpathWebAutoConfigurationVersusMetadata {
             match.each {
                 // 1. if key doesn't start with stormpath, ignore it
                 // 2. if key contains 'form.fields', ignore it
+                // 3. if key contains 'me.expand', ignore it
                 // it should be possible to do this with the above regex, but I was unable to make it work
-                if (it[1].startsWith("stormpath") && !it[1].contains("form.fields")) {
+                if (it[1].startsWith("stormpath") && !it[1].contains("form.fields") && !it[1].contains("me.expand")) {
                     // the regex above captures some values instead of keys, so ignore thoses
                     if (!it[1].contains("stormpath/")) {
                         names << it[1]

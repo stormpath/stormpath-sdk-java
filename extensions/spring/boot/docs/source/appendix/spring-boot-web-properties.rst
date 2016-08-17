@@ -202,12 +202,6 @@ stormpath.web.register.view
 
 The name of the Spring MVC view that should be rendered when visiting the stormpath.web.register.uri.  This is the name provided to the Spring MVC view resolver.  The default value is 'stormpath/register' which will render a convenient default view provided by the Stormpath starter.  If you want to render your own template instead of the default, set the name of your custom view here.
 
-stormpath.web.register.form.fields
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-**Default Value:** ``givenName, surname, email(required), password(required,password)``
-
-A comma-delimited list of form field names and optional directives indicating which form fields should be displayed in the registration view.  The currently supported field names are Stormpath Account field names: 'givenName', 'middleName', 'surname', 'username', 'email', 'password'. Field names may have optional directives in parenthesis immediately following the field name that define additional behavior for the field: `fieldName(directive1, directive2, ..., directiveN)`. The currently supported directives are 'required': the form field must be populated before the form can be submitted and 'password': the form field is a password field; show '*' characters instead of raw password characters. Fields specified without a directive will be optional (displayed, but not required to be filled in). The 'email' form field is always required. If you customize your form fields, ensure that you always have at least an 'email(required)' list entry.
-
 stormpath.web.verifyEmail.enabled
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``true``
@@ -823,6 +817,54 @@ stormpath.web.me.enabled
 stormpath.web.me.uri
 ~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``/me``
+
+
+
+stormpath.web.me.expand.apiKeys
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``false``
+
+
+
+stormpath.web.me.expand.applications
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``false``
+
+
+
+stormpath.web.me.expand.customData
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``false``
+
+
+
+stormpath.web.me.expand.directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``false``
+
+
+
+stormpath.web.me.expand.groupMemberships
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``false``
+
+
+
+stormpath.web.me.expand.groups
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``false``
+
+
+
+stormpath.web.me.expand.providerData
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``false``
+
+
+
+stormpath.web.me.expand.tenant
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``false``
 
 
 
