@@ -196,7 +196,12 @@ public class LoginController extends FormController {
             model.put("oauthStateToken", UUID.randomUUID().toString());
             String status = request.getParameter("status");
             if (status != null) {
-                model.put("status", loginFormStatusResolver.getStatusMessage(request, status));
+                try {
+                    model.put("status", loginFormStatusResolver.getStatusMessage(request, status));
+                } catch (IllegalArgumentException e) {
+                    // status is invalid, set to empty
+                    model.put("status", "");
+                }
             }
         }
     }

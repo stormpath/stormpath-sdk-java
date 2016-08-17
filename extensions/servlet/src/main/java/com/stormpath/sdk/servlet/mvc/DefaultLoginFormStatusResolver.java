@@ -19,6 +19,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @since 1.0.0
@@ -37,6 +39,17 @@ public class DefaultLoginFormStatusResolver implements LoginFormStatusResolver {
 
     @Override
     public String getStatusMessage(HttpServletRequest request, String status) {
-        return messageSource.getMessage("stormpath.web.login.form.status." + status, request.getLocale(), verifyEmailUri);
+        Set<String> validStatus = new LinkedHashSet<>();
+        validStatus.add("unverified");
+        validStatus.add("verified");
+        validStatus.add("created");
+        validStatus.add("forgot");
+        validStatus.add("reset");
+
+        if (validStatus.contains(status)) {
+            return messageSource.getMessage("stormpath.web.login.form.status." + status, request.getLocale(), verifyEmailUri);
+        } else {
+            throw new IllegalArgumentException("Status '" + status + "' is not valid.");
+        }
     }
 }
