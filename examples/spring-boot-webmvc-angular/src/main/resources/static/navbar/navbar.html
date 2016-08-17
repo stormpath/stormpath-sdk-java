@@ -1,0 +1,29 @@
+<nav class="navbar navbar-default navbar-static-top" ng-controller="NavbarCtrl">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" data-toggle="collapse" data-target="#navbar-collapse" class="navbar-toggle collapsed">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+            </button>
+        </div>
+        <div id="navbar-collapse" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li ng-class="{active: isActive('/')}"><a href="/">Home</a></li>
+                <li if-user ng-class="{active: isActive('/profile')}">
+                    <a ui-sref="profile">Profile</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li if-not-user>
+                    <a href="/login">Login</a>
+                </li>
+                <li if-user>
+                    <a href="" sp-logout>Logout</a>
+                </li>
+                <li if-not-user>
+                    <a href="/register">Create Account</a></li>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
