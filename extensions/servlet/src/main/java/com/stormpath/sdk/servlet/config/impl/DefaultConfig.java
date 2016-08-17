@@ -66,6 +66,7 @@ import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -125,8 +126,8 @@ public class DefaultConfig implements Config {
         Assert.notNull(servletContext, "servletContext argument cannot be null.");
         Assert.notNull(configProps, "Properties argument cannot be null.");
         this.servletContext = servletContext;
-        this.props = Collections.unmodifiableMap(configProps);
-        this.CFG = new ExpressionConfigReader(servletContext, this.props);
+        this.props = new HashMap<>(configProps);
+        this.CFG = new ExpressionConfigReader(servletContext, Collections.unmodifiableMap(this.props));
         this.SINGLETONS = new LinkedHashMap<>();
 
         this.ACCESS_TOKEN_COOKIE_CONFIG = new AccessTokenCookieConfig(CFG);
