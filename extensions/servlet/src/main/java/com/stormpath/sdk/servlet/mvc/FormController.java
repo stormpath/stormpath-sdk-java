@@ -132,12 +132,14 @@ public abstract class FormController extends AbstractController {
     @SuppressWarnings("unchecked")
     protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response) {
         List<ErrorModel> errors = null;
-        if (request.getParameter("error") != null) {
+        // session null check fixes https://github.com/stormpath/stormpath-sdk-java/issues/908
+        if (request.getParameter("error") != null && request.getSession(false) != null) {
             //The login page is being re-rendered after an unsuccessful authentication attempt from Spring Security
             //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
             //See StormpathAuthenticationFailureHandler
             errors = new ArrayList<>();
-            ErrorModel error = (ErrorModel) request.getSession(false).getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
+            ErrorModel error =
+                (ErrorModel) request.getSession(false).getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
             if (error != null) {
                 errors.add(error);
             }
