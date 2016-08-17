@@ -226,9 +226,8 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
-        expect(httpServletRequest.getServletContext()).andReturn(servletContext)
-        expect(httpServletRequest.getAttribute(Client.class.getName())).andReturn(client)
-        expect(servletContext.getAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY)).andReturn(client)
+        expect(httpServletRequest.getServletContext()).andReturn(servletContext).times(2)
+        expect(servletContext.getAttribute("com.stormpath.sdk.client.Client")).andReturn(client).times(2)
 
         replay(httpServletRequest, httpServletResponse, servletContext)
 
