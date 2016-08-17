@@ -144,18 +144,28 @@ Additionally, the JWT is cryptographically signed by a key known only to your ap
 Cookie Config
 ~~~~~~~~~~~~~
 
-You can control the authentication cookie behavior by setting various ``stormpath.web.account.cookie``.\* configuration properties:
+You can control the authentication cookie behavior by setting various ``stormpath.web.accessTokenCookie``.\* configuration properties:
 
 ============================================================================================================ ================================================ ==========================================================
 `Cookie <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html>`_ property                      Config Property Name                             Default Value
 ============================================================================================================ ================================================ ==========================================================
-`name <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#getName()>`_                       ``stormpath.web.account.cookie.name``            ``account``
-`comment <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setComment(java.lang.String)>`_ ``stormpath.web.account.cookie.comment``         ``null``
-`domain <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain(java.lang.String)>`_   ``stormpath.web.account.cookie.domain``          ``null``
-`maxAge <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setMaxAge(int)>`_                ``stormpath.web.account.cookie.maxAge``          ``86400`` (1 day)
-`path <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath(java.lang.String)>`_       ``stormpath.web.account.cookie.path``            ``null`` (assumes web app context path)
-`httpOnly <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)>`_        ``stormpath.web.account.cookie.httpOnly``        ``true``
-`secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.account.cookie.secure``          ``true``
+`name <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#getName()>`_                       ``stormpath.web.accessTokenCookie.name``         ``access_token``
+`domain <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain(java.lang.String)>`_   ``stormpath.web.accessTokenCookie.domain``       ``null``
+`path <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath(java.lang.String)>`_       ``stormpath.web.accessTokenCookie.path``         ``null`` (assumes web app context path)
+`httpOnly <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)>`_        ``stormpath.web.accessTokenCookie.httpOnly``     ``true``
+`secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.accessTokenCookie.secure``       ``null``
+============================================================================================================ ================================================ ==========================================================
+
+You need to set the refresh token behavior by setting various ``stormpath.web.refreshTokenCookie``.\* configuration properties:
+
+============================================================================================================ ================================================ ==========================================================
+`Cookie <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html>`_ property                      Config Property Name                             Default Value
+============================================================================================================ ================================================ ==========================================================
+`name <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#getName()>`_                       ``stormpath.web.refreshTokenCookie.name``        ``refresh_token``
+`domain <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain(java.lang.String)>`_   ``stormpath.web.refreshTokenCookie.domain``      ``null``
+`path <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath(java.lang.String)>`_       ``stormpath.web.refreshTokenCookie.path``        ``null`` (assumes web app context path)
+`httpOnly <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)>`_        ``stormpath.web.refreshTokenCookie.httpOnly``    ``true``
+`secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.refreshTokenCookie.secure``      ``null``
 ============================================================================================================ ================================================ ==========================================================
 
 Some notes about the default values:
@@ -164,7 +174,7 @@ Some notes about the default values:
 
    A ``secure`` cookie will only be sent by the browser over HTTPS connections, otherwise the cookie will not be sent at all.  To eliminate certain security attack vectors, it is important that identity cookies always be ``secure`` in production.
 
-* The ``stormpath.web.account.cookie.secure`` property that controls whether the cookie must be secure or not is a little special.  For a value of ``true``, actual secure setting is delegated to a ``Resolver<Boolean>`` bean named ``stormpathSecureResolver`` to return the actual real runtime boolean value.  This ``Resolver<Boolean>`` implementation returns ``true`` or ``false`` as to whether the cookie should be secure or not.
+* The ``stormpath.web.accessTokenCookie.secure`` property that controls whether the cookie must be secure or not is a little special.  For a value of ``true``, actual secure setting is delegated to a ``Resolver<Boolean>`` bean named ``stormpathSecureResolver`` to return the actual real runtime boolean value.  This ``Resolver<Boolean>`` implementation returns ``true`` or ``false`` as to whether the cookie should be secure or not.
 
   Because of the security requirements around identity cookies, the default ``stormpathSecureResolver`` bean implementation always requires HTTPS *except* when it has been determined that the request is sent and received by ``localhost``.  This allows you to develop on your local machine without requiring a TLS/SSL certificate, but will require one when you deploy to production due to the security attack vectors that would occur otherwise.
 
