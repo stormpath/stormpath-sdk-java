@@ -73,13 +73,6 @@ class StormpathWebAutoConfigurationVersusMetadata {
         file.write sb.toString()
     }
 
-
-
-    @Test
-    public void compareValueAnnotationsWithWebStormpathProperties() {
-
-    }
-
     static def Set getPropertyNamesFromMetadata() throws IOException {
         def props = getPropertiesFromMetadata()
         def names = new HashSet()
