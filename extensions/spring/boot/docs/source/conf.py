@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Spring Boot Stormpath Web Starter'
-copyright = u'2015, Stormpath, Inc.'
+copyright = u'2016, Stormpath, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -286,7 +286,7 @@ texinfo_documents = [
 epub_title = u'Spring Boot Stormpath Web Starter'
 epub_author = u'Stormpath'
 epub_publisher = u'Stormpath'
-epub_copyright = u'2015, Stormpath'
+epub_copyright = u'2016, Stormpath'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'Spring-Boot-Stormpath-Web-Starter'
