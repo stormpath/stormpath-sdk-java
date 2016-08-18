@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.servlet.i18n;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -26,6 +29,7 @@ import java.util.ResourceBundle;
  */
 public class DefaultMessageSource implements MessageSource {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultMessageSource.class);
     public static final String BUNDLE_BASE_NAME = "com.stormpath.sdk.servlet.i18n";
 
     @Override
@@ -41,6 +45,7 @@ public class DefaultMessageSource implements MessageSource {
             String msg = new String(bundle.getString(key).getBytes("ISO-8859-1"), "UTF-8");
             return MessageFormat.format(msg, new Object[]{});
         } catch (MissingResourceException e) {
+            log.debug("Couldn't load the property " + key);
             return defaultMessage;
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Couldn't load property from resource bundle", e);
@@ -54,6 +59,7 @@ public class DefaultMessageSource implements MessageSource {
             String msg = new String(bundle.getString(key).getBytes("ISO-8859-1"), "UTF-8");
             return MessageFormat.format(msg, args);
         } catch (MissingResourceException e) {
+            log.debug("Couldn't load the property " + key);
             return defaultMessage;
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("Couldn't load property from resource bundle", e);
@@ -70,6 +76,7 @@ public class DefaultMessageSource implements MessageSource {
             String msg = new String(bundle.getString(key).getBytes("ISO-8859-1"), "UTF-8");
             return MessageFormat.format(msg, args);
         } catch (MissingResourceException e) {
+            log.debug("Couldn't load the property " + key);
             return '!' + key + '!';
         } catch (UnsupportedEncodingException e) {
             /* Should not happen since properties are always encoded in ISO-8850-1 thus is supported and UTF-8 is supported
