@@ -40,10 +40,14 @@ public class DefaultLoginFormStatusResolver implements LoginFormStatusResolver {
     public String getStatusMessage(HttpServletRequest request, String status) {
         EnumSet<LoginStatus> validStatus = EnumSet.allOf(LoginStatus.class);
 
-        if (validStatus.contains(LoginStatus.valueOf(status.toUpperCase()))) {
-            return messageSource.getMessage("stormpath.web.login.form.status." + status, request.getLocale(), verifyEmailUri);
-        } else {
-            return "";
+        try {
+            if (validStatus.contains(LoginStatus.valueOf(status.toUpperCase()))) {
+                return messageSource.getMessage("stormpath.web.login.form.status." + status, request.getLocale(), verifyEmailUri);
+            }
+        } catch (IllegalArgumentException e) {
+            // ignore exception, happens when status not in LoginStatus enum
         }
+
+        return "";
     }
 }

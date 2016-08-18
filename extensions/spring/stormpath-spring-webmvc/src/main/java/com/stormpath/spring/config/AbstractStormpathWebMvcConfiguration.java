@@ -236,7 +236,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.account.jwt.ttl'] ?: 259200 }") //3 days by default
     protected long accountJwtTtl;
 
-    @Value("#{ @environment['stormpath.web.account.jwt.signatureAlgorithm'] ?: 'HS256' }") //3 days by default
+    @Value("#{ @environment['stormpath.web.account.jwt.signatureAlgorithm'] ?: 'HS256' }")
     protected SignatureAlgorithm accountJwtSignatureAlgorithm;
 
     // ================  HTTP Servlet Request behavior  ===================
