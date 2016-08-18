@@ -94,11 +94,10 @@ class AccountIT extends ClientIT {
 
         //create a test account:
         def acct = createTestAccount(app)
-        deleteOnTeardown(acct)
 
         //create another account (in a different account store)
-        def acct2 = createTestAccount(group)
-        deleteOnTeardown(acct2)
+        def acct2 = createTestAccount(app)
+        acct2.addGroup(group)
 
         //link the accounts
         AccountLink accountLink = acct.link(acct2)
@@ -1076,8 +1075,8 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(acct)
 
         //create another account (in a different account store)
-        def acct2 = createTestAccount(group)
-        deleteOnTeardown(acct2)
+        def acct2 = createTestAccount(app)
+        acct2.addGroup(group)
 
         //link the accounts acct and acct2
         AccountLink accountLink = acct.link(acct2)
@@ -1100,8 +1099,8 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(group2)
 
         //create another account (in a different account store)
-        def acct3 = createTestAccount(group2)
-        deleteOnTeardown(acct3)
+        def acct3 = createTestAccount(app)
+        acct3.addGroup(group2)
 
         //link the accounts acct and acct3
         AccountLink accountLink2 = acct.link(acct3)
