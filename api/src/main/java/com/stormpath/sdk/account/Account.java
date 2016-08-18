@@ -575,10 +575,8 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Returns a paginated list of the account's linked accounts.
      *
-     * <p>Tip: If this list might be large, instead of iterating over all linked accounts, it might be more convenient (and
-     * practical) to execute a search for one or more of the account's linked accounts using the
-     * {@link #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)} or {@link #getLinkedAccounts(java.util.Map)} methods instead
-     * of this one.</p>
+     * <p>If you don't want to return all linked accounts, you can instead search for a subset of them via
+     the {@link #getLinkedAccounts(AccountCriteria)} or {@link #getLinkedAccounts(Map)} methods.</p>
      *
      * @return a paginated list of all linked accounts to the Account.
      * @see #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)
@@ -709,10 +707,8 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Returns a paginated list of the AccountLinks for the account.
      *
-     * <p>Tip: If this list might be large, instead of iterating over all accountLinks, it might be more convenient (and
-     * practical) to execute a search for one or more of the accountLinks using the
-     * {@link #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)} or {@link #getAccountLinks(java.util.Map)} methods instead
-     * of this one.</p>
+     * <p>If you don't want to return all linked accounts, you can instead search for a subset of them via
+     *  the {@link #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)} or {@link #getAccountLinks(Map)} methods.</p>
      *
      * @return a paginated list of all accountLinks for the Account
      * @see #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)
