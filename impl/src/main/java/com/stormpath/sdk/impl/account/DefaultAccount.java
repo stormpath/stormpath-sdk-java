@@ -327,6 +327,22 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         return false;
     }
 
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public boolean isLinkedToAccount(String href) {
+        if(!Strings.hasText(href)) {
+            return false;
+        }
+        for (Account anAccount : getLinkedAccounts()) {
+            if (anAccount.getHref().equalsIgnoreCase(href)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public ApiKeyList getApiKeys() {
         return getResourceProperty(API_KEYS);

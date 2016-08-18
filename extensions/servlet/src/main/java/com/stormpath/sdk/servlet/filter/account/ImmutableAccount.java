@@ -207,6 +207,11 @@ public class ImmutableAccount implements Account {
     }
 
     @Override
+    public boolean isLinkedToAccount(String href) {
+        return account.isLinkedToAccount(href);
+    }
+
+    @Override
     public ProviderData getProviderData() {
         return account.getProviderData();
     }

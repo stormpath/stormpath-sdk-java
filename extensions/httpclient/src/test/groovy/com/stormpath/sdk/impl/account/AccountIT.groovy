@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.account
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.AccountLink
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.application.Application
@@ -62,6 +63,7 @@ class AccountIT extends ClientIT {
 
         //create a test account:
         def acct = createTestAccount(app)
+        deleteOnTeardown(acct)
 
         //add the account to the group:
         GroupMembership membership = group.addAccount(acct);
@@ -72,6 +74,45 @@ class AccountIT extends ClientIT {
         assertTrue acct.isMemberOfGroup(group.href)
         assertTrue acct.isMemberOfGroup(group.href.toLowerCase())
         assertFalse acct.isMemberOfGroup(group.name.substring(0, group.name.length() - 2) + "*")
+
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testIsLinkedToAccount() {
+
+        def app = createTempApp()
+
+        //create a user group (to be the account store of the other account):
+        def group = client.instantiate(Group)
+        group.name = uniquify('Users')
+        group.description = "Description for " + group.name
+        group = app.createGroup(group)
+        deleteOnTeardown(group)
+
+        //create a test account:
+        def acct = createTestAccount(app)
+        deleteOnTeardown(acct)
+
+        //create another account (in a different account store)
+        def acct2 = createTestAccount(group)
+        deleteOnTeardown(acct2)
+
+        //link the accounts
+        AccountLink accountLink = acct.link(acct2)
+        deleteOnTeardown(accountLink)
+
+        assertEquals acct.getLinkedAccounts().size, 1
+        assertEquals acct.getAccountLinks().size, 1
+        assertEquals accountLink.leftAccount.href, acct.href
+        assertEquals accountLink.rightAccount.href, acct2.href
+
+        assertTrue acct.isLinkedToAccount(acct2.href)
+        assertTrue acct.isLinkedToAccount(acct2.href.toLowerCase())
+        assertTrue acct.isLinkedToAccount(acct2.href.toUpperCase())
+        assertFalse acct.isLinkedToAccount(acct2.href.substring(0, acct2.href.length() - 2) + "*")
 
     }
 
@@ -1013,6 +1054,78 @@ class AccountIT extends ClientIT {
             assertTrue e instanceof IllegalStateException
             assertEquals "This account does not belong to the specified group.", e.getMessage()
         }
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testLinkAndUnlinkAccount() {
+
+        def app = createTempApp()
+
+        //create a user group (to be the account store of the other account):
+        def group = client.instantiate(Group)
+        group.name = uniquify('Users')
+        group.description = "Description for " + group.name
+        group = app.createGroup(group)
+        deleteOnTeardown(group)
+
+        //create a test account:
+        def acct = createTestAccount(app)
+        deleteOnTeardown(acct)
+
+        //create another account (in a different account store)
+        def acct2 = createTestAccount(group)
+        deleteOnTeardown(acct2)
+
+        //link the accounts acct and acct2
+        AccountLink accountLink = acct.link(acct2)
+        deleteOnTeardown(accountLink)
+
+        assertEquals accountLink.leftAccount.href, acct.href
+        assertEquals accountLink.rightAccount.href, acct2.href
+        assertEquals acct.getLinkedAccounts().size, 1
+        assertEquals acct.getAccountLinks().size, 1
+
+        //create a second group
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        def group2 = client.instantiate(Group)
+        group2.name = uniquify('JSDK: testAddGroup Group2')
+        group2 = dir.createGroup(group2)
+        deleteOnTeardown(group2)
+
+        //create another account (in a different account store)
+        def acct3 = createTestAccount(group2)
+        deleteOnTeardown(acct3)
+
+        //link the accounts acct and acct3
+        AccountLink accountLink2 = acct.link(acct3)
+        deleteOnTeardown(accountLink2)
+
+        assertEquals accountLink2.leftAccount.href, acct.href
+        assertEquals accountLink2.rightAccount.href, acct3.href
+        assertEquals acct.getLinkedAccounts().size, 2
+        assertEquals acct.getAccountLinks().size, 2
+
+        // Test unlink
+        acct = acct.unlink(acct2)
+        assertEquals 1, acct.getLinkedAccounts().size
+        assertEquals 1, acct.getAccountLinks().size
+        assertEquals false, acct.isLinkedToAccount(acct2.href)
+        assertEquals true, acct.isLinkedToAccount(acct3.href)
+
+        acct = acct.unlink(acct3)
+        assertEquals 0, acct.getLinkedAccounts().size
+        assertEquals 0, acct.getAccountLinks().size
+        assertEquals false, acct.isLinkedToAccount(acct2.href)
+        assertEquals false, acct.isLinkedToAccount(acct3.href)
+
+
     }
 
     /**
