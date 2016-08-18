@@ -209,7 +209,7 @@ public abstract class AbstractController implements Controller {
         try {
             return MediaType.APPLICATION_JSON.equals(contentNegotiationResolver.getContentType(request, response, produces));
         } catch (UnresolvedMediaTypeException e) {
-            log.info("isJsonPreferred: Couldn't resolve content type: {}", e.getMessage());
+            log.debug("isJsonPreferred: Couldn't resolve content type: {}", e.getMessage());
             return false;
         }
     }
@@ -218,7 +218,7 @@ public abstract class AbstractController implements Controller {
         try {
             return MediaType.TEXT_HTML.equals(contentNegotiationResolver.getContentType(request, response, produces));
         } catch (UnresolvedMediaTypeException e) {
-            log.info("isHtmlPreferred: Couldn't resolve content type: {}", e.getMessage());
+            log.debug("isHtmlPreferred: Couldn't resolve content type: {}", e.getMessage());
             return false;
         }
     }
