@@ -85,19 +85,17 @@ class AccountIT extends ClientIT {
 
         def app = createTempApp()
 
-        //create a user group (to be the account store of the other account):
-        def group = client.instantiate(Group)
-        group.name = uniquify('Users')
-        group.description = "Description for " + group.name
-        group = app.createGroup(group)
-        deleteOnTeardown(group)
-
         //create a test account:
         def acct = createTestAccount(app)
 
+        //create a user group (to be the account store of the other account):
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testDir")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
         //create another account (in a different account store)
-        def acct2 = createTestAccount(app)
-        acct2.addGroup(group)
+        def acct2 = createAccountInDir(dir)
 
         //link the accounts
         AccountLink accountLink = acct.link(acct2)
@@ -305,6 +303,21 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(acct)
 
         return acct
+    }
+
+    Account createAccountInDir(Directory directory){
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('DELETEME')
+                .setEmail(uniquify('randomEmail')+'@somemail.com')
+                .setPassword('Changeme1!')
+
+        account = directory.createAccount(account)
+        deleteOnTeardown(account)
+
+        return account
+
     }
 
     //@since 1.0.beta
@@ -1062,21 +1075,17 @@ class AccountIT extends ClientIT {
     void testLinkAndUnlinkAccount() {
 
         def app = createTempApp()
-
-        //create a user group (to be the account store of the other account):
-        def group = client.instantiate(Group)
-        group.name = uniquify('Users')
-        group.description = "Description for " + group.name
-        group = app.createGroup(group)
-        deleteOnTeardown(group)
-
         //create a test account:
         def acct = createTestAccount(app)
         deleteOnTeardown(acct)
 
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testDir")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
         //create another account (in a different account store)
-        def acct2 = createTestAccount(app)
-        acct2.addGroup(group)
+        def acct2 = createAccountInDir(dir)
 
         //link the accounts acct and acct2
         AccountLink accountLink = acct.link(acct2)
@@ -1088,19 +1097,13 @@ class AccountIT extends ClientIT {
         assertEquals acct.getAccountLinks().size, 1
 
         //create a second group
-        Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
-        dir = client.currentTenant.createDirectory(dir);
-        deleteOnTeardown(dir)
-
-        def group2 = client.instantiate(Group)
-        group2.name = uniquify('JSDK: testAddGroup Group2')
-        group2 = dir.createGroup(group2)
-        deleteOnTeardown(group2)
+        Directory dir2 = client.instantiate(Directory)
+        dir2.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir2 = client.currentTenant.createDirectory(dir2);
+        deleteOnTeardown(dir2)
 
         //create another account (in a different account store)
-        def acct3 = createTestAccount(app)
-        acct3.addGroup(group2)
+        def acct3 = createAccountInDir(dir2)
 
         //link the accounts acct and acct3
         AccountLink accountLink2 = acct.link(acct3)
