@@ -42,7 +42,7 @@
     <dependencies>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
-            <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>
+            <artifactId>stormpath-webmvc-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

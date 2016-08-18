@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
@@ -44,11 +43,5 @@ public class ProfileController {
         }
 
         res.setStatus(200);
-    }
-
-    // deal with HTML 5 GETs for /profile
-    @RequestMapping(path = "/profile", method = GET)
-    public String profile() {
-        return "forward:/";
     }
 }
