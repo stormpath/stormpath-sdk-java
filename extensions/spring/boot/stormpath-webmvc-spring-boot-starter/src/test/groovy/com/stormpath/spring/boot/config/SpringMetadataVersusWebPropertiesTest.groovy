@@ -42,21 +42,20 @@ class SpringMetadataVersusWebPropertiesTest {
         //println "default keys: " + defaultProperties.keySet().size()
     }
 
-    //TODO see https://github.com/stormpath/stormpath-sdk-java/issues/650
-    @Test(enabled = false)
+    @Test
     void verifyPropertiesInMetadataAreInDefault() {
         def diff = metadataKeys.findAll {
             defaultProperties.containsKey(it) ? null : it
         }
 
-        assertEquals diff.size(), 15, "Missing keys in default config: ${diff}"
-        assertEquals diff.sort().toString(), "[stormpath.application, stormpath.web.authc.savers.cookie.enabled, " +
-                "stormpath.web.authc.savers.session.enabled, stormpath.web.handlerMapping.order, stormpath.web.head.cssUris, stormpath.web.head.extraCssUris, " +
-                "stormpath.web.head.fragmentSelector, stormpath.web.head.view, stormpath.web.oauth2.origin.authorizer.originUris, " +
+        assertEquals diff.size(), 20, "Missing keys in default config: ${diff}"
+        assertEquals diff.sort().toString(), "[stormpath.application, stormpath.web.account.jwt.signatureAlgorithm, " +
+                "stormpath.web.account.jwt.ttl, stormpath.web.assets.handlerMapping.order, stormpath.web.authc.savers.cookie.enabled, " +
+                "stormpath.web.authc.savers.session.enabled, stormpath.web.head.cssUris, stormpath.web.head.extraCssUris, " +
+                "stormpath.web.head.fragmentSelector, stormpath.web.head.view, stormpath.web.idSite.resultUri, " +
+                "stormpath.web.json.view.resolver.order, stormpath.web.jsp.view.resolver.order, stormpath.web.oauth2.origin.authorizer.originUris, " +
                 "stormpath.web.stormpathFilter.dispatcherTypes, stormpath.web.stormpathFilter.enabled, stormpath.web.stormpathFilter.matchAfter, " +
                 "stormpath.web.stormpathFilter.order, stormpath.web.stormpathFilter.servletNames, stormpath.web.stormpathFilter.urlPatterns]"
-        /*println "Keys in metadata that aren't in web.stormpath.properties: " + diff.size()
-        */
     }
 
     @Test
