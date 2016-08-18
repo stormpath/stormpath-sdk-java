@@ -6,12 +6,12 @@ import com.stormpath.sdk.resource.Resource;
 import java.util.Date;
 
 /**
- * A {@code AccountLink} represents the link between 2 accounts {@link Account}
+ * A {@code AccountLink} represents the link between 2 {@link Account}s
  * <p/>
  * {@link #delete() Deleting} this resource will only delete the association - it will not delete
- * the accounts {@code Account}
+ * the accounts themselves {@code Account}
  *
- * @since //TODO
+ * @since 1.1.0
  */
 public interface AccountLink extends Resource, Deletable {
 
@@ -19,6 +19,7 @@ public interface AccountLink extends Resource, Deletable {
      * Returns the leftAccount {@link Account} resource.
      *
      * @return the leftAccount {@link Account} resource.
+     * @since 1.1.0
      */
     Account getLeftAccount();
 
@@ -26,6 +27,7 @@ public interface AccountLink extends Resource, Deletable {
      * Returns the rightAccount {@link Account} resource.
      *
      * @return the rightAccount {@link Account} resource.
+     * @since 1.1.0
      */
     Account getRightAccount();
 
@@ -33,6 +35,7 @@ public interface AccountLink extends Resource, Deletable {
      * Returns the rightAccount {@link Account} resource.
      *
      * @return the rightAccount {@link Account} resource.
+     * @since 1.1.0
      */
     Date getCreatedAt();
 }

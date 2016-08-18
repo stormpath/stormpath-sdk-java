@@ -139,6 +139,7 @@ public interface AccountOptions<T> extends Options {
      * {@link #withLinkedAccounts(int, int) withLinkedAccounts(limit,offset)} methods.
      *
      * @return this instance for method chaining.
+     * @since 1.1.0
      */
     T withLinkedAccounts();
 
@@ -150,6 +151,7 @@ public interface AccountOptions<T> extends Options {
      *
      * @param limit the number of results in the linkedAccounts collection's first page.  Min: 1, Max: 100.
      * @return this instance for method chaining.
+     * @since 1.1.0
      */
     T withLinkedAccounts(int limit);
 
@@ -164,6 +166,7 @@ public interface AccountOptions<T> extends Options {
      * @param offset the starting index of the first linkedAccount to retrieve in the overall linkedAccounts
      *               collection's result set.
      * @return this instance for method chaining.
+     * @since 1.1.0
      */
     T withLinkedAccounts(int limit, int offset);
 
@@ -179,6 +182,7 @@ public interface AccountOptions<T> extends Options {
      * {@link #withAccountLinks(int, int) withAccountLinks(limit,offset)} methods.
      *
      * @return this instance for method chaining.
+     * @since 1.1.0
      */
     T withAccountLinks();
 
@@ -190,6 +194,7 @@ public interface AccountOptions<T> extends Options {
      *
      * @param limit the number of results in the AccountLinks collection's first page.  Min: 1, Max: 100.
      * @return this instance for method chaining.
+     * @since 1.1.0
      */
     T withAccountLinks(int limit);
 
@@ -204,6 +209,7 @@ public interface AccountOptions<T> extends Options {
      * @param offset the starting index of the first linkedAccount to retrieve in the overall AccountLinks
      *               collection's result set.
      * @return this instance for method chaining.
+     * @since 1.1.0
      */
     T withAccountLinks(int limit, int offset);
 

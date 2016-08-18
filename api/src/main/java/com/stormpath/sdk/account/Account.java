@@ -564,7 +564,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Returns a paginated list of the account's linked accounts.
      *
-     * <p>Tip: If this list might be large, instead of iterating over all groups, it might be more convenient (and
+     * <p>Tip: If this list might be large, instead of iterating over all linked accounts, it might be more convenient (and
      * practical) to execute a search for one or more of the account's linked accounts using the
      * {@link #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)} or {@link #getLinkedAccounts(java.util.Map)} methods instead
      * of this one.</p>
@@ -572,6 +572,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @return a paginated list of all linked accounts to the Account.
      * @see #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)
      * @see #getLinkedAccounts(java.util.Map)
+     * @since 1.1.0
      */
     AccountList getLinkedAccounts();
 
@@ -599,7 +600,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the account's linked accounts that match the specified query criteria.
-     * @since 0.8
+     * @since 1.1.0
      */
     AccountList getLinkedAccounts(Map<String, Object> queryParams);
 
@@ -636,7 +637,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the account's linked accounts that match the specified query criteria.
-     * @since 0.8
+     * @since 1.1.0
      */
     AccountList getLinkedAccounts(AccountCriteria criteria);
 
@@ -648,9 +649,9 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param otherAccount the other Account that this account will be linked to
      * @return the new AccountLink resource created reflecting the link between two accounts.
-     * @since // TODO
+     * @since 1.1.0
      */
-    AccountLink addLink(Account otherAccount);
+    AccountLink link(Account otherAccount);
 
     /**
      * Links this account to the otherAccount represented by its {@code href}
@@ -662,9 +663,9 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @return the new AccountLink resource created reflecting the link between two accounts.
      * @throws IllegalStateException if no Account matching {@code otherAccountHref} could be found.
      *
-     * @since // TODO
+     * @since 1.1.0
      */
-    AccountLink addLink(String otherAccountHref);
+    AccountLink link(String otherAccountHref);
 
     /**
      * Removes the link between this account and the otherAccount
@@ -672,13 +673,13 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
      * afterwards. This method will persist the changes in the backend immediately.</p>
      *
-     * @param otherAccount the {@code Group} object from where the account must be removed.
+     * @param otherAccount the {@code Account} object from which the account must be unlinked.
      * @return the Account object for method chaining
      * @throws IllegalStateException if this Account is not linked to the otherAccount.
      *
-     * @since // TODO
+     * @since 1.1.0
      */
-    Account removeLink(Account otherAccount);
+    Account unlink(Account otherAccount);
 
     /**
      * Removes the link between this account and the otherAccount represented by its {@code href}
@@ -686,13 +687,13 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
      * afterwards. This method will persist the changes in the backend immediately.</p>
      *
-     * @param otherAccountHref the href href of the other account this account is linked to.
+     * @param otherAccountHref the href of the other account from which the account must be unlinked.
      * @return the Account object for method chaining
      * @throws IllegalStateException if this Account is not linked to the otherAccount matching the given {@code href}.
      *
-     * @since // TODO
+     * @since 1.1.0
      */
-    Account removeLink(String otherAccountHref);
+    Account unlink(String otherAccountHref);
 
     /**
      * Returns a paginated list of the AccountLinks for the account.
@@ -705,6 +706,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @return a paginated list of all accountLinks for the Account
      * @see #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)
      * @see #getAccountLinks(java.util.Map)
+     * @since 1.1.0
      */
     AccountLinkList getAccountLinks();
 
@@ -732,7 +734,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of the account's accountLinks that match the specified query criteria.
-     * @since 0.8
+     * @since 1.1.0
      */
     AccountLinkList getAccountLinks(Map<String, Object> queryParams);
 
@@ -766,7 +768,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the account's accountLinks that match the specified query criteria.
-     * @since 0.8
+     * @since 1.1.0
      */
     AccountLinkList getAccountLinks(AccountLinkCriteria criteria);
 }

@@ -6,7 +6,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 /**
  * A {@link CollectionResource} containing {@link AccountLink} instances.
  *
- * @since //TODO
+ * @since 1.1.0
  */
 public interface AccountLinkList extends CollectionResource<AccountLink> {
 }

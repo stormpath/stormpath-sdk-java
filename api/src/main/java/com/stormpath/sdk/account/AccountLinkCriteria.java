@@ -22,7 +22,7 @@ import com.stormpath.sdk.query.Criteria;
  * <pre>
  * ...criteria.orderByCreatedAt()<b>.descending()</b>...
  *
- * @since //TODO
+ * @since 1.1.0
  */
 public interface AccountLinkCriteria extends Criteria<AccountLinkCriteria>, AccountLinkOptions<AccountLinkCriteria> {
 

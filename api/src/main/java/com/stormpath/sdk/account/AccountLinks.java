@@ -28,6 +28,8 @@ import java.lang.reflect.Constructor;
  *     .limitTo(25));
  * </pre>
  *
+ * @since 1.1.0
+ *
  */
 public final class AccountLinks {
 
@@ -40,6 +42,7 @@ public final class AccountLinks {
      *
      * @return a new {@link AccountLinkOptions} instance, used to customize how one or more {@link AccountLink}s are retrieved.
      */
+    @SuppressWarnings("unchecked")
     public static AccountLinkOptions<AccountLinkOptions> options() {
         return (AccountLinkOptions) Classes.newInstance("com.stormpath.sdk.impl.account.DefaultAccountLinkOptions");
     }
@@ -110,9 +113,8 @@ public final class AccountLinks {
      *
      * @param accountLink the accountLink to create a new record for within Stormpath
      * @return a new {@link com.stormpath.sdk.account.CreateAccountLinkRequestBuilder CreateAccountLinkRequestBuilder}
-     *         instance reflecting the specified {@link AccountLink} instance.
-     * @see //TODO
-     * @since //TODO
+     *         instance reflecting the specified {@link AccountLink} instance.v
+     * @since @since 1.1.0
      */
     public static CreateAccountLinkRequestBuilder newCreateRequestFor(AccountLink accountLink) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, AccountLink.class);
