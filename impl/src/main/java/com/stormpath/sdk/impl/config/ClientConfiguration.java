@@ -88,26 +88,51 @@ public class ClientConfiguration {
         this.cacheManagerCaches = cacheManagerCaches;
     }
 
+    /**
+     * Time to idle for cache manager in seconds
+     * @return seconds until time to idle expires
+     */
     public long getCacheManagerTti() {
         return cacheManagerTti;
     }
 
+    /**
+     * The cache manager's time to idle in seconds
+     * @param cacheManagerTti the time to idle in seconds
+     */
     public void setCacheManagerTti(long cacheManagerTti) {
         this.cacheManagerTti = cacheManagerTti;
     }
 
+    /**
+     * Time to live for cache manager in seconds
+     * @return seconds until time to live expires
+     */
     public long getCacheManagerTtl() {
         return cacheManagerTtl;
     }
 
+    /**
+     * The cache manager's time to live in seconds
+     * @param cacheManagerTtl the time to live in seconds
+     */
     public void setCacheManagerTtl(long cacheManagerTtl) {
         this.cacheManagerTtl = cacheManagerTtl;
     }
 
+    /**
+     * Connection timeout in seconds
+     * @return seconds until connection timeout
+     */
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
+    /**
+     * Connection timeout in seconds.
+     *
+     * @param connectionTimeout the timeout value in seconds
+     */
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
