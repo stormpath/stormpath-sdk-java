@@ -1,0 +1,191 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Place your custom CSS here */
+
+/* begin css spinner from http://cssload.net/en/spinners */
+#circularG{
+  position:relative;
+  width:58px;
+  height:58px;
+  margin: auto;
+  margin-top: 200px;
+}
+
+.circularG{
+  position:absolute;
+  background-color:rgb(0,98,255);
+  width:14px;
+  height:14px;
+  border-radius:9px;
+    -o-border-radius:9px;
+    -ms-border-radius:9px;
+    -webkit-border-radius:9px;
+    -moz-border-radius:9px;
+  animation-name:bounce_circularG;
+    -o-animation-name:bounce_circularG;
+    -ms-animation-name:bounce_circularG;
+    -webkit-animation-name:bounce_circularG;
+    -moz-animation-name:bounce_circularG;
+  animation-duration:0.668s;
+    -o-animation-duration:0.668s;
+    -ms-animation-duration:0.668s;
+    -webkit-animation-duration:0.668s;
+    -moz-animation-duration:0.668s;
+  animation-iteration-count:infinite;
+    -o-animation-iteration-count:infinite;
+    -ms-animation-iteration-count:infinite;
+    -webkit-animation-iteration-count:infinite;
+    -moz-animation-iteration-count:infinite;
+  animation-direction:normal;
+    -o-animation-direction:normal;
+    -ms-animation-direction:normal;
+    -webkit-animation-direction:normal;
+    -moz-animation-direction:normal;
+}
+
+#circularG_1{
+  left:0;
+  top:23px;
+  animation-delay:0.248s;
+    -o-animation-delay:0.248s;
+    -ms-animation-delay:0.248s;
+    -webkit-animation-delay:0.248s;
+    -moz-animation-delay:0.248s;
+}
+
+#circularG_2{
+  left:6px;
+  top:6px;
+  animation-delay:0.334s;
+    -o-animation-delay:0.334s;
+    -ms-animation-delay:0.334s;
+    -webkit-animation-delay:0.334s;
+    -moz-animation-delay:0.334s;
+}
+
+#circularG_3{
+  top:0;
+  left:23px;
+  animation-delay:0.42s;
+    -o-animation-delay:0.42s;
+    -ms-animation-delay:0.42s;
+    -webkit-animation-delay:0.42s;
+    -moz-animation-delay:0.42s;
+}
+
+#circularG_4{
+  right:6px;
+  top:6px;
+  animation-delay:0.506s;
+    -o-animation-delay:0.506s;
+    -ms-animation-delay:0.506s;
+    -webkit-animation-delay:0.506s;
+    -moz-animation-delay:0.506s;
+}
+
+#circularG_5{
+  right:0;
+  top:23px;
+  animation-delay:0.592s;
+    -o-animation-delay:0.592s;
+    -ms-animation-delay:0.592s;
+    -webkit-animation-delay:0.592s;
+    -moz-animation-delay:0.592s;
+}
+
+#circularG_6{
+  right:6px;
+  bottom:6px;
+  animation-delay:0.668s;
+    -o-animation-delay:0.668s;
+    -ms-animation-delay:0.668s;
+    -webkit-animation-delay:0.668s;
+    -moz-animation-delay:0.668s;
+}
+
+#circularG_7{
+  left:23px;
+  bottom:0;
+  animation-delay:0.754s;
+    -o-animation-delay:0.754s;
+    -ms-animation-delay:0.754s;
+    -webkit-animation-delay:0.754s;
+    -moz-animation-delay:0.754s;
+}
+
+#circularG_8{
+  left:6px;
+  bottom:6px;
+  animation-delay:0.84s;
+    -o-animation-delay:0.84s;
+    -ms-animation-delay:0.84s;
+    -webkit-animation-delay:0.84s;
+    -moz-animation-delay:0.84s;
+}
+
+
+
+@keyframes bounce_circularG{
+  0%{
+    transform:scale(1);
+  }
+
+  100%{
+    transform:scale(.3);
+  }
+}
+
+@-o-keyframes bounce_circularG{
+  0%{
+    -o-transform:scale(1);
+  }
+
+  100%{
+    -o-transform:scale(.3);
+  }
+}
+
+@-ms-keyframes bounce_circularG{
+  0%{
+    -ms-transform:scale(1);
+  }
+
+  100%{
+    -ms-transform:scale(.3);
+  }
+}
+
+@-webkit-keyframes bounce_circularG{
+  0%{
+    -webkit-transform:scale(1);
+  }
+
+  100%{
+    -webkit-transform:scale(.3);
+  }
+}
+
+@-moz-keyframes bounce_circularG{
+  0%{
+    -moz-transform:scale(1);
+  }
+
+  100%{
+    -moz-transform:scale(.3);
+  }
+}
+/* end css spinner from http://cssload.net/en/spinners */
