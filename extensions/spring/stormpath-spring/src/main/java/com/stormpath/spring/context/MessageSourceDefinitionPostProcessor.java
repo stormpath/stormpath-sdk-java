@@ -16,7 +16,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
  */
 public class MessageSourceDefinitionPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
-    protected static final String I18N_PROPERTIES_BASENAME = "com.stormpath.sdk.servlet.i18n";
+    public static final String I18N_PROPERTIES_BASENAME = "com.stormpath.sdk.servlet.i18n";
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
