@@ -47,7 +47,7 @@ class DefaultClientBuilderTest {
     void testConfigureBaseProperties() {
         DefaultClientBuilder clientBuilder = (DefaultClientBuilder) builder
         assertEquals clientBuilder.clientConfiguration.baseUrl, "https://api.stormpath.com/v42"
-        assertEquals clientBuilder.clientConfiguration.connectionTimeout, 10 * 1000
+        assertEquals clientBuilder.clientConfiguration.connectionTimeout, 10
         assertEquals clientBuilder.clientConfiguration.authenticationScheme, AuthenticationScheme.BASIC
     }
 
