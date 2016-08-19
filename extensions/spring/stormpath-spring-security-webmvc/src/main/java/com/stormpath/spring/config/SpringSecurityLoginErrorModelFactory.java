@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @since 1.0.RC7
@@ -14,7 +16,14 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
 
     private static final String INVALID_LOGIN_MESSAGE = "stormpath.web.login.form.errors.invalidLogin";
 
-    private static final String UNSUCCESSFUL_LOGIN_BACKEND_ERROR = "Login attempt failed";
+    // Handling multiple login backend errors is a fix for
+    // https://github.com/stormpath/stormpath-sdk-java/issues/915
+    // and for ensuring that the stormpath-framework-tck still passes
+    private static final List<String> UNSUCCESSFUL_LOGIN_BACKEND_ERRORS = Arrays.asList(
+        "Login attempt failed",
+        "Invalid username or password",
+        "Login and password required"
+    );
 
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
@@ -34,9 +43,11 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
     @Override
     protected boolean hasError(HttpServletRequest request, Exception e) {
         //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
-        if (e instanceof AuthenticationServiceException) {
-            if (e.getMessage() != null && e.getMessage().contains(UNSUCCESSFUL_LOGIN_BACKEND_ERROR)) {
-                return true;
+        if (e instanceof AuthenticationServiceException && e.getMessage() != null) {
+            for (String validBackendMessage : UNSUCCESSFUL_LOGIN_BACKEND_ERRORS) {
+                if (e.getMessage().contains(validBackendMessage)) {
+                    return true;
+                }
             }
         }
         return false;
