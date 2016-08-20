@@ -23,7 +23,10 @@ import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.mvc.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * @since 1.0.RC5
@@ -59,7 +66,6 @@ public class StormpathLogoutHandler implements LogoutHandler {
     @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/' }")
     protected String logoutNextUri;
 
-
     @Autowired
     @Qualifier("stormpathLogoutController")
     protected Controller logoutController;
@@ -69,6 +75,9 @@ public class StormpathLogoutHandler implements LogoutHandler {
 
     @Autowired
     protected AccountResolver accountResolver;
+
+    @Autowired
+    protected List<MediaType> stormpathProducedMediaTypes;
 
     public StormpathLogoutHandler(Saver<AuthenticationResult> authenticationResultSaver) {
         this.authenticationResultSaver = authenticationResultSaver;
@@ -115,8 +124,12 @@ public class StormpathLogoutHandler implements LogoutHandler {
         // https://github.com/stormpath/stormpath-sdk-java/issues/915
         // and for ensuring that the stormpath-framework-tck still passes
         try {
-            request.getRequestDispatcher(logoutNextUri).forward(r, response);
-        } catch (ServletException|IOException e) {
+            if (MediaType.APPLICATION_JSON.equals(
+                ContentNegotiationResolver.INSTANCE.getContentType(request, response, stormpathProducedMediaTypes)
+            )) {
+                request.getRequestDispatcher(logoutNextUri).forward(r, response);
+            }
+        } catch (ServletException | IOException | UnresolvedMediaTypeException e) {
             log.error("Unable to forward logout request to: {}. Error: {}.", logoutNextUri, e.getMessage(), e);
         }
     }
