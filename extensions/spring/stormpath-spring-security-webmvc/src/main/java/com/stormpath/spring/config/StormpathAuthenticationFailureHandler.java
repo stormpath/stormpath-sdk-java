@@ -29,6 +29,7 @@ import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.FormController;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,8 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
+    private static final String INVALID_LOGIN_KEY = "stormpath.web.login.form.errors.invalidLogin";
+
     @Autowired
     Resolver<Locale> localeResolver;
 
@@ -112,10 +115,8 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
                 // and to ensure that the stormpath-framework-tck still passes
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.getWriter().write(
-                    "{\"status\": " + HttpServletResponse.SC_BAD_REQUEST + ", " +
-                    "\"message\": \"" + i18n(request, "stormpath.web.login.form.errors.invalidLogin") + "\"}"
-                );
+                response.getWriter().write(getJsonBody(request));
+                response.getWriter().flush();
             } else {
                 //We are saving the error message in the session (rather than in the request itself) since a redirect is taking place
                 //along the line and that causes the saved attributes to be lost.
@@ -186,19 +187,14 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
         }
     }
 
-    protected String i18n(HttpServletRequest request, String key) {
+    private String getJsonBody(HttpServletRequest request) {
         Locale locale = localeResolver.get(request, null);
-        return messageSource.getMessage(key, locale);
-    }
+        String errMsg = messageSource.getMessage(INVALID_LOGIN_KEY, locale);
 
-    protected String i18n(HttpServletRequest request, String key, String defaultMessage) {
-        Locale locale = localeResolver.get(request, null);
-        return messageSource.getMessage(key, defaultMessage, locale);
-    }
-
-    protected String i18n(HttpServletRequest request, String key, Object... args) {
-        Locale locale = localeResolver.get(request, null);
-        return messageSource.getMessage(key, locale, args);
+        return new JSONObject()
+            .put("status", HttpServletResponse.SC_BAD_REQUEST)
+            .put("message", errMsg)
+            .toString();
     }
 
     //For testing purposes
