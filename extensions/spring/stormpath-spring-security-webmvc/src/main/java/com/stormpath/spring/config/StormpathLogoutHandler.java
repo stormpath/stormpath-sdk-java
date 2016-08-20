@@ -34,8 +34,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @since 1.0.RC5
@@ -51,6 +55,10 @@ public class StormpathLogoutHandler implements LogoutHandler {
 
     @Value("#{ @environment['stormpath.web.idSite.enabled'] ?: false }")
     protected boolean idSiteEnabled;
+
+    @Value("#{ @environment['stormpath.web.logout.nextUri'] ?: '/' }")
+    protected String logoutNextUri;
+
 
     @Autowired
     @Qualifier("stormpathLogoutController")
@@ -95,6 +103,21 @@ public class StormpathLogoutHandler implements LogoutHandler {
         if (account != null) {
             LogoutRequestEvent e = createLogoutEvent(request, response, account);
             stormpathRequestEventPublisher.publish(e);
+        }
+
+        HttpServletRequestWrapper r = new HttpServletRequestWrapper(request) {
+            @Override
+            public Cookie[] getCookies() {
+                return null;
+            }
+        };
+
+        // https://github.com/stormpath/stormpath-sdk-java/issues/915
+        // and for ensuring that the stormpath-framework-tck still passes
+        try {
+            request.getRequestDispatcher(logoutNextUri).forward(r, response);
+        } catch (ServletException|IOException e) {
+            log.error("Unable to forward logout request to: {}. Error: {}.", logoutNextUri, e.getMessage(), e);
         }
     }
 
