@@ -111,15 +111,15 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
             if (MediaType.APPLICATION_JSON.equals(mediaType) && meUri.equals(request.getRequestURI())) {
                 request.getRequestDispatcher(meUri).forward(request, response);
             } else if (MediaType.APPLICATION_JSON.equals(mediaType)) {
-                // this branch is a fix for https://github.com/stormpath/stormpath-sdk-java/issues/915
-                // and to ensure that the stormpath-framework-tck still passes
+                // this "else if" is a fix for https://github.com/stormpath/stormpath-sdk-java/issues/915
+                // and to ensure conformance with the stormpath-framework-spec
+                // as enforced by the stormpath-framework-tck
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.getWriter().write(getJsonBody(request));
                 response.getWriter().flush();
             } else {
-                //We are saving the error message in the session (rather than in the request itself) since a redirect is taking place
-                //along the line and that causes the saved attributes to be lost.
+                //We are saving the error message in the session (rather than in the request itself)
                 //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
                 request.getSession().setAttribute(FormController.SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModelFactory.toError(request, exception));
 
@@ -138,7 +138,8 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
 
                 // forwarding rather than redirecting is a fix for
                 // https://github.com/stormpath/stormpath-sdk-java/issues/915
-                // and for ensuring that the stormpath-framework-tck still passes
+                // and to ensure conformance with the stormpath-framework-spec
+                // as enforced by the stormpath-framework-tck
                 HttpServletRequestWrapper r = new HttpServletRequestWrapper(request) {
                     @Override
                     public String getMethod() {

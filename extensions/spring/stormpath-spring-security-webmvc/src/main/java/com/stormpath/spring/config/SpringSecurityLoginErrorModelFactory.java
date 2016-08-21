@@ -18,7 +18,8 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
 
     // Handling multiple login backend errors is a fix for
     // https://github.com/stormpath/stormpath-sdk-java/issues/915
-    // and for ensuring that the stormpath-framework-tck still passes
+    // and for conformance with the stormpath-framework-spec as enforced
+    // by the stormpath-framework-tck
     private static final List<String> UNSUCCESSFUL_LOGIN_BACKEND_ERRORS = Arrays.asList(
         "Login attempt failed",
         "Invalid username or password",

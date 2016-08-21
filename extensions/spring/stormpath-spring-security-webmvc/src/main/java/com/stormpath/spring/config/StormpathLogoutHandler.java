@@ -114,19 +114,18 @@ public class StormpathLogoutHandler implements LogoutHandler {
             stormpathRequestEventPublisher.publish(e);
         }
 
-        HttpServletRequestWrapper r = new HttpServletRequestWrapper(request) {
-            @Override
-            public Cookie[] getCookies() {
-                return null;
-            }
-        };
-
         // https://github.com/stormpath/stormpath-sdk-java/issues/915
-        // and for ensuring that the stormpath-framework-tck still passes
+        // and to ensure that the request is forwarded and not redirected
+        // for JSON logouts per for stormpath-framework-spec and enforced
+        // by the stormpath-framework-tck
         try {
-            if (MediaType.APPLICATION_JSON.equals(
-                ContentNegotiationResolver.INSTANCE.getContentType(request, response, stormpathProducedMediaTypes)
-            )) {
+            HttpServletRequestWrapper r = new HttpServletRequestWrapper(request) {
+                @Override
+                public Cookie[] getCookies() { return null; }
+            };
+            MediaType requestMediaType =
+                ContentNegotiationResolver.INSTANCE.getContentType(request, response, stormpathProducedMediaTypes);
+            if (MediaType.APPLICATION_JSON.equals(requestMediaType)) {
                 request.getRequestDispatcher(logoutNextUri).forward(r, response);
             }
         } catch (ServletException | IOException | UnresolvedMediaTypeException e) {

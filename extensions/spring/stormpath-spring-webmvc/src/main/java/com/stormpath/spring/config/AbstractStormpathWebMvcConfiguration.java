@@ -104,9 +104,11 @@ import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.AbstractController;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
+import com.stormpath.sdk.servlet.mvc.AccountProviderRequestHandler;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.DefaultAccountProviderRequestHandler;
 import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
 import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
@@ -594,6 +596,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultApplicationResolver();
     }
 
+    /**
+     * @since 1.0.3
+     */
+    public AccountProviderRequestHandler stormpathAccountProviderRequestHandler() {
+        return new DefaultAccountProviderRequestHandler();
+    }
+
     public Resolver<Boolean> stormpathRegisterEnabledResolver() {
         return new RegisterEnabledResolver(
             stormpathRegisterConfig().isEnabled(),
@@ -989,6 +998,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setRegisterUri(stormpathRegisterConfig().getUri());
         c.setLogoutUri(stormpathLogoutConfig().getUri());
         c.setApplicationResolver(stormpathApplicationResolver());
+        c.setAccountProviderRequestHandler(stormpathAccountProviderRequestHandler());
         c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         c.setPreLoginHandler(loginPreHandler);
         c.setPostLoginHandler(loginPostHandler);

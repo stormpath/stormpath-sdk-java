@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.config.filter;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.mvc.AbstractController;
+import com.stormpath.sdk.servlet.mvc.DefaultAccountProviderRequestHandler;
 
 import javax.servlet.ServletContext;
 
@@ -37,6 +38,15 @@ public abstract class ControllerFilterFactory<T extends AbstractController> exte
         c.setMessageSource(config.getMessageSource());
         c.setProduces(config.getProducedMediaTypes());
         c.setApplicationResolver(config.getApplicationResolver());
+        // Refactor of Provider requests for
+        // https://github.com/stormpath/stormpath-sdk-java/issues/915
+        // and to provide uniform responses across all integrations for
+        // conformance to stormpath-framework-spec as enforced by
+        // stormpath-framework-tck
+        /**
+         * @since 1.0.3
+         */
+        c.setAccountProviderRequestHandler(new DefaultAccountProviderRequestHandler());
 
         configure(c, config);
 

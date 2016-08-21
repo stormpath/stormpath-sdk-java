@@ -23,7 +23,6 @@ import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.provider.Providers;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.form.DefaultField;
@@ -38,10 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.stormpath.sdk.servlet.mvc.View.STORMPATH_JSON_VIEW_NAME;
-
-import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED_OBJECT;
 
 /**
  * @since 1.0.RC4
@@ -262,10 +257,13 @@ public abstract class FormController extends AbstractController {
 
         validateCsrfToken(request, response, form);
 
-        // check for request body and no parameters
-        if (request.getParameterMap().size() == 0 && request.getContentLength() > 0) {
-            // Read from request to see if social information exists
-            ProviderAccountRequest accountRequest = getAccountProviderRequest(request);
+        // Refactor of Provider requests for
+        // https://github.com/stormpath/stormpath-sdk-java/issues/915
+        // and to provide uniform responses across all integrations for
+        // conformance to stormpath-framework-spec as enforced by
+        // stormpath-framework-tck
+        if (accountProviderRequestHandler != null) {
+            ProviderAccountRequest accountRequest = accountProviderRequestHandler.getAccountProviderRequest(request);
             if (accountRequest != null) {
                 ProviderAccountResult result = getApplication(request).getAccount(accountRequest);
                 Account account = result.getAccount();
@@ -301,46 +299,5 @@ public abstract class FormController extends AbstractController {
                 }
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
-        Map<String, Object> map = (Map<String, Object>) request.getAttribute(MARSHALLED_OBJECT);
-        Map<String, String> providerData = (Map<String, String>) map.get("providerData");
-
-        if (providerData != null) {
-            String providerId = providerData.get("providerId");
-            ProviderAccountRequest accountRequest = null;
-            switch (providerId) {
-                case "facebook": {
-                    String accessToken = providerData.get("accessToken");
-                    accountRequest = Providers.FACEBOOK.account().setAccessToken(accessToken).build();
-                    break;
-                }
-                case "github": {
-                    String code = providerData.get("code");
-                    accountRequest = Providers.GITHUB.account().setAccessToken(exchangeGithubCodeForAccessToken(code, request)).build();
-                    break;
-                }
-                case "google": {
-                    String code = providerData.get("code");
-                    accountRequest = Providers.GOOGLE.account().setCode(code).build();
-                    break;
-                }
-                case "linkedin": {
-                    String code = providerData.get("code");
-                    accountRequest = Providers.LINKEDIN.account().setCode(code).build();
-                    break;
-                }
-                default: {
-                    log.error("No provider configured for " + providerId);
-                }
-            }
-
-            return accountRequest;
-        }
-
-        log.warn("Provider data not found in request.");
-        return null;
     }
 }

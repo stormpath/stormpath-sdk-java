@@ -16,9 +16,16 @@
 package com.stormpath.spring.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.provider.ProviderAccountRequest;
+import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.sdk.servlet.mvc.AccountProviderRequestHandler;
+import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -44,6 +51,7 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
 
     private boolean postOnly = true;
     private List<MediaType> supportedMediaTypes;
+    private AccountProviderRequestHandler accountProviderRequestHandler;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -72,31 +80,58 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
             return super.attemptAuthentication(request, response);
         }
 
-        UsernamePasswordAuthenticationToken authRequest = getUserNamePasswordAuthenticationToken(request);
+        // Request body can only be read once and we don't yet know if it's a login/password attempt
+        // or a provider attempt - such as Facebook
+        Map<String, Object> loginProps = getLoginProps(request);
 
-        // Allow subclasses to set the "details" property
-        setDetails(request, authRequest);
+        // check to see if it's a login/password auth request
+        if (loginProps.get("login") != null) {
+            UsernamePasswordAuthenticationToken authRequest =
+                new UsernamePasswordAuthenticationToken(loginProps.get("login"), loginProps.get("password"));
+            // Allow subclasses to set the "details" property
+            setDetails(request, authRequest);
+            return getAuthenticationManager().authenticate(authRequest);
+        }
 
-        return getAuthenticationManager().authenticate(authRequest);
+        // check to see if it's a Provider auth request
+        ProviderAccountRequest accountRequest =
+            accountProviderRequestHandler.getAccountProviderRequest(request, loginProps);
+
+        try {
+            ProviderAccountResult result = ApplicationResolver.INSTANCE
+                .getApplication(request)
+                .getAccount(accountRequest);
+            Account account = result.getAccount();
+            return getAuthenticationManager().authenticate(new ProviderAuthenticationToken(account));
+        } catch (ResourceException | IllegalArgumentException e) {
+            log.error("Unable to perform provider auth: {}", e.getMessage(), e);
+            // auth has failed at this point, so cause a 400 to be returned
+            return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(null, null));
+        }
     }
 
     public void setSupportedMediaTypes(List<MediaType> supportedMediaTypes) {
         this.supportedMediaTypes = supportedMediaTypes;
     }
 
-    @SuppressWarnings("unchecked")
-    private UsernamePasswordAuthenticationToken getUserNamePasswordAuthenticationToken(HttpServletRequest request) {
+    /**
+     * @since 1.0.3
+     */
+    public void setAccountProviderRequestHandler(AccountProviderRequestHandler accountProviderRequestHandler) {
+        this.accountProviderRequestHandler = accountProviderRequestHandler;
+    }
+
+    private Map<String, Object> getLoginProps(HttpServletRequest request) {
         String body = getRequestBody(request);
 
-        Map<String, String> loginProps;
+        Map<String, Object> loginProps = null;
         try {
             loginProps = new ObjectMapper().readValue(body, HashMap.class);
         } catch(IOException ex) {
             log.error("Couldn't map request body: '{}': {}", body, ex.getMessage(), ex);
-            return null;
         }
 
-        return new UsernamePasswordAuthenticationToken(loginProps.get("login"), loginProps.get("password"));
+        return loginProps;
     }
 
     private String getRequestBody(HttpServletRequest request) {
