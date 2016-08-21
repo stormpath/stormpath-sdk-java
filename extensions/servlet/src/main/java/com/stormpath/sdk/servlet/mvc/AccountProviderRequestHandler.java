@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.mvc.provider;
+package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.provider.ProviderAccountRequest;
-import com.stormpath.sdk.provider.Providers;
-import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
-import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
+// Refactor of Provider requests for
+// https://github.com/stormpath/stormpath-sdk-java/issues/915
+// and to provide uniform responses across all integrations for
+// conformance to stormpath-framework-spec as enforced by
+// stormpath-framework-tck
 /**
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class GithubCallbackController extends AbstractSocialCallbackController {
+public interface AccountProviderRequestHandler {
 
-    @Override
-    protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
-        String code = ServletUtils.getCleanParam(request, "code");
-        return Providers.GITHUB
-            .account()
-            .setAccessToken(accountProviderRequestHandler.exchangeGithubCodeForAccessToken(code, request))
-            .build();
-    }
+    ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, Map<String, Object> props);
+    ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request);
+
+    String exchangeGithubCodeForAccessToken(String code, HttpServletRequest request);
 }

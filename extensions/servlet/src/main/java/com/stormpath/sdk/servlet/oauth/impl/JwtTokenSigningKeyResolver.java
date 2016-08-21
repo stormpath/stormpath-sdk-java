@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.oauth.impl;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
@@ -65,7 +66,8 @@ public class JwtTokenSigningKeyResolver implements JwtSigningKeyResolver {
 
     protected Key getSigningKey(HttpServletRequest request, SignatureAlgorithm alg) {
 
-        Client client = (Client) request.getAttribute(Client.class.getName());
+        Client client = ClientResolver.INSTANCE.getClient(request);
+
         Assert.notNull(client, "Client must be accessible as a request attribute.");
 
         String apiKeySecret = client.getApiKey().getSecret();

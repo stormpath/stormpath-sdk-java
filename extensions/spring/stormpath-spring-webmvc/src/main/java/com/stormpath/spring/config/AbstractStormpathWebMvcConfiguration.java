@@ -104,9 +104,11 @@ import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.AbstractController;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
+import com.stormpath.sdk.servlet.mvc.AccountProviderRequestHandler;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.DefaultAccountProviderRequestHandler;
 import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
 import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
@@ -244,7 +246,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.account.jwt.ttl'] ?: 259200 }") //3 days by default
     protected long accountJwtTtl;
 
-    @Value("#{ @environment['stormpath.web.account.jwt.signatureAlgorithm'] ?: 'HS256' }") //3 days by default
+    @Value("#{ @environment['stormpath.web.account.jwt.signatureAlgorithm'] ?: 'HS256' }")
     protected SignatureAlgorithm accountJwtSignatureAlgorithm;
 
     // ================  HTTP Servlet Request behavior  ===================
@@ -281,7 +283,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.enabled'] ?: true }")
     protected boolean stormpathFilterEnabled;
 
-    @Value("#{ @environment['stormpath.web.stormpathFilter.order'] ?: T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE }")
+    @Value("#{ @environment['stormpath.web.stormpathFilter.order'] ?: 1}") //Spring Security uses order 0, we want to be behind it, so we set it to 1
     protected int stormpathFilterOrder;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
@@ -592,6 +594,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public ApplicationResolver stormpathApplicationResolver() {
         return new DefaultApplicationResolver();
+    }
+
+    /**
+     * @since 1.0.3
+     */
+    public AccountProviderRequestHandler stormpathAccountProviderRequestHandler() {
+        return new DefaultAccountProviderRequestHandler();
     }
 
     public Resolver<Boolean> stormpathRegisterEnabledResolver() {
@@ -989,6 +998,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setRegisterUri(stormpathRegisterConfig().getUri());
         c.setLogoutUri(stormpathLogoutConfig().getUri());
         c.setApplicationResolver(stormpathApplicationResolver());
+        c.setAccountProviderRequestHandler(stormpathAccountProviderRequestHandler());
         c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         c.setPreLoginHandler(loginPreHandler);
         c.setPostLoginHandler(loginPostHandler);

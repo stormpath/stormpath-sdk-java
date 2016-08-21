@@ -25,6 +25,8 @@ import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.mvc.AccountProviderRequestHandler;
+import com.stormpath.sdk.servlet.mvc.DefaultAccountProviderRequestHandler;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
@@ -68,6 +70,10 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Autowired
     @Qualifier("stormpathRequestEventPublisher")
     private Publisher<RequestEvent> stormpathRequestEventPublisher; //provided by stormpath-spring-webmvc
+
+    @Autowired
+    @Qualifier("stormpathAccountProviderRequestHandler")
+    AccountProviderRequestHandler stormpathAccountProviderRequestHandler;
 
     @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
     protected String loginUri;

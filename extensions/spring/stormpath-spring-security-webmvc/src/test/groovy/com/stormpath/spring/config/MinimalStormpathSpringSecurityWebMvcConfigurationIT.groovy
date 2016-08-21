@@ -21,13 +21,13 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.impl.http.MediaType
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
-import com.stormpath.sdk.servlet.client.ClientLoader
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
@@ -37,20 +37,27 @@ import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
+import org.apache.http.entity.ContentType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.PermissionEvaluator
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
+import org.springframework.security.authentication.AuthenticationEventPublisher
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.web.FilterChainProxy
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
@@ -61,6 +68,8 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import static org.easymock.EasyMock.*
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.testng.Assert.*
 /**
  * @since 1.0.RC5
@@ -112,6 +121,23 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
     @Autowired
     RequestEventPublisher requestEventPublisher
+
+    @Autowired
+    AuthenticationEventPublisher authenticationEventPublisher
+
+    @Autowired
+    ProviderManager providerManager
+
+    @Autowired
+    WebApplicationContext context;
+
+    @Autowired
+    protected FilterChainProxy springSecurityFilterChain;
+
+    @Autowired
+    protected Filter stormpathFilter;
+
+    private MockMvc mvc;
 
     //State shared by these internal tests
     def password = "Pass123!" + UUID.randomUUID()
@@ -186,9 +212,8 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
-        expect(httpServletRequest.getServletContext()).andReturn(servletContext)
-        expect(httpServletRequest.getAttribute(Client.class.getName())).andReturn(client)
-        expect(servletContext.getAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY)).andReturn(client)
+        expect(httpServletRequest.getServletContext()).andReturn(servletContext).times(2)
+        expect(servletContext.getAttribute("com.stormpath.sdk.client.Client")).andReturn(client).times(2)
 
         replay(httpServletRequest, httpServletResponse, servletContext)
 
@@ -243,6 +268,18 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         Assert.isTrue(SecurityContextHolder.getContext().getAuthentication().equals(authentication))
     }
 
+    /**
+     * @since 1.0.3
+     */
+    @Test
+    void testAuthenticationSuccessEventIsTriggered() {
+        providerManager.setAuthenticationEventPublisher(authenticationEventPublisher)
+        MinimalStormpathSpringSecurityWebMvcTestAppConfig.CustomAuthenticationSuccessEventListener.eventWasTriggered = false
+        mvc.perform(post("/login").accept(MediaType.TEXT_HTML.toString()).contentType(ContentType.TEXT_HTML.toString()).with(csrf()).param("login", account.getEmail()).param("password", password)).andReturn()
+        assertTrue MinimalStormpathSpringSecurityWebMvcTestAppConfig.CustomAuthenticationSuccessEventListener.eventWasTriggered
+        SecurityContextHolder.clearContext()
+    }
+
     ///Supporting properties and methods
 
     List<Deletable> resourcesToDelete;
@@ -279,6 +316,11 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         def dir = createTempDir()
         application.setDefaultAccountStore(dir)
         account = createTempAccount(password)
+
+        mvc = MockMvcBuilders.webAppContextSetup(context)
+                .addFilter(springSecurityFilterChain, "/*")
+                .addFilter(stormpathFilter, "/*")
+                .build();
     }
 
     @AfterClass

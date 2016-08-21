@@ -21,6 +21,7 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.sdk.servlet.mvc.AccountProviderRequestHandler;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
 import com.stormpath.spring.filter.LoginHandlerFilter;
@@ -93,6 +94,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
+
+    /**
+     * @since 1.0.3
+     */
+    @Autowired
+    AccountProviderRequestHandler stormpathAccountProviderRequestHandler; //provided by stormpath-spring-webmvc
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
     protected String produces;
@@ -380,6 +387,11 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         filter.setPasswordParameter("password");
         filter.setAuthenticationSuccessHandler(successHandler);
         filter.setAuthenticationFailureHandler(failureHandler);
+
+        /**
+         * @since 1.0.3
+         */
+        filter.setAccountProviderRequestHandler(stormpathAccountProviderRequestHandler);
 
         return filter;
     }
