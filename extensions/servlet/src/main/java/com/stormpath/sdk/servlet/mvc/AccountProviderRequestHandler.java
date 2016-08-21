@@ -32,6 +32,4 @@ public interface AccountProviderRequestHandler {
 
     ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, Map<String, Object> props);
     ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request);
-
-    String exchangeGithubCodeForAccessToken(String code, HttpServletRequest request);
 }

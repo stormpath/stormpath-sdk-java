@@ -84,12 +84,14 @@ public class DefaultAccountProviderRequestHandler implements AccountProviderRequ
             switch (providerId) {
                 case "facebook": {
                     String accessToken = providerData.get("accessToken");
-                    accountRequest = Providers.FACEBOOK.account().setAccessToken(accessToken).build();
+                    accountRequest = Providers.FACEBOOK.account()
+                        .setAccessToken(accessToken).build();
                     break;
                 }
                 case "github": {
                     String code = providerData.get("code");
-                    accountRequest = Providers.GITHUB.account().setAccessToken(exchangeGithubCodeForAccessToken(code, request)).build();
+                    accountRequest = Providers.GITHUB.account()
+                        .setAccessToken(exchangeGithubCodeForAccessToken(code, request)).build();
                     break;
                 }
                 case "google": {
@@ -112,13 +114,10 @@ public class DefaultAccountProviderRequestHandler implements AccountProviderRequ
 
     /**
      * This method is for exchanging a code for an access token with GitHub.
-     * Needed by LoginController and GithubCallbackController.
-     * @param code The code from GitHub
-     * @param request The current request
-     * @return an access token
+     *
+     * @since 1.0.3
      */
-    @Override
-    public String exchangeGithubCodeForAccessToken(String code, HttpServletRequest request) {
+    private String exchangeGithubCodeForAccessToken(String code, HttpServletRequest request) {
         final DefaultGithubProvider[] githubProvider = new DefaultGithubProvider[1];
 
         Application application = ApplicationResolver.INSTANCE.getApplication(request);
