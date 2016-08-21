@@ -70,9 +70,11 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Qualifier("stormpathRequestEventPublisher")
     private Publisher<RequestEvent> stormpathRequestEventPublisher; //provided by stormpath-spring-webmvc
 
+    /**
+     * @since 1.0.3
+     */
     @Autowired
-    @Qualifier("stormpathAccountProviderRequestHandler")
-    ProviderAccountRequestFactory stormpathProviderAccountRequestFactory;
+    ProviderAccountRequestFactory stormpathProviderAccountRequestFactory; //provided by stormpath-spring-webmvc
 
     @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
     protected String loginUri;
