@@ -30,6 +30,7 @@ import java.util.Map;
  */
 public interface AccountProviderRequestHandler {
 
-    ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, Map<String, Object> props);
     ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request);
+    ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, Map<String, Object> props);
+    ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, String providerId, String codeOrToken);
 }

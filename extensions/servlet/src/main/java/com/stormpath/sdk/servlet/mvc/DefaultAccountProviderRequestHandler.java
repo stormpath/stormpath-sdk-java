@@ -24,6 +24,7 @@ import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.impl.provider.DefaultGithubProvider;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
@@ -76,40 +77,47 @@ public class DefaultAccountProviderRequestHandler implements AccountProviderRequ
     @Override
     @SuppressWarnings("unchecked")
     public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, Map<String, Object> props) {
-        ProviderAccountRequest accountRequest = null;
-
         Map<String, String> providerData = (props != null) ? (Map<String, String>) props.get("providerData") : null;
         if (providerData != null) {
             String providerId = providerData.get("providerId");
+            String codeOrToken = (Strings.hasText(providerData.get("accessToken"))) ?
+                providerData.get("accessToken") : providerData.get("code");
+
+            return getAccountProviderRequest(request, providerId, codeOrToken);
+        }
+
+        log.debug("Provider data not found in request.");
+        return null;
+    }
+
+    @Override
+    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, String providerId, String codeOrToken) {
+        if (Strings.hasText(providerId) && Strings.hasText(codeOrToken)) {
             switch (providerId) {
                 case "facebook": {
-                    String accessToken = providerData.get("accessToken");
-                    accountRequest = Providers.FACEBOOK.account()
-                        .setAccessToken(accessToken).build();
-                    break;
+                    return Providers.FACEBOOK
+                        .account().setAccessToken(codeOrToken).build();
                 }
                 case "github": {
-                    String code = providerData.get("code");
-                    accountRequest = Providers.GITHUB.account()
-                        .setAccessToken(exchangeGithubCodeForAccessToken(code, request)).build();
-                    break;
+                    return Providers.GITHUB
+                        .account().setAccessToken(exchangeGithubCodeForAccessToken(codeOrToken, request)).build();
                 }
                 case "google": {
-                    String code = providerData.get("code");
-                    accountRequest = Providers.GOOGLE.account().setCode(code).build();
-                    break;
+                    return Providers.GOOGLE
+                        .account().setCode(codeOrToken).build();
                 }
                 case "linkedin": {
-                    String code = providerData.get("code");
-                    accountRequest = Providers.LINKEDIN.account().setCode(code).build();
-                    break;
+                    return Providers.LINKEDIN
+                        .account().setCode(codeOrToken).build();
                 }
                 default: {
                     log.error("No provider configured for " + providerId);
+                    return null;
                 }
             }
         }
-        return accountRequest;
+        log.debug("providerId and/or token missing.");
+        return null;
     }
 
     /**
