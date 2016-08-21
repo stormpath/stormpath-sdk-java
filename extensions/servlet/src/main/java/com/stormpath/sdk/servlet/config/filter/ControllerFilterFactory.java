@@ -18,7 +18,7 @@ package com.stormpath.sdk.servlet.config.filter;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.mvc.AbstractController;
-import com.stormpath.sdk.servlet.mvc.DefaultAccountProviderRequestHandler;
+import com.stormpath.sdk.servlet.mvc.DefaultProviderAccountRequestFactory;
 
 import javax.servlet.ServletContext;
 
@@ -46,7 +46,7 @@ public abstract class ControllerFilterFactory<T extends AbstractController> exte
         /**
          * @since 1.0.3
          */
-        c.setAccountProviderRequestHandler(new DefaultAccountProviderRequestHandler());
+        c.setProviderAccountRequestFactory(new DefaultProviderAccountRequestFactory());
 
         configure(c, config);
 

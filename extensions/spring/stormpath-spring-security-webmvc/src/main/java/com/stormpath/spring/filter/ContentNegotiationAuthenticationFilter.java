@@ -24,7 +24,7 @@ import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
-import com.stormpath.sdk.servlet.mvc.AccountProviderRequestHandler;
+import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
 
     private boolean postOnly = true;
     private List<MediaType> supportedMediaTypes;
-    private AccountProviderRequestHandler accountProviderRequestHandler;
+    private ProviderAccountRequestFactory providerAccountRequestFactory;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -95,7 +95,7 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
 
         // check to see if it's a Provider auth request
         ProviderAccountRequest accountRequest =
-            accountProviderRequestHandler.getAccountProviderRequest(request, loginProps);
+            providerAccountRequestFactory.getProviderAccountRequest(request, loginProps);
 
         try {
             ProviderAccountResult result = ApplicationResolver.INSTANCE
@@ -117,8 +117,8 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
     /**
      * @since 1.0.3
      */
-    public void setAccountProviderRequestHandler(AccountProviderRequestHandler accountProviderRequestHandler) {
-        this.accountProviderRequestHandler = accountProviderRequestHandler;
+    public void setProviderAccountRequestFactory(ProviderAccountRequestFactory providerAccountRequestFactory) {
+        this.providerAccountRequestFactory = providerAccountRequestFactory;
     }
 
     private Map<String, Object> getLoginProps(HttpServletRequest request) {

@@ -28,9 +28,9 @@ import java.util.Map;
 /**
  * @since 1.0.3
  */
-public interface AccountProviderRequestHandler {
+public interface ProviderAccountRequestFactory {
 
-    ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request);
-    ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, Map<String, Object> props);
-    ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, String providerId, String codeOrToken);
+    ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request);
+    ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request, Map<String, Object> props);
+    ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request, String providerId, String codeOrToken);
 }

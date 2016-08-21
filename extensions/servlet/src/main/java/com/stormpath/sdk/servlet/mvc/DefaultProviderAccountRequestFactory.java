@@ -55,19 +55,19 @@ import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED
 /**
  * @since 1.0.3
  */
-public class DefaultAccountProviderRequestHandler implements AccountProviderRequestHandler {
+public class DefaultProviderAccountRequestFactory implements ProviderAccountRequestFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultAccountProviderRequestHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultProviderAccountRequestFactory.class);
     private static final String GITHUB_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
     private static final String GITHUB_ACCESS_TOKEN_FIELD = "access_token";
 
     @Override
     @SuppressWarnings("unchecked")
-    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
+    public ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request) {
         if (request.getParameterMap().size() == 0 && request.getContentLength() > 0) {
             Map<String, Object> map = (Map<String, Object>) request.getAttribute(MARSHALLED_OBJECT);
 
-            return getAccountProviderRequest(request, map);
+            return getProviderAccountRequest(request, map);
         }
 
         log.debug("Provider data not found in request.");
@@ -76,14 +76,14 @@ public class DefaultAccountProviderRequestHandler implements AccountProviderRequ
 
     @Override
     @SuppressWarnings("unchecked")
-    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, Map<String, Object> props) {
+    public ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request, Map<String, Object> props) {
         Map<String, String> providerData = (props != null) ? (Map<String, String>) props.get("providerData") : null;
         if (providerData != null) {
             String providerId = providerData.get("providerId");
             String codeOrToken = (Strings.hasText(providerData.get("accessToken"))) ?
                 providerData.get("accessToken") : providerData.get("code");
 
-            return getAccountProviderRequest(request, providerId, codeOrToken);
+            return getProviderAccountRequest(request, providerId, codeOrToken);
         }
 
         log.debug("Provider data not found in request.");
@@ -91,7 +91,7 @@ public class DefaultAccountProviderRequestHandler implements AccountProviderRequ
     }
 
     @Override
-    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request, String providerId, String codeOrToken) {
+    public ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request, String providerId, String codeOrToken) {
         if (Strings.hasText(providerId) && Strings.hasText(codeOrToken)) {
             switch (providerId) {
                 case "facebook": {

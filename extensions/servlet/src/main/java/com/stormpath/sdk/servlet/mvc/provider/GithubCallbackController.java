@@ -29,6 +29,6 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
     @Override
     protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
         String code = ServletUtils.getCleanParam(request, "code");
-        return accountProviderRequestHandler.getAccountProviderRequest(request, "github", code);
+        return providerAccountRequestFactory.getProviderAccountRequest(request, "github", code);
     }
 }

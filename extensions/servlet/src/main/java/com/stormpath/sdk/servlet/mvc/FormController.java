@@ -262,8 +262,8 @@ public abstract class FormController extends AbstractController {
         // and to provide uniform responses across all integrations for
         // conformance to stormpath-framework-spec as enforced by
         // stormpath-framework-tck
-        if (accountProviderRequestHandler != null) {
-            ProviderAccountRequest accountRequest = accountProviderRequestHandler.getAccountProviderRequest(request);
+        if (providerAccountRequestFactory != null) {
+            ProviderAccountRequest accountRequest = providerAccountRequestFactory.getProviderAccountRequest(request);
             if (accountRequest != null) {
                 ProviderAccountResult result = getApplication(request).getAccount(accountRequest);
                 Account account = result.getAccount();

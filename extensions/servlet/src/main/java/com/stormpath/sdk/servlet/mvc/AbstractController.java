@@ -57,7 +57,7 @@ public abstract class AbstractController implements Controller {
     protected Publisher<RequestEvent> eventPublisher;
     protected List<MediaType> produces;
     protected ApplicationResolver applicationResolver;
-    protected AccountProviderRequestHandler accountProviderRequestHandler;
+    protected ProviderAccountRequestFactory providerAccountRequestFactory;
 
     private String controllerKey;
     private Resolver<Locale> localeResolver;
@@ -156,8 +156,8 @@ public abstract class AbstractController implements Controller {
     /**
      * @since 1.0.3
      */
-    public void setAccountProviderRequestHandler(AccountProviderRequestHandler accountProviderRequestHandler) {
-        this.accountProviderRequestHandler = accountProviderRequestHandler;
+    public void setProviderAccountRequestFactory(ProviderAccountRequestFactory providerAccountRequestFactory) {
+        this.providerAccountRequestFactory = providerAccountRequestFactory;
     }
 
     public void init() throws Exception {
