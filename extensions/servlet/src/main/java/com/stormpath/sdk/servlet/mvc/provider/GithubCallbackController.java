@@ -16,11 +16,12 @@
 package com.stormpath.sdk.servlet.mvc.provider;
 
 import com.stormpath.sdk.provider.ProviderAccountRequest;
-import com.stormpath.sdk.provider.Providers;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 1.0.0
@@ -29,6 +30,18 @@ public class GithubCallbackController extends AbstractSocialCallbackController {
 
     @Override
     protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
-        return accountProviderRequestHandler.getAccountProviderRequest(request);
+        String code = ServletUtils.getCleanParam(request, "code");
+        return accountProviderRequestHandler.getAccountProviderRequest(request, setupProviderData(code));
+    }
+
+    private Map<String, Object> setupProviderData(String code) {
+        Map<String, String> githubData = new HashMap<>();
+        githubData.put("providerId", "github");
+        githubData.put("code", code);
+
+        Map<String, Object> providerData = new HashMap<>();
+        providerData.put("providerData", githubData);
+
+        return providerData;
     }
 }

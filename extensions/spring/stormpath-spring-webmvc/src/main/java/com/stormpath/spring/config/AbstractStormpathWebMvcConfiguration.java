@@ -1417,6 +1417,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setNextUri(stormpathLoginConfig().getUri());
         c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         c.setApplicationResolver(stormpathApplicationResolver());
+        c.setAccountProviderRequestHandler(stormpathAccountProviderRequestHandler());
         return c;
     }
 
