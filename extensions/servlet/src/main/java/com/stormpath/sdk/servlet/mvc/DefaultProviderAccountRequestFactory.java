@@ -43,43 +43,33 @@ public class DefaultProviderAccountRequestFactory implements ProviderAccountRequ
     @Override
     @SuppressWarnings("unchecked")
     public ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request) {
-        if (request.getParameterMap().size() == 0 && request.getContentLength() > 0) {
-            Map<String, Object> map = (Map<String, Object>) request.getAttribute(MARSHALLED_OBJECT);
+        Map<String, Object> map = (Map<String, Object>) request.getAttribute(MARSHALLED_OBJECT);
 
-            return getProviderAccountRequest(request, map);
-        }
+        if (map != null && map.get("providerData") != null) {
+            Map<String, String> providerData = (Map<String, String>) map.get("providerData");
 
-        log.debug("Provider data not found in request.");
-        return null;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request, Map<String, Object> props) {
-        Map<String, String> providerData = (props != null) ? (Map<String, String>) props.get("providerData") : null;
-        if (providerData != null) {
             String providerId = providerData.get("providerId");
             if (Strings.hasText(providerId)) {
                 switch (providerId) {
                     case "facebook": {
                         String accessToken = providerData.get("accessToken");
                         return Providers.FACEBOOK
-                                .account().setAccessToken(accessToken).build();
+                            .account().setAccessToken(accessToken).build();
                     }
                     case "github": {
                         String accessToken = githubAccessTokenResolver.get(request, null);
                         return Providers.GITHUB
-                                .account().setAccessToken(accessToken).build();
+                            .account().setAccessToken(accessToken).build();
                     }
                     case "google": {
                         String code = providerData.get("code");
                         return Providers.GOOGLE
-                                .account().setCode(code).build();
+                            .account().setCode(code).build();
                     }
                     case "linkedin": {
                         String code = providerData.get("code");
                         return Providers.LINKEDIN
-                                .account().setCode(code).build();
+                            .account().setCode(code).build();
                     }
                     default: {
                         log.error("No provider configured for " + providerId);
@@ -87,9 +77,9 @@ public class DefaultProviderAccountRequestFactory implements ProviderAccountRequ
                     }
                 }
             }
-            log.debug("providerId and/or token missing.");
         }
 
+        log.debug("Provider data not found in request.");
         return null;
     }
 }

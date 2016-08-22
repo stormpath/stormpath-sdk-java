@@ -384,27 +384,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             }
         }
     }
-
-//    // This sets up the Content Negotiation aware filter and replaces the calls to http.formLogin()
-//    // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
-//    private ContentNegotiationAuthenticationFilter setupContentNegotiationAuthenticationFilter() {
-//        ContentNegotiationAuthenticationFilter filter = new ContentNegotiationAuthenticationFilter();
-//
-//        filter.setSupportedMediaTypes(MediaType.parseMediaTypes(produces));
-//        filter.setAuthenticationManager(stormpathAuthenticationManager);
-//        filter.setUsernameParameter("login");
-//        filter.setPasswordParameter("password");
-//        filter.setAuthenticationSuccessHandler(successHandler);
-//        filter.setAuthenticationFailureHandler(failureHandler);
-//
-//        /**
-//         * @since 1.0.3
-//         */
-//        filter.setProviderAccountRequestFactory(stormpathProviderAccountRequestFactory);
-//
-//        return filter;
-//    }
-
+    
     // Creates the pre login handler filter with the user define handler
     private LoginHandlerFilter preLoginHandlerFilter() {
         return new LoginHandlerFilter(loginPreHandler, loginUri);

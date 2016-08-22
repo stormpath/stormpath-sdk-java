@@ -25,6 +25,7 @@ public class GithubCallbackFilterFactory extends SocialCallbackControllerFilterF
 
     @Override
     protected final void configure(GithubCallbackController c, Config config) throws Exception {
+        super.configure(c, config);
         c.setGithubAccessTokenResolver(config.getGithubAccessTokenResolver());
     }
 

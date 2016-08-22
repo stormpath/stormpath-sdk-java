@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED_OBJECT;
+
 /**
  * @since 1.0.0
  */
@@ -98,12 +100,12 @@ public class ContentNegotiationSpringSecurityAuthenticationFilter extends Userna
         }
 
         // check to see if it's a Provider auth request
-        ProviderAccountRequest accountRequest =
-            providerAccountRequestFactory.getProviderAccountRequest(request, loginProps);
+        // setup the request with the providerData
+        request.setAttribute(MARSHALLED_OBJECT, loginProps);
+        ProviderAccountRequest accountRequest = providerAccountRequestFactory.getProviderAccountRequest(request);
 
         try {
-            ProviderAccountResult result = application
-                .getAccount(accountRequest);
+            ProviderAccountResult result = application.getAccount(accountRequest);
             Account account = result.getAccount();
             return getAuthenticationManager().authenticate(new ProviderAuthenticationToken(account));
         } catch (ResourceException | IllegalArgumentException e) {

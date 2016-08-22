@@ -19,8 +19,6 @@ import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
-import com.stormpath.sdk.servlet.mvc.GithubAccessTokenResolver;
-import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;
 

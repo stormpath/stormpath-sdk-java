@@ -107,18 +107,6 @@ public class GithubAccessTokenResolver implements Resolver<String> {
 
     @SuppressWarnings("unchecked")
     private String getCode(HttpServletRequest request) throws IllegalArgumentException {
-        if (request.getParameterMap().size() == 0 && request.getContentLength() > 0) {
-            Map<String, Object> props = (Map<String, Object>) request.getAttribute(MARSHALLED_OBJECT);
-            Map<String, String> providerData = (props != null) ? (Map<String, String>) props.get("providerData") : null;
-            if (providerData != null) {
-                String providerId = providerData.get("providerId");
-                if (!IdentityProviderType.GITHUB.getNameKey().equals(providerId)) {
-                    throw new IllegalArgumentException("No Github information could be obtained from request " + request.toString());
-                }
-                return providerData.get("code");
-            }
-        }
-
-        throw new IllegalArgumentException("No ProviderData information could be obtained from request " + request.toString());
+        return request.getParameter("code");
     }
 }
