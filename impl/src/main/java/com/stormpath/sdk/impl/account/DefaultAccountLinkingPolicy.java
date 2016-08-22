@@ -19,14 +19,14 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
 
     // SIMPLE PROPERTIES
     static final StringProperty STATUS = new StringProperty("status");
-    static final StringProperty AUTO_PROVISIONING = new StringProperty("autoProvisioning");
+    static final StringProperty AUTOMATIC_PROVISIONING = new StringProperty("automaticProvisioning");
     static final StringProperty MATCHING_PROPERTY = new StringProperty("matchingProperty");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            STATUS, AUTO_PROVISIONING, MATCHING_PROPERTY, TENANT);
+            STATUS, AUTOMATIC_PROVISIONING, MATCHING_PROPERTY, TENANT);
 
     @Override
     public Map<String, Property> getPropertyDescriptors() {
@@ -63,14 +63,14 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
     }
 
     @Override
-    public String getAutoProvisioning() {
-        return getString(AUTO_PROVISIONING);
+    public String getAutomaticProvisioning() {
+        return getString(AUTOMATIC_PROVISIONING);
     }
 
     @Override
-    public AccountLinkingPolicy setAutoProvisioning(String autoProvisioningStatus) {
-        Assert.notNull(autoProvisioningStatus, "status cannot be null.");
-        setProperty(AUTO_PROVISIONING, autoProvisioningStatus);
+    public AccountLinkingPolicy setAutomaticProvisioning(String automaticProvisioningStatus) {
+        Assert.notNull(automaticProvisioningStatus, "status cannot be null.");
+        setProperty(AUTOMATIC_PROVISIONING, automaticProvisioningStatus);
         return this;
     }
 

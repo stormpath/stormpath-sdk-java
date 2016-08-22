@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.organization
 
+import com.stormpath.sdk.account.AccountLinkingPolicy
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
@@ -27,6 +28,7 @@ import com.stormpath.sdk.organization.Organizations
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
@@ -163,6 +165,46 @@ class OrganizationIT extends ClientIT {
 
         def accountStoreMapping = organization.addAccountStore("non-existent Dir")
         assertNull accountStoreMapping
+    }
+
+    /* @since 1.1.0 */
+    @Test
+    void testRetrieveAndUpdateAccountLinkingPolicy() {
+
+        def org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test"))
+                .setStatus(OrganizationStatus.ENABLED)
+
+        org = client.createOrganization(org)
+        assertNotNull org.href
+        deleteOnTeardown(org)
+
+        AccountLinkingPolicy accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus(), 'DISABLED'
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning(), 'DISABLED'
+        assertNull accountLinkingPolicy.getMatchingProperty()
+        assertFalse(org.isAccountLinkingEnabled())
+        assertFalse(org.isAutomaticProvisioningForAccountLinkingEnabled())
+
+        accountLinkingPolicy.setStatus('ENABLED')
+        accountLinkingPolicy.setAutomaticProvisioning('ENABLED')
+        accountLinkingPolicy.setMatchingProperty('EMAIL')
+        accountLinkingPolicy.save()
+
+        assertTrue(org.isAccountLinkingEnabled())
+        assertTrue(org.isAutomaticProvisioningForAccountLinkingEnabled())
+
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus(), 'ENABLED'
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning(), 'ENABLED'
+        assertNotNull accountLinkingPolicy.getMatchingProperty()
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'EMAIL'
     }
 
     private assertAccountStoreMappingListSize(OrganizationAccountStoreMappingList accountStoreMappings, int expectedSize) {

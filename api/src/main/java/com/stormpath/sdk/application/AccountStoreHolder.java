@@ -148,5 +148,20 @@ public interface AccountStoreHolder<T extends AccountStoreHolder> {
      */
     AccountLinkingPolicy getAccountLinkingPolicy();
 
+    /**
+     * Returns whether accountLinking is enabled for this AccountStoreHolder based on its {@link AccountLinkingPolicy}
+     * @return whether accountLinking is enabled for this AccountStoreHolder based on its {@link AccountLinkingPolicy}
+     *
+     * @since 1.1.0
+     */
+    boolean isAccountLinkingEnabled();
+
+    /**
+     * Returns whether automaticProvisioningForAccountLinking is enabled for this AccountStoreHolder based on its {@link AccountLinkingPolicy}
+     * @return whether automaticProvisioningForAccountLinking is enabled for this AccountStoreHolder based on its {@link AccountLinkingPolicy}
+     *
+     * @since 1.1.0
+     */
+    boolean isAutomaticProvisioningForAccountLinkingEnabled ();
 
 }

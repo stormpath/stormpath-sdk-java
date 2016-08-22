@@ -30,24 +30,24 @@ public interface AccountLinkingPolicy extends Resource, Saveable {
     AccountLinkingPolicy setStatus(String status);
 
     /**
-     * Returns the autoProvisioning status of the accountLinkingPolicy for the
+     * Returns the automaticProvisioning status of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
      * Possible values are : ENABLED, DISABLED.
      *
-     * @return the autoProvisioning status of the accountLinkingPolicy for the
+     * @return the automaticProvisioning status of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
      * Possible values are : ENABLED, DISABLED.
      */
-    String getAutoProvisioning();
+    String getAutomaticProvisioning();
 
     /**
-     * Sets the autoProvisioning status of the accountLinkingPolicy for the
+     * Sets the automaticProvisioning status of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
      * Possible values are : ENABLED, DISABLED.
      *
      * @return this instance for method chaining.
      */
-    AccountLinkingPolicy setAutoProvisioning(String autoProvisioningStatus);
+    AccountLinkingPolicy setAutomaticProvisioning(String automaticProvisioningStatus);
 
     /**
      * Returns the matchingProperty of the accountLinkingPolicy for the

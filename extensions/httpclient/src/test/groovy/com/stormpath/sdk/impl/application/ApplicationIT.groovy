@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountLinkingPolicy
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.account.PasswordResetToken
@@ -1674,6 +1675,40 @@ class ApplicationIT extends ClientIT {
         assertEquals oauthPolicy.getRefreshTokenTtl(), "P2D"
         assertEquals oauthPolicy.getApplication().getHref(), app.href
     }
+
+    /* @since 1.1.0 */
+    @Test
+    void testRetrieveAndUpdateAccountLinkingPolicy() {
+        def app = createTempApp()
+
+        AccountLinkingPolicy accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus() as String, 'DISABLED'
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning() as String, 'DISABLED'
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        assertFalse(app.isAccountLinkingEnabled())
+        assertFalse(app.isAutomaticProvisioningForAccountLinkingEnabled())
+
+
+        accountLinkingPolicy.setStatus('ENABLED')
+        accountLinkingPolicy.setAutomaticProvisioning('ENABLED')
+        accountLinkingPolicy.setMatchingProperty('EMAIL')
+        accountLinkingPolicy.save()
+
+        assertTrue(app.isAccountLinkingEnabled())
+        assertTrue(app.isAutomaticProvisioningForAccountLinkingEnabled())
+
+        accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus(), 'ENABLED'
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning(), 'ENABLED'
+        assertNotNull accountLinkingPolicy.getMatchingProperty()
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'EMAIL'
+    }
+
 
     /* @since 1.0.RC7 */
 

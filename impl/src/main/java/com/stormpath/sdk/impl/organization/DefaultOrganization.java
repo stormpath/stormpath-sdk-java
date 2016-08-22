@@ -394,4 +394,26 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
     public AccountLinkingPolicy getAccountLinkingPolicy() {
         return getResourceProperty(ACCOUNT_LINKING_POLICY);
     }
+
+    /* @since 1.1.0 */
+    @Override
+    public boolean isAccountLinkingEnabled () {
+        AccountLinkingPolicy accountLinkingPolicy = getResourceProperty(ACCOUNT_LINKING_POLICY);
+
+        if(accountLinkingPolicy == null || accountLinkingPolicy.getStatus().isEmpty()){
+            return false;
+        }
+        return accountLinkingPolicy.getStatus().equalsIgnoreCase("ENABLED") ? true : false;
+    }
+
+    /* @since 1.1.0 */
+    @Override
+    public boolean isAutomaticProvisioningForAccountLinkingEnabled () {
+        AccountLinkingPolicy accountLinkingPolicy = getResourceProperty(ACCOUNT_LINKING_POLICY);
+
+        if(accountLinkingPolicy == null || accountLinkingPolicy.getAutomaticProvisioning().isEmpty()){
+            return false;
+        }
+        return accountLinkingPolicy.getAutomaticProvisioning().equalsIgnoreCase("ENABLED") ? true : false;
+    }
 }
