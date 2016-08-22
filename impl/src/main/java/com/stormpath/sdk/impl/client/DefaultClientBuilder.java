@@ -16,21 +16,19 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
+import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.authc.StormpathCredentialsProvider;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
 import com.stormpath.sdk.cache.Caches;
-import com.stormpath.sdk.client.*;
-import com.stormpath.sdk.impl.api.ApiKeyCredentials;
-import com.stormpath.sdk.impl.config.ClientConfiguration;
-import com.stormpath.sdk.impl.config.JSONPropertiesSource;
-import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
-import com.stormpath.sdk.impl.config.PropertiesSource;
-import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
-import com.stormpath.sdk.impl.config.YAMLPropertiesSource;
-import com.stormpath.sdk.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.client.ClientBuilder;
+import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.impl.authc.credentials.DefaultStormpathCredentialsProviderChain;
+import com.stormpath.sdk.impl.config.*;
 import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.io.Resource;
@@ -231,52 +229,21 @@ public class DefaultClientBuilder implements ClientBuilder {
     }
 
     @Override
-    public ClientBuilder setRequestAuthenticatorFactory(RequestAuthenticatorFactory factory) {
-        this.clientConfig.setRequestAuthenticatorFactory(factory);
+    public ClientBuilder setRequestAuthenticatorFactory(Object factory) {
+        Assert.isInstanceOf(RequestAuthenticatorFactory.class, factory);
+        this.clientConfig.setRequestAuthenticatorFactory((RequestAuthenticatorFactory) factory);
         return this;
     }
 
     @Override
-    public ClientBuilder setClientCredentials(ClientCredentials clientCredentials) {
-        Assert.notNull(clientCredentials, "clientCredentials argument cannot be null");
-        this.clientConfig.setClientCredentials(clientCredentials);
+    public ClientBuilder setStormpathCredentialsProvider(StormpathCredentialsProvider stormpathCredentialsProvider) {
+        Assert.notNull(stormpathCredentialsProvider, "stormpathCredentialsProvider argument cannot be null");
+        this.clientConfig.setStormpathCredentialsProvider(stormpathCredentialsProvider);
         return this;
     }
 
     @Override
     public Client build() {
-        if (this.apiKey == null) {
-            log.debug("No API Key configured. Attempting to acquire an API Key found from well-known locations ($HOME/.stormpath/apiKey.properties < environment variables < system properties)...");
-            this.apiKey = ApiKeys.builder().build();
-
-            // use client.apiKey.file, client.apiKey.id, and client.apiKey.secret if they're set
-            if (this.clientConfig.getApiKeyFile() != null || this.clientConfig.getApiKeyId() != null || this.clientConfig.getApiKeySecret() != null) {
-                ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
-                if (this.clientConfig.getApiKeyFile() != null) {
-                    apiKeyBuilder.setFileLocation(this.clientConfig.getApiKeyFile());
-                }
-                if (this.clientConfig.getApiKeyId() != null) {
-                    apiKeyBuilder.setId(this.clientConfig.getApiKeyId());
-                }
-                if (this.clientConfig.getApiKeySecret() != null) {
-                    apiKeyBuilder.setSecret(this.clientConfig.getApiKeySecret());
-                }
-                this.apiKey = apiKeyBuilder.build();
-            }
-        }
-
-        Assert.isTrue(this.apiKey == null || this.clientConfig.getClientCredentials() == null, "Only one of ApiKey or ClientCredentials may be set, but not both.");
-
-        ClientCredentials clientCredentials;
-
-        if (this.clientConfig.getClientCredentials() != null) {
-            clientCredentials = this.clientConfig.getClientCredentials();
-        } else {
-            Assert.state(this.apiKey != null,
-                    "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
-            clientCredentials = new ApiKeyCredentials(this.apiKey);
-        }
-
         if (!this.clientConfig.isCacheManagerEnabled()) {
             log.debug("CacheManager disabled. Defaulting to DisabledCacheManager");
             this.cacheManager = Caches.newDisabledCacheManager();
@@ -304,7 +271,13 @@ public class DefaultClientBuilder implements ClientBuilder {
                     this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
-        return new DefaultClient(clientCredentials, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
+        ApiKeys.builder().build();
+
+        StormpathCredentialsProvider stormpathCredentialsProvider = this.clientConfig.getStormpathCredentialsProvider() != null
+                ? this.clientConfig.getStormpathCredentialsProvider()
+                : new DefaultStormpathCredentialsProviderChain(clientConfig);
+
+        return new DefaultClient(stormpathCredentialsProvider.getStormpathCredentials(), this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
                 this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout());
     }
 

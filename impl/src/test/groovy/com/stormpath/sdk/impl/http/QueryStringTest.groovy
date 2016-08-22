@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.http
 
-import com.stormpath.sdk.http.QueryString
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals

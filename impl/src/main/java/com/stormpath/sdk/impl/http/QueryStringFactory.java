@@ -15,7 +15,6 @@
  */
 package com.stormpath.sdk.impl.http;
 
-import com.stormpath.sdk.http.QueryString;
 import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;

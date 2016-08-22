@@ -16,18 +16,18 @@
 package com.stormpath.sdk.impl.http.httpclient;
 
 import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.client.ClientCredentials;
+import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.http.HttpHeaders;
-import com.stormpath.sdk.http.MediaType;
-import com.stormpath.sdk.http.QueryString;
-import com.stormpath.sdk.http.Request;
+import com.stormpath.sdk.impl.http.HttpHeaders;
+import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
-import com.stormpath.sdk.http.RestException;
+import com.stormpath.sdk.impl.http.RestException;
 import com.stormpath.sdk.impl.http.authc.DefaultRequestAuthenticatorFactory;
-import com.stormpath.sdk.authc.RequestAuthenticator;
-import com.stormpath.sdk.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.authc.RequestAuthenticator;
+import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.impl.http.support.BackoffStrategy;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.DefaultResponse;
@@ -91,7 +91,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private int numRetries = DEFAULT_MAX_RETRIES;
 
-    private final ClientCredentials clientCredentials;
+    private final StormpathCredentials stormpathCredentials;
 
     private final RequestAuthenticator requestAuthenticator;
 
@@ -139,16 +139,16 @@ public class HttpClientRequestExecutor implements RequestExecutor {
     /**
      * Creates a new {@code HttpClientRequestExecutor} using the specified {@code ApiKey} and optional {@code Proxy}
      * configuration.
-     * @param clientCredentials the Stormpath account API Key that will be used to authenticate the client with Stormpath's API sever
+     * @param stormpathCredentials the Stormpath account API Key that will be used to authenticate the client with Stormpath's API sever
      * @param proxy the HTTP proxy to be used when communicating with the Stormpath API server (can be null)
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API server.
      *                             If null, then Sauthc1 will be used.
      */
-    public HttpClientRequestExecutor(ClientCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
-        Assert.notNull(clientCredentials, "clientCredentials argument is required.");
+    public HttpClientRequestExecutor(StormpathCredentials stormpathCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
+        Assert.notNull(stormpathCredentials, "stormpathCredentials argument is required.");
         Assert.isTrue(connectionTimeout >= 0, "Timeout cannot be a negative number.");
 
-        this.clientCredentials = clientCredentials;
+        this.stormpathCredentials = stormpathCredentials;
 
         this.requestAuthenticatorFactory = (requestAuthenticatorFactory != null)
                 ? requestAuthenticatorFactory
@@ -261,8 +261,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
             //TODO ???
             // Sign the request
-            if (this.clientCredentials != null) {
-                this.requestAuthenticator.authenticate(request, this.clientCredentials);
+            if (this.stormpathCredentials != null) {
+                this.requestAuthenticator.authenticate(request, this.stormpathCredentials);
             }
 
             HttpRequestBase httpRequest = this.httpClientRequestFactory.createHttpClientRequest(request, entity);

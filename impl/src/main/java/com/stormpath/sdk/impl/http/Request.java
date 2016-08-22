@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.http;
+package com.stormpath.sdk.impl.http;
+
+import com.stormpath.sdk.http.HttpMethod;
 
 import java.io.InputStream;
 import java.net.URI;

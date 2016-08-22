@@ -4,10 +4,10 @@
 package com.stormpath.sdk.impl.api;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.client.ClientCredentials;
+import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.lang.Assert;
 
-public class ApiKeyCredentials implements ClientCredentials {
+public class ApiKeyCredentials implements StormpathCredentials {
 
     private ApiKey apiKey;
 

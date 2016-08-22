@@ -26,7 +26,7 @@ import com.stormpath.sdk.application.CreateApplicationRequest;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.client.ClientCredentials;
+import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.directory.CreateDirectoryRequest;
 import com.stormpath.sdk.directory.Directory;
@@ -37,7 +37,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.organization.*;
@@ -71,7 +71,7 @@ public class DefaultClient implements Client {
      * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
      * JavaDoc for a usage example.
      *
-     * @param clientCredentials    the Stormpath account credentials that will be used to authenticate the client with
+     * @param stormpathCredentials the Stormpath account credentials that will be used to authenticate the client with
      *                             Stormpath's API server
      * @param baseUrl              the Stormpath base URL
      * @param proxy                the HTTP proxy to be used when communicating with the Stormpath API server (can be
@@ -81,15 +81,15 @@ public class DefaultClient implements Client {
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API
      *                             server (can be null)
      */
-    public DefaultClient(ClientCredentials clientCredentials, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
-        Assert.notNull(clientCredentials, "apiKeyCredentials argument cannot be null.");
+    public DefaultClient(StormpathCredentials stormpathCredentials, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
+        Assert.notNull(stormpathCredentials, "stormpathCredentials argument cannot be null.");
         Assert.isTrue(connectionTimeout >= 0, "connectionTimeout cannot be a negative number.");
-        RequestExecutor requestExecutor = createRequestExecutor(clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory,connectionTimeout);
-        this.dataStore = createDataStore(requestExecutor, baseUrl, clientCredentials, cacheManager);
+        RequestExecutor requestExecutor = createRequestExecutor(stormpathCredentials, proxy, authenticationScheme, requestAuthenticatorFactory,connectionTimeout);
+        this.dataStore = createDataStore(requestExecutor, baseUrl, stormpathCredentials, cacheManager);
     }
 
-    protected DataStore createDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
-        return new DefaultDataStore(requestExecutor, baseUrl, clientCredentials, cacheManager);
+    protected DataStore createDataStore(RequestExecutor requestExecutor, String baseUrl, StormpathCredentials stormpathCredentials, CacheManager cacheManager) {
+        return new DefaultDataStore(requestExecutor, baseUrl, stormpathCredentials, cacheManager);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class DefaultClient implements Client {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private RequestExecutor createRequestExecutor(ClientCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
+    private RequestExecutor createRequestExecutor(StormpathCredentials stormpathCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
@@ -136,9 +136,9 @@ public class DefaultClient implements Client {
             throw new RuntimeException(msg);
         }
 
-        Constructor<RequestExecutor> ctor = Classes.getConstructor(requestExecutorClass, ClientCredentials.class, Proxy.class, AuthenticationScheme.class, RequestAuthenticatorFactory.class, Integer.class);
+        Constructor<RequestExecutor> ctor = Classes.getConstructor(requestExecutorClass, StormpathCredentials.class, Proxy.class, AuthenticationScheme.class, RequestAuthenticatorFactory.class, Integer.class);
 
-        return Classes.instantiate(ctor, clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory, connectionTimeout);
+        return Classes.instantiate(ctor, stormpathCredentials, proxy, authenticationScheme, requestAuthenticatorFactory, connectionTimeout);
     }
 
     // ========================================================================

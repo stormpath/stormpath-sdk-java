@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.http;
+package com.stormpath.sdk.impl.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;

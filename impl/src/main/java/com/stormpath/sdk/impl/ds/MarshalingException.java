@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.ds;
 
-import com.stormpath.sdk.http.RestException;
+import com.stormpath.sdk.impl.http.RestException;
 
 /**
  * @since 0.1

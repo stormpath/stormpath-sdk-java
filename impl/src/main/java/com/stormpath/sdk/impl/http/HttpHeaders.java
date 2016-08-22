@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.http;
+package com.stormpath.sdk.impl.http;
 
+import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.LinkedCaseInsensitiveMap;
-import com.stormpath.sdk.lang.MultiValueMap;
+import com.stormpath.sdk.impl.util.LinkedCaseInsensitiveMap;
+import com.stormpath.sdk.impl.util.MultiValueMap;
 import com.stormpath.sdk.lang.Strings;
 
 import java.net.URI;

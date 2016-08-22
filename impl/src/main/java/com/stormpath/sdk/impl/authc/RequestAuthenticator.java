@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.impl.authc;
 
-import com.stormpath.sdk.client.ClientCredentials;
-import com.stormpath.sdk.http.Request;
+import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
+import com.stormpath.sdk.authc.StormpathCredentials;
+import com.stormpath.sdk.impl.http.Request;
 
 /**
  * Interface to be implemented by HTTP authentication schemes. Such scheme defines the way the communication with
@@ -33,10 +34,10 @@ public interface RequestAuthenticator {
      *
      * @param request the request that will be sent to Stormpath API server, it shall be modified by the implementating classes
      *                in order to insert here the authentication information
-     * @param clientCredentials provides the authentication data that will be used to create the proper authentication information for
+     * @param stormpathCredentials provides the authentication data that will be used to create the proper authentication information for
      *               the specific scheme the implementation defines.
      * @throws RequestAuthenticationException when the authentication request cannot be created
      */
-    void authenticate(Request request, ClientCredentials clientCredentials) throws RequestAuthenticationException;
+    void authenticate(Request request, StormpathCredentials stormpathCredentials) throws RequestAuthenticationException;
 
 }

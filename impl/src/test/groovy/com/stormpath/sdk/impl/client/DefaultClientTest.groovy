@@ -3,7 +3,7 @@ package com.stormpath.sdk.impl.client
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.impl.api.ApiKeyCredentials
-import com.stormpath.sdk.authc.RequestAuthenticatorFactory
+import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory
 import com.stormpath.sdk.lang.Classes
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.testng.PowerMockTestCase

@@ -16,10 +16,10 @@
 package com.stormpath.sdk.impl.http.httpclient;
 
 import com.stormpath.sdk.http.HttpMethod;
-import com.stormpath.sdk.http.QueryString;
-import com.stormpath.sdk.http.Request;
-import com.stormpath.sdk.http.RestException;
-import com.stormpath.sdk.http.RequestUtils;
+import com.stormpath.sdk.impl.http.QueryString;
+import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.impl.http.RestException;
+import com.stormpath.sdk.impl.util.RequestUtils;
 import com.stormpath.sdk.lang.Strings;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpDelete;

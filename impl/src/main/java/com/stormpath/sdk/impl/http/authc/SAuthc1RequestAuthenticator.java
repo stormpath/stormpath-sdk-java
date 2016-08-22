@@ -15,11 +15,11 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
-import com.stormpath.sdk.authc.RequestAuthenticator;
-import com.stormpath.sdk.client.ClientCredentials;
-import com.stormpath.sdk.http.Request;
-import com.stormpath.sdk.authc.RequestAuthenticationException;
-import com.stormpath.sdk.http.RequestUtils;
+import com.stormpath.sdk.impl.authc.RequestAuthenticator;
+import com.stormpath.sdk.authc.StormpathCredentials;
+import com.stormpath.sdk.impl.http.Request;
+import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
+import com.stormpath.sdk.impl.util.RequestUtils;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,13 +65,13 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
     private static final Logger log = LoggerFactory.getLogger(SAuthc1RequestAuthenticator.class);
 
     @Override
-    public void authenticate(Request request, ClientCredentials clientCredentials) throws RequestAuthenticationException {
+    public void authenticate(Request request, StormpathCredentials stormpathCredentials) throws RequestAuthenticationException {
         Date date = new Date();
         String nonce = UUID.randomUUID().toString();
-        authenticate(request, clientCredentials, date, nonce);
+        authenticate(request, stormpathCredentials, date, nonce);
     }
 
-    public void authenticate(final Request request, final ClientCredentials clientCredentials, final Date date, final String nonce) {
+    public void authenticate(final Request request, final StormpathCredentials stormpathCredentials, final Date date, final String nonce) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         dateFormat.setTimeZone(new SimpleTimeZone(0, TIME_ZONE));
 
@@ -110,7 +110,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
         log.debug("{} Canonical Request: {}", AUTHENTICATION_SCHEME, canonicalRequest);
 
-        String id = clientCredentials.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
+        String id = stormpathCredentials.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
 
         String canonicalRequestHashHex = toHex(hash(canonicalRequest));
 
@@ -123,7 +123,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
         log.debug("{} String to Sign: {}", AUTHENTICATION_SCHEME, stringToSign);
 
         // SAuthc1 uses a series of derived keys, formed by hashing different pieces of data
-        byte[] kSecret = toUtf8Bytes(AUTHENTICATION_SCHEME + clientCredentials.getSecret());
+        byte[] kSecret = toUtf8Bytes(AUTHENTICATION_SCHEME + stormpathCredentials.getSecret());
         byte[] kDate = sign(dateStamp, kSecret, MacAlgorithm.HmacSHA256);
         byte[] kNonce = sign(nonce, kDate, MacAlgorithm.HmacSHA256);
         byte[] kSigning = sign(ID_TERMINATOR, kNonce, MacAlgorithm.HmacSHA256);

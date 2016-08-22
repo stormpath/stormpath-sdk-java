@@ -18,7 +18,7 @@ package com.stormpath.sdk.impl.idsite;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import io.jsonwebtoken.JwsHeader;

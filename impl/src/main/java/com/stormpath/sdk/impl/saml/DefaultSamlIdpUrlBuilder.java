@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.saml;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlIdpUrlBuilder;

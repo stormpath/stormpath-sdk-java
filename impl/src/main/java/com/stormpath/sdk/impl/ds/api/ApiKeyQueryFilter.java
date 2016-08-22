@@ -27,7 +27,7 @@ import com.stormpath.sdk.impl.ds.ResourceAction;
 import com.stormpath.sdk.impl.ds.ResourceDataRequest;
 import com.stormpath.sdk.impl.ds.ResourceDataResult;
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.http.QueryString;
+import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.QueryStringFactory;
 import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;

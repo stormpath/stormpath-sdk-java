@@ -15,8 +15,6 @@
  */
 package com.stormpath.sdk.impl.http;
 
-import com.stormpath.sdk.http.HttpMessage;
-
 /**
  * @since 0.1
  */

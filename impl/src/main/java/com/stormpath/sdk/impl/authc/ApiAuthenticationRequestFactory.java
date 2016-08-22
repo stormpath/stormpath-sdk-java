@@ -7,7 +7,7 @@ import com.stormpath.sdk.error.authc.UnsupportedAuthenticationSchemeException;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.http.HttpRequest;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
-import com.stormpath.sdk.http.MediaType;
+import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.RequestLocation;
 

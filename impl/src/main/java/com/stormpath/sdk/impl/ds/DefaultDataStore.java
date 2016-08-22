@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.client.ClientCredentials;
+import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.api.ApiKeyCredentials;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
@@ -29,12 +29,12 @@ import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
 import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.CanonicalUri;
-import com.stormpath.sdk.http.HttpHeaders;
+import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.HttpHeadersHolder;
-import com.stormpath.sdk.http.MediaType;
-import com.stormpath.sdk.http.QueryString;
+import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.QueryStringFactory;
-import com.stormpath.sdk.http.Request;
+import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
@@ -68,7 +68,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-import static com.stormpath.sdk.http.HttpHeaders.STORMPATH_AGENT;
+import static com.stormpath.sdk.impl.http.HttpHeaders.STORMPATH_AGENT;
 
 /**
  * @since 0.1
@@ -98,7 +98,7 @@ public class DefaultDataStore implements InternalDataStore {
     private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
 
     private final String baseUrl;
-    private final ClientCredentials clientCredentials;
+    private final StormpathCredentials stormpathCredentials;
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
@@ -125,14 +125,14 @@ public class DefaultDataStore implements InternalDataStore {
         this(requestExecutor, baseUrl, apiKeyCredentials, new DisabledCacheManager());
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, StormpathCredentials stormpathCredentials, CacheManager cacheManager) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
-        Assert.notNull(clientCredentials, "clientCredentials cannot be null.");
+        Assert.notNull(stormpathCredentials, "stormpathCredentials cannot be null.");
         Assert.notNull(cacheManager, "CacheManager cannot be null.  Use the DisabledCacheManager if you wish to turn off caching.");
         this.requestExecutor = requestExecutor;
         this.baseUrl = baseUrl;
-        this.clientCredentials = clientCredentials;
+        this.stormpathCredentials = stormpathCredentials;
         this.cacheManager = cacheManager;
         this.resourceFactory = new DefaultResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
@@ -146,8 +146,8 @@ public class DefaultDataStore implements InternalDataStore {
 
         this.filters.add(new EnlistmentFilter());
 
-        if(clientCredentials instanceof ApiKeyCredentials) {
-            this.filters.add(new DecryptApiKeySecretFilter((ApiKeyCredentials) clientCredentials));
+        if(stormpathCredentials instanceof ApiKeyCredentials) {
+            this.filters.add(new DecryptApiKeySecretFilter((ApiKeyCredentials) stormpathCredentials));
         }
 
         if (isCachingEnabled()) {
@@ -155,7 +155,7 @@ public class DefaultDataStore implements InternalDataStore {
             this.filters.add(new WriteCacheFilter(this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
         }
 
-        if(clientCredentials instanceof ApiKeyCredentials) {
+        if(stormpathCredentials instanceof ApiKeyCredentials) {
             this.filters.add(new ApiKeyQueryFilter(this.queryStringFactory));
         }
 
@@ -169,8 +169,8 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public ApiKey getApiKey() {
-        Assert.isInstanceOf(ApiKeyCredentials.class, this.clientCredentials);
-        return ((ApiKeyCredentials) this.clientCredentials).getApiKey();
+        Assert.isInstanceOf(ApiKeyCredentials.class, this.stormpathCredentials);
+        return ((ApiKeyCredentials) this.stormpathCredentials).getApiKey();
     }
 
     @Override

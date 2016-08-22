@@ -1,9 +1,9 @@
 package com.stormpath.sdk.impl.config;
 
+import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.authc.StormpathCredentialsProvider;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.client.ClientCredentials;
-import com.stormpath.sdk.authc.RequestAuthenticatorFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class ClientConfiguration {
     private int connectionTimeout;
     private AuthenticationScheme authenticationScheme;
     private RequestAuthenticatorFactory requestAuthenticatorFactory;
-    private ClientCredentials clientCredentials;
+    private StormpathCredentialsProvider stormpathCredentialsProvider;
     private int proxyPort;
     private String proxyHost;
     private String proxyUsername;
@@ -181,13 +181,14 @@ public class ClientConfiguration {
         this.proxyUsername = proxyUsername;
     }
 
-    public ClientCredentials getClientCredentials() {
-        return clientCredentials;
+    public StormpathCredentialsProvider getStormpathCredentialsProvider() {
+        return stormpathCredentialsProvider;
     }
 
-    public void setClientCredentials(ClientCredentials clientCredentials) {
-        this.clientCredentials = clientCredentials;
+    public void setStormpathCredentialsProvider(StormpathCredentialsProvider stormpathCredentialsProvider) {
+        this.stormpathCredentialsProvider = stormpathCredentialsProvider;
     }
+
     @Override
     public String toString() {
         return "ClientConfiguration{" +
