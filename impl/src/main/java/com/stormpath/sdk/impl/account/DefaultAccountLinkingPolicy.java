@@ -69,7 +69,7 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
 
     @Override
     public AccountLinkingPolicy setAutomaticProvisioning(String automaticProvisioningStatus) {
-        Assert.notNull(automaticProvisioningStatus, "status cannot be null.");
+        Assert.notNull(automaticProvisioningStatus, "automaticProvisioning cannot be null.");
         setProperty(AUTOMATIC_PROVISIONING, automaticProvisioningStatus);
         return this;
     }
