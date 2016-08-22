@@ -34,10 +34,8 @@ public interface RequestAuthenticator {
      *
      * @param request the request that will be sent to Stormpath API server, it shall be modified by the implementating classes
      *                in order to insert here the authentication information
-     * @param stormpathCredentials provides the authentication data that will be used to create the proper authentication information for
-     *               the specific scheme the implementation defines.
      * @throws RequestAuthenticationException when the authentication request cannot be created
      */
-    void authenticate(Request request, StormpathCredentials stormpathCredentials) throws RequestAuthenticationException;
+    void authenticate(Request request) throws RequestAuthenticationException;
 
 }

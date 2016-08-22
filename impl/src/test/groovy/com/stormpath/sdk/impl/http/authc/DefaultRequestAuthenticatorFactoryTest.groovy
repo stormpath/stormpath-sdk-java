@@ -16,11 +16,13 @@
 package com.stormpath.sdk.impl.http.authc
 
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.impl.api.ApiKeyCredentials
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
+import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
@@ -32,9 +34,11 @@ class DefaultRequestAuthenticatorFactoryTest {
     public void test() {
         def requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
 
-        assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.BASIC) instanceof BasicRequestAuthenticator)
-        assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.SAUTHC1) instanceof SAuthc1RequestAuthenticator)
-        assertTrue(requestAuthenticatorFactory.create(null) instanceof SAuthc1RequestAuthenticator)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+
+        assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.BASIC, apiKeyCredentials) instanceof BasicRequestAuthenticator)
+        assertTrue(requestAuthenticatorFactory.create(AuthenticationScheme.SAUTHC1, apiKeyCredentials) instanceof SAuthc1RequestAuthenticator)
+        assertTrue(requestAuthenticatorFactory.create(null, apiKeyCredentials) instanceof SAuthc1RequestAuthenticator)
     }
 
     @Test
@@ -45,9 +49,10 @@ class DefaultRequestAuthenticatorFactoryTest {
         setNewValue(authenticationScheme, "requestAuthenticatorClassName", "this.package.does.not.exist.FooClass")
 
         def requestAuthenticatorFactory = new DefaultRequestAuthenticatorFactory();
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
 
         try {
-            requestAuthenticatorFactory.create(authenticationScheme) instanceof BasicRequestAuthenticator
+            requestAuthenticatorFactory.create(authenticationScheme, apiKeyCredentials) instanceof BasicRequestAuthenticator
             fail("Should have thrown RuntimeException")
         } catch (RuntimeException ex) {
             assertEquals(ex.getMessage(), "There was an error instantiating this.package.does.not.exist.FooClass")

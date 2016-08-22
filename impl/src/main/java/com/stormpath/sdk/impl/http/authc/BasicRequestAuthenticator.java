@@ -20,6 +20,7 @@ import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.Base64;
+import com.stormpath.sdk.lang.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +49,15 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
 
     private static final String NL = "\n";
 
+    private final StormpathCredentials stormpathCredentials;
+
+    public BasicRequestAuthenticator(StormpathCredentials stormpathCredentials){
+        Assert.notNull(stormpathCredentials, "stormpathCredentials must be not be null.");
+        this.stormpathCredentials = stormpathCredentials;
+    }
+
     @Override
-    public void authenticate(Request request, StormpathCredentials stormpathCredentials) throws RequestAuthenticationException {
+    public void authenticate(Request request) throws RequestAuthenticationException {
         Date date = new Date();
 
         SimpleDateFormat timestampFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);

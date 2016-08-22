@@ -15,11 +15,14 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
+import com.stormpath.sdk.authc.StormpathCredentials;
+import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.impl.authc.RequestAuthenticator;
 import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
-import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.lang.Classes;
+
+import java.lang.reflect.Constructor;
 
 /**
  * This default factory is responsible of creating a {@link RequestAuthenticator} out of a given {@link AuthenticationScheme}
@@ -37,22 +40,21 @@ public class DefaultRequestAuthenticatorFactory implements RequestAuthenticatorF
      * @return the corresponding `RequestAuthenticator` for the given `AuthenticationScheme`. Returns `SAuthc1RequestAuthenticator` if
      * the authentication scheme is undefined.
      */
-    public RequestAuthenticator create(AuthenticationScheme scheme) {
+    @SuppressWarnings("unchecked")
+    public RequestAuthenticator create(AuthenticationScheme scheme, StormpathCredentials stormpathCredentials) {
 
         if (scheme == null) {
             //By default, this factory creates a digest authentication when a scheme is not defined
-            return new SAuthc1RequestAuthenticator();
+            return new SAuthc1RequestAuthenticator(stormpathCredentials);
         }
 
-        RequestAuthenticator requestAuthenticator;
-
         try {
-            requestAuthenticator = (RequestAuthenticator) Classes.newInstance(scheme.getRequestAuthenticatorClassName());
+            Class requestAuthenticatorClass = Classes.forName(scheme.getRequestAuthenticatorClassName());
+            Constructor<RequestAuthenticator> ctor = Classes.getConstructor(requestAuthenticatorClass, StormpathCredentials.class);
+            return Classes.instantiate(ctor, stormpathCredentials);
         } catch (RuntimeException ex) {
             throw new RequestAuthenticationException("There was an error instantiating " + scheme.getRequestAuthenticatorClassName());
         }
-
-        return requestAuthenticator;
     }
 
 }

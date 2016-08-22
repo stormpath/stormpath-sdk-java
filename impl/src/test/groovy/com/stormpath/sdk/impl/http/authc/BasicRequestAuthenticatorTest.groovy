@@ -55,8 +55,8 @@ class BasicRequestAuthenticatorTest {
 
         replay(request, apiKeyCredentials)
 
-        def requestAuthenticator = new BasicRequestAuthenticator();
-        requestAuthenticator.authenticate(request, apiKeyCredentials)
+        def requestAuthenticator = new BasicRequestAuthenticator(apiKeyCredentials);
+        requestAuthenticator.authenticate(request)
 
         assertEquals(headers.get(AUTHORIZATION_HEADER).size(), 1)
         assertEquals(headers.get(AUTHORIZATION_HEADER).get(0), "Basic " + authorizationHeader)

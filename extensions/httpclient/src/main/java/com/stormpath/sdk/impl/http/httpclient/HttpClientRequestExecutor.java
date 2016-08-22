@@ -154,7 +154,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 ? requestAuthenticatorFactory
                 : new DefaultRequestAuthenticatorFactory();
 
-        this.requestAuthenticator = this.requestAuthenticatorFactory.create(authenticationScheme);
+        this.requestAuthenticator = this.requestAuthenticatorFactory.create(authenticationScheme, stormpathCredentials);
 
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 
@@ -259,11 +259,9 @@ public class HttpClientRequestExecutor implements RequestExecutor {
                 request.setHeaders(originalHeaders);
             }
 
-            //TODO ???
+
             // Sign the request
-            if (this.stormpathCredentials != null) {
-                this.requestAuthenticator.authenticate(request, this.stormpathCredentials);
-            }
+            this.requestAuthenticator.authenticate(request);
 
             HttpRequestBase httpRequest = this.httpClientRequestFactory.createHttpClientRequest(request, entity);
 

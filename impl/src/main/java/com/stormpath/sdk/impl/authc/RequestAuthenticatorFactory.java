@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.authc;
 
+import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.client.AuthenticationScheme;
 
 /**
@@ -24,6 +25,6 @@ import com.stormpath.sdk.client.AuthenticationScheme;
  */
 public interface RequestAuthenticatorFactory {
 
-    RequestAuthenticator create(AuthenticationScheme scheme);
+    RequestAuthenticator create(AuthenticationScheme scheme, StormpathCredentials stormpathCredentials);
 
 }

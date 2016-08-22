@@ -21,6 +21,7 @@ import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.RequestUtils;
 import com.stormpath.sdk.impl.util.StringInputStream;
+import com.stormpath.sdk.lang.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String HOST_HEADER = "Host";
-    public static final String STORMAPTH_DATE_HEADER = "X-Stormpath-Date";
+    public static final String STORMPATH_DATE_HEADER = "X-Stormpath-Date";
     public static final String ID_TERMINATOR = "sauthc1_request";
     public static final String ALGORITHM = "HMAC-SHA-256";
     public static final String AUTHENTICATION_SCHEME = "SAuthc1";
@@ -64,14 +65,21 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
     private static final Logger log = LoggerFactory.getLogger(SAuthc1RequestAuthenticator.class);
 
-    @Override
-    public void authenticate(Request request, StormpathCredentials stormpathCredentials) throws RequestAuthenticationException {
-        Date date = new Date();
-        String nonce = UUID.randomUUID().toString();
-        authenticate(request, stormpathCredentials, date, nonce);
+    private final StormpathCredentials stormpathCredentials;
+
+    public SAuthc1RequestAuthenticator(StormpathCredentials stormpathCredentials) {
+        Assert.notNull(stormpathCredentials, "stormpathCredentials must not be null.");
+        this.stormpathCredentials = stormpathCredentials;
     }
 
-    public void authenticate(final Request request, final StormpathCredentials stormpathCredentials, final Date date, final String nonce) {
+    @Override
+    public void authenticate(Request request) throws RequestAuthenticationException {
+        Date date = new Date();
+        String nonce = UUID.randomUUID().toString();
+        authenticate(request, date, nonce);
+    }
+
+    public void authenticate(final Request request, final Date date, final String nonce) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         dateFormat.setTimeZone(new SimpleTimeZone(0, TIME_ZONE));
 
@@ -91,7 +99,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
         String timestamp = timestampFormat.format(date);
         String dateStamp = dateFormat.format(date);
 
-        request.getHeaders().set(STORMAPTH_DATE_HEADER, timestamp);
+        request.getHeaders().set(STORMPATH_DATE_HEADER, timestamp);
 
         String method = request.getMethod().toString();
         String canonicalResourcePath = canonicalizeResourcePath(uri.getPath());
@@ -137,7 +145,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
                         createNameValuePair(SAUTHC1_SIGNED_HEADERS, signedHeadersString) + ", " +
                         createNameValuePair(SAUTHC1_SIGNATURE, signatureHex);
 
-        log.debug("{}: {}", AUTHORIZATION_HEADER,  authorizationHeader);
+        log.debug("{}: {}", AUTHORIZATION_HEADER, authorizationHeader);
 
         request.getHeaders().set(AUTHORIZATION_HEADER, authorizationHeader);
     }
@@ -276,7 +284,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
             List<String> values = request.getHeaders().get(header);
             boolean first = true;
             if (values != null) {
-                for(String value : values) {
+                for (String value : values) {
                     if (!first) {
                         buffer.append(",");
                     }
