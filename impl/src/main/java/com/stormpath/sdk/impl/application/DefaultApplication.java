@@ -15,13 +15,7 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -179,6 +173,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
             new ResourceReference<OAuthPolicy>("oAuthPolicy", OAuthPolicy.class);
     static final ResourceReference<SamlPolicy> SAML_POLICY =
             new ResourceReference<SamlPolicy>("samlPolicy", SamlPolicy.class);
+    static final ResourceReference<AccountLinkingPolicy> ACCOUNT_LINKING_POLICY =
+            new ResourceReference<AccountLinkingPolicy>("accountLinkingPolicy", AccountLinkingPolicy.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account>                         ACCOUNTS               =
@@ -201,7 +197,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
-        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY, AUTHORIZED_CALLBACK_URIS, SAML_POLICY);
+        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY, AUTHORIZED_CALLBACK_URIS, SAML_POLICY, ACCOUNT_LINKING_POLICY);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
@@ -859,5 +855,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     /* @since 1.0.RC8.2 */
     public IdSiteAuthenticator createIdSiteAuthenticator(){
         return new DefaultIdSiteAuthenticator(this, getDataStore());
+    }
+
+    /* @since 1.1.0 */
+    @Override
+    public AccountLinkingPolicy getAccountLinkingPolicy() {
+        return getResourceProperty(ACCOUNT_LINKING_POLICY);
     }
 }

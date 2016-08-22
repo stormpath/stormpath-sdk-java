@@ -862,7 +862,7 @@ class AccountIT extends ClientIT {
      * Test for https://github.com/stormpath/stormpath-sdk-java/issues/154
      * @since 1.0.RC4
      */
-    @Test
+    @Test(enabled = false)
     public void testGetApplications() {
 
         def app = createTempApp()

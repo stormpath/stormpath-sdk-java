@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.organization;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountLinkingPolicy;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.directory.AccountStore;
@@ -65,6 +66,9 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
             new ResourceReference<OrganizationAccountStoreMapping>("defaultAccountStoreMapping", OrganizationAccountStoreMapping.class);
     static final ResourceReference<OrganizationAccountStoreMapping> DEFAULT_GROUP_STORE_MAPPING   =
             new ResourceReference<OrganizationAccountStoreMapping>("defaultGroupStoreMapping", OrganizationAccountStoreMapping.class);
+    static final ResourceReference<AccountLinkingPolicy> ACCOUNT_LINKING_POLICY =
+            new ResourceReference<AccountLinkingPolicy>("accountLinkingPolicy", AccountLinkingPolicy.class);
+
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<OrganizationAccountStoreMappingList, OrganizationAccountStoreMapping> ACCOUNT_STORE_MAPPINGS =
@@ -74,7 +78,7 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
 
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, NAME_KEY, STATUS, TENANT, CUSTOM_DATA, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNT_STORE_MAPPINGS);
+            NAME, DESCRIPTION, NAME_KEY, STATUS, TENANT, CUSTOM_DATA, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNT_STORE_MAPPINGS, ACCOUNT_LINKING_POLICY);
 
     public DefaultOrganization(InternalDataStore dataStore) {
         super(dataStore);
@@ -383,5 +387,11 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
             }
         }
         return foundGroup;
+    }
+
+    /* @since 1.1.0 */
+    @Override
+    public AccountLinkingPolicy getAccountLinkingPolicy() {
+        return getResourceProperty(ACCOUNT_LINKING_POLICY);
     }
 }

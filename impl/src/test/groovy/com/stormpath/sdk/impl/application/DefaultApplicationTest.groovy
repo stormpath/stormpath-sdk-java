@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.application
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
+import com.stormpath.sdk.account.AccountLinkingPolicy
 import com.stormpath.sdk.account.AccountList
 import com.stormpath.sdk.account.CreateAccountRequest
 import com.stormpath.sdk.account.PasswordResetToken
@@ -99,7 +100,7 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 14)
+        assertEquals( propertyDescriptors.size(), 15)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -118,6 +119,9 @@ class DefaultApplicationTest {
         //since 1.0.RC8
         assertTrue(propertyDescriptors.get("samlPolicy") instanceof ResourceReference && propertyDescriptors.get("samlPolicy").getType().equals(SamlPolicy))
         assertTrue(propertyDescriptors.get("authorizedCallbackUris") instanceof ListProperty)
+        //since 1.1.0
+        assertTrue(propertyDescriptors.get("accountLinkingPolicy") instanceof ResourceReference && propertyDescriptors.get("accountLinkingPolicy").getType().equals(AccountLinkingPolicy))
+
     }
 
     @Test

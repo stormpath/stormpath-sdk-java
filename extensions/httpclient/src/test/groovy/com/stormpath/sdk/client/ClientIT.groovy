@@ -27,9 +27,9 @@ import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.resource.Deletable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.testng.annotations.AfterTest
+import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeClass
-import org.testng.annotations.BeforeTest
+import org.testng.annotations.BeforeMethod
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 
@@ -47,12 +47,12 @@ abstract class ClientIT {
         client = buildClient();
     }
 
-    @BeforeTest
+    @BeforeMethod
     public void setUp() {
         resourcesToDelete = []
     }
 
-    @AfterTest
+    @AfterMethod
     public void tearDown() {
         def reversed = resourcesToDelete.reverse() //delete in opposite order (cleaner - children deleted before parents)
 
