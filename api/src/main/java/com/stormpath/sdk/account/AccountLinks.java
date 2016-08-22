@@ -4,8 +4,6 @@ import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
 
-import java.lang.reflect.Constructor;
-
 /**
  * Static utility/helper methods for working with {@link AccountLinks} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
@@ -32,10 +30,6 @@ import java.lang.reflect.Constructor;
  *
  */
 public final class AccountLinks {
-
-    @SuppressWarnings("unchecked")
-    private static final Class<CreateAccountLinkRequestBuilder> BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.account.DefaultCreateAccountLinkRequestBuilder");
 
     /**
      * Returns a new {@link AccountLinkOptions} instance, used to customize how one or more {@link AccountLink}s are retrieved.
@@ -104,21 +98,6 @@ public final class AccountLinks {
      */
     public static DateExpressionFactory createdAt(){
         return newDateExpressionFactory("createdAt");
-    }
-
-    /**
-     * Creates a new {@link com.stormpath.sdk.account.CreateAccountLinkRequestBuilder CreateAccountLinkRequestBuilder}
-     * instance reflecting the specified {@link AccountLink} instance.  The builder can be used to customize any
-     * creation request options as necessary.
-     *
-     * @param accountLink the accountLink to create a new record for within Stormpath
-     * @return a new {@link com.stormpath.sdk.account.CreateAccountLinkRequestBuilder CreateAccountLinkRequestBuilder}
-     *         instance reflecting the specified {@link AccountLink} instance.v
-     * @since @since 1.1.0
-     */
-    public static CreateAccountLinkRequestBuilder newCreateRequestFor(AccountLink accountLink) {
-        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, AccountLink.class);
-        return (CreateAccountLinkRequestBuilder) Classes.instantiate(ctor, accountLink);
     }
 
     private static DateExpressionFactory newDateExpressionFactory(String propName) {
