@@ -27,7 +27,7 @@ import com.stormpath.spring.security.provider.GroupPermissionResolver
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.testng.annotations.Test
@@ -38,7 +38,7 @@ import static org.testng.Assert.assertTrue
 /**
  * @since 1.0.RC5
  */
-@SpringApplicationConfiguration(classes = [BeanOverrideStormpathWebSecurityAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
+@SpringBootTest(classes = [BeanOverrideStormpathWebSecurityAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
 @WebAppConfiguration
 class BeanOverrideStormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 

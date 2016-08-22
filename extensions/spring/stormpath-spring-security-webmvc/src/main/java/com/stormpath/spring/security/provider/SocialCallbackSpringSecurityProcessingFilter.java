@@ -21,6 +21,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
+import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
@@ -72,16 +73,16 @@ public class SocialCallbackSpringSecurityProcessingFilter extends HttpFilter imp
     protected String loginUri;
 
     @Autowired
-    protected GoogleCallbackController googleCallbackController;
+    protected Controller stormpathGoogleCallbackController;
 
     @Autowired
-    protected FacebookCallbackController facebookCallbackController;
+    protected Controller stormpathFacebookCallbackController;
 
     @Autowired
-    protected GithubCallbackController githubCallbackController;
+    protected Controller stormpathGithubCallbackController;
 
     @Autowired
-    protected LinkedinCallbackController linkedinCallbackController;
+    protected Controller stormpathLinkedinCallbackController;
 
     @Autowired
     @Qualifier("stormpathAuthenticationFailureHandler")
@@ -113,13 +114,13 @@ public class SocialCallbackSpringSecurityProcessingFilter extends HttpFilter imp
         ProviderAccountRequest providerAccountRequest = null;
         try {
             if (requestUri.equals(googleCallbackUri)) {
-                providerAccountRequest = googleCallbackController.getAccountProviderRequest(request);
+                providerAccountRequest = ((GoogleCallbackController)stormpathGoogleCallbackController).getAccountProviderRequest(request);
             } else if (requestUri.equals(facebookCallbackUri)) {
-                providerAccountRequest = facebookCallbackController.getAccountProviderRequest(request);
+                providerAccountRequest = ((FacebookCallbackController)stormpathFacebookCallbackController).getAccountProviderRequest(request);
             } else if (requestUri.equals(githubCallbackUri)) {
-                providerAccountRequest = githubCallbackController.getAccountProviderRequest(request);
+                providerAccountRequest = ((GithubCallbackController)stormpathGithubCallbackController).getAccountProviderRequest(request);
             } else if (requestUri.equals(linkedinCallbackUri)) {
-                providerAccountRequest = linkedinCallbackController.getAccountProviderRequest(request);
+                providerAccountRequest = ((LinkedinCallbackController)stormpathLinkedinCallbackController).getAccountProviderRequest(request);
             }
         } catch (Exception e) {
             logger.error("Exception handling social callback request", e);
