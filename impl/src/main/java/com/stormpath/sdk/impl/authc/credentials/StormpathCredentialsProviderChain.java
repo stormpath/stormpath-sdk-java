@@ -30,21 +30,16 @@ public abstract class StormpathCredentialsProviderChain implements StormpathCred
     @Override
     public StormpathCredentials getStormpathCredentials() {
 
-        StormpathCredentials stormpathCredentials = null;
-
         for (StormpathCredentialsProvider stormpathCredentialsProvider : stormpathCredentialsProviders) {
             try {
-                stormpathCredentials = stormpathCredentialsProvider.getStormpathCredentials();
+                return stormpathCredentialsProvider.getStormpathCredentials();
             } catch (Throwable throwable) {
                 log.debug("Unable to load credentials from " + stormpathCredentialsProvider.toString() +
                         ": " + throwable.getMessage());
             }
         }
 
-        if (stormpathCredentials == null) {
-            throw new IllegalStateException("Unable to load credentials from any provider in the chain.");
-        }
+        throw new IllegalStateException("Unable to load credentials from any provider in the chain.");
 
-        return stormpathCredentials;
     }
 }

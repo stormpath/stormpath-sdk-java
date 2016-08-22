@@ -16,8 +16,7 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeys;
-import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.authc.StormpathCredentialsProvider;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
@@ -27,6 +26,8 @@ import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.impl.api.ApiKeyCredentials;
+import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.impl.authc.credentials.DefaultStormpathCredentialsProviderChain;
 import com.stormpath.sdk.impl.config.*;
 import com.stormpath.sdk.impl.io.ClasspathResource;
@@ -236,13 +237,6 @@ public class DefaultClientBuilder implements ClientBuilder {
     }
 
     @Override
-    public ClientBuilder setStormpathCredentialsProvider(StormpathCredentialsProvider stormpathCredentialsProvider) {
-        Assert.notNull(stormpathCredentialsProvider, "stormpathCredentialsProvider argument cannot be null");
-        this.clientConfig.setStormpathCredentialsProvider(stormpathCredentialsProvider);
-        return this;
-    }
-
-    @Override
     public Client build() {
         if (!this.clientConfig.isCacheManagerEnabled()) {
             log.debug("CacheManager disabled. Defaulting to DisabledCacheManager");
@@ -271,13 +265,16 @@ public class DefaultClientBuilder implements ClientBuilder {
                     this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
-        ApiKeys.builder().build();
+        StormpathCredentials stormpathCredentials;
 
-        StormpathCredentialsProvider stormpathCredentialsProvider = this.clientConfig.getStormpathCredentialsProvider() != null
-                ? this.clientConfig.getStormpathCredentialsProvider()
-                : new DefaultStormpathCredentialsProviderChain(clientConfig);
+        if (this.apiKey != null) {
+            stormpathCredentials = new ApiKeyCredentials(this.apiKey);
+        } else {
+            StormpathCredentialsProvider stormpathCredentialsProvider = new DefaultStormpathCredentialsProviderChain(clientConfig);
+            stormpathCredentials = stormpathCredentialsProvider.getStormpathCredentials();
+        }
 
-        return new DefaultClient(stormpathCredentialsProvider.getStormpathCredentials(), this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
+        return new DefaultClient(stormpathCredentials, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
                 this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout());
     }
 

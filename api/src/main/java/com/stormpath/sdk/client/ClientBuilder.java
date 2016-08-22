@@ -353,9 +353,6 @@ public interface ClientBuilder {
 
     ClientBuilder setRequestAuthenticatorFactory(Object factory);
 
-    ClientBuilder setStormpathCredentialsProvider(StormpathCredentialsProvider stormpathCredentialsProvider);
-
-
     /**
      * Constructs a new {@link Client} instance based on the ClientBuilder's current configuration state.
      *

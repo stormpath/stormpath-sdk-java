@@ -11,7 +11,6 @@ import com.stormpath.sdk.impl.api.ApiKeyCredentials;
 import com.stormpath.sdk.impl.api.ClientApiKey;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.io.ResourceFactory;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 
 import java.io.*;
@@ -27,36 +26,19 @@ public abstract class AbstractApiKeyCredentialsProvider implements StormpathCred
 
     private ResourceFactory resourceFactory = new DefaultResourceFactory();
 
-    protected final String idPropertyName;
-    protected final String secretPropertyName;
-
-
-    public AbstractApiKeyCredentialsProvider(){
-        this(DEFAULT_ID_PROPERTY_NAME, DEFAULT_SECRET_PROPERTY_NAME);
-    }
-
-    public AbstractApiKeyCredentialsProvider(String idPropertyName, String secretPropertyName) {
-        this.idPropertyName = idPropertyName != null && !idPropertyName.isEmpty()
-                ? idPropertyName
-                : DEFAULT_ID_PROPERTY_NAME;
-        this.secretPropertyName = secretPropertyName != null && !secretPropertyName.isEmpty()
-                ? secretPropertyName
-                : DEFAULT_SECRET_PROPERTY_NAME;
-    }
-
-    protected abstract Properties loadProperties();
-
     public StormpathCredentials getStormpathCredentials() {
 
         Properties props = loadProperties();
 
-        String id = getPropertyValue(props, this.idPropertyName);
-        String secret = getPropertyValue(props, this.secretPropertyName);
+        String id = getPropertyValue(props, DEFAULT_ID_PROPERTY_NAME);
+        String secret = getPropertyValue(props, DEFAULT_SECRET_PROPERTY_NAME);
 
         ApiKey apiKey = createApiKey(id, secret);
 
         return new ApiKeyCredentials(apiKey);
     }
+
+    protected abstract Properties loadProperties();
 
     protected ApiKey createApiKey(String id, String secret) {
 
@@ -118,6 +100,5 @@ public abstract class AbstractApiKeyCredentialsProvider implements StormpathCred
         }
         return value;
     }
-
 
 }

@@ -29,7 +29,7 @@
     <artifactId>stormpath-sdk-examples-spring-boot-web-angular</artifactId>
     <version>1.0.4-SNAPSHOT</version>
 
-    <name>Stormpath Java SDK :: Examples :: Spring Boot + Angualr Webapp</name>
+    <name>Stormpath Java SDK :: Examples :: Spring Boot + Angular Webapp</name>
     <description>A Spring Boot web application that uses Stormpath.</description>
 
     <properties>

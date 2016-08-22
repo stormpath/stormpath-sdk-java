@@ -30,7 +30,6 @@ public class ClientConfiguration {
     private int connectionTimeout;
     private AuthenticationScheme authenticationScheme;
     private RequestAuthenticatorFactory requestAuthenticatorFactory;
-    private StormpathCredentialsProvider stormpathCredentialsProvider;
     private int proxyPort;
     private String proxyHost;
     private String proxyUsername;
@@ -179,14 +178,6 @@ public class ClientConfiguration {
 
     public void setProxyUsername(String proxyUsername) {
         this.proxyUsername = proxyUsername;
-    }
-
-    public StormpathCredentialsProvider getStormpathCredentialsProvider() {
-        return stormpathCredentialsProvider;
-    }
-
-    public void setStormpathCredentialsProvider(StormpathCredentialsProvider stormpathCredentialsProvider) {
-        this.stormpathCredentialsProvider = stormpathCredentialsProvider;
     }
 
     @Override
