@@ -19,10 +19,9 @@ This part of the documentation will show you how to get started right away.  If 
    quickstart
    tutorial
    config
-   authentication
-   authorization
    registration
    login
+   authorization
    forgot-password
    logout
    http-request-authentication
