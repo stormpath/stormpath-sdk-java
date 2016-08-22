@@ -171,4 +171,9 @@ public interface Config extends Map<String, String> {
 
     Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver();
 
+    /**
+     * @since 1.0.3
+     */
+    Resolver<String> getGithubAccessTokenResolver();
+
 }

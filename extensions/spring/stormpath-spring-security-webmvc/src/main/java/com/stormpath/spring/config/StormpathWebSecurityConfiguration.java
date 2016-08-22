@@ -18,8 +18,10 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -84,6 +86,18 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     @Override
     public OAuthAuthenticationSpringSecurityProcessingFilter oAuthAuthenticationProcessingFilter() {
         return super.oAuthAuthenticationProcessingFilter();
+    }
+
+    @Bean
+    @Override
+    public SocialCallbackSpringSecurityProcessingFilter socialCallbackSpringSecurityProcessingFilter() {
+        return super.socialCallbackSpringSecurityProcessingFilter();
+    }
+
+    @Bean
+    @Override
+    public ContentNegotiationSpringSecurityAuthenticationFilter contentNegotiationSpringSecurityAuthenticationFilter() {
+        return super.contentNegotiationSpringSecurityAuthenticationFilter();
     }
 
     @Bean

@@ -15,12 +15,18 @@
  */
 package com.stormpath.sdk.servlet.config.filter;
 
+import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
 
 /**
  * @since 1.0.0
  */
 public class GithubCallbackFilterFactory extends SocialCallbackControllerFilterFactory<GithubCallbackController> {
+
+    @Override
+    protected final void configure(GithubCallbackController c, Config config) throws Exception {
+        c.setGithubAccessTokenResolver(config.getGithubAccessTokenResolver());
+    }
 
     @Override
     protected GithubCallbackController newController() {

@@ -23,10 +23,11 @@ import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
-import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
+import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
 import com.stormpath.spring.filter.LoginHandlerFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
 
     @Autowired
     OAuthAuthenticationSpringSecurityProcessingFilter oauthAuthenticationSpringSecurityProcessingFilter;
+
+    @Autowired
+    SocialCallbackSpringSecurityProcessingFilter socialCallbackSpringSecurityProcessingFilter;
+
+    @Autowired
+    ContentNegotiationSpringSecurityAuthenticationFilter contentNegotiationSpringSecurityAuthenticationFilter;
 
     @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
@@ -252,12 +259,14 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
             http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
 
+            http.addFilterBefore(socialCallbackSpringSecurityProcessingFilter, AnonymousAuthenticationFilter.class);
+
             // This filter replaces http.formLogin() so that we can properly handle content negotiation
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
-            http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            http.addFilterBefore(contentNegotiationSpringSecurityAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-            http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationAuthenticationFilter.class);
+            http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationSpringSecurityAuthenticationFilter.class);
         }
 
         if (idSiteEnabled && loginEnabled) {
@@ -376,25 +385,25 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         }
     }
 
-    // This sets up the Content Negotiation aware filter and replaces the calls to http.formLogin()
-    // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
-    private ContentNegotiationAuthenticationFilter setupContentNegotiationAuthenticationFilter() {
-        ContentNegotiationAuthenticationFilter filter = new ContentNegotiationAuthenticationFilter();
-
-        filter.setSupportedMediaTypes(MediaType.parseMediaTypes(produces));
-        filter.setAuthenticationManager(stormpathAuthenticationManager);
-        filter.setUsernameParameter("login");
-        filter.setPasswordParameter("password");
-        filter.setAuthenticationSuccessHandler(successHandler);
-        filter.setAuthenticationFailureHandler(failureHandler);
-
-        /**
-         * @since 1.0.3
-         */
-        filter.setProviderAccountRequestFactory(stormpathProviderAccountRequestFactory);
-
-        return filter;
-    }
+//    // This sets up the Content Negotiation aware filter and replaces the calls to http.formLogin()
+//    // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
+//    private ContentNegotiationAuthenticationFilter setupContentNegotiationAuthenticationFilter() {
+//        ContentNegotiationAuthenticationFilter filter = new ContentNegotiationAuthenticationFilter();
+//
+//        filter.setSupportedMediaTypes(MediaType.parseMediaTypes(produces));
+//        filter.setAuthenticationManager(stormpathAuthenticationManager);
+//        filter.setUsernameParameter("login");
+//        filter.setPasswordParameter("password");
+//        filter.setAuthenticationSuccessHandler(successHandler);
+//        filter.setAuthenticationFailureHandler(failureHandler);
+//
+//        /**
+//         * @since 1.0.3
+//         */
+//        filter.setProviderAccountRequestFactory(stormpathProviderAccountRequestFactory);
+//
+//        return filter;
+//    }
 
     // Creates the pre login handler filter with the user define handler
     private LoginHandlerFilter preLoginHandlerFilter() {

@@ -15,34 +15,13 @@
  */
 package com.stormpath.sdk.servlet.mvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
-import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.directory.AccountStoreVisitor;
-import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
-import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.impl.provider.DefaultGithubProvider;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
-import com.stormpath.sdk.servlet.http.MediaType;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED_OBJECT;
@@ -58,8 +37,8 @@ import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED
 public class DefaultProviderAccountRequestFactory implements ProviderAccountRequestFactory {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultProviderAccountRequestFactory.class);
-    private static final String GITHUB_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
-    private static final String GITHUB_ACCESS_TOKEN_FIELD = "access_token";
+
+    private final GithubAccessTokenResolver githubAccessTokenResolver = new GithubAccessTokenResolver();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -80,92 +59,37 @@ public class DefaultProviderAccountRequestFactory implements ProviderAccountRequ
         Map<String, String> providerData = (props != null) ? (Map<String, String>) props.get("providerData") : null;
         if (providerData != null) {
             String providerId = providerData.get("providerId");
-            String codeOrToken = (Strings.hasText(providerData.get("accessToken"))) ?
-                providerData.get("accessToken") : providerData.get("code");
-
-            return getProviderAccountRequest(request, providerId, codeOrToken);
-        }
-
-        log.debug("Provider data not found in request.");
-        return null;
-    }
-
-    @Override
-    public ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request, String providerId, String codeOrToken) {
-        if (Strings.hasText(providerId) && Strings.hasText(codeOrToken)) {
-            switch (providerId) {
-                case "facebook": {
-                    return Providers.FACEBOOK
-                        .account().setAccessToken(codeOrToken).build();
-                }
-                case "github": {
-                    return Providers.GITHUB
-                        .account().setAccessToken(exchangeGithubCodeForAccessToken(codeOrToken, request)).build();
-                }
-                case "google": {
-                    return Providers.GOOGLE
-                        .account().setCode(codeOrToken).build();
-                }
-                case "linkedin": {
-                    return Providers.LINKEDIN
-                        .account().setCode(codeOrToken).build();
-                }
-                default: {
-                    log.error("No provider configured for " + providerId);
-                    return null;
-                }
-            }
-        }
-        log.debug("providerId and/or token missing.");
-        return null;
-    }
-
-    /**
-     * This method is for exchanging a code for an access token with GitHub.
-     *
-     * @since 1.0.3
-     */
-    private String exchangeGithubCodeForAccessToken(String code, HttpServletRequest request) {
-        final DefaultGithubProvider[] githubProvider = new DefaultGithubProvider[1];
-
-        Application application = ApplicationResolver.INSTANCE.getApplication(request);
-        for (ApplicationAccountStoreMapping mapping : application.getAccountStoreMappings()) {
-            AccountStore accountStore = mapping.getAccountStore();
-
-            AccountStoreVisitor accountStoreVisitor = new AccountStoreVisitorAdapter() {
-                @Override
-                public void visit(Directory directory) {
-                    if ("github".equals(directory.getProvider().getProviderId())) {
-                        githubProvider[0] = (DefaultGithubProvider) directory.getProvider();
+            if (Strings.hasText(providerId)) {
+                switch (providerId) {
+                    case "facebook": {
+                        String accessToken = providerData.get("accessToken");
+                        return Providers.FACEBOOK
+                                .account().setAccessToken(accessToken).build();
+                    }
+                    case "github": {
+                        String accessToken = githubAccessTokenResolver.get(request, null);
+                        return Providers.GITHUB
+                                .account().setAccessToken(accessToken).build();
+                    }
+                    case "google": {
+                        String code = providerData.get("code");
+                        return Providers.GOOGLE
+                                .account().setCode(code).build();
+                    }
+                    case "linkedin": {
+                        String code = providerData.get("code");
+                        return Providers.LINKEDIN
+                                .account().setCode(code).build();
+                    }
+                    default: {
+                        log.error("No provider configured for " + providerId);
+                        return null;
                     }
                 }
-            };
-            accountStore.accept(accountStoreVisitor);
+            }
+            log.debug("providerId and/or token missing.");
         }
 
-        Assert.notNull(githubProvider[0], "githubProvider cannot be null.");
-
-        HttpClient client = HttpClientBuilder.create().build();
-
-        try {
-            HttpPost httpPost = new HttpPost(GITHUB_ACCESS_TOKEN_URL);
-            List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-            nvps.add(new BasicNameValuePair("code", code));
-            nvps.add(new BasicNameValuePair("client_id", githubProvider[0].getClientId()));
-            nvps.add(new BasicNameValuePair("client_secret", githubProvider[0].getClientSecret()));
-
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8.displayName()));
-            httpPost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
-
-            HttpResponse response = client.execute(httpPost);
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            //noinspection unchecked
-            Map<String, String> result = objectMapper.readValue(response.getEntity().getContent(), Map.class);
-            return result.get(GITHUB_ACCESS_TOKEN_FIELD);
-        } catch (Exception e) {
-            log.error("Couldn't exchange GitHub oAuth code for an access token", e);
-            throw new RuntimeException(e);
-        }
+        return null;
     }
 }

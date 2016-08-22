@@ -16,7 +16,10 @@
 package com.stormpath.sdk.servlet.mvc.provider;
 
 import com.stormpath.sdk.provider.ProviderAccountRequest;
+import com.stormpath.sdk.provider.Providers;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
+import com.stormpath.sdk.servlet.mvc.GithubAccessTokenResolver;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,9 +29,17 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class GithubCallbackController extends AbstractSocialCallbackController {
 
+    Resolver<String> githubAccessTokenResolver;
+
+    public void setGithubAccessTokenResolver(Resolver<String> githubAccessTokenResolver) {
+        this.githubAccessTokenResolver = githubAccessTokenResolver;
+    }
+
     @Override
-    protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
-        String code = ServletUtils.getCleanParam(request, "code");
-        return providerAccountRequestFactory.getProviderAccountRequest(request, "github", code);
+    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
+        return Providers.GITHUB
+                .account()
+                .setAccessToken(githubAccessTokenResolver.get(request, null))
+                .build();
     }
 }

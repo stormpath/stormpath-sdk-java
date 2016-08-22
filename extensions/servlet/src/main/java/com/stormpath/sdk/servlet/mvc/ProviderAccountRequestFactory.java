@@ -32,5 +32,4 @@ public interface ProviderAccountRequestFactory {
 
     ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request);
     ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request, Map<String, Object> props);
-    ProviderAccountRequest getProviderAccountRequest(HttpServletRequest request, String providerId, String codeOrToken);
 }

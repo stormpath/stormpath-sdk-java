@@ -112,6 +112,7 @@ public class DefaultConfig implements Config {
     public static final String ID_SITE_ENABLED = "stormpath.web.idSite.enabled";
     public static final String CALLBACK_ENABLED = "stormpath.web.callback.enabled";
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
+    public static final String GITHUB_ACCESS_TOKEN_RESOLVER = "stormpath.web.social.github.AccessTokenResolver";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -576,5 +577,10 @@ public class DefaultConfig implements Config {
     @Override
     public Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver() {
         return this.getRuntimeInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
+    }
+
+    @Override
+    public Resolver<String> getGithubAccessTokenResolver() {
+        return getRuntimeInstance("GITHUB_ACCESS_TOKEN_RESOLVER");
     }
 }
