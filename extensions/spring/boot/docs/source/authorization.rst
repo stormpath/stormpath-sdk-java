@@ -3,11 +3,8 @@
 Authorization
 ==============
 
-If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ you will obtain a seamless integration with Spring Security's authorization model.
-
-Besides the principal information, Stormpath also seamlessly populates `Spring Security's Granted Authorities <http://docs.spring.io/spring-security/site/docs/4.0.x/reference/html/technical-overview.html#tech-granted-authority>`_ for you. After an account has authenticated,
-you can perform standard Spring Security authority checks, like
-``antMatchers("/**").hasAuthority("SOME_ROLE")`` or ``@PreAuthorize("hasAuthority('SOME_PERMISSION')")``
+If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ you will obtain a seamless integration with Spring Security's authorization model. Besides the principal's information, Stormpath also populates `Spring Security's Granted Authorities <http://docs.spring.io/spring-security/site/docs/4.0.x/reference/html/technical-overview.html#tech-granted-authority>`_ for you. Once an authentication attempt is successful,
+you can perform standard Spring Security authority checks, like ``antMatchers("/**").hasAuthority("SOME_ROLE")`` or ``@PreAuthorize("hasAuthority('SOME_PERMISSION')")``
 
 Roles
 ~~~~~
