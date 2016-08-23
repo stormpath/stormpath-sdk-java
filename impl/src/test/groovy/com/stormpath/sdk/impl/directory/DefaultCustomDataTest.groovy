@@ -15,9 +15,8 @@
  */
 package com.stormpath.sdk.impl.directory
 
-import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.directory.CustomData
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.http.RequestExecutor

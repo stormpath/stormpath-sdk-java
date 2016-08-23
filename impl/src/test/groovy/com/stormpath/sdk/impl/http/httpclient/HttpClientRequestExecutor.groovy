@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.http.httpclient
 
 import com.stormpath.sdk.client.AuthenticationScheme
-import com.stormpath.sdk.authc.StormpathCredentials
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
 import com.stormpath.sdk.client.Proxy
 import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
@@ -39,7 +39,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         return null;
     }
 
-    public HttpClientRequestExecutor(StormpathCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
+    public HttpClientRequestExecutor(ClientCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
 
     }
 }

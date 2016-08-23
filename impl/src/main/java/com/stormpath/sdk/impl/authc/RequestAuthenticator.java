@@ -16,7 +16,6 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
-import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.impl.http.Request;
 
 /**

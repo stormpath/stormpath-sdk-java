@@ -1,13 +1,12 @@
 /*
  * Copyright (c) 2016 Stormpath, Inc.  All rights reserved.
  */
-package com.stormpath.sdk.impl.api;
+package com.stormpath.sdk.impl.authc.credentials;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.authc.StormpathCredentials;
 import com.stormpath.sdk.lang.Assert;
 
-public class ApiKeyCredentials implements StormpathCredentials {
+public class ApiKeyCredentials implements ClientCredentials {
 
     private ApiKey apiKey;
 

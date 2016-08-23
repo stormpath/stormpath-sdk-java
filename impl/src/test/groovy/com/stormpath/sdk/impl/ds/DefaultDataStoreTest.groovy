@@ -15,9 +15,8 @@
  */
 package com.stormpath.sdk.impl.ds
 
-import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.Caches
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.application.DefaultApplication
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response

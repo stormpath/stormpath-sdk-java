@@ -6,17 +6,17 @@ package com.stormpath.sdk.impl.authc.credentials;
 import com.stormpath.sdk.impl.config.ClientConfiguration;
 import com.stormpath.sdk.lang.Assert;
 
-public class DefaultStormpathCredentialsProviderChain extends StormpathCredentialsProviderChain {
+public class DefaultClientCredentialsProviderChain extends ClientCredentialsProviderChain {
 
-    public DefaultStormpathCredentialsProviderChain(ClientConfiguration clientConfiguration) {
+    public DefaultClientCredentialsProviderChain(ClientConfiguration clientConfiguration) {
         Assert.notNull(clientConfiguration, "clientConfiguration must not be null.");
 
-        addStormpathCredentialProviders(
+        addClientCredentialsProviders(
                 new ConfigurationCredentialsProvider(clientConfiguration),
                 new ApiKeyFileCredentialsProvider(clientConfiguration.getApiKeyFile()),
                 new SystemPropertiesApiKeyCredentialsProvider(),
                 new SystemPropertyFileCredentialsProvider(),
-                new EnvironmentVariablePropertiesCredentialsProvider(),
+                new EnvironmentVariableCredentialsProvider(),
                 new EnvironmentVariableFileCredentialsProvider(),
                 new ApiKeyFileCredentialsProvider()
         );

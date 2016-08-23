@@ -4,7 +4,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.http.HttpMethod
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.oauth.Authenticators

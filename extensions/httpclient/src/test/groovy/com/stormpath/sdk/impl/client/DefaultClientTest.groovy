@@ -31,7 +31,7 @@ import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.http.HttpMethod
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.ds.ResourceFactory
@@ -74,7 +74,7 @@ class DefaultClientTest {
 
         Client client = new DefaultClient(apiKeyCredentials, baseUrl, proxy, cacheManager, authcScheme, null, connectionTimeout)
 
-        assertEquals(client.dataStore.requestExecutor.stormpathCredentials, apiKeyCredentials)
+        assertEquals(client.dataStore.requestExecutor.clientCredentials, apiKeyCredentials)
         assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), connectionTimeout * 1000)
         assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), connectionTimeout * 1000)
 
@@ -91,9 +91,9 @@ class DefaultClientTest {
 
         try {
             new DefaultClient(null, baseUrl, proxy, cacheManager, authcScheme, null, 10000)
-            fail("Should have thrown due to null stormpathCredentials")
+            fail("Should have thrown due to null clientCredentials")
         } catch (IllegalArgumentException ex) {
-            assertEquals(ex.getMessage(), "stormpathCredentials argument cannot be null.")
+            assertEquals(ex.getMessage(), "clientCredentials argument cannot be null.")
         }
     }
 

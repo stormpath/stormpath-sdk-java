@@ -42,7 +42,7 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.cache.DefaultCacheManager

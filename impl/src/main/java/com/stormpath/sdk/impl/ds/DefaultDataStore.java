@@ -17,9 +17,9 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.authc.StormpathCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.http.HttpMethod;
-import com.stormpath.sdk.impl.api.ApiKeyCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.ds.api.ApiKeyQueryFilter;
 import com.stormpath.sdk.impl.ds.api.DecryptApiKeySecretFilter;
@@ -98,7 +98,7 @@ public class DefaultDataStore implements InternalDataStore {
     private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
 
     private final String baseUrl;
-    private final StormpathCredentials stormpathCredentials;
+    private final ClientCredentials clientCredentials;
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
@@ -125,14 +125,14 @@ public class DefaultDataStore implements InternalDataStore {
         this(requestExecutor, baseUrl, apiKeyCredentials, new DisabledCacheManager());
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, StormpathCredentials stormpathCredentials, CacheManager cacheManager) {
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
-        Assert.notNull(stormpathCredentials, "stormpathCredentials cannot be null.");
+        Assert.notNull(clientCredentials, "clientCredentials cannot be null.");
         Assert.notNull(cacheManager, "CacheManager cannot be null.  Use the DisabledCacheManager if you wish to turn off caching.");
         this.requestExecutor = requestExecutor;
         this.baseUrl = baseUrl;
-        this.stormpathCredentials = stormpathCredentials;
+        this.clientCredentials = clientCredentials;
         this.cacheManager = cacheManager;
         this.resourceFactory = new DefaultResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
@@ -146,8 +146,8 @@ public class DefaultDataStore implements InternalDataStore {
 
         this.filters.add(new EnlistmentFilter());
 
-        if(stormpathCredentials instanceof ApiKeyCredentials) {
-            this.filters.add(new DecryptApiKeySecretFilter((ApiKeyCredentials) stormpathCredentials));
+        if(clientCredentials instanceof ApiKeyCredentials) {
+            this.filters.add(new DecryptApiKeySecretFilter((ApiKeyCredentials) clientCredentials));
         }
 
         if (isCachingEnabled()) {
@@ -155,7 +155,7 @@ public class DefaultDataStore implements InternalDataStore {
             this.filters.add(new WriteCacheFilter(this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
         }
 
-        if(stormpathCredentials instanceof ApiKeyCredentials) {
+        if(clientCredentials instanceof ApiKeyCredentials) {
             this.filters.add(new ApiKeyQueryFilter(this.queryStringFactory));
         }
 
@@ -169,8 +169,8 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public ApiKey getApiKey() {
-        Assert.isInstanceOf(ApiKeyCredentials.class, this.stormpathCredentials);
-        return ((ApiKeyCredentials) this.stormpathCredentials).getApiKey();
+        Assert.isInstanceOf(ApiKeyCredentials.class, this.clientCredentials);
+        return ((ApiKeyCredentials) this.clientCredentials).getApiKey();
     }
 
     @Override

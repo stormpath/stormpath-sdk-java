@@ -16,8 +16,8 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.authc.StormpathCredentials;
-import com.stormpath.sdk.authc.StormpathCredentialsProvider;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentialsProvider;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
@@ -26,9 +26,9 @@ import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.impl.api.ApiKeyCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
-import com.stormpath.sdk.impl.authc.credentials.DefaultStormpathCredentialsProviderChain;
+import com.stormpath.sdk.impl.authc.credentials.DefaultClientCredentialsProviderChain;
 import com.stormpath.sdk.impl.config.*;
 import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
@@ -265,16 +265,16 @@ public class DefaultClientBuilder implements ClientBuilder {
                     this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
-        StormpathCredentials stormpathCredentials;
+        ClientCredentials clientCredentials;
 
         if (this.apiKey != null) {
-            stormpathCredentials = new ApiKeyCredentials(this.apiKey);
+            clientCredentials = new ApiKeyCredentials(this.apiKey);
         } else {
-            StormpathCredentialsProvider stormpathCredentialsProvider = new DefaultStormpathCredentialsProviderChain(clientConfig);
-            stormpathCredentials = stormpathCredentialsProvider.getStormpathCredentials();
+            ClientCredentialsProvider clientCredentialsProvider = new DefaultClientCredentialsProviderChain(clientConfig);
+            clientCredentials = clientCredentialsProvider.getClientCredentials();
         }
 
-        return new DefaultClient(stormpathCredentials, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
+        return new DefaultClient(clientCredentials, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
                 this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout());
     }
 

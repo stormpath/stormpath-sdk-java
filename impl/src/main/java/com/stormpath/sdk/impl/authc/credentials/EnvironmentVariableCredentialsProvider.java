@@ -7,7 +7,7 @@ import com.stormpath.sdk.lang.Strings;
 
 import java.util.Properties;
 
-public class EnvironmentVariablePropertiesCredentialsProvider extends AbstractApiKeyCredentialsProvider {
+public class EnvironmentVariableCredentialsProvider extends AbstractApiKeyCredentialsProvider {
 
     private static final String API_KEY_ID_ENVIRONMENT_VARIABLE = "STORMPATH_API_KEY_ID";
     private static final String API_KEY_SECRET_ENVIRONMENT_VARIABLE = "STORMPATH_API_KEY_SECRET";

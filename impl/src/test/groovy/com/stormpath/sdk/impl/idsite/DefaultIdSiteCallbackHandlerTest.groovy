@@ -31,7 +31,7 @@ import com.stormpath.sdk.idsite.InvalidIDSiteTokenException
 import com.stormpath.sdk.idsite.LogoutResult
 import com.stormpath.sdk.idsite.NonceStore
 import com.stormpath.sdk.idsite.RegistrationResult
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.ds.cache.CacheResolver

@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
-import com.stormpath.sdk.authc.StormpathCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.impl.authc.RequestAuthenticator;
 import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
@@ -41,17 +41,17 @@ public class DefaultRequestAuthenticatorFactory implements RequestAuthenticatorF
      * the authentication scheme is undefined.
      */
     @SuppressWarnings("unchecked")
-    public RequestAuthenticator create(AuthenticationScheme scheme, StormpathCredentials stormpathCredentials) {
+    public RequestAuthenticator create(AuthenticationScheme scheme, ClientCredentials clientCredentials) {
 
         if (scheme == null) {
             //By default, this factory creates a digest authentication when a scheme is not defined
-            return new SAuthc1RequestAuthenticator(stormpathCredentials);
+            return new SAuthc1RequestAuthenticator(clientCredentials);
         }
 
         try {
             Class requestAuthenticatorClass = Classes.forName(scheme.getRequestAuthenticatorClassName());
-            Constructor<RequestAuthenticator> ctor = Classes.getConstructor(requestAuthenticatorClass, StormpathCredentials.class);
-            return Classes.instantiate(ctor, stormpathCredentials);
+            Constructor<RequestAuthenticator> ctor = Classes.getConstructor(requestAuthenticatorClass, ClientCredentials.class);
+            return Classes.instantiate(ctor, clientCredentials);
         } catch (RuntimeException ex) {
             throw new RequestAuthenticationException("There was an error instantiating " + scheme.getRequestAuthenticatorClassName());
         }

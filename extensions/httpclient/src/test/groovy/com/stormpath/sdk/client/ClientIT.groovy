@@ -22,7 +22,7 @@ import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.resource.Deletable

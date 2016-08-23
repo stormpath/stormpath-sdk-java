@@ -5,9 +5,6 @@ package com.stormpath.sdk.impl.authc.credentials;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
-import com.stormpath.sdk.authc.StormpathCredentials;
-import com.stormpath.sdk.authc.StormpathCredentialsProvider;
-import com.stormpath.sdk.impl.api.ApiKeyCredentials;
 import com.stormpath.sdk.impl.api.ClientApiKey;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.io.ResourceFactory;
@@ -16,7 +13,7 @@ import com.stormpath.sdk.lang.Strings;
 import java.io.*;
 import java.util.Properties;
 
-public abstract class AbstractApiKeyCredentialsProvider implements StormpathCredentialsProvider {
+public abstract class AbstractApiKeyCredentialsProvider implements ClientCredentialsProvider {
 
     public static final String DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION =
             System.getProperty("user.home") + File.separatorChar + ".stormpath" + File.separatorChar + "apiKey.properties";
@@ -26,7 +23,7 @@ public abstract class AbstractApiKeyCredentialsProvider implements StormpathCred
 
     private ResourceFactory resourceFactory = new DefaultResourceFactory();
 
-    public StormpathCredentials getStormpathCredentials() {
+    public ClientCredentials getClientCredentials() {
 
         Properties props = loadProperties();
 

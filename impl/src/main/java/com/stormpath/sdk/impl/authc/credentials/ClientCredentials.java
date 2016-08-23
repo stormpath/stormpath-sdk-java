@@ -1,10 +1,10 @@
-package com.stormpath.sdk.authc;
+package com.stormpath.sdk.impl.authc.credentials;
 
 /**
  * Credentials to be used when authenticating requests to the Stormpath API server.
- * @since 1.0.3
+ * @since 1.0.4
  */
-public interface StormpathCredentials {
+public interface ClientCredentials {
     /**
      * Returns the ID that uniquely identifies these Client Credentials among all others.
      *

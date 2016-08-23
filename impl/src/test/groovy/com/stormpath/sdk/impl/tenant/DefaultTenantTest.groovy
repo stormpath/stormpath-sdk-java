@@ -26,7 +26,7 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.http.HttpMethod
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore

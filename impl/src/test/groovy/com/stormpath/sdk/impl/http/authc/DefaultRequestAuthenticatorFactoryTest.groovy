@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.http.authc
 
 import com.stormpath.sdk.client.AuthenticationScheme
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field

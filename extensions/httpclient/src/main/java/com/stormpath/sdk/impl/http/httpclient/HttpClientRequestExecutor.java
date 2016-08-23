@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.http.httpclient;
 
 import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.authc.StormpathCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
@@ -91,7 +91,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private int numRetries = DEFAULT_MAX_RETRIES;
 
-    private final StormpathCredentials stormpathCredentials;
+    private final ClientCredentials clientCredentials;
 
     private final RequestAuthenticator requestAuthenticator;
 
@@ -139,22 +139,22 @@ public class HttpClientRequestExecutor implements RequestExecutor {
     /**
      * Creates a new {@code HttpClientRequestExecutor} using the specified {@code ApiKey} and optional {@code Proxy}
      * configuration.
-     * @param stormpathCredentials the Stormpath account API Key that will be used to authenticate the client with Stormpath's API sever
+     * @param clientCredentials the Stormpath account API Key that will be used to authenticate the client with Stormpath's API sever
      * @param proxy the HTTP proxy to be used when communicating with the Stormpath API server (can be null)
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API server.
      *                             If null, then Sauthc1 will be used.
      */
-    public HttpClientRequestExecutor(StormpathCredentials stormpathCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
-        Assert.notNull(stormpathCredentials, "stormpathCredentials argument is required.");
+    public HttpClientRequestExecutor(ClientCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
+        Assert.notNull(clientCredentials, "clientCredentials argument is required.");
         Assert.isTrue(connectionTimeout >= 0, "Timeout cannot be a negative number.");
 
-        this.stormpathCredentials = stormpathCredentials;
+        this.clientCredentials = clientCredentials;
 
         this.requestAuthenticatorFactory = (requestAuthenticatorFactory != null)
                 ? requestAuthenticatorFactory
                 : new DefaultRequestAuthenticatorFactory();
 
-        this.requestAuthenticator = this.requestAuthenticatorFactory.create(authenticationScheme, stormpathCredentials);
+        this.requestAuthenticator = this.requestAuthenticatorFactory.create(authenticationScheme, clientCredentials);
 
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 

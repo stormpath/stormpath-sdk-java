@@ -18,9 +18,9 @@ package com.stormpath.sdk.impl.client
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Proxy
-import com.stormpath.sdk.authc.StormpathCredentials
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
 import com.stormpath.sdk.ds.DataStore
-import com.stormpath.sdk.impl.api.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
@@ -45,7 +45,7 @@ public class RequestCountingClient extends DefaultClient {
     }
 
     @Override
-    protected DataStore createDataStore(final RequestExecutor requestExecutor, String baseUrl, StormpathCredentials clientCredentials, CacheManager cacheManager) {
+    protected DataStore createDataStore(final RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
 
         RequestExecutor countingExecutor = new RequestExecutor() {
             @Override

@@ -16,7 +16,6 @@
 package com.stormpath.sdk.client;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.authc.StormpathCredentialsProvider;
 import com.stormpath.sdk.cache.CacheManager;
 
 /**
@@ -351,6 +350,12 @@ public interface ClientBuilder {
      */
     ClientBuilder setBaseUrl(String baseUrl);
 
+    /**
+     * Sets the request authentication factory for the client to use. It is not recommended to use this setting.
+     * @param factory the request authenticator factory to use.
+     * @return the ClientBuilder instance for method chaining
+     * @since 1.0.4
+     */
     ClientBuilder setRequestAuthenticatorFactory(Object factory);
 
     /**
