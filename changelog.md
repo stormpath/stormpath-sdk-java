@@ -39,6 +39,7 @@ Additionally, the following dependency and code updates are included in this rel
 * upgraded all external dependencies to latest versions, including Spring Boot 1.4.0
 * Significant Spring Security performance improvements
 * Internationalization (i18n) support / improvements
+* A number of default properties have been added, changed or removed in conformance with the [sdk spec](https://github.com/stormpath/stormpath-sdk-spec) and the [framework spec](https://github.com/stormpath/stormpath-framework-spec). Details can be found in the [Changes and Additions Guide](https://github.com/stormpath/stormpath-sdk-java/wiki/1.0-Configuration-Changes-&-Additions-Guide).
 
 Notes:
 
