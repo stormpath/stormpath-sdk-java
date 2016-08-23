@@ -15,7 +15,7 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
-import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.RequestUtils;
@@ -64,11 +64,11 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
     private static final Logger log = LoggerFactory.getLogger(SAuthc1RequestAuthenticator.class);
 
-    private final ClientCredentials clientCredentials;
+    private final ApiKeyCredentials apiKeyCredentials;
 
-    public SAuthc1RequestAuthenticator(ClientCredentials clientCredentials) {
-        Assert.notNull(clientCredentials, "clientCredentials must not be null.");
-        this.clientCredentials = clientCredentials;
+    public SAuthc1RequestAuthenticator(ApiKeyCredentials apiKeyCredentials) {
+        Assert.notNull(apiKeyCredentials, "apiKeyCredentials must not be null.");
+        this.apiKeyCredentials = apiKeyCredentials;
     }
 
     @Override
@@ -117,7 +117,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
         log.debug("{} Canonical Request: {}", AUTHENTICATION_SCHEME, canonicalRequest);
 
-        String id = clientCredentials.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
+        String id = apiKeyCredentials.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
 
         String canonicalRequestHashHex = toHex(hash(canonicalRequest));
 
@@ -130,7 +130,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
         log.debug("{} String to Sign: {}", AUTHENTICATION_SCHEME, stringToSign);
 
         // SAuthc1 uses a series of derived keys, formed by hashing different pieces of data
-        byte[] kSecret = toUtf8Bytes(AUTHENTICATION_SCHEME + clientCredentials.getSecret());
+        byte[] kSecret = toUtf8Bytes(AUTHENTICATION_SCHEME + apiKeyCredentials.getSecret());
         byte[] kDate = sign(dateStamp, kSecret, MacAlgorithm.HmacSHA256);
         byte[] kNonce = sign(nonce, kDate, MacAlgorithm.HmacSHA256);
         byte[] kSigning = sign(ID_TERMINATOR, kNonce, MacAlgorithm.HmacSHA256);
