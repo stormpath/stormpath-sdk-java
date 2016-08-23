@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LinkedinCallbackController extends AbstractSocialCallbackController {
 
     @Override
-    protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
+    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
         String code = ServletUtils.getCleanParam(request, "code");
         return Providers.LINKEDIN.account().setCode(code).build();
     }

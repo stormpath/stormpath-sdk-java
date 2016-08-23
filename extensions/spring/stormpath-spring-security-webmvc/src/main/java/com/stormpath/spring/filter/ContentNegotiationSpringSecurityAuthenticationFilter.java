@@ -17,10 +17,10 @@ package com.stormpath.spring.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
@@ -28,6 +28,7 @@ import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,20 +43,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED_OBJECT;
+
 /**
  * @since 1.0.0
  */
-public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class ContentNegotiationSpringSecurityAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(ContentNegotiationAuthenticationFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(ContentNegotiationSpringSecurityAuthenticationFilter.class);
 
     private boolean postOnly = true;
     private List<MediaType> supportedMediaTypes;
     private ProviderAccountRequestFactory providerAccountRequestFactory;
 
+    @Autowired
+    protected Application application;
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        if (postOnly && !request.getMethod().equals("POST")) {
+        if (postOnly && !request.getMethod().equals("POST") && !request.getRequestURI().contains("/callbacks/")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
 
@@ -94,13 +100,12 @@ public class ContentNegotiationAuthenticationFilter extends UsernamePasswordAuth
         }
 
         // check to see if it's a Provider auth request
-        ProviderAccountRequest accountRequest =
-            providerAccountRequestFactory.getProviderAccountRequest(request, loginProps);
+        // setup the request with the providerData
+        request.setAttribute(MARSHALLED_OBJECT, loginProps);
+        ProviderAccountRequest accountRequest = providerAccountRequestFactory.getProviderAccountRequest(request);
 
         try {
-            ProviderAccountResult result = ApplicationResolver.INSTANCE
-                .getApplication(request)
-                .getAccount(accountRequest);
+            ProviderAccountResult result = application.getAccount(accountRequest);
             Account account = result.getAccount();
             return getAuthenticationManager().authenticate(new ProviderAuthenticationToken(account));
         } catch (ResourceException | IllegalArgumentException e) {

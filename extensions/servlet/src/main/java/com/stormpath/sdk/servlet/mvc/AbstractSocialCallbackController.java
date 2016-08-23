@@ -53,7 +53,7 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
         return true;
     }
 
-    protected abstract ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request);
+    public abstract ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request);
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {

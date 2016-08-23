@@ -21,8 +21,10 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
+import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -114,8 +116,23 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     @Bean
     @ConditionalOnMissingBean(name="oAuthAuthenticationProcessingFilter")
+    @Override
     public OAuthAuthenticationSpringSecurityProcessingFilter oAuthAuthenticationProcessingFilter() {
         return super.oAuthAuthenticationProcessingFilter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="socialCallbackSpringSecurityProcessingFilter")
+    @Override
+    public SocialCallbackSpringSecurityProcessingFilter socialCallbackSpringSecurityProcessingFilter() {
+        return super.socialCallbackSpringSecurityProcessingFilter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name="contentNegotiationSpringSecurityAuthenticationFilter")
+    @Override
+    public ContentNegotiationSpringSecurityAuthenticationFilter contentNegotiationSpringSecurityAuthenticationFilter() {
+        return super.contentNegotiationSpringSecurityAuthenticationFilter();
     }
 
     @Bean

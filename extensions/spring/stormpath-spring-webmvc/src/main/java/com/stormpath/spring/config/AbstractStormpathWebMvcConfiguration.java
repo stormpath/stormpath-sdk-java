@@ -104,6 +104,7 @@ import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.AbstractController;
 import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
+import com.stormpath.sdk.servlet.mvc.GithubAccessTokenResolver;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
@@ -620,7 +621,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathGithubCallbackController() {
-        return configure(new GithubCallbackController());
+        GithubCallbackController githubCallbackController = new GithubCallbackController();
+        githubCallbackController.setGithubAccessTokenResolver(new GithubAccessTokenResolver());
+        return configure(githubCallbackController);
     }
 
     public Controller stormpathFacebookCallbackController() {
