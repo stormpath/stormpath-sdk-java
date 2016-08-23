@@ -13,10 +13,11 @@ import java.util.Map;
 public class DefaultOAuthStormpathSocialGrantAuthenticationAttempt extends AbstractResource implements OAuthStormpathSocialGrantAuthenticationAttempt {
 
     static final StringProperty GRANT_TYPE = new StringProperty("grant_type");
-    static final StringProperty API_KEY_ID = new StringProperty("apiKeyId");
-    static final StringProperty API_KEY_SECRET = new StringProperty("apiKeySecret");
+    static final StringProperty PROVIDER_ID = new StringProperty("providerId");
+    static final StringProperty ACCESS_TOKEN = new StringProperty("accessToken");
+    static final StringProperty CODE = new StringProperty("code");
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(GRANT_TYPE, API_KEY_ID, API_KEY_SECRET);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(GRANT_TYPE, PROVIDER_ID, ACCESS_TOKEN, CODE);
 
     public DefaultOAuthStormpathSocialGrantAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -32,25 +33,34 @@ public class DefaultOAuthStormpathSocialGrantAuthenticationAttempt extends Abstr
     }
 
     @Override
-    public void setApiKeyId(String apiKeyId) {
-        setProperty(API_KEY_ID, apiKeyId);
+    public void setProviderId(String providerId) {
+        setProperty(PROVIDER_ID, providerId);
     }
 
     @Override
-    public void setApiKeySecret(String apiKeySecret) {
-        setProperty(API_KEY_SECRET, apiKeySecret);
+    public void setAccessToken(String accessToken) {
+        setProperty(ACCESS_TOKEN, accessToken);
+    }
+
+    @Override
+    public void setCode(String code) {
+        setProperty(CODE, code);
     }
 
     public String getGrantType() {
         return getString(GRANT_TYPE);
     }
 
-    public String getApiKeyId() {
-        return getString(API_KEY_ID);
+    public String getProviderId() {
+        return getString(PROVIDER_ID);
     }
 
-    public String getApiKeySecret() {
-        return getString(API_KEY_SECRET);
+    public String getAccessToken() {
+        return getString(ACCESS_TOKEN);
+    }
+
+    public String getCode() {
+        return getString(CODE);
     }
 
     @Override

@@ -20,10 +20,11 @@ class DefaultCreateOAuthStormpathSocialGrantAuthenticationAttemptTest {
 
         def propertyDescriptors = defaultCreateGrantAuthAttempt.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 3)
+        assertEquals(propertyDescriptors.size(), 4)
 
-        assertTrue(propertyDescriptors.get("apiKeyId") instanceof StringProperty)
-        assertTrue(propertyDescriptors.get("apiKeySecret") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("providerId") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("accessToken") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("code") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("grant_type") instanceof StringProperty)
     }
 
@@ -31,8 +32,8 @@ class DefaultCreateOAuthStormpathSocialGrantAuthenticationAttemptTest {
     void testAuthentication() {
 
         def properties = [
-                apiKeyId    : "XXXYYY",
-                apiKeySecret: "VVVNNN",
+                providerId  : "facebook",
+                accessToken : "VVVNNN",
                 grant_type  : "stormpath_social"
         ]
 
@@ -40,8 +41,8 @@ class DefaultCreateOAuthStormpathSocialGrantAuthenticationAttemptTest {
 
         def attempt = new DefaultOAuthStormpathSocialGrantAuthenticationAttempt(internalDataStore, properties)
 
-        assertEquals(attempt.getApiKeyId(), properties.apiKeyId)
-        assertEquals(attempt.getApiKeySecret(), properties.apiKeySecret)
+        assertEquals(attempt.getProviderId(), properties.providerId)
+        assertEquals(attempt.getAccessToken(), properties.accessToken)
         assertEquals(attempt.getGrantType(), properties.grant_type)
     }
 }

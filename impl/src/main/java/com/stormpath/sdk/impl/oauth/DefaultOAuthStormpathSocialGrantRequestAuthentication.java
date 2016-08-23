@@ -9,25 +9,37 @@ import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthentication;
 public class DefaultOAuthStormpathSocialGrantRequestAuthentication implements OAuthStormpathSocialGrantRequestAuthentication {
     private final static String grant_type = "stormpath_social";
 
-    private String apiKeyId;
-    private String apiKeySecret;
+    private String providerId;
+    private String accessToken;
+    private String code;
 
-    public DefaultOAuthStormpathSocialGrantRequestAuthentication(String apiKeyId, String apiKeySecret) {
-        Assert.hasText(apiKeyId, "apiKeyId cannot be null or empty.");
-        Assert.hasText(apiKeySecret, "apiKeySecret cannot be null or empty.");
+    public DefaultOAuthStormpathSocialGrantRequestAuthentication(String providerId, String accessToken, String code) {
+        Assert.hasText(providerId, "providerId cannot be null or empty.");
+        if (code == null) {
+            Assert.hasText(accessToken, "accessToken cannot be null or empty.");
+        }
+        if (accessToken == null) {
+            Assert.hasText(code, "code cannot be null or empty.");
+        }
 
-        this.apiKeyId = apiKeyId;
-        this.apiKeySecret = apiKeySecret;
+        this.providerId = providerId;
+        this.accessToken = accessToken;
+        this.code = code;
     }
 
     @Override
-    public String getApiKeyId() {
-        return apiKeyId;
+    public String getProviderId() {
+        return providerId;
     }
 
     @Override
-    public String getApiKeySecret() {
-        return apiKeySecret;
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    @Override
+    public String getCode() {
+        return code;
     }
 
     @Override

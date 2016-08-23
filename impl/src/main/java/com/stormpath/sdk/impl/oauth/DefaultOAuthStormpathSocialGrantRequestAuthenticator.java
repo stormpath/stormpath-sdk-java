@@ -26,17 +26,23 @@ public class DefaultOAuthStormpathSocialGrantRequestAuthenticator extends Abstra
     public OAuthGrantRequestAuthenticationResult authenticate(OAuthRequestAuthentication authenticationRequest) {
         Assert.notNull(this.application, "application cannot be null or empty");
         Assert.isInstanceOf(OAuthStormpathSocialGrantRequestAuthentication.class, authenticationRequest, "authenticationRequest must be an instance of OAuthStormpathSocialGrantRequestAuthentication.");
-        OAuthStormpathSocialGrantRequestAuthentication oAuthStormpathSocialGrantRequestAuthentication = (OAuthStormpathSocialGrantRequestAuthentication) authenticationRequest;
+        OAuthStormpathSocialGrantRequestAuthentication authentication = (OAuthStormpathSocialGrantRequestAuthentication) authenticationRequest;
 
-        OAuthStormpathSocialGrantAuthenticationAttempt oAuthStormpathSocialGrantAuthenticationAttempt = new DefaultOAuthStormpathSocialGrantAuthenticationAttempt(dataStore);
-        oAuthStormpathSocialGrantAuthenticationAttempt.setGrantType(oAuthStormpathSocialGrantRequestAuthentication.getGrantType());
-        oAuthStormpathSocialGrantAuthenticationAttempt.setApiKeyId(oAuthStormpathSocialGrantRequestAuthentication.getApiKeyId());
-        oAuthStormpathSocialGrantAuthenticationAttempt.setApiKeySecret(oAuthStormpathSocialGrantRequestAuthentication.getApiKeySecret());
+        OAuthStormpathSocialGrantAuthenticationAttempt authenticationAttempt = new DefaultOAuthStormpathSocialGrantAuthenticationAttempt(dataStore);
+        authenticationAttempt.setGrantType(authentication.getGrantType());
+        authenticationAttempt.setProviderId(authentication.getProviderId());
+        if (authentication.getAccessToken() != null) {
+            authenticationAttempt.setAccessToken(authentication.getAccessToken());
+        } else if (authentication.getCode() != null) {
+            authenticationAttempt.setCode(authentication.getCode());
+        } else {
+            throw new IllegalArgumentException("An accessToken or code is required for grant type 'stormpath_social'.");
+        }
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, oAuthStormpathSocialGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
+        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, authenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthStormpathSocialGrantRequestAuthenticationResultBuilder(grantResult);
 

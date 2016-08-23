@@ -12,7 +12,21 @@ public interface OAuthStormpathSocialGrantAuthenticationAttempt extends Resource
      */
     void setGrantType(String grantType);
 
-    void setApiKeyId(String apiKeyId);
+    /**
+     * Method used to set the providerId (e.g. google, facebook, linkedin).
+     * @param providerId the name of the provider
+     */
+    void setProviderId(String providerId);
 
-    void setApiKeySecret(String apiKeySecret);
+    /**
+     * Method used to set the accessToken.
+     * @param accessToken the access token from the social provider. The accessToken or code is required.
+     */
+    void setAccessToken(String accessToken);
+
+    /**
+     * Method used to set the code.
+     * @param code the code from the social provider. The code or accessToken is required.
+     */
+    void setCode(String code);
 }
