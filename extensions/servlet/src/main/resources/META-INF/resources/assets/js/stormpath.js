@@ -43,26 +43,39 @@ function baseUrl() {
 }
 
 function linkedinLogin(clientId) {
-    window.location.replace('https://www.linkedin.com/uas/oauth2/authorization' +
-        '?client_id=' + clientId +
-        '&response_type=code' +
-        '&scope=' + encodeURIComponent('r_emailaddress r_basicprofile') +
-        '&redirect_uri=' + encodeURIComponent(baseUrl() + '/callbacks/linkedin') +
-        '&state=${oauthStateToken}');
+    window.location.replace(
+        buildUrl('https://www.linkedin.com/uas/oauth2/authorization',
+            {
+                client_id: clientId,
+                response_type: 'code',
+                scope: 'r_emailaddress r_basicprofile',
+                redirect_uri: baseUrl() + '/callbacks/linkedin',
+                state: 'oauthState' //linkedin requires state to be pass all the time.
+            }
+        )
+    );
 }
 
 function googleLogin(clientId) {
-    window.location.replace('https://accounts.google.com/o/oauth2/auth?response_type=code' +
-        '&client_id=' + clientId + '&scope=email' +
-        '&redirect_uri=' + encodeURIComponent(baseUrl() + '/callbacks/google'));
+    window.location.replace(
+        buildUrl(
+            'https://accounts.google.com/o/oauth2/auth',
+            {
+                response_type: 'code',
+                client_id: clientId,
+                scope: 'email',
+                redirect_uri: baseUrl() + '/callbacks/google'
+            }
+        )
+    );
 }
 
 function githubLogin(clientId) {
-    window.location.replace('https://github.com/login/oauth/authorize?client_id=' + clientId);
+    window.location.replace(buildUrl('https://github.com/login/oauth/authorize', {'client_id': clientId}));
 }
 
 function samlLogin(href) {
-    window.location.replace(baseUrl() + '/saml?href=' + encodeURIComponent(href));
+    window.location.replace(buildUrl(baseUrl() + '/saml', {'href': href}));
 }
 
 function facebookLogin(appId) {
@@ -77,9 +90,9 @@ function facebookLogin(appId) {
         if (response.status === 'connected') {
             var queryStr = window.location.search.replace('?', '');
             if (queryStr) {
-                window.location.replace(baseUrl() + '/callbacks/facebook?queryStr&accessToken=' + FB.getAuthResponse()['accessToken']);
+                window.location.replace(buildUrl(baseUrl() + '/callbacks/facebook?queryStr', {accessToken: FB.getAuthResponse()['accessToken']}));
             } else {
-                window.location.replace(baseUrl() + '/callbacks/facebook?accessToken=' + FB.getAuthResponse()['accessToken']);
+                window.location.replace(buildUrl(baseUrl() + '/callbacks/facebook', {accessToken: FB.getAuthResponse()['accessToken']}));
             }
         }
     }, {scope: 'email'});
@@ -95,3 +108,21 @@ function facebookLogin(appId) {
     js.src = '//connect.facebook.net/en_US/sdk.js';
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+function getParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function buildUrl(url, params) {
+    var next = getParameterByName('next');
+
+    if (next !== undefined && next !== '') {
+        params.state = next;
+    }
+
+    if (url.includes('?')) {
+        return url + '&' + $.param(params);
+    }
+    return url + '?' + $.param(params);
+}
