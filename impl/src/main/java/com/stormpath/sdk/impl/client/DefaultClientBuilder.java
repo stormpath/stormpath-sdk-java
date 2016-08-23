@@ -27,7 +27,7 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
-import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.impl.authc.credentials.DefaultClientCredentialsProviderChain;
 import com.stormpath.sdk.impl.config.*;
 import com.stormpath.sdk.impl.io.ClasspathResource;

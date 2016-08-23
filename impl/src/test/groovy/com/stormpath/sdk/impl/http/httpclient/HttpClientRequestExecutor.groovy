@@ -22,7 +22,7 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.RestException
-import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory
 
 /**
  *

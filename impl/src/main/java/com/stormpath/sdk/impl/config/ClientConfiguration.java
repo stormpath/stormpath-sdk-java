@@ -1,6 +1,6 @@
 package com.stormpath.sdk.impl.config;
 
-import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.client.AuthenticationScheme;
 

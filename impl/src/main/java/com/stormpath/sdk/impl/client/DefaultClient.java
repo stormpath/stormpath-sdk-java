@@ -37,7 +37,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.http.RequestExecutor;
-import com.stormpath.sdk.impl.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.organization.*;
