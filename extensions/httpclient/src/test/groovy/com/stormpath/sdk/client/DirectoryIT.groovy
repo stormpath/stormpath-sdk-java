@@ -130,7 +130,7 @@ class DirectoryIT extends ClientIT {
     /**
      * @since 1.0.RC8
      */
-    @Test(enabled = false)
+    @Test
     void testCreateSamlDirectoryWithNoAttributeStatementMappingRules() {
 
         Directory dir = client.instantiate(Directory)
@@ -180,7 +180,7 @@ class DirectoryIT extends ClientIT {
     /**
      * @since 1.0.RC8
      */
-    @Test(enabled = false)
+    @Test
     void testCreateSamlDirectoryWithAttributeStatementMappingRules() {
 
         Directory dir = client.instantiate(Directory)
