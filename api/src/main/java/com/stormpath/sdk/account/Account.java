@@ -30,6 +30,7 @@ import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
+import com.stormpath.sdk.phone.Phone;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
@@ -560,4 +561,6 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.0.RC7
      */
     RefreshTokenList getRefreshTokens();
+
+    Phone createPhone(Phone phone);
 }

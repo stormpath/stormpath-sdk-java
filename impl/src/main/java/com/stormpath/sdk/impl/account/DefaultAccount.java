@@ -50,6 +50,8 @@ import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.oauth.RefreshTokenList;
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
@@ -97,10 +99,13 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<RefreshTokenList, RefreshToken> REFRESH_TOKENS =
             new CollectionReference<RefreshTokenList, RefreshToken>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
 
+    static final CollectionReference<PhoneList, Phone> PHONES =
+            new CollectionReference<>("phones", PhoneList.class, Phone.class);
+
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
-            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS);
+            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, PHONES);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -463,5 +468,10 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
      */
     public RefreshTokenList getRefreshTokens() {
         return getResourceProperty(REFRESH_TOKENS);
+    }
+
+    @Override
+    public Phone createPhone(Phone phone) {
+        return getDataStore().create(this.getHref() + "/phones", phone);
     }
 }
