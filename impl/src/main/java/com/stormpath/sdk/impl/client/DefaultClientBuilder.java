@@ -71,6 +71,7 @@ public class DefaultClientBuilder implements ClientBuilder {
     private ApiKey apiKey;
     private Proxy proxy;
     private CacheManager cacheManager;
+    private ClientCredentials clientCredentials;
 
     private static final String USER_HOME = System.getProperty("user.home") + File.separatorChar;
     private static final String STORMPATH_PROPERTIES = "stormpath.properties";
@@ -236,6 +237,12 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
+    public ClientBuilder setClientCredentials(ClientCredentials clientCredentials) {
+        Assert.isInstanceOf(ClientCredentials.class, clientCredentials);
+        this.clientCredentials = clientCredentials;
+        return this;
+    }
+
     @Override
     public Client build() {
         if (!this.clientConfig.isCacheManagerEnabled()) {
@@ -267,7 +274,9 @@ public class DefaultClientBuilder implements ClientBuilder {
 
         ClientCredentials clientCredentials;
 
-        if (this.apiKey != null) {
+        if (this.clientCredentials != null) {
+            clientCredentials = this.clientCredentials;
+        } else if (this.apiKey != null) {
             clientCredentials = new ApiKeyCredentials(this.apiKey);
         } else {
             ClientCredentialsProvider clientCredentialsProvider = new DefaultClientCredentialsProviderChain(clientConfig);

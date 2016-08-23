@@ -4,6 +4,7 @@
 package com.stormpath.sdk.impl.authc.credentials;
 
 import com.stormpath.sdk.impl.config.ClientConfiguration;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 
 import java.util.Properties;
@@ -13,6 +14,7 @@ public class ConfigurationCredentialsProvider extends AbstractApiKeyCredentialsP
     private ClientConfiguration clientConfiguration;
 
     public ConfigurationCredentialsProvider(ClientConfiguration clientConfiguration) {
+        Assert.notNull(clientConfiguration, "clientConfiguration must not be null.");
         this.clientConfiguration = clientConfiguration;
     }
 

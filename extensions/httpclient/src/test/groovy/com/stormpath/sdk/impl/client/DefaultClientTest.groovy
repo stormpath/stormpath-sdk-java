@@ -74,7 +74,7 @@ class DefaultClientTest {
 
         Client client = new DefaultClient(apiKeyCredentials, baseUrl, proxy, cacheManager, authcScheme, null, connectionTimeout)
 
-        assertEquals(client.dataStore.requestExecutor.clientCredentials, apiKeyCredentials)
+        assertEquals(client.dataStore.requestExecutor.requestAuthenticator.clientCredentials, apiKeyCredentials)
         assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), connectionTimeout * 1000)
         assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), connectionTimeout * 1000)
 

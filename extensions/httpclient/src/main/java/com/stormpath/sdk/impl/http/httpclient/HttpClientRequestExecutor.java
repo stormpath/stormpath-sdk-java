@@ -91,8 +91,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private int numRetries = DEFAULT_MAX_RETRIES;
 
-    private final ClientCredentials clientCredentials;
-
     private final RequestAuthenticator requestAuthenticator;
 
     private DefaultHttpClient httpClient;
@@ -147,8 +145,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
     public HttpClientRequestExecutor(ClientCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, Integer connectionTimeout) {
         Assert.notNull(clientCredentials, "clientCredentials argument is required.");
         Assert.isTrue(connectionTimeout >= 0, "Timeout cannot be a negative number.");
-
-        this.clientCredentials = clientCredentials;
 
         this.requestAuthenticatorFactory = (requestAuthenticatorFactory != null)
                 ? requestAuthenticatorFactory

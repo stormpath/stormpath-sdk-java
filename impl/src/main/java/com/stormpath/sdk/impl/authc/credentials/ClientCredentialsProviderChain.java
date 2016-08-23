@@ -40,4 +40,8 @@ public abstract class ClientCredentialsProviderChain implements ClientCredential
         throw new IllegalStateException("Unable to load credentials from any provider in the chain.");
 
     }
+
+    protected List<ClientCredentialsProvider> getClientCredentialsProviders(){
+        return clientCredentialsProviders;
+    }
 }
