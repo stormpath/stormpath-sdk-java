@@ -259,7 +259,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
             http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
 
-            http.addFilterBefore(socialCallbackSpringSecurityProcessingFilter, AnonymousAuthenticationFilter.class);
+            http.addFilterBefore(socialCallbackSpringSecurityProcessingFilter, UsernamePasswordAuthenticationFilter.class);
 
             // This filter replaces http.formLogin() so that we can properly handle content negotiation
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior

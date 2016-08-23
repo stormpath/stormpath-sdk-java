@@ -39,6 +39,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -141,6 +142,8 @@ public class SocialCallbackSpringSecurityProcessingFilter extends HttpFilter imp
             }
 
             Authentication authentication = stormpathAuthenticationManager.authenticate(new ProviderAuthenticationToken(account));
+            SecurityContextHolder.clearContext();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             successHandler.onAuthenticationSuccess(request, response, authentication);
         }
 
