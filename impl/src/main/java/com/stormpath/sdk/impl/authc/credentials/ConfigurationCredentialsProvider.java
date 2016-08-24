@@ -21,6 +21,9 @@ import com.stormpath.sdk.lang.Strings;
 
 import java.util.Properties;
 
+/**
+ * @since 1.0.4
+ */
 public class ConfigurationCredentialsProvider extends AbstractApiKeyCredentialsProvider {
 
     private ClientConfiguration clientConfiguration;

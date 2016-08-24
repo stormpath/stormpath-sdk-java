@@ -18,6 +18,9 @@ package com.stormpath.sdk.impl.authc.credentials;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.lang.Assert;
 
+/**
+ * @since 1.0.4
+ */
 public class ApiKeyCredentials implements ClientCredentials {
 
     private ApiKey apiKey;

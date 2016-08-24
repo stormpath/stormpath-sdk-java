@@ -351,14 +351,6 @@ public interface ClientBuilder {
     ClientBuilder setBaseUrl(String baseUrl);
 
     /**
-     * Sets the request authentication factory for the client to use. It is not recommended to use this setting.
-     * @param factory the request authenticator factory to use.
-     * @return the ClientBuilder instance for method chaining
-     * @since 1.0.4
-     */
-    ClientBuilder setRequestAuthenticatorFactory(Object factory);
-
-    /**
      * Constructs a new {@link Client} instance based on the ClientBuilder's current configuration state.
      *
      * @return a new {@link Client} instance based on the ClientBuilder's current configuration state.

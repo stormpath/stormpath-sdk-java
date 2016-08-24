@@ -19,6 +19,9 @@ import com.stormpath.sdk.lang.Strings;
 
 import java.util.Properties;
 
+/**
+ * @since 1.0.4
+ */
 public class SystemPropertiesApiKeyCredentialsProvider extends AbstractApiKeyCredentialsProvider {
 
     private static final String API_KEY_ID_SYSTEM_PROPERTY = "stormpath.client.apiKey.id";

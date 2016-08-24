@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.impl.authc.credentials;
 
+/**
+ * @since 1.0.4
+ */
 public interface ClientCredentialsProvider {
 
     ClientCredentials getClientCredentials();

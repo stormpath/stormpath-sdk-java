@@ -21,6 +21,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @since 1.0.4
+ */
 public abstract class ClientCredentialsProviderChain implements ClientCredentialsProvider {
 
     private static final Logger log = LoggerFactory.getLogger(ClientCredentialsProviderChain.class);

@@ -1,22 +1,25 @@
 package com.stormpath.sdk.impl.http.httpclient
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.impl.api.ClientApiKey
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
+import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.http.Response
+import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticator
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory
 import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.oauth.Authenticators
-import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthRequests
 import org.testng.annotations.Test
 
-import java.util.concurrent.Callable
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
@@ -69,4 +72,30 @@ class HttpClientRequestExecutorIT extends ClientIT {
         def response = task.get(500, TimeUnit.MILLISECONDS)
         assertEquals response.getHttpStatus(), 200
     }
+
+    @Test
+    void testConfigureRequestAuthenticatorFactory(){
+
+        def id = UUID.randomUUID().toString()
+        def secret = UUID.randomUUID().toString()
+
+        ApiKey apiKey = new ClientApiKey(id, secret)
+        def creds = new ApiKeyCredentials(apiKey)
+        def requestAuthenticator = new BasicRequestAuthenticator(creds)
+
+        def requestAuthenticatorFactory = new RequestAuthenticatorFactory() {
+            @Override
+            RequestAuthenticator create(AuthenticationScheme scheme, ClientCredentials clientCredentials) {
+                return requestAuthenticator
+            }
+        }
+
+        def builder = new DefaultClientBuilder()
+        builder.setClientCredentials(creds)
+        builder.setRequestAuthenticatorFactory(requestAuthenticatorFactory)
+        def testClient = builder.build()
+
+        assertEquals(testClient.dataStore.requestExecutor.requestAuthenticator, requestAuthenticator)
+    }
+
 }

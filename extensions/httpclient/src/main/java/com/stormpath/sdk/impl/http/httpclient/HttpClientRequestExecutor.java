@@ -99,8 +99,6 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private HttpClientRequestFactory httpClientRequestFactory;
 
-    private final RequestAuthenticatorFactory requestAuthenticatorFactory;
-
     //doesn't need to be SecureRandom: only used in backoff strategy, not for crypto:
     private final Random random = new Random();
 
@@ -146,11 +144,11 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         Assert.notNull(clientCredentials, "clientCredentials argument is required.");
         Assert.isTrue(connectionTimeout >= 0, "Timeout cannot be a negative number.");
 
-        this.requestAuthenticatorFactory = (requestAuthenticatorFactory != null)
+        RequestAuthenticatorFactory factory = (requestAuthenticatorFactory != null)
                 ? requestAuthenticatorFactory
                 : new DefaultRequestAuthenticatorFactory();
 
-        this.requestAuthenticator = this.requestAuthenticatorFactory.create(authenticationScheme, clientCredentials);
+        this.requestAuthenticator = factory.create(authenticationScheme, clientCredentials);
 
         this.httpClientRequestFactory = new HttpClientRequestFactory();
 

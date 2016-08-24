@@ -25,6 +25,9 @@ import com.stormpath.sdk.lang.Strings;
 import java.io.*;
 import java.util.Properties;
 
+/**
+ * @since 1.0.4
+ */
 public abstract class AbstractApiKeyCredentialsProvider implements ClientCredentialsProvider {
 
     public static final String DEFAULT_API_KEY_PROPERTIES_FILE_LOCATION =

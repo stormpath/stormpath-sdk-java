@@ -18,6 +18,9 @@ package com.stormpath.sdk.impl.authc.credentials;
 import com.stormpath.sdk.impl.config.ClientConfiguration;
 import com.stormpath.sdk.lang.Assert;
 
+/**
+ * @since 1.0.4
+ */
 public class DefaultClientCredentialsProviderChain extends ClientCredentialsProviderChain {
 
     public DefaultClientCredentialsProviderChain(ClientConfiguration clientConfiguration) {

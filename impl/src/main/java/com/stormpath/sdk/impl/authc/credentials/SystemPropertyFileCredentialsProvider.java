@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
 
+/**
+ * @since 1.0.4
+ */
 public class SystemPropertyFileCredentialsProvider extends AbstractApiKeyCredentialsProvider {
 
     private static final Logger log = LoggerFactory.getLogger(SystemPropertyFileCredentialsProvider.class);

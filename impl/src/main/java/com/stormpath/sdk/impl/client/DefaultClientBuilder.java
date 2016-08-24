@@ -230,10 +230,9 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
-    @Override
-    public ClientBuilder setRequestAuthenticatorFactory(Object factory) {
-        Assert.isInstanceOf(RequestAuthenticatorFactory.class, factory);
-        this.clientConfig.setRequestAuthenticatorFactory((RequestAuthenticatorFactory) factory);
+    public ClientBuilder setRequestAuthenticatorFactory(RequestAuthenticatorFactory factory) {
+        Assert.notNull(factory, "factory argument cannot be null");
+        this.clientConfig.setRequestAuthenticatorFactory(factory);
         return this;
     }
 
