@@ -1,7 +1,7 @@
 Social Login
 ============
 
-Do you want users to authenticate with a social provider, such as Facebook?
+Do you want users to authenticate with a social provider such as Facebook?
 Stormpath provides integration with the following services:
 
 * Facebook
@@ -48,9 +48,10 @@ menu, then click the "Add Platform" button near the bottom of the page.  When
 prompted, select "Website" as your platform type.
 
 In the "Site URL" box, enter your private and public root URLs.  This should be
-something like ``"http://localhost:8080"`` or ``"http://mysite.com"``.  *If you
-want to allow Facebook Login from multiple URLs (local development, production,
-etc.) you can just click the "Add Platform" button again and enter another URL.*
+something like ``http://localhost:8080`` or ``http://mysite.com``.
+
+.. note::
+    If you want to allow Facebook Login from multiple URLs (local development, production, etc.) you can just click the "Add Platform" button again and enter another URL.
 
 Lastly, click the "Save Changes" button to save the changes.
 
@@ -93,10 +94,10 @@ That's it!
 Test it Out
 ...........
 
-Now that you've plugged your Facebook credentials into express-stormpath, social
+Now that you've plugged your Facebook credentials into your Stormpath Webapp, social
 login should already be working!
 
-Open your express app in a browser, and try logging in by visiting the login page
+Run your Java Webapp and visit it with your browser, and try logging in by visiting the login page
 (``/login``).  If you're using the default login page included with this
 library, you should see the following:
 
@@ -226,10 +227,10 @@ That's it!
 Test it Out
 ...........
 
-Now that you've plugged your Google credentials into express-stormpath, social
+Now that you've plugged your Google credentials into your Stormpath Webapp, social
 login should already be working!
 
-Open your Express app in a browser, and try logging in by visiting the login page
+Visit your Java Webapp with a browser, and try logging in by visiting the login page
 (``/login``).  If you're using the default login page included with this
 library, you should see the following:
 
@@ -327,10 +328,10 @@ That's it!
 Test it Out
 ...........
 
-Now that you've plugged your LinkedIn credentials into express-stormpath, social
+Now that you've plugged your LinkedIn credentials into your Stormpath Webapp, social
 login should already be working!
 
-Open your Express app in a browser, and try logging in by visiting the login page
+Open your Java Webapp in a browser, and try logging in by visiting the login page
 (``/login``).  If you're using the default login page included with this
 library, you should see the following:
 
