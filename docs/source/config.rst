@@ -47,7 +47,7 @@ It is often easiest to specifying this at or near the top of your other filter m
 stormpath.properties
 --------------------
 
-If you need to customize behavior, the Stormpath Java Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a convenient overrides mechanism using various property definition locations.
+If you need to customize behavior, the Stormpath Java Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a convenient override mechanism using various property definition locations.
 
 All stormpath configuration properties are prefixed with ``stormpath.`` and take the following form (for example)
 

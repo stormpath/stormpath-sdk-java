@@ -3,7 +3,7 @@
 Authorization
 ==============
 
-If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ you will obtain a seamless integration with Spring Security's authorization model. Besides the principal's information, Stormpath also populates `Spring Security's Granted Authorities <http://docs.spring.io/spring-security/site/docs/4.0.x/reference/html/technical-overview.html#tech-granted-authority>`_ for you. Once an authentication attempt is successful,
+If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ you will obtain a seamless integration with Spring Security's authorization model. Besides the principal's information, Stormpath also populates `Spring Security's Granted Authorities <http://docs.spring.io/spring-security/site/docs/4.1.2.RELEASE/reference/html/technical-overview.html#tech-granted-authority>`_ for you. Once an authentication attempt is successful,
 you can perform standard Spring Security authority checks, like ``antMatchers("/**").hasAuthority("SOME_ROLE")`` or ``@PreAuthorize("hasAuthority('SOME_PERMISSION')")``
 
 Roles
@@ -14,7 +14,7 @@ Spring Security's role concept in Stormpath is represented as a Stormpath `Group
 Assigning Roles
 ^^^^^^^^^^^^^^^
 
-Spring Security's ``Authority`` concept is represented as a Stormpath ``Grouup``. During the authentication process all the groups belonging to an account are automatically populated as authorities in the authentication token. Therefore you assign a role to an account simply by adding an account to a group (or by adding a group to an account, depending on how you look at it). For example, for an account belonging to a specific group like this:
+Spring Security's ``Authority`` concept is represented as a Stormpath ``Group``. During the authentication process all the groups belonging to an account are automatically populated as authorities in the authentication token. Therefore you assign a role to an account simply by adding an account to a group (or by adding a group to an account, depending on how you look at it). For example, for an account belonging to a specific group like this:
 
 .. code:: java
 
@@ -183,7 +183,7 @@ Checking Permissions
 ^^^^^^^^^^^^^^^^^^^^
 
 So, in order to have Spring Security doing permissions check the way we intend, we need to create our own ``PermissionEvaluator``. The plugin
-provides ``WildcardPermissionEvaluator`` that is able to compare ``WildcardPermission``\ s. In order to use it you need to configure
+provides ``WildcardPermissionEvaluator`` that is able to compare ``WildcardPermission``s. In order to use it you need to configure
 Spring this way:
 
 .. code:: java
@@ -211,7 +211,7 @@ Spring this way:
             return expressionHandler;
         }
 
-and then you can simply evaluate permissions this way using `Method Security Expressions <http://docs.spring.io/spring-security/site/docs/4.1.x/reference/html/el-access.html>`__:
+and then you can simply evaluate permissions this way using `Method Security Expressions <http://docs.spring.io/spring-security/site/docs/4.1.2.RELEASE/reference/html/el-access.html>`__:
 
 .. code:: java
 
@@ -236,7 +236,7 @@ or
     <sec:authorize access="hasPermission('user', 'login')" />
 
 And all this will return ``true``, because, while ``user:login`` isn't directly assigned to the account, it *is* assigned to one of the
-account's groups. Very nice.
+account's groups.
 
 Our ``PermissionEvaluator`` only customizes the way the ``hasPermissions`` operation behaves. The other Spring Security built-in
 expressions (e.g., hasRole(), isAnonymous(), isAuthenticated(), etc. are not modified). These expressions will carry out their usual operation:
