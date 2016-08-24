@@ -3,7 +3,7 @@
 Logout
 ======
 
-Logging out a user is simple: just redirect the user to ``/logout``. This will:
+Logging out a user is simple: just hit the ``/logout`` with a ``POST`` request. This will:
 
 * Trigger a ``LogoutRequestEvent``.  You can listen for this event and perform custom cleanup logic if desired.
 * Clear any authentication state that may be associated with the logged in account (like identity cookies or JWT tokens, etc).
@@ -13,7 +13,7 @@ Logging out a user is simple: just redirect the user to ``/logout``. This will:
 URI
 ---
 
-Users will be logged-out if they visit ``/logout``.
+Users will be logged-out if they visit ``/logout`` (only with ``POST``)
 
 If you want to change this path, set the ``stormpath.web.logout.uri`` configuration property:
 
