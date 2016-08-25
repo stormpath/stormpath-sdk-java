@@ -506,13 +506,13 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     }
 
     @Override
-    public Account unlink(Account otherAccount) {
+    public AccountLink unlink(Account otherAccount) {
         Assert.notNull(otherAccount, "otherAccount cannot be null");
         return  unlink(otherAccount.getHref());
     }
 
     @Override
-    public Account unlink(String otherAccountHref) {
+    public AccountLink unlink(String otherAccountHref) {
         Assert.hasText(otherAccountHref, "otherAccountHref cannot be null or empty");
         AccountLink accountLink = null;
         for (AccountLink anAccountLink : getAccountLinks()) {
@@ -527,7 +527,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         } else {
             throw new IllegalStateException("These accounts are not linked.");
         }
-        return this;
+        return accountLink;
     }
 
     @Override

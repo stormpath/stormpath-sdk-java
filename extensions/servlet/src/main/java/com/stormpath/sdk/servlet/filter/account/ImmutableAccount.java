@@ -336,13 +336,13 @@ public class ImmutableAccount implements Account {
     }
 
     @Override
-    public Account unlink(Account otherAccount) {
+    public AccountLink unlink(Account otherAccount) {
         immutable();
         return null;
     }
 
     @Override
-    public Account unlink(String otherAccountHref) {
+    public AccountLink unlink(String otherAccountHref) {
         immutable();
         return null;
     }

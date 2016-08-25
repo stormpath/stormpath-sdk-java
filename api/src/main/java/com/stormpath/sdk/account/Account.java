@@ -683,12 +683,12 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * afterwards. This method will persist the changes in the backend immediately.</p>
      *
      * @param otherAccount the {@code Account} object from which the account must be unlinked.
-     * @return the Account object for method chaining
+     * @return the AccountLink object that was just deleted
      * @throws IllegalStateException if this Account is not linked to the otherAccount.
      *
      * @since 1.1.0
      */
-    Account unlink(Account otherAccount);
+    AccountLink unlink(Account otherAccount);
 
     /**
      * Removes the link between this account and the otherAccount represented by its {@code href}
@@ -697,12 +697,12 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * afterwards. This method will persist the changes in the backend immediately.</p>
      *
      * @param otherAccountHref the href of the other account from which the account must be unlinked.
-     * @return the Account object for method chaining
+     * @return the AccountLink object that was just deleted
      * @throws IllegalStateException if this Account is not linked to the otherAccount matching the given {@code href}.
      *
      * @since 1.1.0
      */
-    Account unlink(String otherAccountHref);
+    AccountLink unlink(String otherAccountHref);
 
     /**
      * Returns a paginated list of the AccountLinks for the account.

@@ -1116,13 +1116,13 @@ class AccountIT extends ClientIT {
         assertEquals acct.getAccountLinks().size, 2
 
         // Test unlink
-        acct = acct.unlink(acct2)
+        acct.unlink(acct2)
         assertEquals 1, acct.getLinkedAccounts().size
         assertEquals 1, acct.getAccountLinks().size
         assertEquals false, acct.isLinkedToAccount(acct2.href)
         assertEquals true, acct.isLinkedToAccount(acct3.href)
 
-        acct = acct.unlink(acct3)
+        acct.unlink(acct3)
         assertEquals 0, acct.getLinkedAccounts().size
         assertEquals 0, acct.getAccountLinks().size
         assertEquals false, acct.isLinkedToAccount(acct2.href)
