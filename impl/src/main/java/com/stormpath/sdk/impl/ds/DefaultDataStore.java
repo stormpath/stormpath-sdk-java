@@ -17,7 +17,9 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.http.HttpMethod;
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.ds.api.ApiKeyQueryFilter;
 import com.stormpath.sdk.impl.ds.api.DecryptApiKeySecretFilter;
@@ -96,7 +98,7 @@ public class DefaultDataStore implements InternalDataStore {
     private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
 
     private final String baseUrl;
-    private final ApiKey apiKey;
+    private final ClientCredentials clientCredentials;
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
@@ -111,26 +113,26 @@ public class DefaultDataStore implements InternalDataStore {
      */
     public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
-    public DefaultDataStore(RequestExecutor requestExecutor, ApiKey apiKey) {
-        this(requestExecutor, DEFAULT_API_VERSION, apiKey);
+    public DefaultDataStore(RequestExecutor requestExecutor, ApiKeyCredentials apiKeyCredentials) {
+        this(requestExecutor, DEFAULT_API_VERSION, apiKeyCredentials);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKey apiKey) {
-        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKey);
+    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKeyCredentials apiKeyCredentials) {
+        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKeyCredentials);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey) {
-        this(requestExecutor, baseUrl, apiKey, new DisabledCacheManager());
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKeyCredentials apiKeyCredentials) {
+        this(requestExecutor, baseUrl, apiKeyCredentials, new DisabledCacheManager());
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey, CacheManager cacheManager) {
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
-        Assert.notNull(apiKey, "ApiKey cannot be null.");
+        Assert.notNull(clientCredentials, "clientCredentials cannot be null.");
         Assert.notNull(cacheManager, "CacheManager cannot be null.  Use the DisabledCacheManager if you wish to turn off caching.");
         this.requestExecutor = requestExecutor;
         this.baseUrl = baseUrl;
-        this.apiKey = apiKey;
+        this.clientCredentials = clientCredentials;
         this.cacheManager = cacheManager;
         this.resourceFactory = new DefaultResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
@@ -144,14 +146,18 @@ public class DefaultDataStore implements InternalDataStore {
 
         this.filters.add(new EnlistmentFilter());
 
-        this.filters.add(new DecryptApiKeySecretFilter(apiKey));
+        if(clientCredentials instanceof ApiKeyCredentials) {
+            this.filters.add(new DecryptApiKeySecretFilter((ApiKeyCredentials) clientCredentials));
+        }
 
         if (isCachingEnabled()) {
             this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver, COLLECTION_CACHING_ENABLED));
             this.filters.add(new WriteCacheFilter(this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
         }
 
-        this.filters.add(new ApiKeyQueryFilter(this.queryStringFactory));
+        if(clientCredentials instanceof ApiKeyCredentials) {
+            this.filters.add(new ApiKeyQueryFilter(this.queryStringFactory));
+        }
 
         this.filters.add(new ProviderAccountResultFilter());
     }
@@ -163,7 +169,8 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public ApiKey getApiKey() {
-        return apiKey;
+        Assert.isInstanceOf(ApiKeyCredentials.class, this.clientCredentials);
+        return ((ApiKeyCredentials) this.clientCredentials).getApiKey();
     }
 
     @Override
