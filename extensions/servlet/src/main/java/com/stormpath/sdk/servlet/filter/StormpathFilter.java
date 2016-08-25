@@ -130,6 +130,10 @@ public class StormpathFilter extends HttpFilter {
             // http://grokbase.com/t/tomcat/users/0968njb9en/header-names-lower-case
             headersMap.put(name.toLowerCase(), Collections.list(request.getHeaders(name)));
         }
+
+        // 139: Add X-Forwarded-Proto header
+        headersMap.put("x-forwarded-proto", Collections.singletonList(request.getScheme()));
+
         HttpHeadersHolder.set(headersMap);
     }
 
