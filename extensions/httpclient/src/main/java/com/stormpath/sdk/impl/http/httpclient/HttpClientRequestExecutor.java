@@ -171,10 +171,14 @@ public class HttpClientRequestExecutor implements RequestExecutor {
             );
         }
 
+        // The connectionTimeout value is specified in seconds in Stormpath configuration settings.
+        // Therefore, multiply it by 1000 to be milliseconds since DefaultHttpClient expects milliseconds.
+        int connectionTimeoutAsMilliseconds = connectionTimeout * 1000;
+
         this.httpClient = new DefaultHttpClient(connMgr);
         httpClient.getParams().setParameter(AllClientPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-        httpClient.getParams().setParameter(AllClientPNames.SO_TIMEOUT, connectionTimeout);
-        httpClient.getParams().setParameter(AllClientPNames.CONNECTION_TIMEOUT, connectionTimeout);
+        httpClient.getParams().setParameter(AllClientPNames.SO_TIMEOUT, connectionTimeoutAsMilliseconds);
+        httpClient.getParams().setParameter(AllClientPNames.CONNECTION_TIMEOUT, connectionTimeoutAsMilliseconds);
         httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
         httpClient.getParams().setParameter("http.protocol.content-charset", "UTF-8");
 

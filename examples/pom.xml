@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>stormpath-sdk-examples</artifactId>
     <groupId>com.stormpath.sdk</groupId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
     <name>Stormpath Java SDK :: Examples</name>
     <packaging>pom</packaging>
 
@@ -37,6 +37,7 @@
         <module>spring-webmvc</module>
         <module>spring-boot</module>
         <module>spring-boot-webmvc</module>
+        <module>spring-boot-webmvc-angular</module>
         <module>spring-security-webmvc</module>
         <module>spring-security-spring-boot-webmvc</module>
         <module>spring-security-spring-boot-webmvc-bare-bones</module>

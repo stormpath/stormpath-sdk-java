@@ -1,5 +1,56 @@
 ## Change Log ##
 
+### 1.0.3 ##
+
+Notes:
+
+- Please see the [1.0.3](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.3+is%3Aclosed) issues list for more information
+
+### 1.0.2 ##
+
+Notes:
+
+- Please see the [1.0.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.2+is%3Aclosed) issues list for more information
+
+### 1.0.1 ##
+
+Notes:
+
+- Please see the [1.0.1](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.1+is%3Aclosed) issues list for more information
+
+### 1.0.0 ##
+
+This release includes updates in the Core SDK and Servlet, Spring, Spring Boot and Spring Security integrations.
+
+Specifically, the following major updates are included in this release:
+* SPA (Single Page Application) support across all integrations
+* Content Negotiation rules across all integrations to determine whether to return JSON or HTML responses
+* Social login and registration support for Google, Facebook, Linkedin and Github across all integrations
+* SAML Service Provider support across all integrations
+* Support for OAuth2 client_credentials grant type across all integrations
+* Support for Stormpath’s SSO service - ID Site - in the Servlet integration (ID Site is already supported in the other integrations)
+* Support for Pre and Post login and register handlers across all integrations
+* Support for custom fields on the Registration view across all integrations (non-standard fields are stored as Custom Data)
+* Added /me endpoint to return profile information for authenticated users across all integrations
+
+Additionally, the following dependency and code updates are included in this release:
+* removed support for JDK 6
+* removed all code and docs for previously deprecated interfaces
+* upgraded all external dependencies to latest versions, including Spring Boot 1.4.0
+* Significant Spring Security performance improvements
+* Internationalization (i18n) support / improvements
+* A number of default properties have been added, changed or removed in conformance with the [sdk spec](https://github.com/stormpath/stormpath-sdk-spec) and the [framework spec](https://github.com/stormpath/stormpath-framework-spec). Details can be found in the [Changes and Additions Guide](https://github.com/stormpath/stormpath-sdk-java/wiki/1.0-Configuration-Changes-&-Additions-Guide).
+
+Notes:
+
+- Please see the [1.0.0](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.0+is%3Aclosed) issues list for more information
+
+### 1.0.RC9.2 ##
+
+Notes:
+
+- Please see the [1.0.RC9.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC9.2+is%3Aclosed) issues list for more information
+
 ### 1.0.RC9.1 ##
 
 Notes:

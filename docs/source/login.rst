@@ -99,6 +99,8 @@ There are two events that can be triggered during login attempts:
 
    You can determine which type of authentication occurred (login form post, REST API call, etc) by inspecting the event's ``AuthenticationResult`` object (``event.getAuthenticationResult()``).  You can use an ``AuthenticationResultVisitor`` to determine which type of AuthenticationResult occurred: ``event.getAuthenticationResult().accept(authenticationResultVisitor);``
 
+.. _login authentication-state:
+
 Authentication State
 --------------------
 
