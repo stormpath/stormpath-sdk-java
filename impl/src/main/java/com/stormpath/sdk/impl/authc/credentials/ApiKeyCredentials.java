@@ -13,18 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http.authc;
+package com.stormpath.sdk.impl.authc.credentials;
 
-import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
-import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.lang.Assert;
 
 /**
- * Factory interface to create {@link RequestAuthenticator}s out of {@link AuthenticationScheme}s.
- *
- * @since 0.9.3
+ * @since 1.0.4
  */
-public interface RequestAuthenticatorFactory {
+public class ApiKeyCredentials implements ClientCredentials {
 
-    RequestAuthenticator create(AuthenticationScheme scheme, ClientCredentials clientCredentials);
+    private ApiKey apiKey;
 
+    public ApiKeyCredentials(ApiKey apiKey) {
+        Assert.notNull(apiKey);
+        this.apiKey = apiKey;
+    }
+
+    @Override
+    public String getId() {
+        return apiKey.getId();
+    }
+
+    @Override
+    public String getSecret() {
+        return apiKey.getSecret();
+    }
+
+    public ApiKey getApiKey() {
+        return apiKey;
+    }
 }
