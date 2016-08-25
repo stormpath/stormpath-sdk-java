@@ -131,9 +131,6 @@ public class StormpathFilter extends HttpFilter {
             headersMap.put(name.toLowerCase(), Collections.list(request.getHeaders(name)));
         }
 
-        // 139: Add X-Forwarded-Proto header
-        headersMap.put("x-forwarded-proto", Collections.singletonList(request.getScheme()));
-
         HttpHeadersHolder.set(headersMap);
     }
 
