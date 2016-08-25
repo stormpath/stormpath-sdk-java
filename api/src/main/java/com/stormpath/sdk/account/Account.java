@@ -707,7 +707,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Returns a paginated list of the AccountLinks for the account.
      *
-     * <p>If you don't want to return all linked accounts, you can instead search for a subset of them via
+     * <p>If you don't want to return all accountLinks, you can instead search for a subset of them via
      *  the {@link #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)} or {@link #getAccountLinks(Map)} methods.</p>
      *
      * @return a paginated list of all accountLinks for the Account
@@ -718,7 +718,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     AccountLinkList getAccountLinks();
 
     /**
-     * Returns a paginated list of the account's linked accounts that match the specified query criteria.
+     * Returns a paginated list of the account's AccountLinks that match the specified query criteria.
      *
      * <p>This method is mostly provided as a non-type-safe alternative to the
      * {@link #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)} method which might be useful in dynamic languages on
@@ -732,7 +732,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
      * the resource URL as query parameters, for example:
      * <pre>
-     * .../accounts/accountId/linkedAccounts?param1=value1&...
+     * .../accounts/accountId/accountLinks?param1=value1&...
      * </pre>
      * </p>
      * If in doubt, use {@link #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)} as all possible query options are
@@ -766,7 +766,6 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * account.getAccountLinks(where(
      *      createdAt().equals("2016-01-01")
-     *     .and(givenName().startsWithIgnoreCase("bar"))
      *     .orderByCreatedAt().descending()
      *     .withAccounts(10, 10)
      *     .offsetBy(20)
