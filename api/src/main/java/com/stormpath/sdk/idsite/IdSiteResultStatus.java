@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.idsite;
+package com.stormpath.sdk.idsite;
 
 /**
  * Enumeration identifying the possible results of an Id Site invocation.
  *
- * @since 1.0.RC3
+ * @since 1.1.0
  */
 public enum IdSiteResultStatus {
 

@@ -16,7 +16,7 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.impl.idsite.IdSiteResultStatus;
+import com.stormpath.sdk.idsite.IdSiteResultStatus;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.Resolver;
