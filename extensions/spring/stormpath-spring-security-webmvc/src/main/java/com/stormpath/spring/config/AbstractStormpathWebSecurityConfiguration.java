@@ -40,8 +40,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 
 
@@ -128,7 +128,10 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public CsrfTokenRepository stormpathCsrfTokenRepository() {
-        HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
+        // 918: Use cookie-based repository instead of HttpSessionCsrfTokenRepository so
+        // Spring Security can be configured stateless with
+        // sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
         csrfTokenRepository.setParameterName(csrfTokenName);
         return csrfTokenRepository;
     }
