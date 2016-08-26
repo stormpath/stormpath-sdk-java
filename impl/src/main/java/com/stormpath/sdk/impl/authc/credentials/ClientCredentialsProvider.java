@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.http.authc;
-
-import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
-import com.stormpath.sdk.client.AuthenticationScheme;
+package com.stormpath.sdk.impl.authc.credentials;
 
 /**
- * Factory interface to create {@link RequestAuthenticator}s out of {@link AuthenticationScheme}s.
- *
- * @since 0.9.3
+ * @since 1.0.4
  */
-public interface RequestAuthenticatorFactory {
+public interface ClientCredentialsProvider {
 
-    RequestAuthenticator create(AuthenticationScheme scheme, ClientCredentials clientCredentials);
+    ClientCredentials getClientCredentials();
 
 }

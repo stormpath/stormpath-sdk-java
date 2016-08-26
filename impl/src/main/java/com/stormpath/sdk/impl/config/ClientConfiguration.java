@@ -1,5 +1,6 @@
 package com.stormpath.sdk.impl.config;
 
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.client.AuthenticationScheme;
 
@@ -27,6 +28,7 @@ public class ClientConfiguration {
     private String baseUrl;
     private int connectionTimeout;
     private AuthenticationScheme authenticationScheme;
+    private RequestAuthenticatorFactory requestAuthenticatorFactory;
     private int proxyPort;
     private String proxyHost;
     private String proxyUsername;
@@ -62,6 +64,14 @@ public class ClientConfiguration {
 
     public void setAuthenticationScheme(AuthenticationScheme authenticationScheme) {
         this.authenticationScheme = authenticationScheme;
+    }
+
+    public RequestAuthenticatorFactory getRequestAuthenticatorFactory() {
+        return requestAuthenticatorFactory;
+    }
+
+    public void setRequestAuthenticatorFactory(RequestAuthenticatorFactory requestAuthenticatorFactory) {
+        this.requestAuthenticatorFactory = requestAuthenticatorFactory;
     }
 
     public String getBaseUrl() {
