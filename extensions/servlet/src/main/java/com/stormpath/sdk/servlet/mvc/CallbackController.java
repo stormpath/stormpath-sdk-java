@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
@@ -82,6 +83,10 @@ public abstract class CallbackController extends AbstractController {
 
     public abstract void doInit();
 
+    public String getAuthenticationSuccessNextUri(HttpServletRequest request) {
+        return loginNextUri;
+    }
+
     @Override
     public boolean isNotAllowedIfAuthenticated() {
         return true;
@@ -101,7 +106,13 @@ public abstract class CallbackController extends AbstractController {
 
         publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
 
-        return new DefaultViewModel(loginNextUri).setRedirect(true);
+        //Fixes #849 we send in the state the original path the user requested based on the next query param, so we can redirect back
+        String redirectUri = loginNextUri;
+        if (Strings.hasText(result.getState())) {
+            redirectUri = result.getState();
+        }
+
+        return new DefaultViewModel(redirectUri).setRedirect(true);
     }
 
     protected ViewModel onLogout(HttpServletRequest request,

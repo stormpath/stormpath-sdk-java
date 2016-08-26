@@ -1,7 +1,10 @@
 package com.stormpath.sdk.impl.client
 
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Clients
+import com.stormpath.sdk.impl.api.ClientApiKey
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.cache.DefaultCache
 import com.stormpath.sdk.lang.Duration
 import org.testng.annotations.BeforeMethod
@@ -47,7 +50,7 @@ class DefaultClientBuilderTest {
     void testConfigureBaseProperties() {
         DefaultClientBuilder clientBuilder = (DefaultClientBuilder) builder
         assertEquals clientBuilder.clientConfiguration.baseUrl, "https://api.stormpath.com/v42"
-        assertEquals clientBuilder.clientConfiguration.connectionTimeout, 10 * 1000
+        assertEquals clientBuilder.clientConfiguration.connectionTimeout, 10
         assertEquals clientBuilder.clientConfiguration.authenticationScheme, AuthenticationScheme.BASIC
     }
 
@@ -59,4 +62,30 @@ class DefaultClientBuilderTest {
         assertEquals clientBuilder.clientConfiguration.proxyUsername, "fooyaml" // from yaml
         assertEquals clientBuilder.clientConfiguration.proxyPassword, "bar" // from properties
     }
+}
+
+class DefaultClientBuilderTestCustomCredentials{
+
+    def builder, client, clientCredentials, id, secret
+
+    @BeforeMethod
+    void before() {
+
+        id = UUID.randomUUID().toString()
+        secret = UUID.randomUUID().toString()
+
+        ApiKey apiKey = new ClientApiKey(id, secret)
+        clientCredentials = new ApiKeyCredentials(apiKey)
+
+        builder = new DefaultClientBuilder()
+        builder.setClientCredentials(clientCredentials)
+        client = builder.build()
+    }
+
+    @Test
+    void testConfigureCredentials() {
+        assertEquals client.dataStore.apiKey.id, id
+        assertEquals client.dataStore.apiKey.secret, secret
+    }
+
 }

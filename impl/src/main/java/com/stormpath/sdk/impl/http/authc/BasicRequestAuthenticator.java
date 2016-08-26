@@ -15,10 +15,11 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
-import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.Base64;
+import com.stormpath.sdk.lang.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,15 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
 
     private static final String NL = "\n";
 
+    private final ApiKeyCredentials apiKeyCredentials;
+
+    public BasicRequestAuthenticator(ApiKeyCredentials apiKeyCredentials){
+        Assert.notNull(apiKeyCredentials, "apiKeyCredentials must be not be null.");
+        this.apiKeyCredentials = apiKeyCredentials;
+    }
+
     @Override
-    public void authenticate(Request request, ApiKey apiKey) throws RequestAuthenticationException {
+    public void authenticate(Request request) throws RequestAuthenticationException {
         Date date = new Date();
 
         SimpleDateFormat timestampFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
@@ -57,7 +65,7 @@ public class BasicRequestAuthenticator implements RequestAuthenticator {
 
         request.getHeaders().set(STORMPATH_DATE_HEADER, timestamp);
 
-        String authorizationHeader = apiKey.getId() + ":" + apiKey.getSecret();
+        String authorizationHeader = apiKeyCredentials.getId() + ":" + apiKeyCredentials.getSecret();
         byte[] valueBytes;
         try {
             valueBytes = authorizationHeader.getBytes("UTF-8");

@@ -110,6 +110,8 @@ There are two events that can be triggered during login attempts:
 
    You can determine which type of authentication occurred (login form post, REST API call, etc) by inspecting the event's ``AuthenticationResult`` object (``event.getAuthenticationResult()``).  You can use an ``AuthenticationResultVisitor`` to determine which type of AuthenticationResult occurred: ``event.getAuthenticationResult().accept(authenticationResultVisitor);``
 
+.. _login authentication-state:
+
 Authentication State
 --------------------
 
@@ -262,3 +264,19 @@ Finally, if the default Cookie or HttpSession-based ``Saver`` implementations ar
 .. _context path: http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServletRequest.html#getContextPath()
 .. _Cloudflare: https://www.cloudflare.com/
 .. _cryptographically-signed JSON Web Token: https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-40
+
+Spring Security
+---------------
+
+If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ then the ``Authentication`` token will be available in Spring Security's ``SecurityContext`` where you can obtain the Stormpath ``Account`` that is currently authenticated:
+
+.. code-block:: java
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) { //there may be no logged in user.
+        String accountHref = authentication.getUsername();
+        Account account = client.getAccount(accountHref, Account.class);
+        String username = account.getUsername();
+    }
+
+The authentication token will always be available indistinctively of the kind of authentication used to login. It does not matter whether the user authenticated via ``cookie``, ``access_token``, ``credentials``, ``social providers``, etc, the Stormpath Account information will always be available in Spring Security's ``SecurityContext``.

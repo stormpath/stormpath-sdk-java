@@ -1178,6 +1178,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
                     return springMessageSource.getMessage(key, args, locale);
                 } catch (NoSuchMessageException e) {
                     //Same behavior as com.stormpath.sdk.servlet.i18n.DefaultMessageSource
+                    log.debug("Couldn't load the i18n property: {}", key);
                     return defaultMessage;
                 }
             }
