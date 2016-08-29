@@ -6,8 +6,8 @@ import org.testng.annotations.Test
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
-/**
- *
+
+/*
  * @since 1.1.0
  */
 class DefaultAccountLinkOptionsTest {

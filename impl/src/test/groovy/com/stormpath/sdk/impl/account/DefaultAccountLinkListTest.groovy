@@ -8,6 +8,7 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
+
 /**
  * @since 1.1.0
  */

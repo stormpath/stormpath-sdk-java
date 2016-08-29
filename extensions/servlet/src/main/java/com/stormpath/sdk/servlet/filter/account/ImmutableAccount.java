@@ -207,8 +207,18 @@ public class ImmutableAccount implements Account {
     }
 
     @Override
+    public boolean isMemberOfGroup(Group group) {
+        return account.isMemberOfGroup(group);
+    }
+
+    @Override
     public boolean isLinkedToAccount(String href) {
         return account.isLinkedToAccount(href);
+    }
+
+    @Override
+    public boolean isLinkedToAccount(Account otherAccount) {
+        return account.isLinkedToAccount(otherAccount);
     }
 
     @Override

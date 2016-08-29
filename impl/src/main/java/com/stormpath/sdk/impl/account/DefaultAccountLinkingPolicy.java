@@ -1,11 +1,11 @@
 package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.AccountLinkingPolicy;
+import com.stormpath.sdk.account.AccountLinkingStatus;
+import com.stormpath.sdk.account.AutomaticProvisioningStatus;
+import com.stormpath.sdk.account.MatchingProperty;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
@@ -17,10 +17,11 @@ import java.util.Map;
  */
 public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implements AccountLinkingPolicy {
 
-    // SIMPLE PROPERTIES
-    static final StringProperty STATUS = new StringProperty("status");
-    static final StringProperty AUTOMATIC_PROVISIONING = new StringProperty("automaticProvisioning");
-    static final StringProperty MATCHING_PROPERTY = new StringProperty("matchingProperty");
+    // ENUM PROPERTIES
+    static final EnumProperty<AccountLinkingStatus> STATUS = new EnumProperty<>(AccountLinkingStatus.class);
+    static final EnumProperty<AutomaticProvisioningStatus> AUTOMATIC_PROVISIONING = new EnumProperty<>("automaticProvisioning", AutomaticProvisioningStatus.class);
+    static final EnumProperty<MatchingProperty> MATCHING_PROPERTY = new EnumProperty<>("matchingProperty", MatchingProperty.class);
+
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
@@ -51,42 +52,65 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
 
 
     @Override
-    public String getStatus() {
-        return getString(STATUS);
+    public AccountLinkingStatus getStatus() {
+        String value = getStringProperty(STATUS.getName());
+        if (value == null) {
+            return null;
+        }
+        return AccountLinkingStatus.valueOf(value);
     }
 
     @Override
-    public AccountLinkingPolicy setStatus(String status) {
+    public AccountLinkingPolicy setStatus(AccountLinkingStatus status) {
         Assert.notNull(status, "status cannot be null.");
-        setProperty(STATUS, status);
+        setProperty(STATUS, status.name());
         return this;
     }
 
     @Override
-    public String getAutomaticProvisioning() {
-        return getString(AUTOMATIC_PROVISIONING);
+    public AutomaticProvisioningStatus getAutomaticProvisioning() {
+        String value = getStringProperty(AUTOMATIC_PROVISIONING.getName());
+        if (value == null) {
+            return null;
+        }
+        return AutomaticProvisioningStatus.valueOf(value);
     }
 
     @Override
-    public AccountLinkingPolicy setAutomaticProvisioning(String automaticProvisioningStatus) {
+    public AccountLinkingPolicy setAutomaticProvisioning(AutomaticProvisioningStatus automaticProvisioningStatus) {
         Assert.notNull(automaticProvisioningStatus, "automaticProvisioning cannot be null.");
-        setProperty(AUTOMATIC_PROVISIONING, automaticProvisioningStatus);
+        setProperty(AUTOMATIC_PROVISIONING, automaticProvisioningStatus.name());
         return this;
     }
 
     @Override
-    public String getMatchingProperty() {
-        return getString(MATCHING_PROPERTY);
+    public MatchingProperty getMatchingProperty() {
+        String value = getStringProperty(MATCHING_PROPERTY.getName());
+        if (value == null) {
+            return null;
+        }
+        return MatchingProperty.valueOf(value);
     }
 
     @Override
-    public AccountLinkingPolicy setMatchingProperty(String matchingProperty) {
-        setProperty(MATCHING_PROPERTY, matchingProperty);
+    public AccountLinkingPolicy setMatchingProperty(MatchingProperty matchingProperty) {
+        String mp = matchingProperty == null ? null : matchingProperty.name();
+        setProperty(MATCHING_PROPERTY, mp);
         return this;
     }
 
     @Override
     public Tenant getTenant() {
         return getResourceProperty(TENANT);
+    }
+
+    @Override
+    public boolean isAccountLinkingEnabled () {
+        return AccountLinkingStatus.ENABLED.equals(getStatus()) ? true : false;
+    }
+
+    @Override
+    public boolean isAutomaticProvisioningEnabled () {
+        return AutomaticProvisioningStatus.ENABLED.equals(getAutomaticProvisioning()) ? true : false;
     }
 }

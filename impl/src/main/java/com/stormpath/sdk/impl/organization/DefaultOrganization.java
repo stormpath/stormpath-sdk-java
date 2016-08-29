@@ -15,10 +15,7 @@
 */
 package com.stormpath.sdk.impl.organization;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountLinkingPolicy;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
@@ -32,7 +29,7 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -58,7 +55,7 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
     static final StringProperty NAME = new StringProperty("name");
     static final StringProperty DESCRIPTION = new StringProperty("description");
     static final StringProperty NAME_KEY = new StringProperty("nameKey");
-    static final StatusProperty<OrganizationStatus> STATUS = new StatusProperty<OrganizationStatus>(OrganizationStatus.class);
+    static final EnumProperty<OrganizationStatus> STATUS = new EnumProperty<OrganizationStatus>(OrganizationStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
@@ -393,27 +390,5 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
     @Override
     public AccountLinkingPolicy getAccountLinkingPolicy() {
         return getResourceProperty(ACCOUNT_LINKING_POLICY);
-    }
-
-    /* @since 1.1.0 */
-    @Override
-    public boolean isAccountLinkingEnabled () {
-        AccountLinkingPolicy accountLinkingPolicy = getResourceProperty(ACCOUNT_LINKING_POLICY);
-
-        if(accountLinkingPolicy == null || accountLinkingPolicy.getStatus().isEmpty()){
-            return false;
-        }
-        return accountLinkingPolicy.getStatus().equalsIgnoreCase("ENABLED") ? true : false;
-    }
-
-    /* @since 1.1.0 */
-    @Override
-    public boolean isAutomaticProvisioningForAccountLinkingEnabled () {
-        AccountLinkingPolicy accountLinkingPolicy = getResourceProperty(ACCOUNT_LINKING_POLICY);
-
-        if(accountLinkingPolicy == null || accountLinkingPolicy.getAutomaticProvisioning().isEmpty()){
-            return false;
-        }
-        return accountLinkingPolicy.getAutomaticProvisioning().equalsIgnoreCase("ENABLED") ? true : false;
     }
 }

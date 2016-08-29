@@ -19,55 +19,54 @@ public interface AccountLinkingPolicy extends Resource, Saveable {
      * @return the status of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
      * Possible values are : ENABLED, DISABLED.
      */
-    String getStatus();
+    AccountLinkingStatus getStatus();
 
-    /**
+   /**
      * Sets the status of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
-     * Possible values are : ENABLED, DISABLED.
-     *
+     * @param status - Possible values are : ENABLED, DISABLED.
      * @return this instance for method chaining.
      */
-    AccountLinkingPolicy setStatus(String status);
+    AccountLinkingPolicy setStatus(AccountLinkingStatus status);
 
     /**
      * Returns the automaticProvisioning status of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
      * Possible values are : ENABLED, DISABLED.
      *
-     * @return the automaticProvisioning status of the accountLinkingPolicy for the
+     * @return the automaticProvisioningStatus of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
      * Possible values are : ENABLED, DISABLED.
      */
-    String getAutomaticProvisioning();
+    AutomaticProvisioningStatus getAutomaticProvisioning();
 
     /**
-     * Sets the automaticProvisioning status of the accountLinkingPolicy for the
+     * Sets the automaticProvisioningStatus of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
      * Possible values are : ENABLED, DISABLED.
      *
      * @return this instance for method chaining.
      */
-    AccountLinkingPolicy setAutomaticProvisioning(String automaticProvisioningStatus);
+    AccountLinkingPolicy setAutomaticProvisioning(AutomaticProvisioningStatus automaticProvisioningStatus);
 
     /**
      * Returns the matchingProperty of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
-     * Possible values are : EMAIL, USERNAME. null by default.
+     * Possible values are : email, username. null by default.
      *
      * @return the matchingProperty of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
-     * Possible values are : EMAIL, USERNAME.
+     * Possible values are : email, username.
      */
-    String getMatchingProperty();
+    MatchingProperty getMatchingProperty();
 
     /**
      * Sets the the matchingProperty of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
-     * Possible values are : EMAIL, USERNAME. null by default.
+     * Possible values are : email, username. null by default.
      *
      * @return this instance for method chaining.
      */
-    AccountLinkingPolicy setMatchingProperty(String matchingProperty);
+    AccountLinkingPolicy setMatchingProperty(MatchingProperty matchingProperty);
 
     /**
      * Returns the parent {@link Tenant Tenant} of the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
@@ -77,4 +76,20 @@ public interface AccountLinkingPolicy extends Resource, Saveable {
      * associated to this {@link AccountLinkingPolicy accountLinkingPolicy}
      */
     Tenant getTenant();
+
+    /**
+     * Returns true if the status of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
+     * is {@link AccountLinkingStatus#ENABLED ENABLED}, false otherwise
+     * @return true if the status of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
+     * is {@link AccountLinkingStatus#ENABLED ENABLED}, false otherwise
+     */
+    public boolean isAccountLinkingEnabled ();
+
+    /**
+     * Returns true if the automaticProvisioningStatus of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
+     * is {@link AutomaticProvisioningStatus#ENABLED ENABLED}, false otherwise
+     * @return true if the automaticProvisioningStatus of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
+     * is {@link AutomaticProvisioningStatus#ENABLED ENABLED}, false otherwise
+     */
+    public boolean isAutomaticProvisioningEnabled ();
 }

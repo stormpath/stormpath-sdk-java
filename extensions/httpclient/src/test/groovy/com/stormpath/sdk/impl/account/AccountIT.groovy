@@ -64,7 +64,6 @@ class AccountIT extends ClientIT {
 
         //create a test account:
         def acct = createTestAccount(app)
-        deleteOnTeardown(acct)
 
         //add the account to the group:
         GroupMembership membership = group.addAccount(acct);
@@ -111,6 +110,7 @@ class AccountIT extends ClientIT {
         assertTrue acct.isLinkedToAccount(acct2.href.toLowerCase())
         assertTrue acct.isLinkedToAccount(acct2.href.toUpperCase())
         assertFalse acct.isLinkedToAccount(acct2.href.substring(0, acct2.href.length() - 2) + "*")
+        assertNotEquals acct.getDirectory().getHref(), acct2.getDirectory().getHref()
 
     }
 
@@ -306,6 +306,7 @@ class AccountIT extends ClientIT {
         return acct
     }
 
+    //@since 1.1.0
     Account createAccountInDir(Directory directory){
 
         Account account = client.instantiate(Account)

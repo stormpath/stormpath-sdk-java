@@ -56,7 +56,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final StringProperty GIVEN_NAME = new StringProperty("givenName");
     static final StringProperty MIDDLE_NAME = new StringProperty("middleName");
     static final StringProperty SURNAME = new StringProperty("surname");
-    static final StatusProperty<AccountStatus> STATUS = new StatusProperty<>(AccountStatus.class);
+    static final EnumProperty<AccountStatus> STATUS = new EnumProperty<>(AccountStatus.class);
     static final StringProperty FULL_NAME = new StringProperty("fullName"); //computed property, can't set it or query based on it
 
     // INSTANCE RESOURCE REFERENCES:
@@ -331,6 +331,17 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
      * @since 1.1.0
      */
     @Override
+    public boolean isMemberOfGroup(Group group) {
+        if(group == null) {
+            return false;
+        }
+        return isMemberOfGroup(group.getHref());
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
     public boolean isLinkedToAccount(String href) {
         if(!Strings.hasText(href)) {
             return false;
@@ -341,6 +352,17 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
             }
         }
         return false;
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public boolean isLinkedToAccount(Account otherAccount) {
+        if(otherAccount == null){
+            return false;
+        }
+        return isLinkedToAccount(otherAccount.getHref());
     }
 
     @Override

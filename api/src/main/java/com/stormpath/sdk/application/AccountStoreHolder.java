@@ -15,7 +15,6 @@
 */
 package com.stormpath.sdk.application;
 
-import com.stormpath.sdk.account.AccountLinkingPolicy;
 import com.stormpath.sdk.directory.AccountStore;
 
 /**
@@ -139,29 +138,5 @@ public interface AccountStoreHolder<T extends AccountStoreHolder> {
      *                     new groups created by the Application or Organization.
      */
     void setDefaultGroupStore(AccountStore accountStore);
-
-    /**
-     * Returns the {@link AccountLinkingPolicy} associated with this AccountStoreHolder.
-     * @return the {@link AccountLinkingPolicy} associated with this AccountStoreHolder.
-     *
-     * @since 1.1.0
-     */
-    AccountLinkingPolicy getAccountLinkingPolicy();
-
-    /**
-     * Returns whether accountLinking is enabled for this AccountStoreHolder based on its {@link AccountLinkingPolicy}
-     * @return whether accountLinking is enabled for this AccountStoreHolder based on its {@link AccountLinkingPolicy}
-     *
-     * @since 1.1.0
-     */
-    boolean isAccountLinkingEnabled();
-
-    /**
-     * Returns whether automaticProvisioningForAccountLinking is enabled for this AccountStoreHolder based on its {@link AccountLinkingPolicy}
-     * @return whether automaticProvisioningForAccountLinking is enabled for this AccountStoreHolder based on its {@link AccountLinkingPolicy}
-     *
-     * @since 1.1.0
-     */
-    boolean isAutomaticProvisioningForAccountLinkingEnabled ();
 
 }

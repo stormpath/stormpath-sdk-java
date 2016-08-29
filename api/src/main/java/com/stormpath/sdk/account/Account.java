@@ -379,6 +379,15 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     boolean isMemberOfGroup(String hrefOrName);
 
     /**
+     * Returns true if the account belongs to a group, false otherwise.
+     *
+     * @param group the group being sought.
+     * @return true if the account belongs to a group, false otherwise.
+     * @since 1.1.0
+     */
+    boolean isMemberOfGroup(Group group);
+
+    /**
      * Returns true if the account is linked to the account whose href is (case insensitive) equal to the specified
      * href value, false otherwise.
      *
@@ -388,6 +397,15 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.1.0
      */
     boolean isLinkedToAccount(String href);
+
+    /**
+     * Returns true if this account is linked to the other account, false otherwise.
+     *
+     * @param otherAccount the other account.
+     * @return true if this account is linked to the the other account, false otherwise.
+     * @since 1.1.0
+     */
+    boolean isLinkedToAccount(Account otherAccount);
 
     /**
      * Returns the ProviderData Resource belonging to the account.

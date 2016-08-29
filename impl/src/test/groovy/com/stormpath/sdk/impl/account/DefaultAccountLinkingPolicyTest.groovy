@@ -16,9 +16,12 @@
 package com.stormpath.sdk.impl.account
 
 import com.stormpath.sdk.account.AccountLinkingPolicy
+import com.stormpath.sdk.account.AccountLinkingStatus
+import com.stormpath.sdk.account.AutomaticProvisioningStatus
+import com.stormpath.sdk.account.MatchingProperty
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
@@ -37,9 +40,9 @@ public class DefaultAccountLinkingPolicyTest {
         def propertyDescriptors = accountLinkingPolicy.getPropertyDescriptors()
         assertEquals(propertyDescriptors.size(), 4)
 
-        assertTrue(propertyDescriptors.get("status") instanceof StringProperty)
-        assertTrue(propertyDescriptors.get("automaticProvisioning") instanceof StringProperty)
-        assertTrue(propertyDescriptors.get("matchingProperty") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("status") instanceof EnumProperty)
+        assertTrue(propertyDescriptors.get("automaticProvisioning") instanceof EnumProperty)
+        assertTrue(propertyDescriptors.get("matchingProperty") instanceof EnumProperty)
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
     }
 
@@ -51,7 +54,7 @@ public class DefaultAccountLinkingPolicyTest {
         def properties = [href: "https://api.stormpath.com/v1/accountLinkingPolicies/35YM3OwioW9PVtfLOh6q1e",
                           status: "DISABLED",
                           automaticProvisioning: "DISABLED",
-                          matchingProperty: "EMAIL",
+                          matchingProperty: "email", //case-sensitive
                           tenant: [href: "https://api.stormpath.com/v1/tenants/3Tj2L7gxX6NkXtiiLkh1WF"]
         ]
 
@@ -62,14 +65,15 @@ public class DefaultAccountLinkingPolicyTest {
 
         replay internalDataStore
 
-        assertEquals(accountLinkingPolicy.getStatus(), properties.status)
-        assertEquals(accountLinkingPolicy.getAutomaticProvisioning(), properties.automaticProvisioning)
-        assertEquals(accountLinkingPolicy.getMatchingProperty(), properties.matchingProperty)
+        assertEquals(accountLinkingPolicy.getStatus().name(), properties.status)
+        assertEquals(accountLinkingPolicy.getAutomaticProvisioning().name(), properties.automaticProvisioning)
+        assertEquals(accountLinkingPolicy.getMatchingProperty().name(), properties.matchingProperty)
 
-        accountLinkingPolicy = accountLinkingPolicy.setStatus('ENABLED').setAutomaticProvisioning('ENABLED').setMatchingProperty('USERNAME')
+        accountLinkingPolicy = accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).setMatchingProperty(MatchingProperty.username)
 
-        assertEquals(accountLinkingPolicy.getStatus(), "ENABLED")
-        assertEquals(accountLinkingPolicy.getAutomaticProvisioning(), "ENABLED")
+        assertEquals(accountLinkingPolicy.getStatus().name(), "ENABLED")
+        assertEquals(accountLinkingPolicy.getAutomaticProvisioning().name(), "ENABLED")
+        assertEquals(accountLinkingPolicy.getMatchingProperty().name(), "username")
         assertEquals(accountLinkingPolicy.getHref(), properties.href)
 
         def tenant = accountLinkingPolicy.getTenant()
@@ -97,7 +101,9 @@ public class DefaultAccountLinkingPolicyTest {
 
         replay internalDataStore
 
-        accountLinkingPolicy = accountLinkingPolicy.setStatus('ENABLED').setAutomaticProvisioning('ENABLED').setMatchingProperty('USERNAME')
+        accountLinkingPolicy = accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).
+                                setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).
+                                setMatchingProperty(MatchingProperty.username)
 
         try {
             accountLinkingPolicy.setStatus(null)

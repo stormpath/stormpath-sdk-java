@@ -63,7 +63,7 @@ import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.ListProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.impl.saml.DefaultSamlCallbackHandler;
 import com.stormpath.sdk.impl.saml.DefaultSamlIdpUrlBuilder;
@@ -159,8 +159,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     // SIMPLE PROPERTIES:
     static final StringProperty                    NAME        = new StringProperty("name");
     static final StringProperty                    DESCRIPTION = new StringProperty("description");
-    static final StatusProperty<ApplicationStatus> STATUS      =
-        new StatusProperty<ApplicationStatus>(ApplicationStatus.class);
+    static final EnumProperty<ApplicationStatus> STATUS      =
+        new EnumProperty<ApplicationStatus>(ApplicationStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant>              TENANT                        =
@@ -853,7 +853,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /* @since 1.0.RC8.2 */
-    public IdSiteAuthenticator createIdSiteAuthenticator(){
+    public IdSiteAuthenticator createIdSiteAuthenticator() {
         return new DefaultIdSiteAuthenticator(this, getDataStore());
     }
 
@@ -861,27 +861,5 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public AccountLinkingPolicy getAccountLinkingPolicy() {
         return getResourceProperty(ACCOUNT_LINKING_POLICY);
-    }
-
-    /* @since 1.1.0 */
-    @Override
-    public boolean isAccountLinkingEnabled () {
-        AccountLinkingPolicy accountLinkingPolicy = getResourceProperty(ACCOUNT_LINKING_POLICY);
-
-        if(accountLinkingPolicy == null || accountLinkingPolicy.getStatus().isEmpty()){
-            return false;
-        }
-        return accountLinkingPolicy.getStatus().equalsIgnoreCase("ENABLED") ? true : false;
-    }
-
-    /* @since 1.1.0 */
-    @Override
-    public boolean isAutomaticProvisioningForAccountLinkingEnabled () {
-        AccountLinkingPolicy accountLinkingPolicy = getResourceProperty(ACCOUNT_LINKING_POLICY);
-
-        if(accountLinkingPolicy == null || accountLinkingPolicy.getAutomaticProvisioning().isEmpty()){
-            return false;
-        }
-        return accountLinkingPolicy.getAutomaticProvisioning().equalsIgnoreCase("ENABLED") ? true : false;
     }
 }
