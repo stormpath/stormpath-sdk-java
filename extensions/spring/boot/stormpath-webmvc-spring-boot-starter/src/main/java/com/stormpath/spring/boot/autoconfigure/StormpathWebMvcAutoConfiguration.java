@@ -133,13 +133,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    @Override
-    public ObjectMapper stormpathObjectMapper() {
-        return super.stormpathObjectMapper();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathLayoutInterceptor")
     public HandlerInterceptor stormpathLayoutInterceptor() {
         return super.stormpathLayoutInterceptor();

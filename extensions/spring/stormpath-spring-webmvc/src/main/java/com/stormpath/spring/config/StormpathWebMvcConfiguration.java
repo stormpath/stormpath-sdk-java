@@ -110,12 +110,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathControllerView();
     }
 
-    @Bean
-    @Override
-    public ObjectMapper stormpathObjectMapper() {
-        return super.stormpathObjectMapper();
-    }
-
     /**
      * @since 1.0.0
      */

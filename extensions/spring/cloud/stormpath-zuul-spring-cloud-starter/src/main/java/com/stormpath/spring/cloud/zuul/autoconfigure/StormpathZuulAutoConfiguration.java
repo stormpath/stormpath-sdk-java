@@ -7,13 +7,12 @@ import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Function;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.zuul.account.DefaultAccountHeaderValueResolver;
-import com.stormpath.zuul.account.ForwardedAccountHeaderFilter;
 import com.stormpath.sdk.servlet.json.JsonFunction;
 import com.stormpath.sdk.servlet.json.ResourceJsonFunction;
 import com.stormpath.sdk.servlet.mvc.ResourceToMapConverter;
+import com.stormpath.zuul.account.DefaultAccountHeaderValueResolver;
+import com.stormpath.zuul.account.ForwardedAccountHeaderFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,9 +32,8 @@ public class StormpathZuulAutoConfiguration {
     @Autowired
     private AccountResolver accountResolver; //provided by StormpathWebMvcAutoConfiguration
 
-    @Autowired
-    @Qualifier("stormpathObjectMapper") //provided by StormpathWebMvcAutoConfiguration
-    private ObjectMapper objectMapper;
+    @Autowired(required = false)
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${stormpath.zuul.account.filter.type}")
     private String forwardedAccountFilterType = "pre";
@@ -90,6 +88,4 @@ public class StormpathZuulAutoConfiguration {
         resolver.setAccountStringFactory(fun);
         return resolver;
     }
-
-
 }
