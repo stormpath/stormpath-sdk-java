@@ -222,6 +222,31 @@ class DefaultConfigFactoryTest {
         assertEquals 0, config.size()
     }
 
+    /**
+     * Test that properties are loaded from the ServletContext init parameter of 'stormpath.properties'.
+     * @since 1.0.4
+     */
+    @Test
+    public void testServletContextParamProperties() {
+
+        String key1 = "stormpath.test.key1"
+        String value1 = "test.value.result1"
+        String key2 = "stormpath.test.key2"
+        String value2 = "test value result 2"
+
+        def contextProp = """
+            $key1 = $value1
+            $key2 = $value2
+            """
+
+        def servletContext = new MockServletContext()
+        servletContext.setInitParameter("stormpath.properties", contextProp)
+
+        config = new ConfigLoader().createConfig(servletContext)
+        assertEquals config.get(key1), value1
+        assertEquals config.get(key2), value2
+    }
+
     @AfterTest
     public void after() {
         // reset idsite and callback back to defaults
