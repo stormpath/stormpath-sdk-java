@@ -546,9 +546,8 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         }
         if (accountLink != null){
             accountLink.delete();
-        } else {
-            throw new IllegalStateException("These accounts are not linked.");
         }
+
         return accountLink;
     }
 

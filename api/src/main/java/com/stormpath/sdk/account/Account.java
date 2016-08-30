@@ -688,7 +688,6 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param otherAccountHref the href of the other account that this account will be linked to
      * @return the new AccountLink resource created reflecting the link between two accounts.
-     * @throws IllegalStateException if no Account matching {@code otherAccountHref} could be found.
      *
      * @since 1.1.0
      */
@@ -701,8 +700,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * afterwards. This method will persist the changes in the backend immediately.</p>
      *
      * @param otherAccount the {@code Account} object from which the account must be unlinked.
-     * @return the AccountLink object that was just deleted
-     * @throws IllegalStateException if this Account is not linked to the otherAccount.
+     * @return the AccountLink object that was deleted or {@code null} if the two accounts were not linked.
      *
      * @since 1.1.0
      */
@@ -715,8 +713,8 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * afterwards. This method will persist the changes in the backend immediately.</p>
      *
      * @param otherAccountHref the href of the other account from which the account must be unlinked.
-     * @return the AccountLink object that was just deleted
-     * @throws IllegalStateException if this Account is not linked to the otherAccount matching the given {@code href}.
+     * @return the AccountLink object that was deleted or {@code null} if the two accounts were not linked.
+     * @throws com.stormpath.sdk.resource.ResourceException if the AccountLink could not be deleted.
      *
      * @since 1.1.0
      */

@@ -276,18 +276,6 @@ class OrganizationIT extends ClientIT {
         assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
         assertNotNull accountLinkingPolicy.getMatchingProperty()
         assertEquals accountLinkingPolicy.getMatchingProperty().name(), 'email'
-
-        accountLinkingPolicy.setMatchingProperty(null) // partially update matchingProperty
-        accountLinkingPolicy.save()
-        accountLinkingPolicy = org.getAccountLinkingPolicy()
-        assertNotNull accountLinkingPolicy
-        assertNotNull accountLinkingPolicy.getStatus()
-        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
-        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
-
-        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
-        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
-        assertNull accountLinkingPolicy.getMatchingProperty()
     }
 
     private assertAccountStoreMappingListSize(OrganizationAccountStoreMappingList accountStoreMappings, int expectedSize) {
