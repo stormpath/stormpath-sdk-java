@@ -141,4 +141,19 @@ public interface PasswordStrength extends Resource, Saveable {
      */
     PasswordStrength setMinNumeric(int minNumeric);
 
+    /**
+     * Returns the size of the history of passwords you can't reuse by this policy.
+     *
+     * @return the size of the history of passwords you can't reuse by this policy.
+     */
+    int getPreventReuse();
+
+    /**
+     * Specifies a history of the last passwords used
+     * any number between 1 and 25 sets the size of this history
+     * 0 disables this setting, meaning that reusing the same password is valid
+     *
+     * @return this instance for method chaining.
+     */
+    PasswordStrength setPreventReuse(int preventReuse);
 }
