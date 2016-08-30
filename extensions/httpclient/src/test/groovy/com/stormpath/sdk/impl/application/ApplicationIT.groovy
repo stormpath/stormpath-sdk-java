@@ -1680,7 +1680,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test
+    @Test(enabled = false)// TODO : enable after AM-3464 and AM-3402 is available in Prod
     void testRetrieveAndUpdateAccountLinkingPolicy() {
         def app = createTempApp()
 
@@ -1714,7 +1714,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test
+    @Test(enabled = false)// TODO : enable after AM-3464 and AM-3402 is available in Prod
     void testRetrieveAndUpdateAccountLinkingPolicyPartially() {
         def app = createTempApp()
 
