@@ -3,7 +3,7 @@ package com.stormpath.sdk.servlet.utils
 import java.lang.reflect.Field
 
 /**
- * @since 1.1.0
+ * @since 1.0.4
  */
 class ConfigTestUtils {
 

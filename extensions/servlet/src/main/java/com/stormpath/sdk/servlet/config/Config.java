@@ -90,7 +90,7 @@ public interface Config extends Map<String, String> {
     Publisher<RequestEvent> getRequestEventPublisher();
 
     /**
-     * @since 1.1.0
+     * @since 1.0.4
      */
     boolean isStormpathEnabled();
 

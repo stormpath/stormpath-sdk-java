@@ -20,7 +20,7 @@ import static org.testng.Assert.assertFalse
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.1.0
+ * @since 1.0.4
  */
 class SelfConfiguredStormpathFilterTest {
 

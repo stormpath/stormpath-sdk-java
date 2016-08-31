@@ -17,7 +17,7 @@ import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertNull
 
 /**
- * @since 1.1.0
+ * @since 1.0.4
  */
 class DefaultApplicationLoaderListenerTest {
 
