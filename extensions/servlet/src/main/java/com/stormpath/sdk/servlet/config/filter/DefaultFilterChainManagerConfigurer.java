@@ -25,7 +25,6 @@ import com.stormpath.sdk.servlet.config.impl.ExpressionConfigReader;
 import com.stormpath.sdk.servlet.filter.DefaultFilter;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
 
-import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.LinkedHashMap;
@@ -59,6 +58,10 @@ public class DefaultFilterChainManagerConfigurer {
 
         //Too much copy-and-paste. YUCK.
         //TODO: refactor this method to be more generic
+
+        if (!config.isStormpathEnabled()) {
+            return mgr;
+        }
 
         ConfigReader reader = new ExpressionConfigReader(servletContext, config);
 
