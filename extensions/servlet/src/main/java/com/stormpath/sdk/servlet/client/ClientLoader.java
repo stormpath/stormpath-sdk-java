@@ -29,63 +29,63 @@ import javax.servlet.ServletContext;
  * available in the {@code ServletContext} at application startup.  Once in the {@code ServletContext}, the
  * {@code Client} is available to any application component that needs to interact with Stormpath; these components can
  * can access the {@code client} instance easily, for example:
- * <p>
+ *
  * <pre>
  * (Client)aServletRequest.getAttribute(Client.class.getName());
  * </pre>
- * <p>
+ *
  * <h3>Usage</h3>
- * <p>
+ *
  * <p>This implementation will, without any configuration at all, instantiate and use a
  * {@link DefaultServletContextClientFactory} to build the {@link Client} used by the application.  The
  * {@code DefaultServletContextClientFactory} supports the following {@code context-param} options in your
  * {@code web.xml} configuration: {@code stormpathApiKeyFileLocation} and {@code stormpathClientAuthenticationScheme}.
  * </p>
- * <p>
+ *
  * <h4>{@code stormpathApiKeyFileLocation}</h4>
- * <p>
+ *
  * <p>The {@code stormpathApiKeyFileLocation} {@code context-param}, if present, allows you to specify the resource
  * path to the {@code apiKey.properties} file that should be used to authenticate requests to Stormpath.  For example:</p>
- * <p>
+ *
  * <pre>
  * &lt;context-param&gt;
  *     &lt;param-name&gt;stormpathApiKeyFileLocation&lt;/param-name&gt;
  *     &lt;param-value&gt;/users/whatever/stormpath/apiKey.properties&lt;/param-value&gt;
  * &lt;/context-param&gt;
  * </pre>
- * <p>
+ *
  * <p>You may load files from the filesystem, classpath, or URLs by prefixing the location path with
  * {@code file:}, {@code classpath:}, or {@code url:} respectively.  If no prefix is present, {@code file:}
  * is assumed by default.</p>
- * <p>
+ *
  * <p>If you do not specify this context-param, <code>${user.home}/.stormpath/apiKey.properties</code> is assumed by
  * default.</p>
- * <p>
+ *
  * <h4>{@code stormpathClientAuthenticationScheme}</h4>
- * <p>
+ *
  * <p>The {@code stormpathClientAuthenticationScheme} {@code context-param}, if present, allows you to specify a
  * different HTTP authentication scheme than Stormpath's (very secure) default.  At the moment, the only other
  * alternative is {@code basic}. For example:</p>
- * <p>
+ *
  * <pre>
  * &lt;context-param&gt;
  *     &lt;param-name&gt;stormpathClientAuthenticationScheme&lt;/param-name&gt;
  *     &lt;param-value&gt;basic&lt;/param-value&gt;
  * &lt;/context-param&gt;
  * </pre>
- * <p>
+ *
  * <p><b>Because Stormpath's default authentication scheme is more secure than HTTP Basic authentication, it is
  * strongly recommended that you do not override this value unless you have to</b>.  For example, Google App Engine
  * users will be forced to specify {@code basic} here because GAE's outbound HTTP connection behavior interferes with
  * the default algorithm.  Again, it is not recommended that you use {@code basic} unless you have a technical
  * limitation that prevents you from using Stormpath's default.</p>
- * <p>
+ *
  * <p>If you do not specify this context-param,
  * <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest"><code>sauthc1</code></a>
  * is assumed by default.</p>
- * <p>
+ *
  * <h4>Custom ServletContextClientFactory Implementation</h4>
- * <p>
+ *
  * <p>As mentioned above, the {@code ClientLoader} assumes the {@code DefaultServletContextClientFactory} behavior
  * (supporting the above two {@code context-param} options) is sufficient for many needs.  If you need to build your
  * application's {@code Client} instance in a custom way - perhaps to enable specific
@@ -93,17 +93,17 @@ import javax.servlet.ServletContext;
  * {@link com.stormpath.sdk.client.Clients#builder() ClientBuilder} - you can implement the
  * {@link ServletContextClientFactory} interface yourself and specify that implementation class name as
  * follows:</p>
- * <p>
+ *
  * <pre>
  * &lt;context-param&gt;
  *     &lt;param-name&gt;stormpathServletContextClientFactoryClass&lt;/param-name&gt;
  *     &lt;param-value&gt;<b>com.mycompany.myapp.stormpath.MyCustomServletContextClientFactory</b>&lt;/param-value&gt;
  * &lt;/context-param&gt;
  * </pre>
- * <p>
+ *
  * <p>If you do not specify this context-param, {@link DefaultServletContextClientFactory
  * com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory} is assumed by default.</p>
- * <p>
+ *
  * <p><b>Because the {@code DefaultServletContextClientFactory} implementation is basic and does not support specifying
  * a custom CacheManager implementation, it is recommended that you create your own
  * {@link ServletContextClientFactory} implementation and specify that class name here for more advanced use cases.
