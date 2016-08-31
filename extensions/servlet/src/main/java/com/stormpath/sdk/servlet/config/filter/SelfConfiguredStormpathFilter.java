@@ -62,7 +62,7 @@ public class SelfConfiguredStormpathFilter extends StormpathFilter {
     protected void doInit() throws ServletException {
         ServletContext servletContext = getServletContext();
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-        setEnabled(config.isStormpathEnabled());
+        setEnabled(config.isStormpathWebEnabled());
 
         if (isEnabled()) {
             setClient(config.getClient());

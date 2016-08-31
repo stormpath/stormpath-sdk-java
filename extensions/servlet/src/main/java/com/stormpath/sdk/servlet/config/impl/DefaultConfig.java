@@ -94,6 +94,7 @@ public class DefaultConfig implements Config {
     public static final String CALLBACK_ENABLED = "stormpath.web.callback.enabled";
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
     public static final String STORMPATH_ENABLED = "stormpath.enabled";
+    public static final String STORMPATH_WEB_ENABLED = "stormpath.web.enabled";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -239,6 +240,13 @@ public class DefaultConfig implements Config {
         // get as String in case property not defined
         String isEnabled = CFG.getString(STORMPATH_ENABLED);
         return isEnabled == null || CFG.getBoolean(STORMPATH_ENABLED);
+    }
+
+    @Override
+    public boolean isStormpathWebEnabled() {
+        // get as String in case property not defined
+        String isWebEnabled = CFG.getString(STORMPATH_WEB_ENABLED);
+        return isWebEnabled == null || CFG.getBoolean(STORMPATH_WEB_ENABLED);
     }
 
     @Override

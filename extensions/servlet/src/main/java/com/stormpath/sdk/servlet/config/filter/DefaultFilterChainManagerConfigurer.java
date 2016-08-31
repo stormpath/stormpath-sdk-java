@@ -56,12 +56,12 @@ public class DefaultFilterChainManagerConfigurer {
 
     public FilterChainManager configure() throws ServletException {
 
-        //Too much copy-and-paste. YUCK.
-        //TODO: refactor this method to be more generic
-
-        if (!config.isStormpathEnabled()) {
+        if (!config.isStormpathWebEnabled()) {
             return mgr;
         }
+
+        //Too much copy-and-paste. YUCK.
+        //TODO: refactor this method to be more generic
 
         ConfigReader reader = new ExpressionConfigReader(servletContext, config);
 

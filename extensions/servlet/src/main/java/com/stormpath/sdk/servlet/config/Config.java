@@ -94,6 +94,11 @@ public interface Config extends Map<String, String> {
      */
     boolean isStormpathEnabled();
 
+    /**
+     * @since 1.0.4
+     */
+    boolean isStormpathWebEnabled();
+
     boolean isRegisterAutoLoginEnabled();
 
     /**

@@ -40,7 +40,7 @@ public class FilterChainManagerFactory extends ConfigSingletonFactory<FilterChai
         Config config = getConfig();
         DefaultFilterChainManager mgr = new DefaultFilterChainManager(servletContext);
 
-        if (config.isStormpathEnabled()) {
+        if (config.isStormpathWebEnabled()) {
             //add the defaults:
             for (DefaultFilter defaultFilter : DefaultFilter.values()) {
                 Object o = defaultFilter.getFactoryClass();
@@ -70,7 +70,7 @@ public class FilterChainManagerFactory extends ConfigSingletonFactory<FilterChai
                 }
             }
         } else {
-            log.warn("Stormpath disabled, filters not added.");
+            log.warn("Stormpath web support disabled, filters not added.");
         }
 
         return new DefaultFilterChainManagerConfigurer(mgr, servletContext, config).configure();

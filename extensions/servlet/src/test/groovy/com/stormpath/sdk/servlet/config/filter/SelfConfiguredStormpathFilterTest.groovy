@@ -65,7 +65,7 @@ class SelfConfiguredStormpathFilterTest {
     @Test
     public void testStormpathFilterDisabled() {
         Map<String, String> env = new HashMap<>()
-        env.put('STORMPATH_ENABLED', 'false')
+        env.put('STORMPATH_WEB_ENABLED', 'false')
         ConfigTestUtils.setEnv(env)
 
         config = new ConfigLoader().createConfig(mockServletContext)
