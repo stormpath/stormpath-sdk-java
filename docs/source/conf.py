@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Stormpath Java Servlet Plugin documentation build configuration file, created by
+# Stormpath documentation build configuration file, created by
 # sphinx-quickstart on Mon Dec  8 16:03:46 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -52,8 +52,12 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Stormpath Java Servlet Plugin'
-copyright = u'2014, Stormpath, Inc.'
+if tags.has('servlet'):
+    project = u'Stormpath Java Servlet Plugin'
+else:
+    project = u'Spring Boot Stormpath Web Starter'
+
+copyright = u'2016, Stormpath, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -108,6 +112,15 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
+
+if tags.has('servlet'):
+    rst_prolog = """
+    .. |project| replace:: Stormpath Java Servlet Plugin
+    """
+else:
+    rst_prolog = """
+    .. |project| replace:: Spring Boot Stormpath Web Starter
+    """
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -191,8 +204,10 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'StormpathServletPlugindoc'
-
+if tags.has('servlet'):
+    htmlhelp_basename = 'StormpathServletPlugindoc'
+else:
+    htmlhelp_basename = 'SpringBootStormpathWebStarterDoc'
 
 # Make the default syntax highlighting target Javascript code snippets.
 highlight_language = 'java'
@@ -213,10 +228,16 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-  ('index', 'StormpathServletPlugin.tex', u'Stormpath Java Servlet Plugin Documentation',
-   u'Stormpath, Inc.', 'manual'),
-]
+if tags.has('servlet'):
+    latex_documents = [
+      ('index', 'StormpathServletPlugin.tex', u'Stormpath Java Servlet Plugin Documentation',
+       u'Stormpath, Inc.', 'manual'),
+    ]
+else:
+    latex_documents = [
+        ('index', 'SpringBootStormpathWebStarter.tex', u'Spring Boot Stormpath Web Starter Documentation',
+         u'Stormpath, Inc.', 'manual'),
+    ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -243,10 +264,16 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'stormpath-servlet-plugin', u'Stormpath Java Servlet Plugin Documentation',
-     [u'Stormpath, Inc.'], 1)
-]
+if tags.has('servlet'):
+    man_pages = [
+        ('index', 'stormpath-servlet-plugin', u'Stormpath Java Servlet Plugin Documentation',
+         [u'Stormpath, Inc.'], 1)
+    ]
+else:
+    man_pages = [
+        ('index', 'spring-boot-stormpath-web-starter', u'Spring Boot Stormpath Web Starter Documentation',
+         [u'Stormpath, Inc.'], 1)
+    ]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
@@ -257,11 +284,18 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-  ('index', 'StormpathServletPlugin', u'Stormpath Java Servlet Plugin Documentation',
-   u'Stormpath', 'StormpathServletPlugin', 'One line description of project.',
-   'Miscellaneous'),
-]
+if tags.has('servlet'):
+    texinfo_documents = [
+        ('index', 'StormpathServletPlugin', u'Stormpath Java Servlet Plugin Documentation',
+         u'Stormpath', 'StormpathServletPlugin', 'One line description of project.',
+         'Miscellaneous'),
+    ]
+else:
+    texinfo_documents = [
+        ('index', 'SpringBootStormpathWebStarter', u'Spring Boot Stormpath Web Starter Documentation',
+         u'Stormpath', 'SpringBootStormpathWebStarter', 'One line description of project.',
+         'Miscellaneous'),
+    ]
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
@@ -279,7 +313,11 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'Stormpath Java Servlet Plugin'
+if tags.has('servlet'):
+    epub_title = u'Stormpath Java Servlet Plugin'
+else:
+    epub_title = u'Spring Boot Stormpath Web Starter'
+
 epub_author = u'Stormpath'
 epub_publisher = u'Stormpath'
 epub_copyright = u'2014, Stormpath'
