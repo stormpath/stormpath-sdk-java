@@ -31,7 +31,7 @@ Security Notice
 
    Using HTTPS only during login attempts and then returning to HTTP afterwards is an easily exploitable and very serious security hole.  Please do not do this.
 
-The plugin will not enforce HTTPS so that you may easily test during development. It is expected that you will enable HTTPS when you deploy your application to production.
+The |project| will not enforce HTTPS so that you may easily test during development. It is expected that you will enable HTTPS when you deploy your application to production.
 
 If your application is available on the public internet and you feel setting up your own TLS certificate is too bothersome, you can use a free `Cloudflare`_ account and they will provide you one for *free*.  There is simply no reason anymore to not enable TLS for all logged in user sessions. (Stormpath has no incentive to recommend Cloudflare. Free TLS for everyone is just too good to pass up).
 
@@ -68,6 +68,17 @@ If you want the user to visit a different default post-login path, set the ``sto
     stormpath.web.login.nextUri = /
 
 If the request to the login URI has a ``next`` query paramter, that parameter value will be used as the context-relative path instead and the ``stormpath.web.login.nextUri`` value will be ignored.
+
+View
+----
+
+When the URI is visited a default template view named ``stormpath/login`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.login.view`` property:
+
+.. code-block:: properties
+
+    stormpath.web.login.view = stormpath/login
+
+Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 i18n
 ----
@@ -108,7 +119,7 @@ When a user authenticates successfully during a request, how does the web applic
 
 HTTP is a stateless protocol, so there must be a way to represent the *state* of an authenticated user - the user identity, when they authenticated, etc - across requests.
 
-The plugin supports retaining authentication state across requests by delegating to an ``AuthenticationResult`` ``Saver``.  Upon a successful authentication, the SDK generates an ``AuthenticationResult``.  This ``AuthenticationResult`` is relayed to one or more ``Saver`` instances to persist this state however might be necessary so it is available during future requests.
+The |project| supports retaining authentication state across requests by delegating to an ``AuthenticationResult`` ``Saver``.  Upon a successful authentication, the SDK generates an ``AuthenticationResult``.  This ``AuthenticationResult`` is relayed to one or more ``Saver`` instances to persist this state however might be necessary so it is available during future requests.
 
 By default, a Cookie-based ``Saver`` is enabled.  This is a nice default because it it ensures that all state is maintained by the HTTP client ('user agent') and sent on all future requests automatically.
 
@@ -120,6 +131,8 @@ Even though the cookie approach is the default, you can choose server-side sessi
 
 Saving Authentication State
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The |project| will automatically save authentication state for access during later requests for you.  By default, a Cookie-based saver is enabled and no ``HttpSession`` access is used.  There is also an ``HttpSession``-based implementation that you can enable if you wish.  Finally, you can provide your own implementations entirely if neither of these two options are suitable.
 
 You can enable any number of AuthenticationResult savers as a comma-delimited list by setting the ``stormpath.web.authc.savers`` configuration property.  For example, the default value is the following:
 
@@ -214,23 +227,77 @@ Some notes about the default values:
 
   If you want to provide your own condition implementation that returns ``true`` or ``false`` based on request criteria, you can specify your own ``com.stormpath.sdk.servlet.http.Resolver<Boolean>`` implementation - for example:
 
-  .. code-block:: properties
+.. only:: servlet
 
-     stormpath.web.account.cookie.secure.resolver = my.impl.class.that.implements.ResolverThatReturnsBoolean
+    .. code-block:: properties
 
+       stormpath.web.account.cookie.secure.resolver = my.impl.class.that.implements.ResolverThatReturnsBoolean
+
+.. only:: springboot
+
+    .. code-block:: java
+
+       @Bean
+       public Resolver<Boolean> stormpathSecureResolver() {
+           return new MySecureResolver(); //implement me
+       }
+
+JWT Creation
+~~~~~~~~~~~~
+
+As mentioned above, the cookie value is actually a `cryptographically-signed JSON Web Token`_.  The JWT string itself is created by the ``stormpathAuthenticationJwtFactory`` bean, an instance of the ``AuthenticationJwtFactory`` interface.
+
+The default implementation supports configuring the JWT's TTL (time-to-live) to indicate how long it is valid for.  By default, the JWT itself is valid for 3 days, but it would never be used longer than the cookie's ``maxAge`` value (1 day by default).  If you need to change the JWT TLL, it is configurable via the ``stormpath.web.account.jwt.ttl`` property:
+
+.. code-block:: properties
+
+    # value is in _seconds_ (not milliseconds):
+    stormpath.web.account.jwt.ttl = 259200
+
+.. note::
+    When a JWT is stored in a cookie, the JWT TTL *must* be greater than or equal to the cookie's ``maxAge`` value (in seconds), otherwise the cookie will retain a stale/unusable JWT.
+
+.. only:: springboot
+
+  Custom AuthenticationJwtFactory
+  +++++++++++++++++++++++++++++++
+
+  If you need greater control over how the JWT is constructed, you can create your own ``AuthenticationJwtFactory`` implementation and override the ``stormpathAuthenticationJwtFactory`` bean to return your instance:
+
+  .. code-block:: java
+
+      @Bean
+      public AuthenticationJwtFactory stormpathAuthenticationJwtFactory() {
+          return new MyAuthenticationJwtFactory(); //implement me
+      }
+
+  .. tip::
+      The default ``AuthenticationJwtFactory`` implementation uses the `JJWT library <https://github.com/jwtk/jjwt>`_ to construct the JWT string.  Because the JJWT library is already available in the runtime classpath, you might find it convenient to use the same library for any custom JWT creation.
+
+Disabling Cookie Storage
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are going to use the ``HttpSession`` to store authentication state or use your own ``Saver<AuthenticationResult>`` implementation, you can disable the cookie if desired:
+
+.. code-block:: properties
+
+    stormpath.web.authc.savers.cookie.enabled = false
+
+But be careful: if you disable this, you *must* enable at least one other saver - at least one must be available to handle authentication correctly.
 
 HttpSession Storage
 ^^^^^^^^^^^^^^^^^^^
 
 The ``SessionAuthenticationResultSaver`` is available but not enabled by default.  This saver will save an efficient compact representation of the authenticated ``Account`` to the associated request's `HttpSession <http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpSession.html>`_.  This implementation assumes you are using sessions managed by the servlet container.
 
-You can enable this saver by adding the name ``session`` to the ``stormpath.web.authc.savers`` comma-delimited list.  For example:
+You can enable this saver by setting the ``stormpath.web.authc.savers.session.enabled`` property to ``true``:
 
 .. code-block:: properties
 
-   stormpath.web.authc.savers = cookie, session
+   # default is false:
+   stormpath.web.authc.savers.session.enabled = true
 
-The plugin does not require use of the ``HttpSession`` at all to remain compatible with stateless architectures.  It will not use the ``HttpSession`` unless you explicitly enable the ``session`` name in the above list.
+The |project| does not require use of the ``HttpSession`` at all to remain compatible with stateless architectures.  It will not use the ``HttpSession`` unless you explicitly set ``stormpath.web.authc.savers.session.enabled`` to ``true`` as indicated above.
 
 Finally, if the default HttpSession-based ``Saver`` implementation is not sufficient, you can specify a different implementation with the ``stormpath.web.authc.savers.session`` configuration property.  The value must be the full qualified class name of an implementation of the ``com.stormpath.sdk.servlet.http.Saver`` interface.  For example:
 
@@ -238,6 +305,40 @@ Finally, if the default HttpSession-based ``Saver`` implementation is not suffic
 
    stormpath.web.authc.savers.session = com.my.httpsession.based.Saver
 
+.. only:: springboot
+
+  Custom Savers
+  ^^^^^^^^^^^^^
+
+  Finally, if the default Cookie or HttpSession-based ``Saver`` implementations are not sufficient, you can specify different implementations by overriding the ``stormpathAuthenticationResultSavers`` bean and returning your own ``List`` of ``Saver<AuthenticationResult>`` instances.  For example:
+
+  .. code-block:: java
+
+      @Bean
+      public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
+
+          List<Saver<AuthenticationResult>> savers = new ArrayList<Saver<AuthenticationResult>>();
+
+          //add your custom Saver<AuthenticationResult> instances to the 'savers' list here
+
+          return savers;
+      }
+
+Spring Security
+---------------
+
+If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ then the ``Authentication`` token will be available in Spring Security's ``SecurityContext`` where you can obtain the Stormpath ``Account`` that is currently authenticated:
+
+.. code-block:: java
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) { //there may be no logged in user.
+        String accountHref = authentication.getUsername();
+        Account account = client.getAccount(accountHref, Account.class);
+        String username = account.getUsername();
+    }
+
+The authentication token will always be available indistinctively of the kind of authentication used to login. It does not matter whether the user authenticated via ``cookie``, ``access_token``, ``credentials``, ``social providers``, etc, the Stormpath Account information will always be available in Spring Security's ``SecurityContext``.
 
 .. _context path: http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServletRequest.html#getContextPath()
 .. _Cloudflare: https://www.cloudflare.com/

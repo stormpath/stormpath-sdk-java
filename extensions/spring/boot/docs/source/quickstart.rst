@@ -3,7 +3,13 @@
 Quickstart
 ==========
 
-This quickstart demonstrates the fastest way to enable Stormpath in a Spring Boot web application.  It should take about 5 minutes start to finish.  Let's get started!
+.. only:: servlet
+
+  This quickstart demonstrates the fastest way to enable Stormpath in a Servlet 3.0 (or later) Java web application.  It should take about 5 minutes start to finish.  Let's get started!
+
+.. only:: springboot
+
+  This quickstart demonstrates the fastest way to enable Stormpath in a Spring Boot web application.  It should take about 5 minutes start to finish.  Let's get started!
 
 Topics:
 
@@ -40,7 +46,6 @@ Using your favorite dependency resolution build tool like Maven or Gradle, add t
     dependencies {
         compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:\ |version|\ '
     }
-
 
 Spring Security
 ^^^^^^^^^^^^^^^

@@ -4,81 +4,122 @@
 Quickstart
 ==========
 
-This quickstart demonstrates the fastest way to enable Stormpath in a Servlet 3.0 (or later) Java web application.  It should take about 5 minutes start to finish.  Let's get started!
+.. only:: servlet
+
+  This quickstart demonstrates the fastest way to enable Stormpath in a Servlet 3.0 (or later) Java web application.  It should take about 5 minutes start to finish.  Let's get started!
+
+.. only:: springboot
+
+  This quickstart demonstrates the fastest way to enable Stormpath in a Spring Boot web application.  It should take about 5 minutes start to finish.  Let's get started!
 
 Topics:
 
-.. contents:: :local:
-   :depth: 1
+.. contents::
+     :local:
+     :depth: 1
 
-.. _get-api-key:
+.. include:: stormpath-setup.txt
 
-Get an API Key
---------------
+.. only:: servlet
 
-All communication with Stormpath must be authenticated with an API Key.
+  .. _servlet-plugin-jar:
 
-#. If you haven’t already, `sign up for Stormpath for free`_.  You’ll be sent a verification email.
+  Add the Stormpath Java Servlet Plugin
+  -------------------------------------
 
-#. Click the link in the verification email.
+  This step allows you to deploy Stormpath *without a single line of code or configuration*.  How amazing is that? Here's how.
 
-#. Log in to the `Stormpath Admin Console`_ using the email address and password you used during registration and the assigned tenant id.
+  Using your favorite dependency resolution build tool like Maven or Gradle, ensure your web (.war) project/module depends on stormpath-servlet-plugin-|version|.jar. For example:
 
-#. Click the **Create API** Key or **Manage Existing Keys** button.
+  **Maven**:
 
-#. Under **Security Credentials**, click **Create API Key**.
+  .. parsed-literal::
 
-   This will generate your API Key and download it to your computer as an ``apiKey.properties`` file.
+      <dependency>
+          <groupId>com.stormpath.sdk</groupId>
+          <artifactId>stormpath-servlet-plugin</artifactId>
+          <version>\ |version|\ </version>
+      </dependency>
 
-#. Save the file in your home directory in the following location:
+  **Gradle**:
 
-   * ``~/.stormpath/apiKey.properties`` on Unix, Linux and Mac OS
-   * ``C:\Users\YOUR_USERNAME\.stormpath\apiKey.properties`` on Windows
+  .. parsed-literal::
 
-#. Change the file permissions to ensure only you can read this file. For example:
+      dependencies {
+          compile 'com.stormpath.sdk:stormpath-servlet-plugin:\ |version|\ '
+      }
 
-    .. code-block:: bash
+  Ensure that all resolved dependencies are in your web application's ``/WEB-INF/lib`` directory.
 
-     $ chmod go-rwx ~/.stormpath/apiKey.properties
+  That's it!  You're ready to start using Stormpath in your web application!  Can you believe how easy that was?
 
-#. To be safe, you might also want to prevent yourself from accidentally writing/modifying the file:
+.. only:: springboot
 
-    .. code-block:: bash
+  .. _dependency-jar:
 
-     $ chmod u-w ~/.stormpath/apiKey.properties
+  Add the Stormpath Default Spring Boot Starter
+  ---------------------------------------------
 
-On Windows, you can `set file permissions similarly`_.
+  This step allows you to enable Stormpath in a Spring Boot web app with *very minimal* configuration.
+  It includes Stormpath Spring Security, Stormpath Spring WebMVC and Stormpath Thymeleaf templates. How amazing is that? Here's how.
 
-.. _servlet-plugin-jar:
+  Using your favorite dependency resolution build tool like Maven or Gradle, add the stormpath-default-spring-boot-starter-|version|.jar to your project dependencies. For example:
 
-Add the Stormpath Java Servlet Plugin
--------------------------------------
+  **Maven**:
 
-This step allows you to deploy Stormpath *without a single line of code or configuration*.  How amazing is that? Here's how.
+  .. parsed-literal::
 
-Using your favorite dependency resolution build tool like Maven or Gradle, ensure your web (.war) project/module depends on stormpath-servlet-plugin-|version|.jar. For example:
+      <dependency>
+          <groupId>com.stormpath.spring</groupId>
+          <artifactId>stormpath-default-spring-boot-starter</artifactId>
+          <version>\ |version|\ </version>
+      </dependency>
 
-**Maven**:
+  **Gradle**:
 
-.. parsed-literal::
+  .. parsed-literal::
 
-    <dependency>
-        <groupId>com.stormpath.sdk</groupId>
-        <artifactId>stormpath-servlet-plugin</artifactId>
-        <version>\ |version|\ </version>
-    </dependency>
+      dependencies {
+          compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:\ |version|\ '
+      }
 
-**Gradle**:
+  Spring Security
+  ^^^^^^^^^^^^^^^
 
-.. parsed-literal::
+  The Stormpath Default Spring Boot starter assumes Spring Security by default.  But to ensure they work
+  together, you will need a Spring Security configuration class and apply the ``stormpath()`` hook:
 
-    dependencies {
-        compile 'com.stormpath.sdk:stormpath-servlet-plugin:\ |version|\ '
-    }
+  .. code-block:: java
+      :emphasize-lines: 7
 
-Ensure that all resolved dependencies are in your web application's ``/WEB-INF/lib`` directory.
+      import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
-That's it!  You're ready to start using Stormpath in your web application!  Can you believe how easy that was?
+      @Configuration
+      public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+          @Override
+          protected void configure(HttpSecurity http) throws Exception {
+              http.apply(stormpath());
+          }
+      }
+
+  Without this, you will see a browser popup prompting for authentication, which is the default basic authentication behavior for Spring Security.
+
+  Also, by default, all paths are locked down with Spring Security. Stormpath's Spring Security integration follows this idiomatic behavior.
+
+  Disabling Spring Security
+  """""""""""""""""""""""""
+
+  If you do not want to use Spring Security, do not add the ``SpringSecurityWebAppConfig`` class shown above (or just comment out the ``http.apply(stormpath())`` line if you do not want to remove the class).  Also set the following two config properties:
+
+    .. code-block:: properties
+
+        # disable Stormpath's Spring Security support:
+        stormpath.spring.security.enabled = false
+
+        # disable Spring Security entirely:
+        security.basic.enabled = false
+
+  That's it!  You're ready to start using Stormpath in your Spring Boot web application!  Can you believe how easy that was?
 
 Try it!
 -------
@@ -106,16 +147,65 @@ Any Problems?
 
 Did you experience any problems with this quickstart?  It might not have worked perfectly for you if:
 
-* you have more than one Application registered with Stormpath.  If this is the case, you'll need to configure your application's Stormpath ``href``, found in the admin console.
+* you have more than one Application registered with Stormpath.  If this is the case, you'll need to configure your application's Stormpath ``href``, found in the admin console. Once you get the ``href``, add the following to your Spring Boot ``application.properties`` file (where ``YOUR_APPLICATION_ID`` is your application's actual Stormpath Application ID):
 
-* your web app already uses web frameworks that make heavy use of servlet filters, like Spring or Apache Shiro. These could cause filter ordering conflicts, but the fix is easy - you'll need to manually add a few lines to your web app's ``/WEB-INF/web.xml`` file.  Ensure the following chunk is at or near the top of your filter mapping definitions:
+  .. code-block:: properties
 
-  .. code-block:: xml
+      stormpath.application.href = https://api.stormpath.com/v1/applications/YOUR_APPLICATION_ID
 
-      <filter-mapping>
-          <filter-name>StormpathFilter</filter-name>
-          <url-pattern>/*</url-pattern>
-      </filter-mapping>
+.. only:: servlet
+
+  * your web app already uses web frameworks that make heavy use of servlet filters, like Spring or Apache Shiro. These could cause filter ordering conflicts, but the fix is easy - you'll need to manually add a few lines to your web app's ``/WEB-INF/web.xml`` file.  Ensure the following chunk is at or near the top of your filter mapping definitions:
+
+    .. code-block:: xml
+
+        <filter-mapping>
+            <filter-name>StormpathFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
+
+.. only:: springboot
+
+  * your web app already uses web frameworks that make heavy use of servlet filters, like Spring Security or Apache Shiro. These could cause filter ordering conflicts, but the fix is easy - you just need to specify the specific order where you want the Stormpath filter relative to other filters.  You do this by adding the following to your Spring Boot ``application.properties`` file (where ``preferred_value`` is your preferred integer value):
+
+    .. code-block:: properties
+
+        stormpath.web.stormpathFilter.order = preferred_value
+
+    By default, the ``StormpathFilter`` is ordered as ``Ordered.HIGHEST_PRECEDENCE``, but if you have multiple filters with that same order value, you might have to change the order of the other filters as well.
+
+  * you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring Security. The ``stormpath-default-spring-boot-starter`` relies on Spring Security 4.1.x. The current release of the ``spring-boot-starter-parent`` is 1.4.0 and it also relies on Spring Security 4.1.x. Prior versions of the ``spring-boot-starter-parent`` rely on Spring Security 3.2.x. Our first recommendation is to use the latest version of the ``spring-boot-starter-parent``. However, if you must use earlier versions, there is a simple solution to this, which is to override the Spring Security version in your ``pom.xml``
+
+    .. code-block:: xml
+        :emphasize-lines: 15
+
+          <?xml version="1.0" encoding="UTF-8"?>
+          <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+            <modelVersion>4.0.0</modelVersion>
+            ...
+            <parent>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-parent</artifactId>
+                <version>1.4.0.RELEASE</version>
+                <relativePath/> <!-- lookup parent from repository -->
+            </parent>
+
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <java.version>1.8</java.version>
+                <spring-security.version>4.1.2.RELEASE</spring-security.version>
+            </properties>
+
+            <dependencies>
+                ...
+                <dependency>
+                    <groupId>com.stormpath.spring</groupId>
+                    <artifactId>stormpath-default-spring-boot-starter</artifactId>
+                </dependency>
+                ...
+            </dependencies>
+            ...
+        </project>
 
 * If there is anything else, please let us know!  Our `Support Team`_ is always happy to help!
 
@@ -126,7 +216,7 @@ That was just a little example of how much functionality is ready right out of t
 
 * View customization with your own look and feel
 * Internationalization (i18n) for all views
-* Token authentication for Single Page Applications (SPAs)
+* Token authentication for Javascript Single Page Applications (SPAs) and mobile clients like those on iOS and Android.
 * Account email verification (verify an email address is valid before enabling a user account)
 * Secure CSRF protection on views with forms
 * A simple security assertion/authorization framework
@@ -134,6 +224,10 @@ That was just a little example of how much functionality is ready right out of t
 * Session-free (stateless) secure user account identification
 * HTTP Basic and OAuth2 authentication
 * and more!
+
+.. only:: springboot
+
+  Dig in to our `examples`_ to see more Stormpath Spring Boot in action.
 
 Continue on to find out how to leverage this functionality and customize it for your own needs.
 
