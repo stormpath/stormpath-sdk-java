@@ -95,7 +95,7 @@ public class ResourceToMapConverter<T extends Resource> implements Function<T, M
 
         if (r instanceof CustomData) {
 
-            CustomData cd = (CustomData)r;
+            CustomData cd = (CustomData) r;
 
             //force data load before copying:
             cd.getCreatedAt();
@@ -114,10 +114,15 @@ public class ResourceToMapConverter<T extends Resource> implements Function<T, M
             Object propValue;
 
             try {
-                Method method = resource.getClass().getMethod("get" + Strings.capitalize(propName));
+                final Class<? extends AbstractResource> resourceClass = resource.getClass();
+                final String methodName = "get" + Strings.capitalize(propName);
+                Method method = resourceClass.getMethod(methodName);
                 propValue = method.invoke(resource);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                log.error("Error obtaining account property", e);
+                if (log.isWarnEnabled()) {
+                    String msg = "Unable to access account property '" + propName + "': " + e.getMessage();
+                    log.warn(msg, e);
+                }
                 continue;
             }
 

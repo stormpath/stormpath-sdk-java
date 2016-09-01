@@ -1,26 +1,12 @@
-#spring:
-  #application:
-  #  name: swag
-  #resources:
-  #  add-mappings: false
-
 zuul:
   routes:
     app:
       path: /**
       url: http://localhost:8080
 
-ribbon:
-  eureka:
-    enabled: false
-
 server:
   port: 8000
   use-forward-headers: true
-
-security:
-  basic:
-    enabled: false
 
 logging:
   level:
