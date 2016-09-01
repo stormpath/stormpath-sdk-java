@@ -107,6 +107,7 @@
         <servlet.version>3.1.0</servlet.version>
         <spring.version>4.3.2.RELEASE</spring.version>
         <spring.boot.version>1.4.0.RELEASE</spring.boot.version>
+        <spring.cloud.netflix.version>1.1.5.RELEASE</spring.cloud.netflix.version>
         <spring.security.version>4.1.2.RELEASE</spring.security.version>
         <zuul.version>1.2.2</zuul.version>
 
@@ -269,6 +270,11 @@
                 <artifactId>stormpath-default-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.stormpath.spring</groupId>
+                <artifactId>stormpath-zuul-spring-cloud-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- 3rd party dependencies: -->
             <dependency>
@@ -389,6 +395,36 @@
                     <exclusion>
                         <groupId>commons-logging</groupId>
                         <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-zuul</artifactId>
+                <version>${spring.cloud.netflix.version}</version>
+                <exclusions>
+                    <!-- We use SLF4J: -->
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                    <!-- The Stormpath SDK already depends on a newer version: -->
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                    <!-- Use the latest stable zuul version, declared above: -->
+                    <exclusion>
+                        <groupId>com.netflix.zuul</groupId>
+                        <artifactId>zuul-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-web</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-actuator</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

@@ -42,6 +42,7 @@
         <module>spring-security-spring-boot-webmvc</module>
         <module>spring-security-spring-boot-webmvc-bare-bones</module>
         <module>spring-boot-default</module>
+        <module>zuul-spring-cloud-starter</module>
         <module>quickstart</module>
     </modules>
 

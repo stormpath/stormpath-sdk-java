@@ -13,9 +13,12 @@ import javax.servlet.http.HttpServletResponse;
  * value as header on the intercepted/outgoing Request.  The header name is configurable via
  * {@link #setHeaderName(String) setHeaderName}.
  * <p>The <code>Resolver&lt;String&gt;</code> may be set via {@link #setValueResolver(Resolver) setValueResolver}.
- * If the resolver returns a non-null/empty value, that
+ * If the resolver returns a non-null/non-empty value, that
  * value is set as the header value.  If the resolver returns a null or empty String value, the header is not set.</p>
  *
+ * @see #setValueResolver(Resolver)
+ * @see #setHeaderName(String)
+ * @see #setFilterOrder(int)
  * @since 1.1.0
  */
 public class AppliedRequestHeaderFilter extends ZuulFilter {
@@ -28,6 +31,12 @@ public class AppliedRequestHeaderFilter extends ZuulFilter {
 
     private Resolver<String> valueResolver;
 
+    /**
+     * Sets the filter type.  Default value is {@code pre} and probably shouldn't be overridden since request
+     * headers must be set in Zuul's {@code pre} phase.
+     *
+     * @param type the filter type.
+     */
     public void setFilterType(String type) {
         this.type = type;
     }
@@ -37,6 +46,11 @@ public class AppliedRequestHeaderFilter extends ZuulFilter {
         return this.type;
     }
 
+    /**
+     * Sets the execution order of the filter.  This value is returned from {@link #filterOrder()}.
+     *
+     * @param order the execution order of the filter.
+     */
     public void setFilterOrder(int order) {
         this.order = order;
     }
@@ -46,18 +60,43 @@ public class AppliedRequestHeaderFilter extends ZuulFilter {
         return this.order;
     }
 
+    /**
+     * Returns the name of the header to set if a value is returned from the
+     * {@link #setValueResolver(Resolver) valueResolver}. If no value is resolved, the header will not be set.
+     *
+     * @return the name of the header to set if a value is returned from the {@code valueResolver}.
+     */
     public String getHeaderName() {
         return headerName;
     }
 
+    /**
+     * The name of the header to set if a value is returned from the {@link #setValueResolver(Resolver) valueResolver}.
+     * If no value is resolved, the header will not be set.
+     *
+     * @param headerName name of the header to set if a value is returned from the
+     *                   {@link #setValueResolver(Resolver) valueResolver}.
+     */
     public void setHeaderName(String headerName) {
         this.headerName = headerName;
     }
 
+    /**
+     * Returns the resolver to use to acquire a header value. If the resolver returns a value, the header will be set.
+     * If the resolver returns null or the empty string, the header will not be set at all.
+     *
+     * @return the resolver to use to acquire a header value.
+     */
     public Resolver<String> getValueResolver() {
         return valueResolver;
     }
 
+    /**
+     * Sets the resolver to use to acquire a header value.  If the resolver returns a value, the header will be set.
+     * If the resolver returns null or the empty string, the header will not be set at all.
+     *
+     * @param valueResolver the resolver to use to acquire a header value.
+     */
     public void setValueResolver(Resolver<String> valueResolver) {
         this.valueResolver = valueResolver;
     }

@@ -30,6 +30,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zuul</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-default-spring-boot-starter</artifactId>
         </dependency>

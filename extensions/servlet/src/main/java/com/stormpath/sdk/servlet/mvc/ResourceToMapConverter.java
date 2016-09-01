@@ -94,6 +94,12 @@ public class ResourceToMapConverter<T extends Resource> implements Function<T, M
         AbstractResource resource = (AbstractResource) r;
 
         if (r instanceof CustomData) {
+
+            CustomData cd = (CustomData)r;
+
+            //force data load before copying:
+            cd.getCreatedAt();
+
             return deepCopy((CustomData) r); //copy the source - don't modify it
         }
 
