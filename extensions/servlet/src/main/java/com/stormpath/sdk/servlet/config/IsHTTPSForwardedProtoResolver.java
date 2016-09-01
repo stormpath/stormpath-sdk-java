@@ -30,6 +30,6 @@ public class IsHTTPSForwardedProtoResolver implements Resolver<Boolean> {
     @Override
     public Boolean get(HttpServletRequest request, HttpServletResponse response) {
         String protocol = request.getHeader(HEADER_FORWARDED_PROTO);
-        return protocol != null && protocol.equalsIgnoreCase("https");
+        return "https".equalsIgnoreCase(protocol);
     }
 }
