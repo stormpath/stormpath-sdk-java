@@ -46,7 +46,9 @@ public class SelfConfiguredStormpathFilter extends StormpathFilter {
     protected void onInit() throws ServletException {
         try {
             doInit();
-            super.onInit();
+            if (isEnabled()) {
+                super.onInit();
+            }
         } catch (ServletException e) {
             log.error("Unable to initialize StormpathFilter.", e);
             throw e;
@@ -58,31 +60,31 @@ public class SelfConfiguredStormpathFilter extends StormpathFilter {
     }
 
     protected void doInit() throws ServletException {
-
         ServletContext servletContext = getServletContext();
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        setEnabled(config.isStormpathWebEnabled());
 
-        setClient(config.getClient());
-        setApplication(config.getApplicationResolver().getApplication(servletContext));
+        if (isEnabled()) {
+            setClient(config.getClient());
+            setApplication(config.getApplicationResolver().getApplication(servletContext));
 
-        FilterChainResolver resolver = config.getInstance("stormpath.web.filter.chain.resolver");
-        setFilterChainResolver(resolver);
+            FilterChainResolver resolver = config.getInstance("stormpath.web.filter.chain.resolver");
+            setFilterChainResolver(resolver);
 
-        String val = config.get("stormpath.web.request.client.attributeNames");
-        if (Strings.hasText(val)) {
-            String[] vals = Strings.split(val);
-            setClientRequestAttributeNames(new LinkedHashSet<>(Arrays.asList(vals)));
+            String val = config.get("stormpath.web.request.client.attributeNames");
+            if (Strings.hasText(val)) {
+                String[] vals = Strings.split(val);
+                setClientRequestAttributeNames(new LinkedHashSet<>(Arrays.asList(vals)));
+            }
+
+            val = config.get("stormpath.web.request.application.attributeNames");
+            if (Strings.hasText(val)) {
+                String[] vals = Strings.split(val);
+                setApplicationRequestAttributeNames(new LinkedHashSet<>(Arrays.asList(vals)));
+            }
+
+            WrappedServletRequestFactory factory = config.getInstance("stormpath.web.request.factory");
+            setWrappedServletRequestFactory(factory);
         }
-
-        val = config.get("stormpath.web.request.application.attributeNames");
-        if (Strings.hasText(val)) {
-            String[] vals = Strings.split(val);
-            setApplicationRequestAttributeNames(new LinkedHashSet<>(Arrays.asList(vals)));
-        }
-
-        WrappedServletRequestFactory factory = config.getInstance("stormpath.web.request.factory");
-        setWrappedServletRequestFactory(factory);
     }
-
-
 }
