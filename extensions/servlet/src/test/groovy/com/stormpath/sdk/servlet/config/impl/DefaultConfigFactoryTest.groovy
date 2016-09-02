@@ -18,21 +18,14 @@ package com.stormpath.sdk.servlet.config.impl
 import com.stormpath.sdk.lang.Classes
 import com.stormpath.sdk.servlet.config.Config
 import com.stormpath.sdk.servlet.config.ConfigLoader
+import com.stormpath.sdk.servlet.utils.ConfigTestUtils
 import org.springframework.mock.web.MockServletContext
 import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import org.yaml.snakeyaml.Yaml
 
-import java.lang.reflect.Field
-
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertNull
-import static org.testng.Assert.assertTrue
-import static org.testng.Assert.assertNotNull
-
-
+import static org.testng.Assert.*
 /**
  * @since 1.0.RC9
  */
@@ -47,9 +40,14 @@ class DefaultConfigFactoryTest {
         Map<String, String> env = new HashMap<>()
         env.put('STORMPATH_WEB_IDSITE_ENABLED', 'false')
         env.put('STORMPATH_WEB_CALLBACK_ENABLED', 'true')
-        setEnv(env)
+        ConfigTestUtils.setEnv(env)
         mockServletContext = new MockServletContext()
         config = new ConfigLoader().createConfig(mockServletContext)
+    }
+
+    @Test
+    public void stormpathEnabledByDefault() {
+        assertEquals config.isStormpathEnabled(), true
     }
 
     @Test
@@ -78,7 +76,7 @@ class DefaultConfigFactoryTest {
         Map<String, String> env = new HashMap<>()
         def baseUrl = 'http://env.stormpath.com/v2'
         env.put('STORMPATH_CLIENT_BASEURL', baseUrl)
-        setEnv(env)
+        ConfigTestUtils.setEnv(env)
         config = new ConfigLoader().createConfig(new MockServletContext())
         assertEquals config.get('stormpath.client.baseUrl'), baseUrl
     }
@@ -116,7 +114,7 @@ class DefaultConfigFactoryTest {
         env.put('STORMPATH_WEB_IDSITE_ENABLED', "true")
         env.put('STORMPATH_WEB_CALLBACK_ENABLED', "true")
         env.put('STORMPATH_WEB_ME_ENABLED', "true")
-        setEnv(env)
+        ConfigTestUtils.setEnv(env)
         config = new ConfigLoader().createConfig(new MockServletContext())
 
         assertTrue config.isOAuthEnabled()
@@ -139,7 +137,7 @@ class DefaultConfigFactoryTest {
         Map<String, String> env = new HashMap<>()
         env.put('STORMPATH_WEB_IDSITE_ENABLED', 'true')
         env.put('STORMPATH_WEB_CALLBACK_ENABLED', 'false')
-        setEnv(env)
+        ConfigTestUtils.setEnv(env)
         config = new ConfigLoader().createConfig(new MockServletContext())
     }
 
@@ -253,22 +251,6 @@ class DefaultConfigFactoryTest {
         Map<String, String> env = new HashMap<>()
         env.put('STORMPATH_WEB_IDSITE_ENABLED', 'false')
         env.put('STORMPATH_WEB_CALLBACK_ENABLED', 'true')
-        setEnv(env)
-    }
-
-    // From http://stackoverflow.com/a/496849
-    private static void setEnv(Map<String, String> newenv) throws Exception {
-        Class[] classes = Collections.class.getDeclaredClasses();
-        Map<String, String> env = System.getenv();
-        for (Class cl : classes) {
-            if ('java.util.Collections$UnmodifiableMap'.equals(cl.getName())) {
-                Field field = cl.getDeclaredField('m');
-                field.setAccessible(true);
-                Object obj = field.get(env);
-                Map<String, String> map = (Map<String, String>) obj;
-                map.clear();
-                map.putAll(newenv);
-            }
-        }
+        ConfigTestUtils.setEnv(env)
     }
 }

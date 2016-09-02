@@ -21,6 +21,8 @@ import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.DefaultFilter;
 import com.stormpath.sdk.servlet.filter.DefaultFilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 
@@ -29,42 +31,46 @@ import javax.servlet.ServletContext;
  */
 public class FilterChainManagerFactory extends ConfigSingletonFactory<FilterChainManager> {
 
+    private static final Logger log = LoggerFactory.getLogger(FilterChainManagerFactory.class);
     public static final String FILTER_CONFIG_PREFIX = "stormpath.web.filters.";
 
     @Override
     protected FilterChainManager createInstance(ServletContext servletContext) throws Exception {
 
+        Config config = getConfig();
         DefaultFilterChainManager mgr = new DefaultFilterChainManager(servletContext);
 
-        //add the defaults:
-        for (DefaultFilter defaultFilter : DefaultFilter.values()) {
-            Object o = defaultFilter.getFactoryClass();
-            if (o == null) {
-                o = defaultFilter.getFilterClass();
-            }
-            mgr.addFilter(defaultFilter.name(), o);
-        }
-
-        //pick up any user-configured filterish things as well as allow them to override the defaults:
-        Config config = getConfig();
-
-        for (String key : config.keySet()) {
-
-            if (key.startsWith(FILTER_CONFIG_PREFIX)) {
-
-                String instanceName = key.substring(FILTER_CONFIG_PREFIX.length());
-
-                //if there are any periods in the remainder, then the property is not a class name - it is an
-                // instance-specific config property, so just ignore it:
-                int i = instanceName.indexOf('.');
-                if (i >= 0) {
-                    continue;
+        if (config.isStormpathWebEnabled()) {
+            //add the defaults:
+            for (DefaultFilter defaultFilter : DefaultFilter.values()) {
+                Object o = defaultFilter.getFactoryClass();
+                if (o == null) {
+                    o = defaultFilter.getFilterClass();
                 }
-
-                String className = config.get(key);
-                Object instance = Classes.newInstance(className);
-                mgr.addFilter(instanceName, instance);
+                mgr.addFilter(defaultFilter.name(), o);
             }
+
+            //pick up any user-configured filterish things as well as allow them to override the defaults:
+            for (String key : config.keySet()) {
+
+                if (key.startsWith(FILTER_CONFIG_PREFIX)) {
+
+                    String instanceName = key.substring(FILTER_CONFIG_PREFIX.length());
+
+                    //if there are any periods in the remainder, then the property is not a class name - it is an
+                    // instance-specific config property, so just ignore it:
+                    int i = instanceName.indexOf('.');
+                    if (i >= 0) {
+                        continue;
+                    }
+
+                    String className = config.get(key);
+                    Object instance = Classes.newInstance(className);
+                    mgr.addFilter(instanceName, instance);
+                }
+            }
+        } else {
+            log.warn("Stormpath web support disabled, filters not added.");
         }
 
         return new DefaultFilterChainManagerConfigurer(mgr, servletContext, config).configure();

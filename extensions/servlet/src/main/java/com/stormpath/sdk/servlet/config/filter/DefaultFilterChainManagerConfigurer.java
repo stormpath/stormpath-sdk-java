@@ -25,7 +25,6 @@ import com.stormpath.sdk.servlet.config.impl.ExpressionConfigReader;
 import com.stormpath.sdk.servlet.filter.DefaultFilter;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
 
-import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.LinkedHashMap;
@@ -56,6 +55,10 @@ public class DefaultFilterChainManagerConfigurer {
     }
 
     public FilterChainManager configure() throws ServletException {
+
+        if (!config.isStormpathWebEnabled()) {
+            return mgr;
+        }
 
         //Too much copy-and-paste. YUCK.
         //TODO: refactor this method to be more generic
