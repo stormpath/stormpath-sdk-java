@@ -69,7 +69,7 @@ class StormpathWebAutoConfigurationVersusMetadata {
             sb.append(it.description + "\n\n")
         }
 
-        File file = new File("../docs/source/appendix/spring-boot-web-properties.rst");
+        File file = new File("../../../../docs/source/appendix/spring-boot-web-properties.rst");
         file.write sb.toString()
     }
 

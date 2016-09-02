@@ -207,7 +207,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
             ...
         </project>
 
-* If there is anything else, please let us know!  Our `Support Team`_ is always happy to help!
+If there is anything else, please let us know!  Our `Support Team`_ is always happy to help!
 
 Next Steps
 ----------

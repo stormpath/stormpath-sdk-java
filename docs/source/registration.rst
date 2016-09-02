@@ -57,7 +57,7 @@ Again, this property is only referenced if email verification is disabled.  If e
 Next Query Parameter
 ^^^^^^^^^^^^^^^^^^^^
 
-If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URI has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location.  For example:
+If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URI has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location. For example:
 
 ``https://myapp.com/register?next=/registerSuccess``
 

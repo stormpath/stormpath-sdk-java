@@ -27,6 +27,7 @@ Refreshingly, the |project| doesn't require any configuration at all as long as 
 If all of these conditions cannot be met, then you will have to specify some minimal configuration (but not much!) as described below.
 
 .. only:: servlet
+
   web.xml
   -------
 
@@ -211,7 +212,7 @@ If all of these conditions cannot be met, then you will have to specify some min
   A ``MyJwtFactory`` instance will be used instead of the default.
 
 Stormpath Client
-----------
+----------------
 
 The |project| depends on a Stormpath SDK ``Client`` instance to communicate with Stormpath for most functionality.  You may configure the client via ``stormpath.*`` properties as necessary.
 
@@ -262,6 +263,7 @@ If you deploy your app on Google App Engine however, you might experience some p
 If your application is not deployed on Google App Engine, we recommend that you *do not* set this property.
 
 .. only:: springboot
+
   Caching
   ~~~~~~~
 

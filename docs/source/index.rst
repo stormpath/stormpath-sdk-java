@@ -37,6 +37,7 @@ User Guide
      i18n
      events
      caching
+     idsite
      views
      appendix
 

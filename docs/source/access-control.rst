@@ -3,7 +3,7 @@
 Access Control
 ==============
 
-The Stormpath Java Servlet Plugin allows you to easily control which of your web application's URI paths a user is allowed to access based on configurable rules.
+The |project| allows you to easily control which of your web application's URI paths a user is allowed to access based on configurable rules.
 
 The rules are implemented via simple Servlet :ref:`filters <filters>` and :ref:`configurable filter chains <uris>`, but in a simpler, easier to read, much more flexible, and more succinct definition format than you might be used to with ``web.xml`` configuration.
 
@@ -65,12 +65,6 @@ However, this might not be a trivial exercise if you still wish to support both 
 .. note::
 
    If you want to execute custom behavior as a result of a failed login, it is generally recommended not to implement a custom ``UnauthenticatedHandler`` and instead react to :ref:`login events <login events>`.  These events are triggered in the event of an authentication by login form or by HTTP headers, so you can react to both scenarios.
-
-
-Authorization
--------------
-
-TBD
 
 Exclusions
 ----------
