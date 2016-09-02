@@ -67,7 +67,7 @@ public class BasicAuthenticator {
             attempt.setAccountStore(request.getAccountStore());
         }
 
-        //since 1.0.0
+        //since 1.1.0
         if(Strings.hasText(request.getOrganizationNameKey())) {
             attempt.setOrganizationNameKey(request.getOrganizationNameKey());
         }

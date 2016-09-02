@@ -41,6 +41,7 @@ public interface LoginAttempt extends Resource {
      *
      * see: https://github.com/stormpath/stormpath-sdk-java/issues/284
      *
+     * @since 1.1.0
      * @param nameKey an organization name key
      */
     void setOrganizationNameKey(String nameKey);

@@ -100,7 +100,7 @@ public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBui
     /**
      * Sets the {@code Organization} name key to be used as the account store, this property can't be used with the {@code inAccountStore} method.
      *
-     * @since 1.0.0
+     * @since 1.1.0
      * @param orgNameKey An organization name key
      * @return the instance of the method chaining
      */
