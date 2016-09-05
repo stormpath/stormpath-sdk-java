@@ -46,6 +46,7 @@ class CookieAuthenticationResultSaverHttpsWarningTest extends PowerMockTestCase 
 
         expect(accessTokenConfig.isSecure()).andReturn(true)
         expect(resolver.get(same(request), isNull(HttpServletResponse))).andReturn(false)
+        expect(request.getScheme()).andReturn "https"
         expect(log.warn(isA(String)))
 
         replay LoggerFactory.class
