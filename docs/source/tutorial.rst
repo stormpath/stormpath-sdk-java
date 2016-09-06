@@ -264,7 +264,7 @@
   automatically redirect to ``/error``, which gets handled by our ``RestrictedErrorController.java``.
   This returns a nicely formatted Thymeleaf template.
 
-  With the service defined, we can incorporate it into our controller, ``HellController.java``:
+  With the service defined, we can incorporate it into our controller, ``HelloController.java``:
 
   .. code-block:: java
       :linenos:
@@ -450,7 +450,7 @@
       }
 
   Try it out. Launch the application as before, and then browse to: ``http://localhost:8080/me``. You will be redirected to the ``/login``
-  and then after you login to a valid Stormpath Account, you will automatically be brought back to ``/me``. That's the StormPath magic at work!
+  and then after you login to a valid Stormpath Account, you will automatically be brought back to ``/me``. That's the Stormpath magic at work!
 
   Now, we'll look at fine grained controls using Spring Security permissions connected to Stormpath custom data.
 

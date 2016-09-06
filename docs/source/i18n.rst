@@ -24,24 +24,24 @@ Languages
 
 .. only:: servlet
 
-The |project| JAR comes with one default :ref:`English bundle file <i18n-properties-file>`: ``/com/stormpath/sdk/servlet/i18n.properties``.
+  The |project| JAR comes with one default :ref:`English bundle file <i18n-properties-file>`: ``/com/stormpath/sdk/servlet/i18n.properties``.
 
 .. only:: springboot
 
-Even if you don't define any message keys yourself, the |project| comes with one default :ref:`English bundle file <i18n-properties-file>`.
+  Even if you don't define any message keys yourself, the |project| comes with one default :ref:`English bundle file <i18n-properties-file>`.
 
 You can add other languages as follows:
 
 .. only:: servlet
 
-1.  Create a ``com.stormpath.sdk.servlet`` package in your project.  It must have this exact structure and name.
-2.  In this ``com/stormpath/sdk/servlet`` package directory, add one or more ``i18n_LOCALE.properties`` files to this package, for example, ``i18n_es.properties`` for Spanish (or even ``i18n_es_ES.properties`` for Spain's dialect of Spanish and ``i18n_es_MX.properties`` for Mexican dialect of Spanish, etc).
-3.  In each locale-specific file, re-define each :ref:`i18n property <i18n-properties-file>` value in that language.
+  1.  Create a ``com.stormpath.sdk.servlet`` package in your project.  It must have this exact structure and name.
+  2.  In this ``com/stormpath/sdk/servlet`` package directory, add one or more ``i18n_LOCALE.properties`` files to this package, for example, ``i18n_es.properties`` for Spanish (or even ``i18n_es_ES.properties`` for Spain's dialect of Spanish and ``i18n_es_MX.properties`` for Mexican dialect of Spanish, etc).
+  3.  In each locale-specific file, re-define each :ref:`i18n property <i18n-properties-file>` value in that language.
 
 .. only:: springboot
 
-1.  Create one or more ``messages_LOCALE.properties`` files to the root package (as shown above), for example ``messages_es.properties`` for Spanish (or even ``messages_es_ES.properties`` for Spain's dialect of Spanish and ``messages_es_MX.properties`` for Mexican dialect of Spanish, etc).
-2.  In each locale-specific file, re-define each Stormpath :ref:`i18n property <i18n-properties-file>` value in that language.
+  1.  Create one or more ``messages_LOCALE.properties`` files to the root package (as shown above), for example ``messages_es.properties`` for Spanish (or even ``messages_es_ES.properties`` for Spain's dialect of Spanish and ``messages_es_MX.properties`` for Mexican dialect of Spanish, etc).
+  2.  In each locale-specific file, re-define each Stormpath :ref:`i18n property <i18n-properties-file>` value in that language.
 
 .. Note::
     If you create new translations, we'd love it if you would contribute them to the project as a `pull request`_. The Stormpath community would be grateful!

@@ -3,7 +3,9 @@
 Default Stormpath Properties
 ============================
 
-.. contents:: Table of Contents
+.. contents::
+   :local:
+   :depth: 2
 
 .. include:: spring-boot-core-properties.rst
 

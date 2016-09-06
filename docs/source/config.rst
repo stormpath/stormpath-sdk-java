@@ -217,7 +217,7 @@ If all of these conditions cannot be met, then you will have to specify some min
 Stormpath Client
 ----------------
 
-The |project| depends on a Stormpath SDK ``Client`` instance to communicate with Stormpath for most functionality.  You may configure the client via ``stormpath.*`` properties as necessary.
+The |project| depends on a Stormpath ``Client`` instance to communicate with Stormpath for most functionality.  You may configure the client via ``stormpath.*`` properties as necessary.
 
 API Key
 ~~~~~~~
@@ -228,15 +228,16 @@ The API Key used by the SDK Client will be acquired from the following locations
 
   * ``$HOME/.stormpath/apiKey.properties`` file
   * Any ``stormpath.client.apiKey.id`` value discovered from inspected :ref:`property locations <stormpath.properties locations>`
-  * Any ``stormpath.client.apiKey.secret`` value discovered from inspected :ref:`property locations <stormpath.properties locations>` **\***
+  * Any ``stormpath.client.apiKey.secret`` value discovered from inspected :ref:`property locations <stormpath.properties locations>`
 
 .. only:: springboot
 
   * ``$HOME/.stormpath/apiKey.properties`` file
   * Any ``stormpath.client.apiKey.id`` value discovered from Spring property placeholder locations
-  * Any ``stormpath.client.apiKey.secret`` value discovered from Spring property placeholder locations **\***
+  * Any ``stormpath.client.apiKey.secret`` value discovered from Spring property placeholder locations
 
-**\*** While ``stormpath.client.apiKey.secret`` can be configured as a property in a file, please be aware of the :ref:`security considerations <stormpath.properties locations>` of files shared with other people.
+.. caution::
+   While ``stormpath.client.apiKey.secret`` can be configured as a property in a file, please be aware of the :ref:`security considerations <stormpath.properties locations>` of files shared with other people.
 
 HTTP Proxy
 ~~~~~~~~~~

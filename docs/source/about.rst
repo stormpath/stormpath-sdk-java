@@ -49,14 +49,7 @@ Stormpath is a powerful and secure service.  The Stormpath Java Servlet Plugin m
 
 You might want to use Stormpath if:
 
-.. only:: servlet
-
-  - You want to make user creation, management, and security as simple as possible (you can get started with the Stormpath Java Servlet Plugin with ZERO lines of code *excluding settings*)
-
-.. only:: springboot
-
-  - You want to make user creation, management, and security as simple as possible (you can get started with Stormpath-Spring with ZERO lines of code *excluding settings*)
-
+- You want to make user creation, management, and security as simple as possible (you can get started with ZERO lines of code *excluding settings*).
 - User security is a top priority.  The Stormpath API, our documents and integrations were built by Java security experts.
 - Scaling your userbase is a potential problem (Stormpath handles scaling your users transparently).
 - You need to store custom user data along with your user's basic information (email, password).
