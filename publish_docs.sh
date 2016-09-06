@@ -10,15 +10,15 @@ git checkout source
 
 echo "Copying over servlet plugin docs"
 rm -rf source/java/servlet-plugin/
-cp -r ../docs/build/html source/java/servlet-plugin
-cp -r ../docs/build/html source/java/servlet-plugin/latest
-cp -r ../docs/build/html source/java/servlet-plugin/$RELEASE_VERSION
+cp -r ../docs/build/html/servlet source/java/servlet-plugin
+cp -r ../docs/build/html/servlet source/java/servlet-plugin/latest
+cp -r ../docs/build/html/servlet source/java/servlet-plugin/$RELEASE_VERSION
 
 echo "Copying over spring boot docs"
 rm -rf source/java/spring-boot-web
-cp -r ../extensions/spring/boot/docs/build/html source/java/spring-boot-web
-cp -r ../extensions/spring/boot/docs/build/html source/java/spring-boot-web/latest
-cp -r ../extensions/spring/boot/docs/build/html source/java/spring-boot-web/$RELEASE_VERSION
+cp -r ../docs/build/html/springboot source/java/spring-boot-web
+cp -r ../docs/build/html/springboot source/java/spring-boot-web/latest
+cp -r ../docs/build/html/springboot source/java/spring-boot-web/$RELEASE_VERSION
 
 echo "Copying over javadocs"
 rm -rf source/java/apidocs
