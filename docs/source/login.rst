@@ -69,16 +69,18 @@ If you want the user to visit a different default post-login path, set the ``sto
 
 If the request to the login URI has a ``next`` query paramter, that parameter value will be used as the context-relative path instead and the ``stormpath.web.login.nextUri`` value will be ignored.
 
-View
-----
+.. only:: springboot
 
-When the URI is visited a default template view named ``stormpath/login`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.login.view`` property:
+  View
+  ----
 
-.. code-block:: properties
+  When the URI is visited a default template view named ``stormpath/login`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.login.view`` property:
 
-    stormpath.web.login.view = stormpath/login
+  .. code-block:: properties
 
-Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+      stormpath.web.login.view = stormpath/login
+
+  Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 i18n
 ----
@@ -324,21 +326,21 @@ Finally, if the default HttpSession-based ``Saver`` implementation is not suffic
           return savers;
       }
 
-Spring Security
----------------
+  Spring Security
+  ---------------
 
-If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ then the ``Authentication`` token will be available in Spring Security's ``SecurityContext`` where you can obtain the Stormpath ``Account`` that is currently authenticated:
+  If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ then the ``Authentication`` token will be available in Spring Security's ``SecurityContext`` where you can obtain the Stormpath ``Account`` that is currently authenticated:
 
-.. code-block:: java
+  .. code-block:: java
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) { //there may be no logged in user.
-        String accountHref = authentication.getUsername();
-        Account account = client.getAccount(accountHref, Account.class);
-        String username = account.getUsername();
-    }
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (authentication != null) { //there may be no logged in user.
+          String accountHref = authentication.getUsername();
+          Account account = client.getAccount(accountHref, Account.class);
+          String username = account.getUsername();
+      }
 
-The authentication token will always be available indistinctively of the kind of authentication used to login. It does not matter whether the user authenticated via ``cookie``, ``access_token``, ``credentials``, ``social providers``, etc, the Stormpath Account information will always be available in Spring Security's ``SecurityContext``.
+  The authentication token will always be available indistinctively of the kind of authentication used to login. It does not matter whether the user authenticated via ``cookie``, ``access_token``, ``credentials``, ``social providers``, etc, the Stormpath Account information will always be available in Spring Security's ``SecurityContext``.
 
 .. _context path: http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServletRequest.html#getContextPath()
 .. _Cloudflare: https://www.cloudflare.com/

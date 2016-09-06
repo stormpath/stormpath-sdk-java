@@ -18,6 +18,8 @@ Topics:
      :local:
      :depth: 1
 
+.. _get-api-key:
+
 .. include:: stormpath-setup.txt
 
 .. only:: servlet
@@ -147,11 +149,17 @@ Any Problems?
 
 Did you experience any problems with this quickstart?  It might not have worked perfectly for you if:
 
-* you have more than one Application registered with Stormpath.  If this is the case, you'll need to configure your application's Stormpath ``href``, found in the admin console. Once you get the ``href``, add the following to your Spring Boot ``application.properties`` file (where ``YOUR_APPLICATION_ID`` is your application's actual Stormpath Application ID):
+.. only:: servlet
 
-  .. code-block:: properties
+  * you have more than one Application registered with Stormpath.  If this is the case, you'll need to configure your application's Stormpath ``href``, found in the admin console. Once you get the ``href``, add the following to your ``stormpath.properties`` file (where ``YOUR_APPLICATION_ID`` is your application's actual Stormpath Application ID):
 
-      stormpath.application.href = https://api.stormpath.com/v1/applications/YOUR_APPLICATION_ID
+.. only:: springboot
+
+  * you have more than one Application registered with Stormpath.  If this is the case, you'll need to configure your application's Stormpath ``href``, found in the admin console. Once you get the ``href``, add the following to your Spring Boot ``application.properties`` file (where ``YOUR_APPLICATION_ID`` is your application's actual Stormpath Application ID):
+
+.. code-block:: properties
+
+  stormpath.application.href = https://api.stormpath.com/v1/applications/YOUR_APPLICATION_ID
 
 .. only:: servlet
 

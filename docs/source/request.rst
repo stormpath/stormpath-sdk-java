@@ -191,7 +191,7 @@ The ``Application`` will always be available under the request attribute key equ
 
 .. code-block:: java
 
-    Application myApp = (Application)servletRequest.getAttribute(Application.getClass().getName());
+    Application myApp = (Application) servletRequest.getAttribute(Application.getClass().getName());
 
 Custom Request Attribute Names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -200,7 +200,7 @@ The ``Application`` is also available via simpler unqualified attribute names fo
 
 .. code-block:: java
 
-    Application myApp = (Application)servletRequest.getAttribute("application");
+    Application myApp = (Application) servletRequest.getAttribute("application");
 
 If you want to change this name, or add other names, you can change the ``stormpath.web.request.application.attributeNames`` configuration property and set a comma-delimited list of names.  For example:
 
@@ -226,16 +226,16 @@ which is less readable and not very convenient.
 
 .. _request sdk client:
 
-Stormpath SDK Client
+Stormpath Client
 --------------------
 
 .. only:: servlet
 
-  The |project| uses a Stormpath SDK ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using either the ``ClientResolver`` or request attributes.
+  The |project| uses a Stormpath ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using either the ``ClientResolver`` or request attributes.
 
 .. only:: springboot
 
-  The |project| uses a Stormpath SDK ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using Spring autowiring, the ``ClientResolver`` or request attributes.
+  The |project| uses a Stormpath ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using Spring autowiring, the ``ClientResolver`` or request attributes.
 
   Spring autowiring
   ^^^^^^^^^^^^^^^^^
@@ -271,7 +271,7 @@ The ``Client`` will always be available under the request attribute key equal to
 
 .. code-block:: java
 
-    Client client = (Client)servletRequest.getAttribute(Client.getClass().getName());
+    Client client = (Client) servletRequest.getAttribute(Client.getClass().getName());
 
 Custom Request Attribute Names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -280,7 +280,7 @@ The ``Client`` is also available via simpler unqualified attribute names for con
 
 .. code-block:: java
 
-    Client client = (Client)servletRequest.getAttribute("client");
+    Client client = (Client) servletRequest.getAttribute("client");
 
 If you want to change this name, or add other names, you can change the ``stormpath.web.request.client.attributeNames`` configuration property and set a comma-delimited list of names.  For example:
 

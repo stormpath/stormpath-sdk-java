@@ -15,14 +15,14 @@ Refreshingly, the |project| doesn't require any configuration at all as long as 
 .. only:: servlet
 
   #. You added the stormpath-servlet-plugin .jar and its transitive dependencies to your web application's ``/WEB-INF/lib`` directory.  This happens automatically if you use a Maven-compatible build tool like Maven or Gradle to :ref:`specify the stormpath-servlet-plugin dependency <servlet-plugin-jar>` in your project build configuration.
+  #. Your web application can read the ``$HOME/.stormpath/apiKey.properties`` file :ref:`mentioned in the Quickstart <get-api-key>`.
+  #. You have only one Application registered with Stormpath.
 
 .. only:: springboot
 
   #. You added the |project| .jar and its transitive dependencies to your web application's ``/WEB-INF/lib`` directory.  This happens automatically if you use a Maven-compatible build tool like Maven or Gradle to :ref:`specify the stormpath-thymeleaf-spring-boot-starter dependency <dependency-jar>` in your project build configuration.
-
-#. Your web application can read the ``$HOME/.stormpath/apiKey.properties`` file :ref:`mentioned in the Quickstart <get-api-key>`.
-
-#. You have only one Application registered with Stormpath.
+  #. Your web application can read the ``$HOME/.stormpath/apiKey.properties`` file :ref:`mentioned in the Quickstart <get-api-key>`.
+  #. You have only one Application registered with Stormpath.
 
 If all of these conditions cannot be met, then you will have to specify some minimal configuration (but not much!) as described below.
 
@@ -82,7 +82,7 @@ If all of these conditions cannot be met, then you will have to specify some min
   Defining properties in these locations is covered more in detail next.
 
   1. Plugin web.stormpath.properties
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   This file resides in the stormpath-servlet-plugin-|version|.jar at:
 
@@ -115,8 +115,11 @@ If all of these conditions cannot be met, then you will have to specify some min
   .. code-block:: xml
 
       <context-param>
-          <param-name>stormpath.foo.bar</param-name>
-          <param-value>myValue</param-value>
+          <param-name>stormpath.properties</param-name>
+          <param-value><![CDATA[
+              stormpath.foo.bar = myValue
+              stormpath.other.prop = another value
+          ]]></param-value>
       </context-param>
 
   5. Environment Variables
@@ -221,15 +224,15 @@ API Key
 
 The API Key used by the SDK Client will be acquired from the following locations.  Locations inspected later override previously discovered values.
 
-* ``$HOME/.stormpath/apiKey.properties`` file
-
 .. only:: servlet
 
+  * ``$HOME/.stormpath/apiKey.properties`` file
   * Any ``stormpath.client.apiKey.id`` value discovered from inspected :ref:`property locations <stormpath.properties locations>`
   * Any ``stormpath.client.apiKey.secret`` value discovered from inspected :ref:`property locations <stormpath.properties locations>` **\***
 
 .. only:: springboot
 
+  * ``$HOME/.stormpath/apiKey.properties`` file
   * Any ``stormpath.client.apiKey.id`` value discovered from Spring property placeholder locations
   * Any ``stormpath.client.apiKey.secret`` value discovered from Spring property placeholder locations **\***
 
@@ -247,7 +250,7 @@ If your application requires communication to Stormpath go through an HTTP Proxy
 
  .. code-block:: bash
 
-    export STORMPATH_PROXY_PASSWORD=your_proxy_server_password
+    export STORMPATH_CLIENT_PROXY_PASSWORD=your_proxy_server_password
 
 Authentication Scheme
 ~~~~~~~~~~~~~~~~~~~~~
@@ -270,7 +273,8 @@ If your application is not deployed on Google App Engine, we recommend that you 
   The client caches resources from the Stormpath API server by default in an in-memory, in-process cache to enhance performance.
 
   .. caution::
-  If your application is deployed across multiple JVMs (e.g. clustered or striped) the default caching mechanism could cause problems because each application instance would have its *own* cache.  This could cause data consistency problems across the application instances.
+
+      If your application is deployed across multiple JVMs (e.g. clustered or striped) the default caching mechanism could cause problems because each application instance would have its *own* cache.  This could cause data consistency problems across the application instances.
 
   You can either disable the cache entirely or configure your own coherent or cluster-friendly Spring ``CacheManager`` and that would be used for the Stormpath Client's needs automatically.
 

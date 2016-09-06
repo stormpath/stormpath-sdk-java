@@ -101,16 +101,18 @@ As you can see, this URI has a ``status=forgot`` query parameter. The default lo
 
 .. image:: /_static/forgot-result.png
 
-Forgot View
------------
+.. only:: springboot
 
-When the Forgot URI is visited a default template view named ``stormpath/forgot`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.forgotPassword.view`` property:
+  Forgot View
+  -----------
 
-.. code-block:: properties
+  When the Forgot URI is visited a default template view named ``stormpath/forgot`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.forgotPassword.view`` property:
 
-    stormpath.web.forgotPassword.view = stormpath/forgot
+  .. code-block:: properties
 
-Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+      stormpath.web.forgotPassword.view = stormpath/forgot
+
+  Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 Change Password URI
 -------------------
@@ -150,16 +152,18 @@ If you want to change this path, set the ``stormpath.web.login.uri`` configurati
     # The context-relative path to the login view:
     stormpath.web.login.uri = /login
 
-Change Password View
---------------------
+.. only:: springboot
 
-When the Change Password URI is visited a default template view named ``stormpath/change`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.changePassword.view`` property:
+  Change Password View
+  --------------------
 
-.. code-block:: properties
+  When the Change Password URI is visited a default template view named ``stormpath/change`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.changePassword.view`` property:
 
-    stormpath.web.changePassword.view = stormpath/change
+  .. code-block:: properties
 
-Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+      stormpath.web.changePassword.view = stormpath/change
+
+  Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 i18n
 ----

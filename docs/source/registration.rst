@@ -18,7 +18,7 @@ One of the very first things most web apps need is the ability to create a user 
 
 2. Fill out the form and click submit and you'll be redirected back to your application's root path, for example, ``http://localhost:8080/``.
 
-Pretty nice!  Not a single line of code required :)
+Pretty nice!  Not a single line of code required. :)
 
 And while we think the default look and feel of the pages automatically rendered by the plugin are pretty nice, you have full control over the CSS and HTML for these pages - we'll cover customizing them later.
 
@@ -65,16 +65,18 @@ This will cause the user to be redirected ``/registerSuccess`` instead of the co
 
 Again, this functionality is only executed if email verification is disabled.  If email verification is enabled, a page will be rendered asking the user to check their email.
 
-View
-----
+.. only:: springboot
 
-When the URI is visited a default template view named ``stormpath/register`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.register.view`` property:
+  View
+  ----
 
-.. code-block:: properties
+  When the URI is visited a default template view named ``stormpath/register`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.register.view`` property:
+
+  .. code-block:: properties
 
     stormpath.web.register.view = stormpath/register
 
-Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+  Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 Form Fields
 -----------

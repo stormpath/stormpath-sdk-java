@@ -132,7 +132,7 @@ Internationalization (i18n)
 
   If you wish to see all of the predefined message keys available, as well as more information about i18n message value resolution, please see the :ref:`i18n` page.
 
-  .. _default view files:
+  .. _default view files_jsp:
 
   Change a Default View
   ---------------------
@@ -212,7 +212,7 @@ Internationalization (i18n)
      * ``<jsp:doBody/>`` must be somewhere in the template.  This will be substituted at runtime with the actual page content.
      * A ``title`` page attribute is supported.  This can be specified in views that use the template via ``<jsp:attribute name="title">Value Here</jsp:attribute>``
 
-  #. Copy and paste :ref:`each stormpath default view file <default view files>` to your own project at the *exact* same path as the plugin files.  That is, each file *must* be in your .war's ``/WEB-INF/jsp/stormpath/`` directory and they *must* have the exact same name as the original files.
+  #. Copy and paste :ref:`each stormpath default view file <default view files_jsp>` to your own project at the *exact* same path as the plugin files.  That is, each file *must* be in your .war's ``/WEB-INF/jsp/stormpath/`` directory and they *must* have the exact same name as the original files.
 
   #. In each view file, you'll need to replace the following line:
 
@@ -228,10 +228,40 @@ Internationalization (i18n)
 
      (or whatever URI you chose when you created your ``/META-INF/templates.tld`` :ref:`tag library descriptor file <custom template tld>`).
 
-
   After completing these steps, all plugin views will reflect your custom template.
 
 .. only:: springboot
+
+  In the above example, you can see one of two meaningful lines:
+
+  .. code-block:: html
+
+      <title th:text="#{stormpath.web.login.title}">Login Title Here</title>
+
+  This line shows a title using standard `Thymeleaf i18n message key notation <http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#messages>`_.  The Spring Boot Thymeleaf starter automatically ensures that this notation will reference your application's Spring ``MessageSource``, ensuring i18n works the same as in any other Spring application.
+
+  Each Stormpath message key is automatically available in any template. The full list of Stormpath's out-of-the-box message keys is listed in the default :ref:`i18n.properties file <i18n-properties-file>`.  You can use them yourself or use any of your own message keys.
+
+  .. _head template:
+
+  Head Template
+  -------------
+
+  The second interesting line above is this one:
+
+  .. code-block:: html
+
+      <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
+
+
+  While this may look like a commented-out HTML comment, this is actually a special `Thymeleaf directive <http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#thymeleaf-prototype-only-comment-blocks>`_ that will include another template.  As you see, ``${headViewName}`` and ``${headFragmentSelector}`` are themselves values that are substituted at runtime with a template view name and a 'fragment selector' to allow you to control which fragment within the template is included.  These values are configured with the following two configuration properties:
+
+  .. code-block:: properties
+
+      stormpath.web.head.view = stormpath/head
+      stormpath.web.head.fragmentSelector = head
+
+  If you wanted, you could change these values to completely replace the default head template with your own.  See the Thymeleaf documentation for more about `comments and blocks <http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#comments-and-blocks>`_ and `fragment selectors <http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#optional-brackets>`_.
 
   CSS
   ---
@@ -275,7 +305,7 @@ Internationalization (i18n)
 
   Finally, if this proves too cumbersome or you just want total control, you might want to define your own `head template`_ entirely.
 
-  .. _default view files:
+  .. _default view files_thymeleaf:
 
   Change a Default View
   ---------------------

@@ -44,14 +44,14 @@ Many times, these clients communicate with your application via a REST API and n
 
 A common use case is as follows:
 
-1.  A rich client (JS/HTML/CSS) is loaded in a user's browser or a mobile application starts
+1.  A rich client (JS/HTML/CSS) is loaded in a user's browser or a mobile application starts.
 2.  The client-side UI collects the user's username (or email address) and password, for example via a form.
 3.  The client-side UI submits the username/email and password pair to your server-side web application, typically as an AJAX HTTPS request.
 4.  The |project| will ensure the client is allowed to make the request and then authenticates the submitted credentials.
 5.  If the authentication is successful, a 'bearer token' will be returned in the HTTP response to the Javascript application.
 6.  The client-side UI will send this bearer token over HTTPS on every future request, either in a cookie, or the request's ``Authorization`` header, or both.  For example:
 
-    .. code-block:: http
+    .. code-block:: rest
 
        Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0NTI0ODhlZ ... etc ...
 
@@ -94,7 +94,7 @@ The response body will be an OAuth 2 response, for example:
 
 The ``access_token`` value is the Bearer Token to send back on future requests in the ``Authorization`` header.  For example, assuming the above:
 
-.. code-block:: http
+.. code-block:: rest
 
    Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0NTI0ODhlZi00NWU4LTQ1NTMtOTRiNS0xMTM2NTY2ZGFhOTIiLCJpYXQiOjE0MjE3ODQ3NjYsInN1YiI6Imh0dHBzOi8vYXBpLnN0b3JtcGF0aC5jb20vdjEvYWNjb3VudHMvNDE5MndEaEx6ejFjVnFLdk44b1p4NyIsImV4cCI6MTQyMTc4ODM2Nn0._I4wlDRML6GfgZEL_qjmTDVh0a-qfP20CB7v7IgFwAc
 
@@ -160,7 +160,7 @@ The Bearer Token will be saved as a secure, http-only cookie and sent back to th
 
 Or, if you prefer, your JavaScript code can inspect the HTTP response body and get the ``access_token`` value and then set the ``Authorization`` header with the value on future requests.  For example:
 
-.. code-block:: http
+.. code-block:: rest
 
    Authorization: Bearer ACCESS_TOKEN_VALUE
 

@@ -39,7 +39,8 @@ It is generally not recommended to disable caching, but it might be useful in ce
    You can enable any of Spring's supported cache mechanisms and configure each cache region or TTL and TTI values accordingly.
 
    .. caution::
-   If your application is deployed on multiple hosts/nodes simultaneously, it is important to configure a Spring ``CacheManager`` that supports `coherent <http://en.wikipedia.org/wiki/Cache_coherence>`_ distributed memory, like Hazelcast, Redis, Gemfire, etc.  This ensures that all of your application nodes 'see' the same data and minimizes the likelihood of any one node seeing stale data.
+
+      If your application is deployed on multiple hosts/nodes simultaneously, it is important to configure a Spring ``CacheManager`` that supports `coherent <http://en.wikipedia.org/wiki/Cache_coherence>`_ distributed memory, like Hazelcast, Redis, Gemfire, etc.  This ensures that all of your application nodes 'see' the same data and minimizes the likelihood of any one node seeing stale data.
 
 .. _default ttl:
 
