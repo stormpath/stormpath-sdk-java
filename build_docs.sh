@@ -1,15 +1,9 @@
 #! /bin/sh
 
-# TODO: Move top-level docs folder into extensions/servlet-plugin
-# servlet-plugin docs
+# servlet-plugin + spring-boot docs
 cd docs
-make html
+make allhtml
 cd ..
-
-# spring boot docs
-cd extensions/spring/boot/docs
-make html
-cd ../../../../
 
 # javadocs
 mvn javadoc:aggregate -P travis-docs
