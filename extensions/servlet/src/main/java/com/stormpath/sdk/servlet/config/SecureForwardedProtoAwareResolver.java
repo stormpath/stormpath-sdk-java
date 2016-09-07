@@ -22,7 +22,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0.4
+ * Requires all HTTP clients to be secure (that is, {@link javax.servlet.http.HttpServletRequest#isSecure()
+ * request.isSecure()} must be {@code true}) <em>except</em> for clients that send 'X-Forwarded-Proto' as
+ * a header with a value of 'https'.
+ *
+ * <p>This solves https://github.com/stormpath/stormpath-sdk-java/issues/139: support X-Forwarded-Proto HTTP header
+ * if SSL termination is offloaded to dedicated hardware.</p>
+ *
+ * @since 1.1.0
  */
 public class SecureForwardedProtoAwareResolver implements Resolver<Boolean> {
 

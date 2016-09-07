@@ -21,7 +21,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @since 1.0.4
+ * A Resolver that takes into account the X-Forwarded-Proto header. If the header exists
+ * and its value is 'https', then the request does not need to be secure.
+ *
+ * @since 1.1.0
  */
 public class IsHTTPSForwardedProtoResolver implements Resolver<Boolean> {
 
