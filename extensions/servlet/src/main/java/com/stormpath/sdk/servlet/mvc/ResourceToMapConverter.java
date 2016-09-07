@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.directory.CustomData;
@@ -87,20 +102,20 @@ public class ResourceToMapConverter<T extends Resource> implements Function<T, M
         return !(propValue instanceof Resource) || propValue instanceof CustomData;
     }
 
-    public Map<String, Object> toMap(Object r) {
+    public Map<String, Object> toMap(Object o) {
 
-        Assert.notNull(r, "resource cannot be null");
-        Assert.isInstanceOf(AbstractResource.class, r, "Object must be an instance of " + AbstractResource.class.getName());
-        AbstractResource resource = (AbstractResource) r;
+        Assert.notNull(o, "Resource object cannot be null");
+        Assert.isInstanceOf(AbstractResource.class, o, "Object must be an instance of " + AbstractResource.class.getName());
+        AbstractResource resource = (AbstractResource) o;
 
-        if (r instanceof CustomData) {
+        if (o instanceof CustomData) {
 
-            CustomData cd = (CustomData) r;
+            CustomData cd = (CustomData) o;
 
             //force data load before copying:
             cd.getCreatedAt();
 
-            return deepCopy((CustomData) r); //copy the source - don't modify it
+            return deepCopy((CustomData) o); //copy the source - don't modify it
         }
 
         Map<String, Object> props = new LinkedHashMap<>();
@@ -135,8 +150,8 @@ public class ResourceToMapConverter<T extends Resource> implements Function<T, M
                 CollectionResource collectionResource = (CollectionResource) propValue;
                 List<Object> list = new ArrayList<>();
 
-                for (Object o : collectionResource) {
-                    Map<String, Object> val = toMap(o);
+                for (Object cr : collectionResource) {
+                    Map<String, Object> val = toMap(cr);
                     list.add(val);
                 }
 
