@@ -89,6 +89,16 @@ public interface Config extends Map<String, String> {
 
     Publisher<RequestEvent> getRequestEventPublisher();
 
+    /**
+     * @since 1.0.4
+     */
+    boolean isStormpathEnabled();
+
+    /**
+     * @since 1.0.4
+     */
+    boolean isStormpathWebEnabled();
+
     boolean isRegisterAutoLoginEnabled();
 
     /**

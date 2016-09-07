@@ -45,7 +45,7 @@ public class AuthorizationHeaderAccountResolver implements Resolver<Account> {
 
     public AuthorizationHeaderAccountResolver(HttpAuthenticator authenticator, String idSiteResultURI) {
         Assert.notNull(authenticator, "HttpAuthenticator argument cannot be null.");
-        Assert.notNull(authenticator, "idSiteResultURI argument cannot be null.");
+        Assert.notNull(idSiteResultURI, "idSiteResultURI argument cannot be null.");
         this.httpAuthenticator = authenticator;
         this.idSiteResultURI = idSiteResultURI;
     }
