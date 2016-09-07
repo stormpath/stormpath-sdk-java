@@ -22,6 +22,9 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Static utility/helper methods for working with {@link Account} resources.  Most methods are
@@ -309,6 +312,12 @@ public final class Accounts {
     public static CreateAccountRequestBuilder newCreateRequestFor(Account account) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Account.class);
         return (CreateAccountRequestBuilder) Classes.instantiate(ctor, account);
+    }
+
+    public static AccountCriteria filter(String query) {
+//        StringExpressionFactory q = newStringExpressionFactory("q");
+        StringExpressionFactory q = newStringExpressionFactory("surname");
+        return where(surname().eqIgnoreCase(query));
     }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {

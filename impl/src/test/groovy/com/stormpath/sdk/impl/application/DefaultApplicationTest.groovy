@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
 import com.stormpath.sdk.account.AccountList
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.account.CreateAccountRequest
 import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
@@ -220,7 +221,12 @@ class DefaultApplicationTest {
         resource = defaultApplication.getAccounts(accountCriteria)
         assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
 
-        resource = defaultApplication.getAccounts(accountCriteriaMap)
+//        resource = defaultApplication.getAccounts(accountCriteriaMap)
+//        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
+
+//      def qAccountCriteria = Accounts.filter("some+search")
+        accountCriteria.add(Accounts.surname().eqIgnoreCase("some+search"))
+        resource = defaultApplication.getAccounts(ccountCriteria)
         assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
 
         resource = defaultApplication.getTenant()
