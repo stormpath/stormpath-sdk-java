@@ -138,11 +138,20 @@ public class DefaultPasswordStrength extends AbstractInstanceResource implements
         return this;
     }
 
+
+    /**
+     * @since 1.1.0
+     */
     @Override
     public int getPreventReuse() {
         return getInt(PREVENT_REUSE);
     }
 
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
     public PasswordStrength setPreventReuse(int preventReuse) {
         Assert.isTrue(preventReuse >= 0, "preventReuse cannot be a negative number.");
         Assert.isTrue(preventReuse <= 25, "preventReuse cannot be larger than 25.");

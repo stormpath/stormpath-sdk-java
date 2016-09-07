@@ -17,8 +17,13 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.authc.UsernamePasswordRequests
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
+
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
 
 /**
  * @since 1.1.0
@@ -26,7 +31,7 @@ import org.testng.annotations.Test
 class PasswordStrengthPolicyIT extends ClientIT {
 
     /**
-     * Sets the prevent reuse to 0 this means you can set the same password you have.
+     * Sets the prevent reuse to 0 this means you can set the same password that is currently being used.
      */
     @Test
     void testPreventReuseDisabled() {
@@ -43,14 +48,21 @@ class PasswordStrengthPolicyIT extends ClientIT {
 
         def newPassword = "N3wP@ssw0rd!";
 
-        def spToken = getPasswordResetToken(tempApp, acct)
+        def spToken = tempApp.sendPasswordResetEmail(acct.email).getValue()
 
         tempApp.resetPassword(spToken, newPassword)
 
-        def spToken2 = getPasswordResetToken(tempApp, acct)
+        def spToken2 = tempApp.sendPasswordResetEmail(acct.email).getValue()
 
         tempApp.resetPassword(spToken2, newPassword)
 
+        //Checking "newPassword" works
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(acct.username).setPassword(newPassword).build()
+        def result = tempApp.authenticateAccount(request)
+
+        def loginAccount = result.getAccount()
+
+        assertEquals loginAccount.username, acct.username
     }
 
     /**
@@ -58,7 +70,7 @@ class PasswordStrengthPolicyIT extends ClientIT {
      * you need at least 1 password different in between two equal passwords.
      * Using the same password twice results in a ResourceException
      */
-    @Test(expectedExceptions = [ResourceException])
+    @Test
     void testPreventReuseEnabledError() {
 
         def tempApp = createTempApp()
@@ -73,13 +85,19 @@ class PasswordStrengthPolicyIT extends ClientIT {
 
         def newPassword = "N3wP@ssw0rd!";
 
-        def spToken = getPasswordResetToken(tempApp, acct)
+        def spToken = tempApp.sendPasswordResetEmail(acct.email).getValue()
 
         tempApp.resetPassword(spToken, newPassword)
 
-        def spToken2 = getPasswordResetToken(tempApp, acct)
+        def spToken2 = tempApp.sendPasswordResetEmail(acct.email).getValue()
 
-        tempApp.resetPassword(spToken2, newPassword)
+        try {
+            tempApp.resetPassword(spToken2, newPassword)
+            fail ("Should have failed due to same password usage and password prevent reuse set to 1")
+        } catch (Exception e){
+            assertTrue e instanceof ResourceException
+            assertTrue e.getMessage().contains("The password specified violates the Directory's Password Policy for Strength. The password can not match the past 1 passwords.")
+        }
     }
 
     /**
@@ -101,25 +119,30 @@ class PasswordStrengthPolicyIT extends ClientIT {
 
         def newPassword = "N3wP@ssw0rd!";
 
-        def spToken = getPasswordResetToken(tempApp, acct)
+        def spToken = tempApp.sendPasswordResetEmail(acct.email).getValue()
 
         tempApp.resetPassword(spToken, newPassword)
 
         def newPassword2 = "N3wP@ssw0rd2!";
 
-        def spToken2 = getPasswordResetToken(tempApp, acct)
+        def spToken2 = tempApp.sendPasswordResetEmail(acct.email).getValue()
 
         tempApp.resetPassword(spToken2, newPassword2)
 
-        def spToken3 = getPasswordResetToken(tempApp, acct)
+        def spToken3 = tempApp.sendPasswordResetEmail(acct.email).getValue()
 
         tempApp.resetPassword(spToken3, newPassword)
+
+        //Checking "newPassword" works
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(acct.username).setPassword(newPassword).build()
+        def result = tempApp.authenticateAccount(request)
+
+        def loginAccount = result.getAccount()
+
+        assertEquals loginAccount.username, acct.username
     }
 
-    /**
-     * @since 1.1.0
-     */
-    Account createTestAccount(def application) {
+    private Account createTestAccount(def application) {
 
         //create a test account:
         def acct = client.instantiate(Account)
@@ -133,12 +156,5 @@ class PasswordStrengthPolicyIT extends ClientIT {
         deleteOnTeardown(acct)
 
         return acct
-    }
-
-    String getPasswordResetToken(def application, def account) {
-
-        def token = application.sendPasswordResetEmail(account.email)
-
-        return token.href.drop(token.href.lastIndexOf("/") + 1)
     }
 }
