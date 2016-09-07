@@ -69,10 +69,10 @@ public class UserAgent {
 
     //Stormpath Java Servlet Plugin
     private static final String STORMPATH_SDK_SERVLET_ID = "stormpath-servlet-java";
-    private static final String STORMPATH_SDK_SERVLET_CLASS = "com.stormpath.sdk.servlet.filter.StormpathFilter";
+    private static final String STORMPATH_SDK_SERVLET_CLASS = "com.stormpath.sdk.servlet.config.Config";
 
     private static final String STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_ID = "stormpath-spring-webmvc";
-    private static final String STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_CLASS = "com.stormpath.spring.mvc.SpringController";
+    private static final String STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_CLASS = "com.stormpath.spring.mvc.AbstractSpringControllerConfig";
 
     //Stormpath Spring Boot
     private static final String STORMPATH_SDK_SPRING_BOOT_STARTER_ID = "stormpath-spring-boot-starter";

@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.stormpath.sdk.servlet.mvc.View.STORMPATH_JSON_VIEW_NAME;
-
 import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED_OBJECT;
 
 /**
@@ -199,9 +197,10 @@ public abstract class FormController extends AbstractController {
                 } else {
                     clone.setValue(val);
                 }
+
                 // #645: Allow unresolved i18n keys to pass through for labels and placeholders
-                ((DefaultField) clone).setLabel(i18n(request, clone.getLabel(), clone.getLabel()));
-                ((DefaultField) clone).setPlaceholder(i18n(request, clone.getPlaceholder(), clone.getPlaceholder()));
+                ((DefaultField) clone).setLabel(i18nWithDefault(request, clone.getLabel(), clone.getLabel()));
+                ((DefaultField) clone).setPlaceholder(i18nWithDefault(request, clone.getPlaceholder(), clone.getPlaceholder()));
 
                 fields.add(clone);
             }
