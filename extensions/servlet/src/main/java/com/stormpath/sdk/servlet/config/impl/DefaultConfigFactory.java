@@ -46,7 +46,6 @@ import java.util.Scanner;
  */
 public class DefaultConfigFactory implements ConfigFactory {
 
-
     public static final String STORMPATH_PROPERTIES         = "stormpath.properties";
     public static final String STORMPATH_PROPERTIES_SOURCES = STORMPATH_PROPERTIES + ".sources";
 
