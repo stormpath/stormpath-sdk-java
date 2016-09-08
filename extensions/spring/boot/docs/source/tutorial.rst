@@ -214,7 +214,7 @@ It has the ``@Configuration`` annotation:
     @Configuration
     public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
         @Override
-        protected void doConfigure(HttpSecurity http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .apply(stormpath()).and()
                 .authorizeRequests()

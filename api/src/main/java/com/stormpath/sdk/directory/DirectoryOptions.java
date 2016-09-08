@@ -31,4 +31,6 @@ public interface DirectoryOptions<T extends DirectoryOptions> extends AccountSto
      * @since 1.0.0
      */
     T withCustomData();
+
+    T withAccountSchema();
 }

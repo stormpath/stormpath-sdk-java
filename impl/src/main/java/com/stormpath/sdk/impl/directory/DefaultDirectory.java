@@ -48,6 +48,7 @@ import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.schema.AccountSchema;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -67,6 +68,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     static final ResourceReference<Provider> PROVIDER = new ResourceReference<Provider>("provider", Provider.class);
     static final ResourceReference<PasswordPolicy> PASSWORD_POLICY = new ResourceReference<PasswordPolicy>("passwordPolicy", PasswordPolicy.class);
     static final ResourceReference<AccountCreationPolicy> ACCOUNT_CREATION_POLICY = new ResourceReference<AccountCreationPolicy>("accountCreationPolicy", AccountCreationPolicy.class);
+    static final ResourceReference<AccountSchema> ACCOUNT_SCHEMA = new ResourceReference<AccountSchema>("accountSchema", AccountSchema.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account> ACCOUNTS =
@@ -79,7 +81,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
             new CollectionReference<OrganizationAccountStoreMappingList, OrganizationAccountStoreMapping>("organizationMappings", OrganizationAccountStoreMappingList.class, OrganizationAccountStoreMapping.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA, PASSWORD_POLICY, ACCOUNT_CREATION_POLICY, ORGANIZATION_MAPPINGS, ORGANIZATIONS);
+            NAME, DESCRIPTION, STATUS, TENANT, PROVIDER, ACCOUNTS, GROUPS, CUSTOM_DATA, PASSWORD_POLICY, ACCOUNT_CREATION_POLICY, ORGANIZATION_MAPPINGS, ORGANIZATIONS, ACCOUNT_SCHEMA);
 
     public DefaultDirectory(InternalDataStore dataStore) {
         super(dataStore);
@@ -336,5 +338,10 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
     public OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria) {
         OrganizationList list = getOrganizations(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), OrganizationAccountStoreMappingList.class, (Criteria<OrganizationAccountStoreMappingCriteria>) criteria);
+    }
+
+    @Override
+    public AccountSchema getAccountSchema() {
+        return getResourceProperty(ACCOUNT_SCHEMA);
     }
 }

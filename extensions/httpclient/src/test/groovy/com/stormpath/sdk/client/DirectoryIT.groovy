@@ -32,6 +32,7 @@ import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.saml.AttributeStatementMappingRule
 import com.stormpath.sdk.saml.AttributeStatementMappingRules
 import com.stormpath.sdk.saml.SamlAttributeStatementMappingRules
+import com.stormpath.sdk.schema.AccountSchema
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -799,5 +800,52 @@ class DirectoryIT extends ClientIT {
         orgList = directory.getOrganizations(Organizations.where(Organizations.name().eqIgnoreCase(org2.name)))
         assertEquals orgList.size, 1
         assertEquals orgList.iterator().next().href, org2.href
+    }
+
+    /**
+     * @since 1.0.4
+     */
+    @Test
+    void testGetAccountSchema() {
+
+        Directory directory = client.instantiate(Directory)
+        directory.setName(uniquify("JSDK.DirectoryIT.testGetAccountSchema"))
+        directory = client.createDirectory(directory);
+        assertNotNull directory.href
+        deleteOnTeardown(directory)
+
+        def accountSchema = directory.getAccountSchema()
+        assertNotNull accountSchema
+        assertNotNull accountSchema.getHref()
+
+        def accountSchema1 = client.getResource(accountSchema.getHref(), AccountSchema)
+
+        assertFalse(accountSchema.equals(accountSchema1))  //not expanded -> must be different
+    }
+
+    /**
+     * @since 1.0.4
+     */
+    @Test
+    void testGetDirectoryWithExpandedAccountSchema() {
+
+        Directory directory = client.instantiate(Directory)
+        directory.setName(uniquify("JSDK.DirectoryIT.testGetDirectoryWithExpandedAccountSchema"))
+        directory = client.createDirectory(directory);
+        assertNotNull directory.href
+        deleteOnTeardown(directory)
+
+        def dirOptions = Directories.options().withAccountSchema()
+
+        directory = client.getResource(directory.getHref(), Directory, dirOptions)
+
+        //accountSchema must be expanded
+        def accountSchema = directory.getAccountSchema()
+        assertNotNull accountSchema
+        assertNotNull accountSchema.getHref()
+
+        def accountSchema1 = client.getResource(accountSchema.getHref(), AccountSchema)
+
+        assertEquals(accountSchema, accountSchema1)  //expanded -> must be equals
     }
 }

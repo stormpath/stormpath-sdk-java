@@ -86,4 +86,13 @@ public class DefaultDirectoryCriteria extends DefaultCriteria<DirectoryCriteria,
         getOptions().withCustomData();
         return this;
     }
+
+    /**
+     * @since 1.0.0
+     */
+    @Override
+    public DirectoryCriteria withAccountSchema() {
+        getOptions().withAccountSchema();
+        return this;
+    }
 }
