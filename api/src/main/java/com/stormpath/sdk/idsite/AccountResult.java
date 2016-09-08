@@ -58,4 +58,7 @@ public interface AccountResult {
      */
     String getState();
 
+    IdSiteResultStatus getStatus();
+
+    void setStatus(IdSiteResultStatus status);
 }

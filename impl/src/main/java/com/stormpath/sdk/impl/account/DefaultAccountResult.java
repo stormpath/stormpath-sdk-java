@@ -2,6 +2,7 @@ package com.stormpath.sdk.impl.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.idsite.AccountResult;
+import com.stormpath.sdk.idsite.IdSiteResultStatus;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
@@ -27,6 +28,8 @@ public class DefaultAccountResult extends AbstractResource implements AccountRes
     public static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(NEW_ACCOUNT, ACCOUNT);
+
+    private IdSiteResultStatus status;
 
     public DefaultAccountResult(InternalDataStore dataStore) {
         super(dataStore);
@@ -54,5 +57,15 @@ public class DefaultAccountResult extends AbstractResource implements AccountRes
     @Override
     public String getState() {
         return getString(STATE);
+    }
+
+    @Override
+    public IdSiteResultStatus getStatus() {
+        return status;
+    }
+    
+    @Override
+    public void setStatus(IdSiteResultStatus status) {
+        this.status = status;
     }
 }
