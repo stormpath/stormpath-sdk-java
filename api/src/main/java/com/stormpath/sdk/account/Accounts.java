@@ -314,10 +314,13 @@ public final class Accounts {
         return (CreateAccountRequestBuilder) Classes.instantiate(ctor, account);
     }
 
-    public static AccountCriteria filter(String query) {
-//        StringExpressionFactory q = newStringExpressionFactory("q");
-        StringExpressionFactory q = newStringExpressionFactory("surname");
-        return where(surname().eqIgnoreCase(query));
+    /**
+     * @since 1.1.0
+     */
+    public static Map<String, Object> filter(String query) {
+        Map<String, Object> result =  new HashMap<String, Object>();
+        result.put("q", new String(query));
+        return result;
     }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {

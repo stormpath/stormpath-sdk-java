@@ -22,6 +22,8 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Static utility/helper methods for working with {@link Group} resources.  Most methods are
@@ -190,6 +192,14 @@ public final class Groups {
         return (CreateGroupRequestBuilder) Classes.instantiate(ctor, group);
     }
 
+    /**
+     * @since 1.1.0
+     */
+    public static Map<String, Object> filter(String query) {
+        Map<String, Object> result =  new HashMap<String, Object>();
+        result.put("q", new String(query));
+        return result;
+    }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultStringExpressionFactory";

@@ -39,6 +39,7 @@ import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupCriteria
 import com.stormpath.sdk.group.GroupList
 import com.stormpath.sdk.group.GroupOptions
+import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
@@ -221,12 +222,7 @@ class DefaultApplicationTest {
         resource = defaultApplication.getAccounts(accountCriteria)
         assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
 
-//        resource = defaultApplication.getAccounts(accountCriteriaMap)
-//        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
-
-//      def qAccountCriteria = Accounts.filter("some+search")
-        accountCriteria.add(Accounts.surname().eqIgnoreCase("some+search"))
-        resource = defaultApplication.getAccounts(ccountCriteria)
+        resource = defaultApplication.getAccounts(accountCriteriaMap)
         assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.accounts.href))
 
         resource = defaultApplication.getTenant()
@@ -245,6 +241,53 @@ class DefaultApplicationTest {
         assertEquals(defaultApplication.authenticateAccount(request), authenticationResult02)
 
         verify internalDataStore, groupCriteria, accountCriteria, account
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testQueryFilters() {
+
+        def properties = [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj",
+                          accounts: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/accounts"],
+                          groups: [href: "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj/groups"]
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+
+        def defaultApplication = new DefaultApplication(internalDataStore, properties)
+
+        assertNull(defaultApplication.getStatus())
+
+        defaultApplication = defaultApplication.setStatus(ApplicationStatus.DISABLED)
+                .setName("App Name")
+                .setDescription("App Description")
+
+        assertEquals(defaultApplication.getStatus(), ApplicationStatus.DISABLED)
+        assertEquals(defaultApplication.getName(), "App Name")
+        assertEquals(defaultApplication.getDescription(), "App Description")
+
+        def queryCriteriaMap = [q: "some+search"]
+        expect(internalDataStore.instantiate(AccountList, properties.accounts)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
+        expect(internalDataStore.getResource(properties.accounts.href, AccountList, queryCriteriaMap)).andReturn(new DefaultAccountList(internalDataStore, properties.accounts))
+
+        expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
+        expect(internalDataStore.getResource(properties.groups.href, GroupList, queryCriteriaMap)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
+
+        expect(internalDataStore.delete(defaultApplication))
+
+        replay internalDataStore
+
+        def acctResource = defaultApplication.getAccounts(Accounts.filter("some+search"))
+        assertTrue(acctResource instanceof DefaultAccountList && acctResource.getHref().equals(properties.accounts.href))
+
+        def grpResource = defaultApplication.getGroups(Groups.filter("some+search"))
+        assertTrue(grpResource instanceof DefaultGroupList && grpResource.getHref().equals(properties.groups.href))
+
+        defaultApplication.delete()
+
+        verify internalDataStore
     }
 
     @Test
