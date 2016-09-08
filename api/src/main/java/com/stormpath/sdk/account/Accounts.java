@@ -23,7 +23,6 @@ import com.stormpath.sdk.query.StringExpressionFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
