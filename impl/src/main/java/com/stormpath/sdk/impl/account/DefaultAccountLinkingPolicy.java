@@ -94,6 +94,9 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
 
     @Override
     public AccountLinkingPolicy setMatchingProperty(MatchingProperty matchingProperty) {
+        if(matchingProperty == null) {
+            this.deletedPropertyNames.add(MATCHING_PROPERTY.getName()); // To tell the DataStore that this property is nullable
+        }
         String mp = matchingProperty == null ? null : matchingProperty.name();
         setProperty(MATCHING_PROPERTY, mp);
         return this;

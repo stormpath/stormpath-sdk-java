@@ -19,6 +19,5 @@ package com.stormpath.sdk.account;
  * @see AccountLinkingPolicy
  */
 public enum MatchingProperty {
-    email,
-    username
+    email
 }

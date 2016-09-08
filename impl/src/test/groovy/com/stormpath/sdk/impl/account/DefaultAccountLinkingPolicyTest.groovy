@@ -69,11 +69,11 @@ public class DefaultAccountLinkingPolicyTest {
         assertEquals(accountLinkingPolicy.getAutomaticProvisioning().name(), properties.automaticProvisioning)
         assertEquals(accountLinkingPolicy.getMatchingProperty().name(), properties.matchingProperty)
 
-        accountLinkingPolicy = accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).setMatchingProperty(MatchingProperty.username)
+        accountLinkingPolicy = accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).setMatchingProperty(MatchingProperty.email)
 
         assertEquals(accountLinkingPolicy.getStatus().name(), "ENABLED")
         assertEquals(accountLinkingPolicy.getAutomaticProvisioning().name(), "ENABLED")
-        assertEquals(accountLinkingPolicy.getMatchingProperty().name(), "username")
+        assertEquals(accountLinkingPolicy.getMatchingProperty().name(), "email")
         assertEquals(accountLinkingPolicy.getHref(), properties.href)
 
         def tenant = accountLinkingPolicy.getTenant()
@@ -103,7 +103,7 @@ public class DefaultAccountLinkingPolicyTest {
 
         accountLinkingPolicy = accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).
                                 setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).
-                                setMatchingProperty(MatchingProperty.username)
+                                setMatchingProperty(MatchingProperty.email)
 
         try {
             accountLinkingPolicy.setStatus(null)

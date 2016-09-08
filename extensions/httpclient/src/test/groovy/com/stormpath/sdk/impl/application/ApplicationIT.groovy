@@ -1769,6 +1769,19 @@ class ApplicationIT extends ClientIT {
         assertTrue(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
         assertNotNull accountLinkingPolicy.getMatchingProperty()
         assertEquals accountLinkingPolicy.getMatchingProperty().name(), 'email'
+
+        accountLinkingPolicy.setMatchingProperty(null) // set matchingProperty to null
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNull accountLinkingPolicy.getMatchingProperty()
     }
 
 
