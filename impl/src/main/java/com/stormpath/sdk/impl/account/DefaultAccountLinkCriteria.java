@@ -5,7 +5,7 @@ import com.stormpath.sdk.account.AccountLinkOptions;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 
 /**
- * @since // TODO
+ * @since 1.1.0
  */
 public class DefaultAccountLinkCriteria extends DefaultCriteria<AccountLinkCriteria, AccountLinkOptions> implements AccountLinkCriteria {
 

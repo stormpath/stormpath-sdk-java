@@ -12,6 +12,9 @@ import com.stormpath.sdk.lang.Assert;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * @since 1.1.0
+ */
 public class DefaultAccountLink extends AbstractInstanceResource implements AccountLink {
 
     private static final String ENTITY_HREF = "/accountLinks";

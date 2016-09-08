@@ -9,6 +9,9 @@ import com.stormpath.sdk.impl.resource.Property;
 
 import java.util.Map;
 
+/**
+ * @since 1.1.0
+ */
 public class DefaultAccountLinkList extends AbstractCollectionResource<AccountLink> implements AccountLinkList {
 
     private static final ArrayProperty<AccountLink> ITEMS = new ArrayProperty<>("items", AccountLink.class);
