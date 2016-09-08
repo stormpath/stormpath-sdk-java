@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
 import com.stormpath.sdk.oauth.IdSiteAuthenticationRequestBuilder;
 
@@ -25,6 +26,7 @@ import com.stormpath.sdk.oauth.IdSiteAuthenticationRequestBuilder;
 public class DefaultIdSiteAuthenticationRequestBuilder implements IdSiteAuthenticationRequestBuilder {
 
     private String token;
+    private String organizationNameKey;
 
     @Override
     public IdSiteAuthenticationRequestBuilder setToken(String token) {
@@ -34,9 +36,19 @@ public class DefaultIdSiteAuthenticationRequestBuilder implements IdSiteAuthenti
     }
 
     @Override
+    public IdSiteAuthenticationRequestBuilder setOrganizationNameKey(String organizationNameKey) {
+        Assert.hasText(organizationNameKey, "organizationNameKey cannot be null or empty.");
+        this.organizationNameKey = organizationNameKey;
+        return this;
+    }
+
+    @Override
     public IdSiteAuthenticationRequest build() {
         Assert.state(this.token != null, "token has not been set. It is a required attribute.");
         IdSiteAuthenticationRequest request = new DefaultIdSiteAuthenticationRequest(token);
+        if(Strings.hasText(this.organizationNameKey)) {
+            request.setOrganizationNameKey(this.organizationNameKey);
+        }
         return request;
     }
 }

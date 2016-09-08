@@ -25,10 +25,15 @@ public class DefaultIdSiteAuthenticationRequest implements IdSiteAuthenticationR
 
     private final static String grant_type = "stormpath_token";
     private final String token;
+    private String organizationNameKey;
 
     public DefaultIdSiteAuthenticationRequest(String token) {
         Assert.notNull(token, "token argument cannot be null.");
         this.token = token;
+    }
+
+    public void setOrganizationNameKey(String organizationNameKey) {
+        this.organizationNameKey = organizationNameKey;
     }
 
     @Override
@@ -39,5 +44,10 @@ public class DefaultIdSiteAuthenticationRequest implements IdSiteAuthenticationR
     @Override
     public String getToken() {
         return token;
+    }
+
+    @Override
+    public String getOrganizationNameKey() {
+        return organizationNameKey;
     }
 }

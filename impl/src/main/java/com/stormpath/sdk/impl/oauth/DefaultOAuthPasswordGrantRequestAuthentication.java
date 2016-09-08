@@ -15,9 +15,9 @@
 */
 package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 
 /**
  * @since 1.0.RC7
@@ -27,6 +27,7 @@ public class DefaultOAuthPasswordGrantRequestAuthentication implements OAuthPass
     private final String login;
     private final String password;
     private AccountStore accountStore;
+    private String organizationNameKey;
     private final static String grant_type = "password";
 
     public DefaultOAuthPasswordGrantRequestAuthentication(String login, String password) {
@@ -39,6 +40,11 @@ public class DefaultOAuthPasswordGrantRequestAuthentication implements OAuthPass
 
     public OAuthPasswordGrantRequestAuthentication setAccountStore(AccountStore accountStore) {
         this.accountStore = accountStore;
+        return this;
+    }
+
+    public OAuthPasswordGrantRequestAuthentication setOrganizationNameKey(String organizationNameKey) {
+        this.organizationNameKey = organizationNameKey;
         return this;
     }
 
@@ -60,5 +66,10 @@ public class DefaultOAuthPasswordGrantRequestAuthentication implements OAuthPass
     @Override
     public String getGrantType() {
         return grant_type;
+    }
+
+    @Override
+    public String getOrganizationNameKey() {
+        return organizationNameKey;
     }
 }

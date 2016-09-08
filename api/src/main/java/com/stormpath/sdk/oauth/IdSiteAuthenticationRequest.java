@@ -26,4 +26,14 @@ public interface IdSiteAuthenticationRequest extends OAuthGrantRequestAuthentica
      * @return a String value denoting the Id Site <a href="https://en.wikipedia.org/wiki/JSON_Web_Token">Json Web Token</a> used to generate an OAuth 2.0 access token.
      */
     String getToken();
+
+    /**
+     * Returns the given Organization name key
+     *
+     * @since 1.1.0
+     * @return The org name key
+     */
+    String getOrganizationNameKey();
+
+    void setOrganizationNameKey(String organizationNameKey);
 }

@@ -15,10 +15,10 @@
 */
 package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
-import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticationBuilder;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticationBuilder;
 
 /**
  * @since 1.0.RC7
@@ -28,6 +28,7 @@ public class DefaultOAuthPasswordGrantRequestAuthenticationBuilder implements OA
     private String login;
     private String password;
     private AccountStore accountStore;
+    private String organizationNameKey;
 
     @Override
     public OAuthPasswordGrantRequestAuthenticationBuilder setLogin(String login) {
@@ -51,6 +52,13 @@ public class DefaultOAuthPasswordGrantRequestAuthenticationBuilder implements OA
     }
 
     @Override
+    public OAuthPasswordGrantRequestAuthenticationBuilder setOrganizationNameKey(String organizationNameKey) {
+        Assert.hasText(organizationNameKey, "organizationNameKey cannot be null or empty.");
+        this.organizationNameKey = organizationNameKey;
+        return this;
+    }
+
+    @Override
     public OAuthPasswordGrantRequestAuthentication build() {
         Assert.state(this.login != null, "login has not been set. It is a required attribute.");
         Assert.state(this.password != null, "password has not been set. It is a required attribute.");
@@ -59,6 +67,10 @@ public class DefaultOAuthPasswordGrantRequestAuthenticationBuilder implements OA
 
         if (this.accountStore != null) {
             request.setAccountStore(this.accountStore);
+        }
+
+        if(this.organizationNameKey != null) {
+            request.setOrganizationNameKey(this.organizationNameKey);
         }
 
         return request;

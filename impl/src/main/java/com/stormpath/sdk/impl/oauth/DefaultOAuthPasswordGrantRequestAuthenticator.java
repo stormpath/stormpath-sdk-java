@@ -16,11 +16,16 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.oauth.GrantAuthenticationToken;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
 
 /**
  * @since 1.0.RC7
@@ -43,8 +48,13 @@ public class DefaultOAuthPasswordGrantRequestAuthenticator extends AbstractOAuth
         oauthPasswordGrantAuthenticationAttempt.setLogin(oauthPasswordGrantRequestAuthentication.getLogin());
         oauthPasswordGrantAuthenticationAttempt.setPassword(oauthPasswordGrantRequestAuthentication.getPassword());
         oauthPasswordGrantAuthenticationAttempt.setGrantType(oauthPasswordGrantRequestAuthentication.getGrantType());
-        if (oauthPasswordGrantRequestAuthentication.getAccountStore() != null){
+        if (oauthPasswordGrantRequestAuthentication.getAccountStore() != null) {
             oauthPasswordGrantAuthenticationAttempt.setAccountStore(oauthPasswordGrantRequestAuthentication.getAccountStore());
+        }
+
+        //@since 1.1.0
+        if (Strings.hasText(oauthPasswordGrantRequestAuthentication.getOrganizationNameKey())) {
+            oauthPasswordGrantAuthenticationAttempt.setOrganizationNameKey(oauthPasswordGrantRequestAuthentication.getOrganizationNameKey());
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();

@@ -29,8 +29,9 @@ public class DefaultIdSiteAuthenticationAttempt extends AbstractResource impleme
 
     static final StringProperty TOKEN = new StringProperty("token");
     static final StringProperty GRANT_TYPE = new StringProperty("grant_type");
+    static final StringProperty ORGANIZATION_NAME_KEY = new StringProperty("organizationNameKey");
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TOKEN, GRANT_TYPE);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TOKEN, GRANT_TYPE, ORGANIZATION_NAME_KEY);
 
     public DefaultIdSiteAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -57,6 +58,11 @@ public class DefaultIdSiteAuthenticationAttempt extends AbstractResource impleme
     @Override
     public void setGrantType(String grantType) {
         setProperty(GRANT_TYPE, grantType);
+    }
+
+    @Override
+    public void setOrganizationNameKey(String organizationNameKey) {
+        setProperty(ORGANIZATION_NAME_KEY, organizationNameKey);
     }
 
     public String getGrantType(){

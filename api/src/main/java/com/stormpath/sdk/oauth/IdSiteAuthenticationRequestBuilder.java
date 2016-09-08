@@ -31,6 +31,14 @@ public interface IdSiteAuthenticationRequestBuilder extends OAuthRequestAuthenti
     IdSiteAuthenticationRequestBuilder setToken(String token);
 
     /**
+     * Specifies the organization via it's name key
+     *
+     * @param organizationNameKey The organization name key
+     * @return this instance for method chaining.
+     */
+    IdSiteAuthenticationRequestBuilder setOrganizationNameKey(String organizationNameKey);
+
+    /**
      * Builds a new {@link OAuthRefreshTokenRequestAuthentication RefreshGrantRequest} instance based on the current builder state.
      *
      * @return the {@link OAuthRefreshTokenRequestAuthentication} object used to create a new authentication token

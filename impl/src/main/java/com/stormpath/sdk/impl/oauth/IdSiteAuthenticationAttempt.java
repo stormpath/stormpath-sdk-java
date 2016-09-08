@@ -24,6 +24,7 @@ public interface IdSiteAuthenticationAttempt extends Resource {
 
     /**
      * Sets the Id Site JWT that will be used for the token exchange request.
+     *
      * @param token The String representation of an ID Site provided JWT.
      */
     void setToken(String token);
@@ -31,7 +32,16 @@ public interface IdSiteAuthenticationAttempt extends Resource {
     /**
      * Method used to set the Authentication Grant Type that will be used for the token exchange request.
      * Currently only "stormpath_token" grant type is supported for this operation.
+     *
      * @param grantType the Authentication Grant Type that will be used for the token exchange request.
      */
     void setGrantType(String grantType);
+
+    /**
+     * Sets the optional organization name key
+     *
+     * @param organizationNameKey The organization name key
+     * @since 1.1.0
+     */
+    void setOrganizationNameKey(String organizationNameKey);
 }

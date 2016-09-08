@@ -47,4 +47,13 @@ public interface OAuthPasswordGrantRequestAuthenticationBuilder extends OAuthReq
      * @return this instance for method chaining.
      */
     OAuthPasswordGrantRequestAuthenticationBuilder setAccountStore(AccountStore accountStore);
+
+    /**
+     * Specifies the target organization to be used for authentication
+     *
+     * @param organizationNameKey The organization name key
+     * @return this instance for method changing
+     * @since 1.1.0
+     */
+    OAuthPasswordGrantRequestAuthenticationBuilder setOrganizationNameKey(String organizationNameKey);
 }

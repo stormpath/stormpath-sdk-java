@@ -45,4 +45,12 @@ public interface OAuthPasswordGrantRequestAuthentication extends OAuthGrantReque
      */
     AccountStore getAccountStore();
 
+    /**
+     * https://github.com/stormpath/stormpath-sdk-java/issues/742
+     *
+     * @since 1.1.0
+     * @return The organization name key
+     */
+    String getOrganizationNameKey();
+
 }

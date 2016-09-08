@@ -20,11 +20,12 @@ import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.IdSiteAuthenticator;
-import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
-import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
-import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.GrantAuthenticationToken;
+import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
+import com.stormpath.sdk.oauth.IdSiteAuthenticator;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
 
 /**
  * @since 1.0.RC8.2
@@ -47,6 +48,11 @@ public class DefaultIdSiteAuthenticator extends AbstractOAuthRequestAuthenticato
         IdSiteAuthenticationAttempt attempt = new DefaultIdSiteAuthenticationAttempt(dataStore);
         attempt.setGrantType(request.getGrantType());
         attempt.setToken(request.getToken());
+
+        //@since 1.1.0
+        if(Strings.hasText(request.getOrganizationNameKey())) {
+            attempt.setOrganizationNameKey(request.getOrganizationNameKey());
+        }
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
