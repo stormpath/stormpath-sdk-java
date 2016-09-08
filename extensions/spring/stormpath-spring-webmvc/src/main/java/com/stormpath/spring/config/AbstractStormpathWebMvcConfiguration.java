@@ -168,6 +168,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.DelegatingMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.CompositePropertySource;
@@ -836,6 +837,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultRefreshTokenResultFactory(application);
     }
 
+    @Bean
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
         return new DefaultWrappedServletRequestFactory(
             stormpathUsernamePasswordRequestFactory(), stormpathAuthenticationResultSaver(),
@@ -1064,6 +1066,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return lci;
     }
 
+    @Bean
     public Set<String> stormpathRequestClientAttributeNames() {
         Set<String> set = new LinkedHashSet<>();
         set.addAll(Strings.commaDelimitedListToSet(requestClientAttributeNames));
@@ -1072,6 +1075,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return set;
     }
 
+    @Bean
     public Set<String> stormpathRequestApplicationAttributeNames() {
         Set<String> set = new LinkedHashSet<>();
         set.addAll(Strings.commaDelimitedListToSet(requestApplicationAttributeNames));
@@ -1484,6 +1488,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         mgr.createChain(meUri, name);
     }
 
+    @Bean
     public FilterChainResolver stormpathFilterChainResolver() {
 
         PathMatchingFilterChainResolver resolver = new PathMatchingFilterChainResolver(servletContext);

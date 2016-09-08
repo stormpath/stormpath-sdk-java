@@ -654,6 +654,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter() {
         StormpathFilter filter = newStormpathFilter();
