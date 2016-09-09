@@ -1,7 +1,7 @@
 package com.stormpath.sdk.challenge;
 
 /**
- * Created by mehrshadrafiei on 8/31/16.
+ * todo: mehrshad
  */
 public enum ChallengeStatus {
     CREATED,

@@ -16,16 +16,25 @@
 package com.stormpath.sdk.factor;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.factor.sms.FactorVerificationStatus;
+import com.stormpath.sdk.resource.Auditable;
+import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
 
 /**
  * TODO: description
  */
-public abstract class Factor {
-    private FactorType factorType;
-    private Account account;
 
-    public Factor(FactorType factorType, Account account) {
-        this.factorType = factorType;
-        this.account = account;
-    }
+// todo: mehrshad
+
+public interface Factor extends Resource, Saveable, Deletable, Auditable {
+    FactorStatus getStatus();
+    Factor setStatus(FactorStatus status);
+    FactorVerificationStatus getFactorVerificationStatus();
+    Factor setFactorVerificationStatus(FactorVerificationStatus verificationStatus);
+    FactorType getFactorType();
+    Factor setFactorType(FactorType factorType);
+    Account getAccount();
+    Factor setAccount(Account account);
 }

@@ -15,14 +15,11 @@
  */
 package com.stormpath.sdk.phone;
 
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.GroupOptions;
-
 /**
  * A Builder to construct {@link CreatePhoneRequest}s.
  *
  * @see com.stormpath.sdk.account.Account#createPhone(CreatePhoneRequest)
- * @since 0.9
+ * @since 1.0.4
  */
 public interface CreatePhoneRequestBuilder {
 

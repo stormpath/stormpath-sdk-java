@@ -6,6 +6,9 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 /**
  * Created by mehrshadrafiei on 9/1/16.
  */
+
+// todo: mehrshad
+
 public class DefaultSmsFactorOptions extends DefaultOptions<SmsFactorOptions> implements SmsFactorOptions<SmsFactorOptions> {
 
     @Override

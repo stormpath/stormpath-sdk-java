@@ -23,6 +23,9 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
+import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.factor.FactorList;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -30,13 +33,11 @@ import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
+import com.stormpath.sdk.phone.CreatePhoneRequest;
 import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
-import com.stormpath.sdk.resource.Auditable;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.*;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -562,5 +563,82 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      */
     RefreshTokenList getRefreshTokens();
 
-    Phone createPhone(Phone phone);
+    /**
+     * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Phone for Multi Factor Authentication purposes.
+     *
+     * @return the newly created {@link Phone}.
+     *
+     * @since 1.0.4
+     */
+    Phone createPhone(CreatePhoneRequest request);
+
+    /**
+     * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Phone for Multi Factor Authentication purposes.
+     *
+     * @return the newly created {@link Phone}.
+     *
+     * @since 1.0.4
+     */
+    Phone createPhone(Phone phone) throws ResourceException;
+
+    /**
+     * Returns a paginated list of all the phones that belong to the account.
+     *
+     * @return a paginated list of all the Account's phones.
+     *
+     * @since 1.0.4
+     */
+    PhoneList getPhones();
+
+    /**
+     * Returns a paginated list of all the phones that belong to the account matching the query params.
+     *
+     * @return a paginated list of all the Account's phones.
+     *
+     * @since 1.0.4
+     */
+    PhoneList getPhones(Map<String, Object> queryParams);
+
+    /**
+     * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Factor for Multi Factor Authentication purposes.
+     *
+     * @param factor {@link Factor} pojo tho hold necessary data to send to the back- end to create a {@link Factor}.
+     * @return the newly created {@link Factor}.
+     *
+     * @since 1.0.4
+     */
+    Factor createFactor(Factor factor) throws ResourceException;
+
+    /**
+     * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource
+     * based on provided {@link CreateSmsFactorRequest}
+     * The account can then use the Factor for Multi Factor Authentication purposes.
+     *
+     * @param request {@link CreateSmsFactorRequest} used to create a factor with.
+     * @return the newly created {@link Factor}.
+     *
+     * @since 1.0.4
+     */
+    Factor createFactor(CreateSmsFactorRequest request) throws ResourceException;
+
+    /**
+     * Returns a paginated list of all the factors that belong to the account.
+     *
+     * @return a paginated list of all the Account's factos.
+     *
+     * @since 1.0.4
+     */
+    FactorList getFactors();
+
+    /**
+     * Returns a paginated list of all the factors that belong to the account matching the query params.
+     *
+     * @return a paginated list of all the Account's factos.
+     *
+     * @since 1.0.4
+     */
+    FactorList getFactors(Map<String, Object> queryParams);
 }

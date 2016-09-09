@@ -7,6 +7,9 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 /**
  * Created by mehrshadrafiei on 9/1/16.
  */
+
+// todo: mehrshad
+
 public class DefaultSmsFactorCriteria extends DefaultCriteria<SmsFactorCriteria, SmsFactorOptions> implements SmsFactorCriteria {
 
     public DefaultSmsFactorCriteria() {

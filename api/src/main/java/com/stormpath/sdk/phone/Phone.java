@@ -15,12 +15,31 @@
 */
 package com.stormpath.sdk.phone;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
 
 /**
  * TODO: description
  */
-public interface Phone extends Resource, Deletable {
+
+// todo: mehrshad
+
+
+public interface Phone extends Resource, Saveable, Deletable, Auditable {
+    String getNumber();
+    Phone setNumber(String number);
+    String getName();
+    Phone setName(String name);
+    String getDescription();
+    Phone setDescription(String description);
+    PhoneStatus getStatus();
+    Phone setStatus(PhoneStatus status);
+    PhoneVerificationStatus getVerificationStatus();
+    Phone setVerificationStatus(PhoneVerificationStatus verificationStatus);
+    Account getAccount();
+    Phone setAccount(Account account);
 
 }

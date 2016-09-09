@@ -5,7 +5,7 @@ import com.stormpath.sdk.challenge.ChallengeOptions;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 
 /**
- * Created by mehrshadrafiei on 9/1/16.
+ * todo: mehrshad
  */
 public class DefaultChallengeCriteria extends DefaultCriteria<ChallengeCriteria, ChallengeOptions> implements ChallengeCriteria {
 

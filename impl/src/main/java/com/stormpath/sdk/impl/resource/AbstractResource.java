@@ -65,12 +65,12 @@ public abstract class AbstractResource implements Resource {
         this.readLock = rwl.readLock();
         this.writeLock = rwl.writeLock();
         this.dataStore = dataStore;
-        this.dirtyProperties = new LinkedHashMap<String, Object>();
-        this.deletedPropertyNames = new HashSet<String>();
+        this.dirtyProperties = new LinkedHashMap<>();
+        this.deletedPropertyNames = new HashSet<>();
         if (properties instanceof Enlistment) {
             this.properties = properties;
         } else {
-            this.properties = new LinkedHashMap<String, Object>();
+            this.properties = new LinkedHashMap<>();
         }
         setProperties(properties);
     }
@@ -87,6 +87,17 @@ public abstract class AbstractResource implements Resource {
      */
     public static boolean isMaterialized(Map<String, ?> props) {
         return props != null && props.get(HREF_PROP_NAME) != null && props.size() > 1;
+    }
+
+    /**
+     * Returns {@code true} if the specified data map contains an href property.
+     *
+     * @param props the data properties to test.
+     * @return {@code true} if the specified data map contains an href property.
+     * @since 1.0.4
+     */
+    public static boolean hasHref(Map<String, ?> props) {
+        return props != null && props.get(HREF_PROP_NAME) != null;
     }
 
     protected static Map<String, Property> createPropertyDescriptorMap(Property... props) {
@@ -131,8 +142,8 @@ public abstract class AbstractResource implements Resource {
         return this.dataStore;
     }
 
-    protected final boolean isMaterialized() {
-        return this.materialized;
+    public final boolean isMaterialized() {
+        return this.properties.containsKey(HREF_PROP_NAME);
     }
 
     /**
@@ -188,7 +199,7 @@ public abstract class AbstractResource implements Resource {
         readLock.lock();
         try {
             Set<String> keys = this.properties.keySet();
-            return new LinkedHashSet<String>(keys);
+            return new LinkedHashSet<>(keys);
         } finally {
             readLock.unlock();
         }
@@ -198,7 +209,7 @@ public abstract class AbstractResource implements Resource {
         readLock.lock();
         try {
             Set<String> keys = this.dirtyProperties.keySet();
-            return new LinkedHashSet<String>(keys);
+            return new LinkedHashSet<>(keys);
         } finally {
             readLock.unlock();
         }
@@ -207,7 +218,7 @@ public abstract class AbstractResource implements Resource {
     protected Set<String> getDeletedPropertyNames() {
         readLock.lock();
         try {
-            return new LinkedHashSet<String>(this.deletedPropertyNames);
+            return new LinkedHashSet<>(this.deletedPropertyNames);
         } finally {
             readLock.unlock();
         }
@@ -457,6 +468,21 @@ public abstract class AbstractResource implements Resource {
         Assert.notNull(property, "Property argument cannot be null.");
         String name = property.getName();
         Map<String, String> reference = this.referenceFactory.createReference(name, value);
+        setProperty(name, reference);
+    }
+
+
+    /**
+     * @param property
+     * @param value
+     * @param <T>
+     * @since 1.4.0
+     */
+    protected <T extends Resource> void setMaterializableResourceProperty(ResourceReference<T> property, Resource value) {
+        Assert.notNull(property, "Property argument cannot be null.");
+        Assert.isNull(value.getHref(), "Resource must not have an 'href' property ");
+        String name = property.getName();
+        Map<String, String> reference = this.referenceFactory.createUnmaterializedReference(name, value);
         setProperty(name, reference);
     }
 

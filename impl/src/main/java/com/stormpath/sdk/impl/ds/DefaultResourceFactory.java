@@ -27,6 +27,9 @@ import java.util.Map;
 /**
  * @since 0.1
  */
+// todo: mehrshad
+
+
 public class DefaultResourceFactory implements ResourceFactory {
 
     private InternalDataStore dataStore;
@@ -122,11 +125,11 @@ public class DefaultResourceFactory implements ResourceFactory {
             afterBase = afterBase.substring(IMPL_PACKAGE_NAME.length());
         }
 
-        int index = afterBase.indexOf('.');
-        String beforeImpl = afterBase.substring(0, index);
+        int index = afterBase.lastIndexOf('.');
+        String beforeConcreteClassName = afterBase.substring(0, index);
 
         String implFqcn = BASE_PACKAGE + IMPL_PACKAGE_NAME_FRAGMENT + "." +
-                beforeImpl + "." + IMPL_CLASS_PREFIX + clazz.getSimpleName();
+                beforeConcreteClassName + "." + IMPL_CLASS_PREFIX + clazz.getSimpleName();
 
         return Classes.forName(implFqcn);
     }

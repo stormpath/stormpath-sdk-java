@@ -1,37 +1,132 @@
-/*
-* Copyright 2015 Stormpath, Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
 package com.stormpath.sdk.impl.factor.sms;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.challenge.Challenge;
+import com.stormpath.sdk.challenge.ChallengeList;
+import com.stormpath.sdk.challenge.Challenges;
+import com.stormpath.sdk.challenge.CreateChallengeRequest;
 import com.stormpath.sdk.factor.FactorType;
 import com.stormpath.sdk.factor.sms.SmsFactor;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.factor.AbstractFactor;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.resource.ResourceException;
+
+import java.util.Map;
 
 /**
- * TODO: description
+ * Created by mehrshadrafiei on 9/1/16.
  */
-public class DefaultSmsFactor extends Factor implements SmsFactor {
-    private Phone phone;
-    private String message;
 
-    public DefaultSmsFactor(Phone phone, Account account, String message) {
-        super(FactorType.SMS, account);
+// todo: mehrshad
 
-        this.phone = phone;
-        this.message = message;
+public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
+    static final ResourceReference<Phone> PHONE = new ResourceReference<>("phone", Phone.class);
+    static final ResourceReference<Challenge> CHALLENGE = new ResourceReference<>("challenge", Challenge.class);
+    static final ResourceReference<Challenge> MOST_RECENT_CHALLENGE = new ResourceReference<>("mostRecentChallenge", Challenge.class);
+    static final CollectionReference<ChallengeList, Challenge> CHALLENGES =
+            new CollectionReference<>("challenges", ChallengeList.class, Challenge.class);
+
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PHONE, CHALLENGE, MOST_RECENT_CHALLENGE, CHALLENGES);
+
+    public DefaultSmsFactor(InternalDataStore dataStore) {
+        super(dataStore);
+        // Set the factor type to 'SMS' once factor is instantiated via a client (getFactorType() == null).
+        // But when the factor is instantiated via the resource factory as a consequence of a response from t
+        // he back-end (getFactorType() != null), it should not be overwritten since it would mark the FactorType
+        // as 'dirty'. This would not be correct and leads to unforeseen side effects.
+        if(getFactorType() == null){
+            setFactorType(FactorType.SMS);
+        }
     }
+
+    public DefaultSmsFactor(InternalDataStore dataStore, Map<String, Object> properties) {
+        super(dataStore, properties);
+        // Set the factor type to 'SMS' once factor is instantiated via a client (getFactorType() == null).
+        // But when the factor is instantiated via the resource factory as a consequence of a response from t
+        // he back-end (getFactorType() != null), it should not be overwritten since it would mark the FactorType
+        // as 'dirty'. This would not be correct and leads to unforeseen side effects.
+        if(getFactorType() == null){
+            setFactorType(FactorType.SMS);
+        }
+    }
+
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        PROPERTY_DESCRIPTORS.putAll(super.getPropertyDescriptors());
+        return PROPERTY_DESCRIPTORS;
+    }
+
+    @Override
+    public Phone getPhone() {
+        return getResourceProperty(PHONE);
+    }
+
+    @Override
+    public SmsFactor setPhone(Phone phone) {
+        if(((AbstractResource)phone).isMaterialized()) {
+            setResourceProperty(PHONE, phone);
+        }
+        else{
+            setMaterializableResourceProperty(PHONE, phone);
+        }
+        return this;
+    }
+
+    @Override
+    public Challenge getChallenge() {
+        return getResourceProperty(CHALLENGE);
+    }
+
+    @Override
+    public Challenge getMostRecentChallenge() {
+        return getResourceProperty(MOST_RECENT_CHALLENGE);
+    }
+
+    @Override
+    public SmsFactor setChallenge(Challenge challenge) {
+        if(((AbstractResource)challenge).isMaterialized()) {
+            setResourceProperty(CHALLENGE, challenge);
+        }
+        else{
+            setMaterializableResourceProperty(CHALLENGE, challenge);
+        }
+        return this;
+    }
+
+    @Override
+    public ChallengeList getChallenges() {
+        return getResourceProperty(CHALLENGES);
+    }
+
+    @Override
+    public SmsFactor challenge() {
+        String href = getHref();
+        href += "/challenges";
+        Assert.notNull(href, "SmsFactor hast to be materialized and have an href.");
+        return getDataStore().create(href, this);
+    }
+
+    @Override
+    public Challenge createChallenge(CreateChallengeRequest request) throws ResourceException{
+
+        Assert.notNull(request, "Request cannot be null.");
+
+        final Challenge challenge = request.getChallenge();
+        String href = getChallenges().getHref();
+
+        return getDataStore().create(href, challenge);
+    }
+
+    @Override
+    public Challenge createChallenge(Challenge challenge) throws ResourceException {
+        Assert.notNull(challenge, "Phone instance cannot be null.");
+        CreateChallengeRequest request = Challenges.newCreateRequestFor(challenge).build();
+        return createChallenge(request);
+    }
+
 }

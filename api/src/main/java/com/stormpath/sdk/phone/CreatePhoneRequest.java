@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,19 @@
  */
 package com.stormpath.sdk.phone;
 
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupOptions;
 
 /**
  * Represents an attempt to create a new {@link Phone} record in Stormpath.
  *
  * @see com.stormpath.sdk.account.Account#createPhone(CreatePhoneRequest)
- * @since 0.9
+ * @since 1.0.4
  */
 public interface CreatePhoneRequest {
 
     /**
-     * Returns the Group instance for which a new record will be created in Stormpath.
+     * Returns the Phone instance for which a new record will be created in Stormpath.
      *
-     * @return the Group instance for which a new record will be created in Stormpath.
+     * @return the Phone instance for which a new record will be created in Stormpath.
      */
     Phone getPhone();
 

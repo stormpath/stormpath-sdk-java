@@ -16,9 +16,6 @@
 package com.stormpath.sdk.impl.phone;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.factor.sms.SmsFactor;
-import com.stormpath.sdk.factor.sms.SmsFactorBuilder;
-import com.stormpath.sdk.impl.factor.sms.DefaultSmsFactor;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.phone.Phone;
 import com.stormpath.sdk.phone.PhoneBuilder;
@@ -28,13 +25,15 @@ import com.stormpath.sdk.phone.PhoneVerificationStatus;
 /**
  * TODO: description
  */
+// todo: mehrshad
+
 public class DefaultPhoneBuilder implements PhoneBuilder {
 
     private String number;
     private String name;
     private String description;
     private PhoneStatus phoneStatus;
-    private PhoneVerificationStatus phoneVerificationStatus;
+    private PhoneVerificationStatus verificationStatus;
     private Account account;
 
     @Override
@@ -62,8 +61,8 @@ public class DefaultPhoneBuilder implements PhoneBuilder {
     }
 
     @Override
-    public PhoneBuilder setPhoneVerificationStatus(PhoneVerificationStatus phoneVerificationStatus) {
-        this.phoneVerificationStatus = phoneVerificationStatus;
+    public PhoneBuilder setPhoneVerificationStatus(PhoneVerificationStatus verificationStatus) {
+        this.verificationStatus = verificationStatus;
         return this;
     }
 
@@ -81,10 +80,11 @@ public class DefaultPhoneBuilder implements PhoneBuilder {
             phoneStatus = PhoneStatus.ENABLED;
         }
 
-        if (phoneVerificationStatus == null) {
-            phoneVerificationStatus = PhoneVerificationStatus.UNVERIFIED;
+        if (verificationStatus == null) {
+            verificationStatus = PhoneVerificationStatus.UNVERIFIED;
         }
 
-        return new DefaultPhone(number, name, description, phoneStatus, phoneVerificationStatus, account);
+        //return new DefaultPhone(number, name, description, phoneStatus, phoneVerificationStatus, account);
+        return null;
     }
 }

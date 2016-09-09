@@ -9,6 +9,9 @@ import com.stormpath.sdk.lang.Assert;
 /**
  * Created by mehrshadrafiei on 8/30/16.
  */
+
+// todo: mehrshad
+
 public class DefaultCreateSmsFactorRequestBuilder implements CreateSmsFactorRequestBuilder {
 
     private final com.stormpath.sdk.factor.sms.SmsFactor smsFactor;
@@ -19,6 +22,13 @@ public class DefaultCreateSmsFactorRequestBuilder implements CreateSmsFactorRequ
         Assert.notNull(smsFactor, "Factor can't be null.");
         this.smsFactor = (com.stormpath.sdk.factor.sms.SmsFactor) smsFactor;
     }
+
+    @Override
+    public DefaultCreateSmsFactorRequestBuilder createChallenge() {
+        this.createChallenge = true;
+        return this;
+    }
+
 
     @Override
     public CreateSmsFactorRequestBuilder withResponseOptions(SmsFactorOptions options) throws IllegalArgumentException {

@@ -27,6 +27,9 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.factor.FactorList;
+import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -35,7 +38,11 @@ import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
+import com.stormpath.sdk.phone.CreatePhoneRequest;
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Date;
@@ -46,6 +53,9 @@ import java.util.Map;
  *
  * @since 1.0.RC3
  */
+
+// todo: mehrshad
+
 public class ImmutableAccount implements Account {
 
     private static final String IMMUTABLE_MSG = "Immutable account references cannot be modified.";
@@ -308,5 +318,49 @@ public class ImmutableAccount implements Account {
     @Override
     public RefreshTokenList getRefreshTokens() {
         return account.getRefreshTokens();
+    }
+
+    @Override
+    public Phone createPhone(CreatePhoneRequest request) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public Phone createPhone(Phone phone) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public PhoneList getPhones() {
+        return account.getPhones();
+    }
+
+    @Override
+    public PhoneList getPhones(Map<String, Object> queryParams) {
+        return account.getPhones(queryParams);
+    }
+
+    @Override
+    public Factor createFactor(Factor factor) throws ResourceException {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public Factor createFactor(CreateSmsFactorRequest request) throws ResourceException {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public FactorList getFactors() {
+        return account.getFactors();
+    }
+
+    @Override
+    public FactorList getFactors(Map<String, Object> queryParams) {
+        return account.getFactors(queryParams);
     }
 }

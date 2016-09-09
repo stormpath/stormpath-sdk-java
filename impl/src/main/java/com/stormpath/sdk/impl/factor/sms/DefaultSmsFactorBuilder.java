@@ -17,13 +17,14 @@ package com.stormpath.sdk.impl.factor.sms;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.factor.sms.SmsFactor;
-import com.stormpath.sdk.factor.sms.SmsFactorBuilder;
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.phone.Phone;
 
 /**
  * TODO: description
  */
+
+// todo: mehrshad
+
 public class DefaultSmsFactorBuilder implements SmsFactorBuilder {
 
     private Phone phone;
@@ -49,9 +50,10 @@ public class DefaultSmsFactorBuilder implements SmsFactorBuilder {
     }
 
     public SmsFactor build(){
-        Assert.notNull(phone, "Phone cannot be null");
+        /*Assert.notNull(phone, "Phone cannot be null");
         Assert.notNull(account, "Account cannot be null");
 
-        return new DefaultSmsFactor(phone, account, message);
+        return new DefaultSmsFactor(phone, account, message);*/
+        return null;
     }
 }

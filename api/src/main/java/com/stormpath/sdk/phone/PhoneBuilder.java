@@ -20,13 +20,16 @@ import com.stormpath.sdk.account.Account;
 /**
  * TODO: description
  */
+
+// todo: mehrshad
+
 public interface PhoneBuilder {
 
     PhoneBuilder setNumber(String number);
     PhoneBuilder setName(String name);
     PhoneBuilder setDescription(String description);
     PhoneBuilder setPhoneStatus(PhoneStatus phoneStatus);
-    PhoneBuilder setPhoneVerificationStatus(PhoneVerificationStatus phoneVerificationStatus);
+    PhoneBuilder setPhoneVerificationStatus(PhoneVerificationStatus verificationStatus);
     PhoneBuilder setAccount(Account account);
 
     Phone build();

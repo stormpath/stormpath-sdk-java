@@ -31,6 +31,7 @@ import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.ds.ResourceFactory

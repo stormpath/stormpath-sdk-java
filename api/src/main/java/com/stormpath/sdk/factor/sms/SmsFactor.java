@@ -15,9 +15,27 @@
 */
 package com.stormpath.sdk.factor.sms;
 
+import com.stormpath.sdk.challenge.Challenge;
+import com.stormpath.sdk.challenge.ChallengeList;
+import com.stormpath.sdk.challenge.CreateChallengeRequest;
+import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.resource.ResourceException;
+
 /**
  * TODO: description
  */
-public interface SmsFactor {
 
+// todo: mehrshad
+
+public interface SmsFactor extends Factor {
+    Phone getPhone();
+    SmsFactor setPhone(Phone phone);
+    Challenge getChallenge();
+    Challenge getMostRecentChallenge();
+    SmsFactor setChallenge(Challenge challenge);
+    ChallengeList getChallenges();
+    SmsFactor challenge();
+    Challenge createChallenge(Challenge challenge)throws ResourceException;
+    Challenge createChallenge(CreateChallengeRequest request)throws ResourceException;
 }

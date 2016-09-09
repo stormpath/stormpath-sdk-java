@@ -1,7 +1,6 @@
 package com.stormpath.sdk.challenge;
 
-import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
-import com.stormpath.sdk.factor.sms.SmsFactorOptions;
+// todo: mehrshad
 
 public interface CreateChallengeRequestBuilder {
 

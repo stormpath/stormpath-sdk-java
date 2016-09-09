@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,6 +109,42 @@ public class DefaultAccountCriteria extends DefaultCriteria<AccountCriteria, Acc
     @Override
     public AccountCriteria withGroupMemberships(int limit, int offset) {
         getOptions().withGroupMemberships(limit, offset);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withFactors() {
+        getOptions().withFactors();
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withFactors(int limit) {
+        getOptions().withFactors(limit);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withFactors(int limit, int offset) {
+        getOptions().withFactors(limit, offset);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withPhones() {
+        getOptions().withPhones();
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withPhones(int limit) {
+        getOptions().withPhones(limit);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withPhones(int limit, int offset) {
+        getOptions().withPhones(limit, offset);
         return this;
     }
 }

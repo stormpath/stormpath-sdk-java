@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// todo: mehrshad
+
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.directory.CustomData;
@@ -24,7 +27,6 @@ import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.saml.AttributeStatementMappingRule;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
 import java.util.*;
@@ -54,7 +56,7 @@ public class DefaultResourceConverter implements ResourceConverter {
             propNames = resource.getPropertyNames();
         }
 
-        LinkedHashMap<String, Object> props = new LinkedHashMap<String, Object>(propNames.size());
+        LinkedHashMap<String, Object> props = new LinkedHashMap<>(propNames.size());
 
         for (String propName : propNames) {
             Object value = resource.getProperty(propName);
@@ -81,7 +83,7 @@ public class DefaultResourceConverter implements ResourceConverter {
                 Set<String> updatedPropertyNames = abstractResource.getUpdatedPropertyNames();
 
                 LinkedHashMap<String, Object> properties =
-                    new LinkedHashMap<String, Object>(Collections.size(updatedPropertyNames));
+                    new LinkedHashMap<>(Collections.size(updatedPropertyNames));
 
                 for (String updatedCustomPropertyName : updatedPropertyNames) {
                     Object object = abstractResource.getProperty(updatedCustomPropertyName);
@@ -106,12 +108,22 @@ public class DefaultResourceConverter implements ResourceConverter {
                 //if the property is a reference, don't write the entire object - just the href will do:
                 //TODO need to change this to write the entire object because this code defeats the purpose of entity expansion
                 //     when this code gets called (returning the reference instead of the whole object that is returned from Stormpath)
-                return this.referenceFactory.createReference(propName, (Map) value);
+                if(AbstractResource.hasHref((Map) value)) {
+                    return this.referenceFactory.createReference(propName, (Map) value);
+                }
+                else{
+                    return this.referenceFactory.createUnmaterializedReference(propName, (Map) value);
+                }
             }
         }
 
         if (value instanceof Resource) {
-            return this.referenceFactory.createReference(propName, (Resource) value);
+            if(((AbstractResource)value).isMaterialized()) {
+                return this.referenceFactory.createReference(propName, (Resource) value);
+            }
+            else{
+                return this.referenceFactory.createUnmaterializedReference(propName, (Resource) value);
+            }
         }
 
         return value;

@@ -49,8 +49,14 @@ class ChallengeIT extends ClientIT{
         }
     }
 
-    @Test
+    // This test and the next one (testSuccessfulChallengeVerifyChallenge) require an actual phone to complete
+    // Therefore they are disabled and meant to be run manually
+    @Test(enabled = false)
     void testSuccessfulChallengeSendCode() {
+
+        // Put your phone number here
+        def phoneNumber = "2076588575"
+
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
         dir = client.currentTenant.createDirectory(dir);
@@ -66,7 +72,7 @@ class ChallengeIT extends ClientIT{
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone = phone.setNumber("2016589573").setAccount(account)
+        phone = phone.setNumber(phoneNumber).setAccount(account)
         SmsFactor factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
 
@@ -82,11 +88,16 @@ class ChallengeIT extends ClientIT{
         assertEquals(challenge.href.substring(challenge.href.lastIndexOf("/")+1), challenge.token)
     }
 
-    @Test
+    // This test and the previous one (testSuccessfulChallengeSendCode) require an actual phone to complete
+    // Therefore they are disabled and meant to be run manually
+    @Test(enabled = false)
     void testSuccessfulChallengeVerifyChallenge() {
 
+        // Paste the value for challenge href retrieved from previous test (testSuccessfulChallengeSendCode) here
         def href = "http://localhost:9191/v1/challenges/3YA1MvXeccKORSkX6QXkB4"
+        // Paste the code you received on your phone by running the previous test (testSuccessfulChallengeSendCode) here
         def code = "506726"
+
         Challenge challenge = client.getResource(href, Challenge)
         assertTrue(challenge.validate(code))
 

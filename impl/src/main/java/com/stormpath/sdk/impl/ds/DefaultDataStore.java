@@ -73,6 +73,9 @@ import static com.stormpath.sdk.impl.http.HttpHeaders.STORMPATH_AGENT;
 /**
  * @since 0.1
  */
+
+// todo: mehrshad
+
 public class DefaultDataStore implements InternalDataStore {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultDataStore.class);
@@ -435,7 +438,7 @@ public class DefaultDataStore implements InternalDataStore {
 
                 if (Collections.isEmpty(responseBody)) {
                     // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/218
-                    if ( response.getHttpStatus() == 202 ) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
+                    if ( response.getHttpStatus() == 202 || response.getHttpStatus() == 303) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
                         responseBody = java.util.Collections.emptyMap();
                     } else {
                         throw new IllegalStateException("Unable to obtain resource data from the API server.");
@@ -537,6 +540,11 @@ public class DefaultDataStore implements InternalDataStore {
      */
     public boolean isCachingEnabled() {
         return this.cacheManager != null && !(this.cacheManager instanceof DisabledCacheManager);
+    }
+
+    @Override
+    public String getBaseUrl(){
+        return this.baseUrl;
     }
 
     /**

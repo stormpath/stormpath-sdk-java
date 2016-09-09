@@ -6,7 +6,7 @@ import com.stormpath.sdk.impl.factor.sms.DefaultSmsFactor;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 
 /**
- * Created by mehrshadrafiei on 9/1/16.
+ * todo: mehrshad
  */
 public class DefaultChallengeOptions extends DefaultOptions<ChallengeOptions> implements ChallengeOptions<ChallengeOptions> {
 

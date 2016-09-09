@@ -1,5 +1,5 @@
 /*
-* Copyright 2015 Stormpath, Inc.
+* Copyright 2016 Stormpath, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,9 +15,50 @@
 */
 package com.stormpath.sdk.challenge;
 
-/**
- * TODO: description
- */
-public interface Challenge {
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.resource.*;
 
+//todo: mehrshad
+
+
+/**
+ * This domain object represents a challenge of {@link com.stormpath.sdk.factor.sms.SmsFactor} smsFactor for a Multi Factor Authentication.
+ * <p/>
+ * In a Multi Factor Authentication scenario a challenge would be issued to challenge the authentication by an additional {@link Factor}
+ * like and {@link com.stormpath.sdk.factor.sms.SmsFactor}
+ *
+ * @since 1.0.4
+ */
+public interface Challenge extends Resource, Saveable, Deletable, Auditable {
+
+    /**
+     * Returns the message associated with this challenge.
+     * The message contains a code sent to the user to be sent back
+     * for authentication.
+     *
+     * @return message associated with this challenge
+     */
+    String getMessage();
+
+    /**
+     * Sets the message associated with this directory.
+     * Tenant.
+     *
+     * @param message the message associated with this challenge.
+     * @return this instance for method chaining.
+     */
+    Challenge setMessage(String message);
+    String getMessageId();
+    Challenge setMessageId(String messageId);
+    ChallengeStatus getStatus();
+    Challenge setStatus(ChallengeStatus status);
+    Account getAccount();
+    Challenge setAccount(Account account);
+    Factor getFactor();
+    Challenge setFactor(Factor smsFactor);
+    String getToken();
+    Challenge setToken(String token);
+    Challenge setCode(String code);
+    boolean validate(String code);
 }

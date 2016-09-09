@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// todo: mehrshad
+
 package com.stormpath.sdk.impl.phone
 
-import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.resource.ArrayProperty
 import com.stormpath.sdk.impl.resource.IntegerProperty
 import com.stormpath.sdk.phone.Phone
