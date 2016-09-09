@@ -42,7 +42,7 @@ Then clone this repo.
 The possible values for `{name}` are:
 
 - `servlet`
-- `spring-boot`
+- `springboot`
 
 If you would like to generate all of the Product Guides in one go, you can use the same command that Travis uses:
 
