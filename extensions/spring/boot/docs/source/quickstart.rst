@@ -112,7 +112,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
   By default, the ``StormpathFilter`` is ordered as ``Ordered.HIGHEST_PRECEDENCE``, but if you have multiple filters with that same order value, you might have to change the order of the other filters as well.
 
-* you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring Security. The ``stormpath-default-spring-boot-starter`` relies on Spring Security 4.0.x. The current release of the ``spring-boot-starter-parent`` is 1.3.0 and it also relies on Spring Security 4.0.x. Prior versions of the ``spring-boot-starter-parent`` rely on Spring Security 3.2.x. Our first recommendation is to use the latest version of the ``spring-boot-starter-parent``. However, if you must use earlier versions, there is a simple solution to this, which is to override the Spring Security version in your ``pom.xml``
+* you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring Security. The ``stormpath-default-spring-boot-starter`` relies on Spring Security 4.1.x. The current release of the ``spring-boot-starter-parent`` is 1.4.0 and it also relies on Spring Security 4.1.x. Prior versions of the ``spring-boot-starter-parent`` rely on Spring Security 3.2.x. Our first recommendation is to use the latest version of the ``spring-boot-starter-parent``. However, if you must use earlier versions, there is a simple solution to this, which is to override the Spring Security version in your ``pom.xml``
 
   .. code-block:: xml
       :emphasize-lines: 15
@@ -124,14 +124,14 @@ Did you experience any problems with this quickstart?  It might not have worked 
           <parent>
               <groupId>org.springframework.boot</groupId>
               <artifactId>spring-boot-starter-parent</artifactId>
-              <version>1.3.3.RELEASE</version>
+              <version>1.4.0.RELEASE</version>
               <relativePath/> <!-- lookup parent from repository -->
           </parent>
 
           <properties>
               <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
               <java.version>1.8</java.version>
-              <spring-security.version>4.0.3.RELEASE</spring-security.version>
+              <spring-security.version>4.1.2.RELEASE</spring-security.version>
           </properties>
 
           <dependencies>

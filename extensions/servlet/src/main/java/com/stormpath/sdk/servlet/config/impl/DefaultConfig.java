@@ -23,7 +23,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.client.ClientResolver;
@@ -35,17 +34,13 @@ import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
-import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfig;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfig;
 import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
 import com.stormpath.sdk.servlet.http.MediaType;
@@ -55,11 +50,10 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -80,28 +74,15 @@ import java.util.regex.Pattern;
  */
 public class DefaultConfig implements Config {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultConfig.class);
-
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
     public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.password.validationStrategy";
-    public static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
-            "stormpath.web.oauth2.authenticationRequestFactory";
-    public static final String REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
-            "stormpath.web.refreshToken.authenticationRequestFactory";
 
-    public static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.oauth2.resultFactory";
-    public static final String REFRESH_TOKEN_RESULT_FACTORY = "stormpath.web.refreshToken.resultFactory";
-    public static final String REQUEST_AUTHORIZER = "stormpath.web.oauth2.authorizer";
-    public static final String BASIC_AUTHENTICATION_REQUEST_FACTORY = "stormpath.web.http.authc.schemes.basic";
-    protected static final String UNAUTHENTICATED_HANDLER = "stormpath.web.authc.unauthenticatedHandler";
-    protected static final String UNAUTHORIZED_HANDLER = "stormpath.web.authz.unauthorizedHandler";
     protected static final String SERVER_URI_RESOLVER = "stormpath.web.oauth2.origin.authorizer.serverUriResolver";
     protected static final String IDSITE_ORGANIZATION_RESOLVER_FACTORY = "stormpath.web.idSite.OrganizationResolverFactory";
 
     public static final String WEB_APPLICATION_DOMAIN = "stormpath.web.application.domain";
-
 
     public static final String PRODUCES_MEDIA_TYPES = "stormpath.web.produces";
 
@@ -112,6 +93,8 @@ public class DefaultConfig implements Config {
     public static final String ID_SITE_ENABLED = "stormpath.web.idSite.enabled";
     public static final String CALLBACK_ENABLED = "stormpath.web.callback.enabled";
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
+    public static final String STORMPATH_ENABLED = "stormpath.enabled";
+    public static final String STORMPATH_WEB_ENABLED = "stormpath.web.enabled";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -250,6 +233,20 @@ public class DefaultConfig implements Config {
     @Override
     public FilterChainResolver getFilterChainResolver() {
         return getRuntimeInstance("stormpath.web.filter.chain.resolver");
+    }
+
+    @Override
+    public boolean isStormpathEnabled() {
+        // get as String in case property not defined
+        String isEnabled = CFG.getString(STORMPATH_ENABLED);
+        return isEnabled == null || CFG.getBoolean(STORMPATH_ENABLED);
+    }
+
+    @Override
+    public boolean isStormpathWebEnabled() {
+        // get as String in case property not defined
+        String isWebEnabled = CFG.getString(STORMPATH_WEB_ENABLED);
+        return isWebEnabled == null || CFG.getBoolean(STORMPATH_WEB_ENABLED);
     }
 
     @Override
