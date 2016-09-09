@@ -837,7 +837,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultRefreshTokenResultFactory(application);
     }
 
-    @Bean
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
         return new DefaultWrappedServletRequestFactory(
             stormpathUsernamePasswordRequestFactory(), stormpathAuthenticationResultSaver(),
@@ -1066,7 +1065,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return lci;
     }
 
-    @Bean
     public Set<String> stormpathRequestClientAttributeNames() {
         Set<String> set = new LinkedHashSet<>();
         set.addAll(Strings.commaDelimitedListToSet(requestClientAttributeNames));
@@ -1075,7 +1073,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return set;
     }
 
-    @Bean
     public Set<String> stormpathRequestApplicationAttributeNames() {
         Set<String> set = new LinkedHashSet<>();
         set.addAll(Strings.commaDelimitedListToSet(requestApplicationAttributeNames));
@@ -1488,7 +1485,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         mgr.createChain(meUri, name);
     }
 
-    @Bean
     public FilterChainResolver stormpathFilterChainResolver() {
 
         PathMatchingFilterChainResolver resolver = new PathMatchingFilterChainResolver(servletContext);
