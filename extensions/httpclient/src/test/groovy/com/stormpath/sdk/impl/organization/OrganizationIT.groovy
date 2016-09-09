@@ -159,7 +159,7 @@ class OrganizationIT extends ClientIT {
     }
 
     @Test
-    void testAddAccountDirWithInvalidDir(){
+    void testAddAccountDirWithInvalidDir() {
         Organization organization = client.instantiate(Organization)
         organization.name = uniquify("Java SDK: OrganizationIT.testAddAccountDirWithInvalidDir")
         organization.setNameKey(uniquify("test"))
@@ -171,7 +171,7 @@ class OrganizationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test(enabled = false)// TODO : enable after AM-3464 and AM-3402 is available in Prod
+    @Test
     void testRetrieveAndUpdateAccountLinkingPolicy() {
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
@@ -213,7 +213,7 @@ class OrganizationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test(enabled = false)// TODO : enable after AM-3464 and AM-3402 is available in Prod
+    @Test
     void testRetrieveAndUpdateAccountLinkingPolicyPartially() {
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))

@@ -269,6 +269,20 @@ public abstract class AbstractResource implements Resource {
      * @since 0.6.0
      */
     protected Object setProperty(String name, Object value, final boolean dirty) {
+        return setProperty(name, value, dirty, false);
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    protected void setProperty(Property property, Object value, final boolean dirty, final boolean isNullable) {
+        setProperty(property.getName(), value, dirty, isNullable);
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    private Object setProperty(String name, Object value, final boolean dirty, final boolean isNullable) {
         writeLock.lock();
         Object previous;
         try {
@@ -276,9 +290,14 @@ public abstract class AbstractResource implements Resource {
             if(previous == null) {
                 previous = this.properties.get(name);
             }
-            this.dirty = true;
-            if (this.deletedPropertyNames.contains(name)) {
-                this.deletedPropertyNames.remove(name);
+            this.dirty = dirty;
+
+            if(isNullable && value == null) {
+                this.deletedPropertyNames.add(name);
+            } else {
+                if (this.deletedPropertyNames.contains(name)) {
+                    this.deletedPropertyNames.remove(name);
+                }
             }
         } finally {
             writeLock.unlock();
