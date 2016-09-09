@@ -10,6 +10,8 @@ If you already have Sphinx, then just upgrade:
 
 `pip install -U Sphinx sphinx_rtd_theme`
 
+**NOTE:** Make sure you are using Sphinx 1.4.6 as a minimum. With previous versions, warnings are treated as errors.
+
 Then clone this repo.
 
 ### Structure
