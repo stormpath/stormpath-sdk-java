@@ -23,12 +23,7 @@ import com.stormpath.sdk.impl.authc.DefaultBasicApiAuthenticationRequest;
 import com.stormpath.sdk.impl.authc.DefaultHttpServletRequestWrapper;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthentication;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.Authenticators;
-import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
-import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
-import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
-import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
@@ -242,7 +237,10 @@ public class AccessTokenController extends AbstractController {
         try {
             Application app = getApplication(request);
             OAuthClientCredentialsGrantRequestAuthentication clientCredentialsGrantRequestAuthentication =
-                    new DefaultOAuthClientCredentialsGrantRequestAuthentication(authenticationRequest.getPrincipals(), authenticationRequest.getCredentials());
+                    OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()
+                            .setApiKeyId(authenticationRequest.getPrincipals())
+                            .setApiKeySecret(authenticationRequest.getCredentials())
+                            .build();
 
             authenticationResult = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR
                     .forApplication(app)

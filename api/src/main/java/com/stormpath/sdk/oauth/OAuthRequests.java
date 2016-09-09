@@ -69,4 +69,14 @@ public final class OAuthRequests {
      * @since 1.0.RC8.2
      */
     public static final IdSiteAuthenticationRequestFactory IDSITE_AUTHENTICATION_REQUEST = (IdSiteAuthenticationRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticationRequestFactory");
+
+    /**
+     * Returns a new {@link OAuthClientCredentialsRequestAuthenticatorFactory} instance, used to construct Create Client Credentials Authentication requests.
+     *
+     * @return a new {@link OAuthClientCredentialsRequestAuthenticatorFactory} instance, used to construct Create Client Credentials Authentication requests.
+     *
+     * @since 1.1.0
+     */
+    public static final OAuthClientCredentialsGrantRequestAuthenticationFactory OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST = (OAuthClientCredentialsGrantRequestAuthenticationFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsRequestAuthenticationFactory");
+
 }
