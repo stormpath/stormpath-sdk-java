@@ -143,7 +143,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     public final boolean isMaterialized() {
-        return this.properties.containsKey(HREF_PROP_NAME);
+        return this.materialized;
     }
 
     /**

@@ -68,7 +68,7 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
 
     @Override
     public SmsFactor setPhone(Phone phone) {
-        if(((AbstractResource)phone).isMaterialized()) {
+        if(phone.getHref() != null) {
             setResourceProperty(PHONE, phone);
         }
         else{
@@ -89,7 +89,7 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
 
     @Override
     public SmsFactor setChallenge(Challenge challenge) {
-        if(((AbstractResource)challenge).isMaterialized()) {
+        if(challenge.getHref() != null) {
             setResourceProperty(CHALLENGE, challenge);
         }
         else{
