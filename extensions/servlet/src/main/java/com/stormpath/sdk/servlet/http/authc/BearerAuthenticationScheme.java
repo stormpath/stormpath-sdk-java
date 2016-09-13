@@ -32,11 +32,11 @@ import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthRequests;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
-import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.impl.StormpathHttpServletRequest;
+import com.stormpath.sdk.servlet.oauth.AccessTokenOrganizationClaimValidator;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
@@ -57,23 +57,19 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
 
     private static final String NAME = "Bearer";
 
-    private JwtSigningKeyResolver jwtSigningKeyResolver;
+    private AccessTokenOrganizationClaimValidator organizationClaimValidator;
 
     private boolean withLocalValidation;
 
-    public BearerAuthenticationScheme(JwtSigningKeyResolver jwtSigningKeyResolver, AccessTokenValidationStrategy validation) {
-        Assert.notNull(jwtSigningKeyResolver, "JwtSigningKeyResolver cannot be null.");
-        this.jwtSigningKeyResolver = jwtSigningKeyResolver;
+    public BearerAuthenticationScheme(AccessTokenValidationStrategy validation, AccessTokenOrganizationClaimValidator organizationClaimValidator) {
+        Assert.notNull(organizationClaimValidator, "organizationClaimValidator cannot be null.");
+        this.organizationClaimValidator = organizationClaimValidator;
         this.withLocalValidation = validation.equals(AccessTokenValidationStrategy.LOCAL);
     }
 
     @Override
     public String getName() {
         return NAME;
-    }
-
-    protected JwtSigningKeyResolver getJwtSigningKeyResolver() {
-        return this.jwtSigningKeyResolver;
     }
 
     @Override
@@ -99,7 +95,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
             HttpAuthenticationResult result = authenticate(request, response, token);
 
             request.setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME,
-                                 StormpathHttpServletRequest.AUTH_TYPE_BEARER);
+                    StormpathHttpServletRequest.AUTH_TYPE_BEARER);
 
             return result;
 
@@ -116,7 +112,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
                 response.getWriter().flush();
             } catch (IOException e2) {
                 throw new HttpAuthenticationException("Unable to render OAuth error response body: " + e2.getMessage(),
-                                                      e2);
+                        e2);
             }
 
             throw new HttpAuthenticationException("OAuth request authentication failed: " + e.getMessage(), e);
@@ -127,6 +123,9 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
                                                     final HttpServletResponse response, String token) {
 
         try {
+            if (!organizationClaimValidator.isValid(request, response, token)) {
+                throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "resolved organization doesn't match the access_token org claim.");
+            }
 
             OAuthBearerRequestAuthentication jwtrequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(token).build();
             OAuthBearerRequestAuthenticator OAuthBearerRequestAuthenticator = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR.forApplication(getApplication(request));
@@ -152,7 +151,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
 
     protected HttpAuthenticationResult createAuthenticationResult(HttpServletRequest request,
                                                                   HttpServletResponse response, Account account)
-        throws OAuthException {
+            throws OAuthException {
 
         AuthenticationResult authcResult;
 
@@ -205,7 +204,7 @@ public class BearerAuthenticationScheme extends AbstractAuthenticationScheme {
     }
 
     protected Client getClient(HttpServletRequest request) {
-        return (Client)request.getAttribute(Client.class.getName());
+        return (Client) request.getAttribute(Client.class.getName());
     }
 
     /**

@@ -55,6 +55,7 @@ import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.oauth.AccessTokenOrganizationClaimValidator;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
 import org.springframework.beans.factory.InitializingBean;
@@ -268,6 +269,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public List<HttpAuthenticationScheme> stormpathHttpAuthenticationSchemes() {
         return super.stormpathHttpAuthenticationSchemes();
+    }
+
+    @Bean
+    @Override
+    public AccessTokenOrganizationClaimValidator stormpathAccessTokenOrganizationClaimValidator() {
+        return super.stormpathAccessTokenOrganizationClaimValidator();
     }
 
     @Bean

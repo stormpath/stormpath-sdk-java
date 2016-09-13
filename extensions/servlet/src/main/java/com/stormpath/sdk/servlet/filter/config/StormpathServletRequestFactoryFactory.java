@@ -22,6 +22,7 @@ import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.DefaultWrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 
 import javax.servlet.ServletContext;
@@ -37,16 +38,22 @@ public class StormpathServletRequestFactoryFactory extends ConfigSingletonFactor
     protected WrappedServletRequestFactory createInstance(ServletContext sc) throws Exception {
 
         UsernamePasswordRequestFactory factory =
-            getConfig().getInstance("stormpath.web.authc.usernamePasswordRequestFactory");
+                getConfig().getInstance("stormpath.web.authc.usernamePasswordRequestFactory");
 
         Saver<AuthenticationResult> authenticationResultSaver = getConfig().getInstance("stormpath.web.authc.saver");
 
         Publisher<RequestEvent> eventPublisher = getConfig().getInstance(REQUEST_EVENT_PUBLISHER);
+        Resolver<String> organizationNameKeyResolver = getConfig().getOrganizationNameKeyResolver();
 
         String remoteUserStrategyName = getConfig().get("stormpath.web.request.remoteUser.strategy");
         String userPrincipalStrategyName = getConfig().get("stormpath.web.request.userPrincipal.strategy");
 
-        return new DefaultWrappedServletRequestFactory(factory, authenticationResultSaver, eventPublisher,
-                                                       userPrincipalStrategyName, remoteUserStrategyName);
+        return new DefaultWrappedServletRequestFactory(
+                factory,
+                authenticationResultSaver,
+                eventPublisher,
+                organizationNameKeyResolver,
+                userPrincipalStrategyName,
+                remoteUserStrategyName);
     }
 }

@@ -34,6 +34,8 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
     protected static final String PASSWORD_PARAM_NAME = "password";
 
+    private static final String ORGANIZATION_NAME_KEY_PARAM_NAME = "organizationNameKey";
+
     private AccountStoreResolver accountStoreResolver;
 
     public DefaultAccessTokenAuthenticationRequestFactory(AccountStoreResolver accountStoreResolver) {
@@ -54,11 +56,17 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
 
             AccountStore accountStore = accountStoreResolver.getAccountStore(request, null);
 
+            String organizationNameKey = Strings.clean(request.getParameter(ORGANIZATION_NAME_KEY_PARAM_NAME));
+
             OAuthPasswordGrantRequestAuthenticationBuilder requestBuilder = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
                     .setPassword(password)
                     .setLogin(username);
             if (accountStore != null){
                 requestBuilder.setAccountStore(accountStore);
+            }
+
+            if (Strings.hasText(organizationNameKey)) {
+                requestBuilder.setOrganizationNameKey(organizationNameKey);
             }
 
             return requestBuilder.build();

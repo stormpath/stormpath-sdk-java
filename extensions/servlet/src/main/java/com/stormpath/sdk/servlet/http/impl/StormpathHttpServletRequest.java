@@ -49,6 +49,7 @@ import com.stormpath.sdk.servlet.http.AccountPrincipal;
 import com.stormpath.sdk.servlet.http.EmailPrincipal;
 import com.stormpath.sdk.servlet.http.GivenNamePrincipal;
 import com.stormpath.sdk.servlet.http.HrefPrincipal;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UsernamePrincipal;
 import com.stormpath.sdk.servlet.oauth.OAuthTokenResolver;
@@ -101,11 +102,13 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
     private final Publisher<RequestEvent> eventPublisher;
     private final String userPrincipalStrategyName;
     private final String remoteUserStrategyName;
+    private final Resolver<String> organizationNameKeyResolver;
 
     public StormpathHttpServletRequest(HttpServletRequest request, HttpServletResponse response,
                                        UsernamePasswordRequestFactory usernamePasswordRequestFactory,
                                        Publisher<RequestEvent> eventPublisher,
                                        Saver<AuthenticationResult> authenticationResultSaver,
+                                       Resolver<String> organizationNameKeyResolver,
                                        String userPrincipalStrategyName, String remoteUserStrategyName) {
         super(request);
         Assert.notNull(response, "HttpServletResponse cannot be null.");
@@ -120,6 +123,8 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
         this.userPrincipalStrategyName = userPrincipalStrategyName;
         Assert.hasText(remoteUserStrategyName, "remoteUserStrategyName argument cannot be null or empty.");
         this.remoteUserStrategyName = remoteUserStrategyName;
+        Assert.notNull(organizationNameKeyResolver, "organizationNameKeyResolver cannot be null.");
+        this.organizationNameKeyResolver = organizationNameKeyResolver;
     }
 
     public UsernamePasswordRequestFactory getUsernamePasswordRequestFactory() {
@@ -379,6 +384,13 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
 
             if (accountStore != null) {
                 requestBuilder.setAccountStore(accountStore);
+            }
+
+            //@since 1.1.0
+            //https://github.com/stormpath/stormpath-sdk-java/issues/742
+            String organizationNameKey = organizationNameKeyResolver.get(this, null);
+            if(Strings.hasText(organizationNameKey)) {
+                requestBuilder.setOrganizationNameKey(organizationNameKey);
             }
 
             OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR

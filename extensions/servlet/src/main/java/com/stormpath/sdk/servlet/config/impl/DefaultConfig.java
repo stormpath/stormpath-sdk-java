@@ -53,7 +53,9 @@ import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
+import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
+import com.stormpath.sdk.servlet.util.SubdomainResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -573,5 +575,16 @@ public class DefaultConfig implements Config {
     @Override
     public Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver() {
         return this.getRuntimeInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
+    }
+
+    @Override
+    public Resolver<String> getOrganizationNameKeyResolver() {
+        SubdomainResolver subdomainResolver = new SubdomainResolver();
+        subdomainResolver.setBaseDomainName(CFG.getString("stormpath.web.application.domain"));
+
+        DefaultOrganizationNameKeyResolver organizationNameKeyResolver = new DefaultOrganizationNameKeyResolver();
+        organizationNameKeyResolver.setSubdomainResolver(subdomainResolver);
+
+        return organizationNameKeyResolver;
     }
 }

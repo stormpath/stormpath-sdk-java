@@ -181,4 +181,5 @@ public interface Config extends Map<String, String> {
 
     Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver();
 
+    Resolver<String> getOrganizationNameKeyResolver();
 }

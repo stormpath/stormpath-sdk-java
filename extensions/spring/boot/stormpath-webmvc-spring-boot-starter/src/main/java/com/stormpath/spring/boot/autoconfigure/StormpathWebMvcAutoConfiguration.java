@@ -56,6 +56,7 @@ import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.View;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.oauth.AccessTokenOrganizationClaimValidator;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import com.stormpath.spring.config.AccessTokenCookieProperties;
 import com.stormpath.spring.config.RefreshTokenCookieProperties;
@@ -317,6 +318,13 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name = "stormpathBearerAuthenticationScheme")
     public HttpAuthenticationScheme stormpathBearerAuthenticationScheme() {
         return super.stormpathBearerAuthenticationScheme();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathAccessTokenOrganizationClaimValidator")
+    @Override
+    public AccessTokenOrganizationClaimValidator stormpathAccessTokenOrganizationClaimValidator() {
+        return super.stormpathAccessTokenOrganizationClaimValidator();
     }
 
     @Bean
