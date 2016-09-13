@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.zuul.account;
+package com.stormpath.sdk.servlet.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Function;
-import com.stormpath.sdk.servlet.account.AccountResolver;
-import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.json.JsonFunction;
 import com.stormpath.sdk.servlet.json.ResourceJsonFunction;
@@ -31,24 +29,25 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * A {@code Resolver} that locates the account associated with the current request using an
- * {@link AccountResolver}, converts the located account to a String, and returns that String to the caller.
+ * {@link AccountResolver}, converts the located account to a String via a
+ * {@link Function Function&lt;Account,String&gt;}, and returns that String to the caller.
  * <p>
  * If an account cannot be resolved (for example, the request is not authenticated or a user not remembered
- * from a previous authentication), {@code null} is returned to indicate no header value needs to be set.
+ * from a previous authentication), {@code null} is returned to indicate no account could be located.
  * </p>
  * <p>
  * If an account is located, the default configuration returns a JSON representation of the account.  A
  * different account String representation can be returned by configuring a different
- * {@link #setAccountStringFactory(Function) accountStringFactory}.
+ * {@link #setAccountStringFunction(Function) accountStringFunction}.
  * </p>
  *
  * @see #setAccountResolver(AccountResolver)
- * @see #setAccountStringFactory(Function)
+ * @see #setAccountStringFunction(Function)
  * @since 1.1.0
  */
-public class DefaultAccountHeaderValueResolver implements Resolver<String> {
+public class AccountStringResolver implements Resolver<String> {
 
-    private Function<Account, String> accountStringFactory;
+    private Function<Account, String> accountStringFunction;
 
     private AccountResolver accountResolver;
 
@@ -56,11 +55,11 @@ public class DefaultAccountHeaderValueResolver implements Resolver<String> {
      * Default constructor that uses a {@link ResourceJsonFunction ResourceJsonFunction} to convert any discovered
      * account to a string.
      */
-    public DefaultAccountHeaderValueResolver() {
+    public AccountStringResolver() {
         this.accountResolver = new DefaultAccountResolver();
         ResourceToMapConverter<Account> converter = new ResourceToMapConverter<>();
         converter.setIncludedFields(Collections.toSet("groups")); //represent this one collection by default
-        this.accountStringFactory = new ResourceJsonFunction<>(converter, new JsonFunction<>());
+        this.accountStringFunction = new ResourceJsonFunction<>(converter, new JsonFunction<>());
     }
 
     /**
@@ -68,17 +67,17 @@ public class DefaultAccountHeaderValueResolver implements Resolver<String> {
      * <p>Unless overridden, the default instance is a {@link ResourceJsonFunction}, which returns a JSON
      * representation of the account.</p>
      *
-     * @param accountStringFactory the function used to convert a discovered {@link Account} to a String representation.
+     * @param accountStringFunction the function used to convert a discovered {@link Account} to a String representation.
      */
-    public void setAccountStringFactory(Function<Account, String> accountStringFactory) {
-        Assert.notNull(accountStringFactory, "accountStringFactory cannot be null.");
-        this.accountStringFactory = accountStringFactory;
+    public void setAccountStringFunction(Function<Account, String> accountStringFunction) {
+        Assert.notNull(accountStringFunction, "accountStringFunction cannot be null.");
+        this.accountStringFunction = accountStringFunction;
     }
 
     /**
      * Sets the account resolver to use to look a request's associated account.  Unless overridden, the default
      * instance is a {@link DefaultAccountResolver}.  Once located, the account will be converted to a string
-     * using the {@link #accountStringFactory}.
+     * using the {@link #accountStringFunction}.
      *
      * @param accountResolver the account resolver to use to look a request's associated account.
      */
@@ -92,12 +91,12 @@ public class DefaultAccountHeaderValueResolver implements Resolver<String> {
      * available.
      * <p>
      * This method locates the account associated with the current request using the
-     * {@link #accountResolver}, cnverts the located account to a String with the
-     * {@link #accountStringFactory}, and returns the resulting String.
+     * {@link #accountResolver}, converts the located account to a String with the
+     * {@link #accountStringFunction}, and returns the resulting String.
      * </p>
      * <p>
      * If an account cannot be resolved (for example, the request is not authenticated or a user not remembered
-     * from a previous authentication), {@code null} is returned to indicate no header value needs to be set.
+     * from a previous authentication), {@code null} is returned to indicate an account is not available.
      * </p>
      *
      * @param request  the inbound request
@@ -109,7 +108,7 @@ public class DefaultAccountHeaderValueResolver implements Resolver<String> {
     public String get(HttpServletRequest request, HttpServletResponse response) {
         Account account = accountResolver.getAccount(request);
         if (account != null) {
-            return accountStringFactory.apply(account);
+            return accountStringFunction.apply(account);
         }
         return null;
     }

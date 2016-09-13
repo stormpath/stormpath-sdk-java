@@ -17,6 +17,7 @@ package com.stormpath.zuul.account;
 
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.account.AccountStringResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.zuul.filter.AppliedRequestHeaderFilter;
@@ -32,7 +33,7 @@ import javax.servlet.ServletRequest;
  * {@link #setAccountResolver(AccountResolver) accountResolver}'s
  * {@link AccountResolver#hasAccount(ServletRequest) hasAccount} method. If there is an account, the account's string
  * representation will be obtained by calling the {@link #valueResolver}, a
- * {@link DefaultAccountHeaderValueResolver} instance by default.  If there is not an account associated with the
+ * {@link AccountStringResolver} instance by default.  If there is not an account associated with the
  * request, the header is not set at all.
  * </p>
  * <h5>Header Name</h5>
@@ -67,7 +68,7 @@ public class ForwardedAccountHeaderFilter extends AppliedRequestHeaderFilter {
      *     </tr>
      *     <tr>
      *         <td>{@link #setValueResolver(Resolver) valueResolver}</td>
-     *         <td>a new {@link DefaultAccountHeaderValueResolver} instance</td>
+     *         <td>a new {@link AccountStringResolver} instance</td>
      *     </tr>
      * </table>
      */
@@ -75,7 +76,7 @@ public class ForwardedAccountHeaderFilter extends AppliedRequestHeaderFilter {
         setHeaderName(DEFAULT_HEADER_NAME);
         AccountResolver accountResolver = new DefaultAccountResolver();
         setAccountResolver(accountResolver);
-        DefaultAccountHeaderValueResolver resolver = new DefaultAccountHeaderValueResolver();
+        AccountStringResolver resolver = new AccountStringResolver();
         resolver.setAccountResolver(accountResolver);
         setValueResolver(resolver);
     }

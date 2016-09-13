@@ -26,7 +26,7 @@ import com.stormpath.sdk.servlet.json.JsonFunction;
 import com.stormpath.sdk.servlet.json.ResourceJsonFunction;
 import com.stormpath.sdk.servlet.mvc.ResourceToMapConverter;
 import com.stormpath.spring.boot.autoconfigure.StormpathWebMvcAutoConfiguration;
-import com.stormpath.zuul.account.DefaultAccountHeaderValueResolver;
+import com.stormpath.sdk.servlet.account.AccountStringResolver;
 import com.stormpath.zuul.account.ForwardedAccountHeaderFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,9 +98,9 @@ public class StormpathZuulAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "stormpathForwardedAccountHeaderValueResolver")
     public Resolver<String> stormpathForwardedAccountHeaderValueResolver() {
-        DefaultAccountHeaderValueResolver resolver = new DefaultAccountHeaderValueResolver();
+        AccountStringResolver resolver = new AccountStringResolver();
         resolver.setAccountResolver(accountResolver);
-        resolver.setAccountStringFactory(stormpathForwardedAccountStringConverter());
+        resolver.setAccountStringFunction(stormpathForwardedAccountStringConverter());
         return resolver;
     }
 
