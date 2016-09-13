@@ -19,5 +19,41 @@ package com.stormpath.sdk.account;
  * @see AccountLinkingPolicy
  */
 public enum MatchingProperty {
-    email
+
+    EMAIL("email");
+
+    private final String value;
+
+    private MatchingProperty(String value) {
+        this.value = value;
+    }
+
+    public static MatchingProperty fromName(String name) {
+        for (MatchingProperty matchingProperty : values()) {
+            if (matchingProperty.name().equalsIgnoreCase(name)) {
+                return matchingProperty;
+            }
+        }
+        throw new IllegalArgumentException("No MatchingProperty named '" + name + "'");
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public static MatchingProperty fromValue(String value) {
+        for (MatchingProperty matchingProperty : values()) {
+
+            if (matchingProperty.getValue().equalsIgnoreCase(value)) {
+                return matchingProperty;
+            }
+        }
+        throw new IllegalArgumentException("No MatchingProperty has value [" + value + "]");
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return this.getValue();
+    }
 }

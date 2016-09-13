@@ -197,7 +197,7 @@ class OrganizationIT extends ClientIT {
 
         accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED)
         accountLinkingPolicy.setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED)
-        accountLinkingPolicy.setMatchingProperty(MatchingProperty.email)
+        accountLinkingPolicy.setMatchingProperty(MatchingProperty.EMAIL)
         accountLinkingPolicy.save()
 
         accountLinkingPolicy = org.getAccountLinkingPolicy()
@@ -209,7 +209,7 @@ class OrganizationIT extends ClientIT {
         assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
         assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
         assertNotNull accountLinkingPolicy.getMatchingProperty()
-        assertEquals accountLinkingPolicy.getMatchingProperty().name(), 'email'
+        assertEquals accountLinkingPolicy.getMatchingProperty().getValue(), 'email'
     }
 
     /* @since 1.1.0 */
@@ -263,7 +263,7 @@ class OrganizationIT extends ClientIT {
 
         assertNull accountLinkingPolicy.getMatchingProperty()
 
-        accountLinkingPolicy.setMatchingProperty(MatchingProperty.email) // partially update matchingProperty
+        accountLinkingPolicy.setMatchingProperty(MatchingProperty.EMAIL) // partially update matchingProperty
         accountLinkingPolicy.save()
 
         accountLinkingPolicy = org.getAccountLinkingPolicy()
@@ -275,7 +275,7 @@ class OrganizationIT extends ClientIT {
         assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
         assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
         assertNotNull accountLinkingPolicy.getMatchingProperty()
-        assertEquals accountLinkingPolicy.getMatchingProperty().name(), 'email'
+        assertEquals accountLinkingPolicy.getMatchingProperty().getValue(), 'email'
 
         accountLinkingPolicy.setMatchingProperty(null) // set matchingProperty to null
         accountLinkingPolicy.save()

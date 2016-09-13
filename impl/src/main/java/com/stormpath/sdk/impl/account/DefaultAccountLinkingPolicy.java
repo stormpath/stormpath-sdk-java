@@ -89,12 +89,12 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
         if (value == null) {
             return null;
         }
-        return MatchingProperty.valueOf(value);
+        return MatchingProperty.fromValue(value);
     }
 
     @Override
     public AccountLinkingPolicy setMatchingProperty(MatchingProperty matchingProperty) {
-        String mp = matchingProperty == null ? null : matchingProperty.name();
+        String mp = matchingProperty == null ? null : matchingProperty.getValue();
         setProperty(MATCHING_PROPERTY, mp, true, true);
         return this;
     }
