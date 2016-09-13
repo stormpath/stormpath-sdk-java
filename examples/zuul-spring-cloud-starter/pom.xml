@@ -31,7 +31,7 @@
 
     <name>Stormpath Java SDK :: Examples :: Zuul Spring Cloud Starter</name>
     <description>An example spring cloud zuul web gateway using Stormpath</description>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <properties>
         <jdk.version>1.7</jdk.version>
