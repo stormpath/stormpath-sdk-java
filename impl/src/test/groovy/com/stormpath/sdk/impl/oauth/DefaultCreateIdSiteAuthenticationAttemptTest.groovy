@@ -40,10 +40,11 @@ class DefaultCreateIdSiteAuthenticationAttemptTest {
 
         def propertyDescriptors = defaultIdSiteAuthenticationAttempt.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 2)
+        assertEquals(propertyDescriptors.size(), 3)
 
         assertTrue(propertyDescriptors.get("token") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("grant_type") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("organizationNameKey") instanceof  StringProperty)
     }
 
     @Test
