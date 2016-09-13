@@ -75,7 +75,7 @@ public final class OAuthRequests {
      *
      * @return a new {@link OAuthClientCredentialsRequestAuthenticatorFactory} instance, used to construct Create Client Credentials Authentication requests.
      *
-     * @since 1.1.0
+     * @since 1.0.4
      */
     public static final OAuthClientCredentialsGrantRequestAuthenticationFactory OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST = (OAuthClientCredentialsGrantRequestAuthenticationFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsRequestAuthenticationFactory");
 
