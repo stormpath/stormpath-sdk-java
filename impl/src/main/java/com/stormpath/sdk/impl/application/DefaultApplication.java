@@ -15,7 +15,14 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountLinkingPolicy;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.Accounts;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -26,6 +33,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.application.WebConfiguration;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -61,10 +69,10 @@ import com.stormpath.sdk.impl.query.Expandable;
 import com.stormpath.sdk.impl.query.Expansion;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.ListProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.impl.saml.DefaultSamlCallbackHandler;
 import com.stormpath.sdk.impl.saml.DefaultSamlIdpUrlBuilder;
@@ -177,6 +185,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
             new ResourceReference<SamlPolicy>("samlPolicy", SamlPolicy.class);
     static final ResourceReference<AccountLinkingPolicy> ACCOUNT_LINKING_POLICY =
             new ResourceReference<AccountLinkingPolicy>("accountLinkingPolicy", AccountLinkingPolicy.class);
+    static final ResourceReference<WebConfiguration> WEB_CONFIGURATION =
+            new ResourceReference<>("webConfig", WebConfiguration.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account>                         ACCOUNTS               =
@@ -199,7 +209,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
-        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY, AUTHORIZED_CALLBACK_URIS, SAML_POLICY, ACCOUNT_LINKING_POLICY);
+        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY, AUTHORIZED_CALLBACK_URIS, SAML_POLICY,
+            ACCOUNT_LINKING_POLICY, WEB_CONFIGURATION);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
@@ -238,16 +249,12 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     @Override
     public ApplicationStatus getStatus() {
-        String value = getStringProperty(STATUS.getName());
-        if (value == null) {
-            return null;
-        }
-        return ApplicationStatus.valueOf(value.toUpperCase());
+        return getEnumProperty(STATUS);
     }
 
     @Override
     public Application setStatus(ApplicationStatus status) {
-        setProperty(STATUS, status.name());
+        setProperty(STATUS, status);
         return this;
     }
 
@@ -322,6 +329,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     // @since 1.0.RC8
     public SamlPolicy getSamlPolicy() {
         return getResourceProperty(SAML_POLICY);
+    }
+
+    @Override
+    public WebConfiguration getWebConfiguration() {
+        return getResourceProperty(WEB_CONFIGURATION);
     }
 
     // @since 1.0.RC8
