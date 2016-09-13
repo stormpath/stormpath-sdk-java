@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.json;
 
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Function;
 import com.stormpath.sdk.resource.Resource;
 
@@ -30,6 +31,8 @@ public class ResourceJsonFunction<T extends Resource> implements Function<T, Str
     private Function<Object, String> jsonFunction;
 
     public ResourceJsonFunction(Function<T, Map<String, Object>> mapFunction, Function<Object, String> jsonFunction) {
+        Assert.notNull(mapFunction, "mapFunction cannot be null.");
+        Assert.notNull(jsonFunction, "jsonFunction cannot be null.");
         this.mapFunction = mapFunction;
         this.jsonFunction = jsonFunction;
     }

@@ -21,12 +21,12 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Function;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.sdk.servlet.account.AccountStringResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.json.JsonFunction;
 import com.stormpath.sdk.servlet.json.ResourceJsonFunction;
-import com.stormpath.sdk.servlet.mvc.ResourceToMapConverter;
+import com.stormpath.sdk.servlet.mvc.ResourceMapFunction;
 import com.stormpath.spring.boot.autoconfigure.StormpathWebMvcAutoConfiguration;
-import com.stormpath.sdk.servlet.account.AccountStringResolver;
 import com.stormpath.zuul.account.ForwardedAccountHeaderFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,24 +75,24 @@ public class StormpathZuulAutoConfiguration {
     private Set<String> accountToMapConverterExcludedFields = java.util.Collections.emptySet();
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathJsonFactory")
-    public Function<Object, String> stormpathJsonFactory() {
+    @ConditionalOnMissingBean(name = "stormpathJsonFunction")
+    public Function<Object, String> stormpathJsonFunction() {
         return new JsonFunction<>(objectMapper);
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathForwardedAccountMapConverter")
-    public Function<Account, Map<String, Object>> stormpathForwardedAccountMapConverter() {
-        ResourceToMapConverter<Account> converter = new ResourceToMapConverter<>();
+    @ConditionalOnMissingBean(name = "stormpathForwardedAccountMapFunction")
+    public Function<Account, Map<String, Object>> stormpathForwardedAccountMapFunction() {
+        ResourceMapFunction<Account> converter = new ResourceMapFunction<>();
         converter.setIncludedFields(accountToMapConverterIncludedFields);
         converter.setExcludedFields(accountToMapConverterExcludedFields);
         return converter;
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathForwardedAccountStringConverter")
-    public Function<Account, String> stormpathForwardedAccountStringConverter() {
-        return new ResourceJsonFunction<>(stormpathForwardedAccountMapConverter(), stormpathJsonFactory());
+    @ConditionalOnMissingBean(name = "stormpathForwardedAccountStringFunction")
+    public Function<Account, String> stormpathForwardedAccountStringFunction() {
+        return new ResourceJsonFunction<>(stormpathForwardedAccountMapFunction(), stormpathJsonFunction());
     }
 
     @Bean
@@ -100,7 +100,7 @@ public class StormpathZuulAutoConfiguration {
     public Resolver<String> stormpathForwardedAccountHeaderValueResolver() {
         AccountStringResolver resolver = new AccountStringResolver();
         resolver.setAccountResolver(accountResolver);
-        resolver.setAccountStringFunction(stormpathForwardedAccountStringConverter());
+        resolver.setAccountStringFunction(stormpathForwardedAccountStringFunction());
         return resolver;
     }
 

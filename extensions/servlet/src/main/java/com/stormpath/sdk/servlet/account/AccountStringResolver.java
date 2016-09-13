@@ -22,7 +22,7 @@ import com.stormpath.sdk.lang.Function;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.json.JsonFunction;
 import com.stormpath.sdk.servlet.json.ResourceJsonFunction;
-import com.stormpath.sdk.servlet.mvc.ResourceToMapConverter;
+import com.stormpath.sdk.servlet.mvc.ResourceMapFunction;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,9 +57,9 @@ public class AccountStringResolver implements Resolver<String> {
      */
     public AccountStringResolver() {
         this.accountResolver = new DefaultAccountResolver();
-        ResourceToMapConverter<Account> converter = new ResourceToMapConverter<>();
-        converter.setIncludedFields(Collections.toSet("groups")); //represent this one collection by default
-        this.accountStringFunction = new ResourceJsonFunction<>(converter, new JsonFunction<>());
+        ResourceMapFunction<Account> mapFunction = new ResourceMapFunction<>();
+        mapFunction.setIncludedFields(Collections.toSet("groups")); //represent this one collection by default
+        this.accountStringFunction = new ResourceJsonFunction<>(mapFunction, new JsonFunction<>());
     }
 
     /**

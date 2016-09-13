@@ -40,7 +40,7 @@ public class JsonFunction<T> implements Function<T, String> {
     public String apply(T value) {
         try {
             return objectMapper.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             String msg = "Cannot convert object value [" + value + "] to JSON string: " + e.getMessage();
             throw new IllegalArgumentException(msg, e);
         }

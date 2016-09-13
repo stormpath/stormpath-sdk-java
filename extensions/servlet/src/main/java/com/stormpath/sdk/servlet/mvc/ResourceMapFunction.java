@@ -36,11 +36,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A function that accepts a {@link Resource} and converts it to a Map&lt;String,Object&gt; instance suitable for
+ * serialization, likely to JSON.
+ *
  * @since 1.1.0
  */
-public class ResourceToMapConverter<T extends Resource> implements Function<T, Map<String, Object>> {
+public class ResourceMapFunction<T extends Resource> implements Function<T, Map<String, Object>> {
 
-    private static final Logger log = LoggerFactory.getLogger(ResourceToMapConverter.class);
+    private static final Logger log = LoggerFactory.getLogger(ResourceMapFunction.class);
 
     private Collection<String> excludedFields = java.util.Collections.emptySet();
     private Collection<String> includedFields = java.util.Collections.emptySet();
