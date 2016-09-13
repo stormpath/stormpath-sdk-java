@@ -1131,6 +1131,14 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
     SamlPolicy getSamlPolicy();
 
     /**
+     * Returns the {@link WebConfiguration} associated with this application.
+     *
+     * @return the {@link WebConfiguration} associated with this application.
+     * @since 1.1.0
+     */
+    WebConfiguration getWebConfiguration();
+
+    /**
      * Returns the valid list of Valid Callback URIs for this application.
      * @return the list of String valid callback URIs for this application.
      *

@@ -628,4 +628,26 @@ public abstract class AbstractResource implements Resource {
             readLock.unlock();
         }
     }
+
+    protected <E extends Enum<E>> E getEnumProperty(EnumProperty<E> enumProperty) {
+        return getEnumProperty(enumProperty.getName(), enumProperty.getType());
+    }
+
+    protected <E extends Enum<E>> E getEnumProperty(String key, Class<E> type) {
+        Assert.notNull(type, "type cannot be null.");
+
+        Object value = getProperty(key);
+
+        if (value != null) {
+            if (value instanceof String) {
+                return Enum.valueOf(type, value.toString());
+            }
+            if (type.isAssignableFrom(value.getClass())) {
+                //noinspection unchecked
+                return (E) value;
+            }
+        }
+        return null;
+    }
+
 }
