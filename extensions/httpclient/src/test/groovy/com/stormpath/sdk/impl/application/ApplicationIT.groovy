@@ -51,6 +51,7 @@ import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult
+import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
@@ -1652,6 +1653,29 @@ class ApplicationIT extends ClientIT {
         assertNull(((Map) result.getRefreshToken().getExpandedJwt().get("claims")).get("rti"))
         assertEquals(((Map) result.getRefreshToken().getExpandedJwt().get("header")).get("alg"), SignatureAlgorithm.HS256.toString())
         assertNotNull(result.getRefreshToken().getExpandedJwt().get("signature"))
+    }
+
+    /* @since 1.0.4 */
+
+    @Test
+    void testCreateClientCredentialsTokenForAppAccount() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        RequestCountingClient client = buildCountingClient();
+
+        app = client.getResource(app.href, Application)
+
+        def appApiKey = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
+
+        OAuthClientCredentialsGrantRequestAuthentication ccrequest = OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder().setApiKeyId(appApiKey.id).setApiKeySecret(appApiKey.secret).build();
+        def result = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(ccrequest)
+
+        assertNotNull result
     }
 
     /* @since 1.0.RC7 */
