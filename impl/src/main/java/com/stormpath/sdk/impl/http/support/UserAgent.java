@@ -65,7 +65,7 @@ public class UserAgent {
 
     //Stormpath Zuul support
     private static final String STORMPATH_ZUUL_ID = "stormpath-zuul";
-    private static final String STORMPATH_ZUUL_CLASS = "com.stormpath.zuul.account.AccountFilter";
+    private static final String STORMPATH_ZUUL_CLASS = "com.stormpath.zuul.filter.AppliedRequestHeaderFilter";
 
     //Stormpath Java Servlet Plugin
     private static final String STORMPATH_SDK_SERVLET_ID = "stormpath-servlet-java";
