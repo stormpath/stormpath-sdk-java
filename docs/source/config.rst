@@ -111,7 +111,6 @@ If all of these conditions cannot be met, then you will have to specify some min
 
   If you define ``stormpath.*`` servlet context parameters in your web application's ``/WEB-INF/web.xml`` file, they will override any identically-named properties discovered in previous locations.  For example:
 
-
   .. code-block:: xml
 
       <context-param>

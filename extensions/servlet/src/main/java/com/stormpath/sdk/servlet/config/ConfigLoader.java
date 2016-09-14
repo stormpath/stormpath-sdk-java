@@ -110,14 +110,19 @@ public class ConfigLoader {
             Config config = doCreateConfig(servletContext);
 
             servletContext.setAttribute(CONFIG_ATTRIBUTE_NAME, config);
-            //needed for MessageTag implementation:
+            // needed for MessageTag implementation:
             servletContext.setAttribute(MessageContext.class.getName(), config.getMessageContext());
 
-            log.debug("Published Config as ServletContext attribute with name [{}]", CONFIG_ATTRIBUTE_NAME);
+            // suppress log messages if stormpath disabled
+            if (config.isStormpathEnabled()) {
+                log.debug("Published Config as ServletContext attribute with name [{}]", CONFIG_ATTRIBUTE_NAME);
 
-            if (log.isInfoEnabled()) {
-                long elapsed = System.currentTimeMillis() - startTime;
-                log.info("Stormpath config initialized in {} ms.", elapsed);
+                if (log.isInfoEnabled()) {
+                    long elapsed = System.currentTimeMillis() - startTime;
+                    log.info("Stormpath config initialized in {} ms.", elapsed);
+                }
+            } else {
+                log.info("Stormpath disabled, cancelling initialization.");
             }
 
             return config;
