@@ -83,7 +83,7 @@ public interface AccountLinkingPolicy extends Resource, Saveable {
      * @return true if the status of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
      * is {@link AccountLinkingStatus#ENABLED ENABLED}, false otherwise
      */
-    public boolean isAccountLinkingEnabled ();
+    boolean isAccountLinkingEnabled ();
 
     /**
      * Returns true if the automaticProvisioningStatus of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
@@ -91,5 +91,5 @@ public interface AccountLinkingPolicy extends Resource, Saveable {
      * @return true if the automaticProvisioningStatus of the accountLinkingPolicy for the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
      * is {@link AutomaticProvisioningStatus#ENABLED ENABLED}, false otherwise
      */
-    public boolean isAutomaticProvisioningEnabled ();
+    boolean isAutomaticProvisioningEnabled ();
 }

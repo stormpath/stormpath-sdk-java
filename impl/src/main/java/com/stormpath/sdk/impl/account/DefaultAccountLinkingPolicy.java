@@ -22,7 +22,6 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
     static final EnumProperty<AutomaticProvisioningStatus> AUTOMATIC_PROVISIONING = new EnumProperty<>("automaticProvisioning", AutomaticProvisioningStatus.class);
     static final EnumProperty<MatchingProperty> MATCHING_PROPERTY = new EnumProperty<>("matchingProperty", MatchingProperty.class);
 
-
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
@@ -49,7 +48,6 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
         }
         return m;
     }
-
 
     @Override
     public AccountLinkingStatus getStatus() {
@@ -106,11 +104,11 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
 
     @Override
     public boolean isAccountLinkingEnabled () {
-        return AccountLinkingStatus.ENABLED.equals(getStatus()) ? true : false;
+        return AccountLinkingStatus.ENABLED.equals(getStatus());
     }
 
     @Override
     public boolean isAutomaticProvisioningEnabled () {
-        return AutomaticProvisioningStatus.ENABLED.equals(getAutomaticProvisioning()) ? true : false;
+        return AutomaticProvisioningStatus.ENABLED.equals(getAutomaticProvisioning());
     }
 }

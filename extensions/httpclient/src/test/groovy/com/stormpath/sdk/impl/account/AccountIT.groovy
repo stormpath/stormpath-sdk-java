@@ -95,7 +95,7 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(dir)
 
         //create another account (in a different account store)
-        def acct2 = createAccountInDir(dir)
+        def acct2 = createTempAccountInDir(dir)
 
         //link the accounts
         AccountLink accountLink = acct.link(acct2)
@@ -304,22 +304,6 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(acct)
 
         return acct
-    }
-
-    //@since 1.1.0
-    Account createAccountInDir(Directory directory){
-
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail(uniquify('randomEmail')+'@somemail.com')
-                .setPassword('Changeme1!')
-
-        account = directory.createAccount(account)
-        deleteOnTeardown(account)
-
-        return account
-
     }
 
     //@since 1.0.beta
@@ -1087,7 +1071,7 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(dir)
 
         //create another account (in a different account store)
-        def acct2 = createAccountInDir(dir)
+        def acct2 = createTempAccountInDir(dir)
 
         //link the accounts acct and acct2
         AccountLink accountLink = acct.link(acct2)
@@ -1105,7 +1089,7 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(dir2)
 
         //create another account (in a different account store)
-        def acct3 = createAccountInDir(dir2)
+        def acct3 = createTempAccountInDir(dir2)
 
         //link the accounts acct and acct3
         AccountLink accountLink2 = acct.link(acct3)
@@ -1162,7 +1146,7 @@ class AccountIT extends ClientIT {
         deleteOnTeardown(dir)
 
         //create another account (in a different account store)
-        def acct2 = createAccountInDir(dir)
+        def acct2 = createTempAccountInDir(dir)
 
 
         //link the accounts acct and acct2 - vaild
@@ -1181,7 +1165,7 @@ class AccountIT extends ClientIT {
             assertEquals re.properties.code as String , '7500'
         }
 
-        def acct3 = createAccountInDir(dir)
+        def acct3 = createTempAccountInDir(dir)
 
         //link more than 1 account, in a given directory - invalid
         try{
@@ -1203,8 +1187,8 @@ class AccountIT extends ClientIT {
         dir2 = client.currentTenant.createDirectory(dir2);
         deleteOnTeardown(dir2)
 
-        def acct4 = createAccountInDir(dir2)
-        def acct5 = createAccountInDir(dir2)
+        def acct4 = createTempAccountInDir(dir2)
+        def acct5 = createTempAccountInDir(dir2)
 
         //link with invalid href
         try{
