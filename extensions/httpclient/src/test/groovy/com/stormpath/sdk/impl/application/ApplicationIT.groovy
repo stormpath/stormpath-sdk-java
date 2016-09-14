@@ -23,6 +23,7 @@ import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.api.ApiKeyOptions
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
@@ -46,6 +47,7 @@ import com.stormpath.sdk.impl.idsite.IdSiteClaims
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.saml.SamlResultStatus
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
+import com.stormpath.sdk.lang.Strings
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
@@ -1656,7 +1658,6 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.0.4 */
-
     @Test
     void testCreateClientCredentialsTokenForAppAccount() {
 
@@ -1666,16 +1667,20 @@ class ApplicationIT extends ClientIT {
 
         def apiKey = account.createApiKey()
 
-        RequestCountingClient client = buildCountingClient();
+        OAuthClientCredentialsGrantRequestAuthentication request = OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder().setApiKeyId(apiKey.id).setApiKeySecret(apiKey.secret).build();
+        def result = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
 
-        app = client.getResource(app.href, Application)
+        assertNotNull result.getAccessTokenHref()
+        assertEquals result.getAccessToken().getHref(), result.getAccessTokenHref()
+        assertEquals(result.getAccessToken().getAccount().getHref(), account.getHref())
+        assertEquals(result.getAccessToken().getApplication().getHref(), app.getHref())
+        assertTrue Strings.hasText(result.getAccessTokenString())
+        assertEquals(result.getRefreshToken().getAccount().getHref(), account.getHref())
+        assertEquals(result.getRefreshToken().getApplication().getHref(), app.getHref())
+        assertTrue Strings.hasText(result.getRefreshTokenString())
 
-        def appApiKey = app.getApiKey(apiKey.id, ApiKeys.options().withAccount().withTenant())
-
-        OAuthClientCredentialsGrantRequestAuthentication ccrequest = OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder().setApiKeyId(appApiKey.id).setApiKeySecret(appApiKey.secret).build();
-        def result = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(ccrequest)
-
-        assertNotNull result
+        assertEquals result.getTokenType(), "Bearer"
+        assertEquals result.getExpiresIn(), 3600
     }
 
     /* @since 1.0.RC7 */
