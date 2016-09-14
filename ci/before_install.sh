@@ -18,7 +18,7 @@ export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk7' ] && echo 'true')"
 
 echo "Build configuration:\n\n"
 echo "Version:             $RELEASE_VERSION"
-echo "Is relase:           $IS_RELEASE"
-echo "Build documentation: $BUILD_DOCS"
-echo "Running IT tests:    $RUN_ITS"
+echo "Is relase:           ${IS_RELEASE:-false}"
+echo "Build documentation: ${BUILD_DOCS:-false}"
+echo "Running IT tests:    ${RUN_ITS:-false}"
 
