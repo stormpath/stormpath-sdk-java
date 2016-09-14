@@ -24,6 +24,7 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.http.HttpRequest
 import com.stormpath.sdk.http.HttpRequests
 import com.stormpath.sdk.idsite.AccountResult
+import com.stormpath.sdk.idsite.IdSiteResultStatus
 import com.stormpath.sdk.impl.http.QueryString
 import com.stormpath.sdk.impl.jwt.signer.DefaultJwtSigner
 import com.stormpath.sdk.lang.Assert
