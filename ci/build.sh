@@ -6,9 +6,10 @@ if [ -n "$RUN_ITS" ]; then
   echo "-------> Running unit and IT tests..."
   mvn -Pclover.all -DskipITs=false -q install &> $WORKDIR/target/tests.log
   if [ $? -ne 0 ]; then
-    error "-------> Tests failed"
+    EXIT_CODE = $?
+    error "Tests failed"
     cat $WORKDIR/target/tests.log
-    exit $?
+    exit EXIT_CODE
   fi
 fi
 
@@ -16,9 +17,10 @@ if [ -z "$RUN_ITS" ]; then
   echo "-------> Running unit tests..."
   mvn -q install > $WORKDIR/target/tests.log
   if [ $? -ne 0 ]; then
-    error "-------> Tests failed"
+    EXIT_CODE = $?
+    error "Tests failed"
     cat $WORKDIR/target/tests.log
-    exit $?
+    exit EXIT_CODE
   fi
 fi
 
