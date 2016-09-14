@@ -16,7 +16,7 @@ export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $T
 export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
 export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk7' ] && echo 'true')"
 
-echo "Build configuration:\n\n"
+echo -e  "$GREEN-------> Build configuration:$NORMAL\n\n"
 echo "Version:             $RELEASE_VERSION"
 echo "Is relase:           ${IS_RELEASE:-false}"
 echo "Build documentation: ${BUILD_DOCS:-false}"
