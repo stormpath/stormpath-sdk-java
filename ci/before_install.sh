@@ -4,8 +4,6 @@ source ./ci/common.sh
 
 ./ci/travis_bootstrap.sh
 
-source env.sh
-source stormpath_env.sh
 cp id_rsa_stormpath.github.io ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 mkdir -p ~/.stormpath/clover
@@ -16,7 +14,7 @@ export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $T
 export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
 export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk7' ] && echo 'true')"
 
-echo -e  "$GREEN-------> Build configuration:$NORMAL"
+info "Build configuration:"
 echo "Version:             $RELEASE_VERSION"
 echo "Is relase:           ${IS_RELEASE:-false}"
 echo "Build documentation: ${BUILD_DOCS:-false}"

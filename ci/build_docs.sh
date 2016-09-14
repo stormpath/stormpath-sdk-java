@@ -5,7 +5,7 @@
 source ./ci/common.sh
 
 # servlet-plugin docs
-echo "-------> Generating servlet plugin docs..."
+info "Generating servlet plugin docs..."
 $(cd docs && make html &> $WORKDIR/target/servlet-plugin-docs.log)
 if [ $? -ne 0 ]; then
   EXIT_CODE = $?
@@ -15,7 +15,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # spring boot docs
-echo "-------> Generating SpringBoot extension docs..."
+info "Generating SpringBoot extension docs..."
 $(cd extensions/spring/boot/docs && make html &> $WORKDIR/spring-boot-docs.log)
 if [ $? -ne 0 ]; then
   EXIT_CODE = $?
@@ -24,7 +24,7 @@ if [ $? -ne 0 ]; then
   exit EXIT_CODE
 fi
 
-echo "-------> Generating JavaDocs..."
+info "Generating JavaDocs..."
 # javadocs
 mvn -q javadoc:aggregate -P travis-docs &> $WORKDIR/target/javadocs.log
 if [ $? -ne 0 ]; then

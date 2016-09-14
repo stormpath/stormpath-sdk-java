@@ -5,7 +5,9 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 before_install:
-  - . ./ci/before_install.sh
+  - source ./ci/before_install.sh
+  - source ./ci/env.sh
+  - source ./ci/stormpath_env.sh
 install:
   - ./ci/install.sh
 script:

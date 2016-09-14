@@ -3,7 +3,7 @@
 source ./ci/common.sh
 
 if [ -n "$RUN_ITS" ]; then
-  echo "-------> Running unit and IT tests..."
+  info "Running unit and IT tests..."
   mvn -Pclover.all -DskipITs=false -q install &> $WORKDIR/target/tests.log
   if [ $? -ne 0 ]; then
     EXIT_CODE = $?
@@ -14,7 +14,7 @@ if [ -n "$RUN_ITS" ]; then
 fi
 
 if [ -z "$RUN_ITS" ]; then
-  echo "-------> Running unit tests..."
+  info "Running unit tests..."
   mvn -q install > $WORKDIR/target/tests.log
   if [ $? -ne 0 ]; then
     EXIT_CODE = $?
