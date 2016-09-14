@@ -8,5 +8,7 @@ function error() {
   echo -e "$RED-------> $1 $NORMAL"
 }
 
-mkdir target
+if [ ! -d target ]; then
+  mkdir target
+fi
 
