@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 # TODO: Move top-level docs folder into extensions/servlet-plugin
 
