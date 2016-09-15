@@ -10,10 +10,10 @@ if [ -n "$RUN_ITS" ]; then
   while ps | grep " $PID "
   do
     echo mvn $PID is still in the ps output. Must still be running.
-    sleep 3
+    sleep 20
   done
 
-  wait $PID ## sets exist code from command
+  wait $PID ## sets exit code from command
 
   if [ $? -ne 0 ]; then
     EXIT_CODE=$?
