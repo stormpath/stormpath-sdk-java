@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -423,18 +424,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathRequestClientAttributeNames")
-    public Set<String> stormpathRequestClientAttributeNames() {
-        return super.stormpathRequestClientAttributeNames();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathRequestApplicationAttributeNames")
-    public Set<String> stormpathRequestApplicationAttributeNames() {
-        return super.stormpathRequestApplicationAttributeNames();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathLocaleResolver")
     public Resolver<Locale> stormpathLocaleResolver() {
         return super.stormpathLocaleResolver();
@@ -588,7 +577,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathFilter")
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter() {
         StormpathFilter filter = newStormpathFilter();

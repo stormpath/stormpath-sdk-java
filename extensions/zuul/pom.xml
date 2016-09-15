@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014 Stormpath, Inc.
+  ~ Copyright 2016 Stormpath, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,26 +16,33 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
         <version>1.0.4-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>stormpath-sdk-extensions</artifactId>
-    <name>Stormpath Java SDK :: Extensions</name>
-    <packaging>pom</packaging>
+    <artifactId>stormpath-sdk-zuul</artifactId>
+    <name>Stormpath Java SDK :: Extensions :: Zuul</name>
+    <description>Support classes for enabling Stormpath within the Zuul gateway.</description>
+    <packaging>jar</packaging>
 
-    <modules>
-        <module>oauth</module>
-        <module>hazelcast</module>
-        <module>servlet</module>
-        <module>servlet-plugin</module>
-        <module>httpclient</module>
-        <module>zuul</module>
-        <module>spring</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stormpath.sdk</groupId>
+            <artifactId>stormpath-sdk-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.zuul</groupId>
+            <artifactId>zuul-core</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
