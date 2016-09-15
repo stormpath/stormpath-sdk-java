@@ -18,10 +18,10 @@ package com.stormpath.sdk.impl.account
 import com.stormpath.sdk.account.AccountLinkingPolicy
 import com.stormpath.sdk.account.AccountLinkingStatus
 import com.stormpath.sdk.account.AutomaticProvisioningStatus
-import com.stormpath.sdk.account.MatchingProperty
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
+import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
@@ -42,7 +42,7 @@ public class DefaultAccountLinkingPolicyTest {
 
         assertTrue(propertyDescriptors.get("status") instanceof EnumProperty)
         assertTrue(propertyDescriptors.get("automaticProvisioning") instanceof EnumProperty)
-        assertTrue(propertyDescriptors.get("matchingProperty") instanceof EnumProperty)
+        assertTrue(propertyDescriptors.get("matchingProperty") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
     }
 
@@ -67,14 +67,13 @@ public class DefaultAccountLinkingPolicyTest {
 
         assertEquals(accountLinkingPolicy.getStatus().name(), properties.status)
         assertEquals(accountLinkingPolicy.getAutomaticProvisioning().name(), properties.automaticProvisioning)
-        assertEquals(accountLinkingPolicy.getMatchingProperty().getValue(), properties.matchingProperty)
+        assertEquals(accountLinkingPolicy.getMatchingProperty(), properties.matchingProperty)
 
-        accountLinkingPolicy = accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).setMatchingProperty(MatchingProperty.EMAIL)
+        accountLinkingPolicy = accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).setMatchingProperty("email")
 
         assertEquals(accountLinkingPolicy.getStatus().name(), "ENABLED")
         assertEquals(accountLinkingPolicy.getAutomaticProvisioning().name(), "ENABLED")
-        assertEquals(accountLinkingPolicy.getMatchingProperty().name(), "EMAIL")
-        assertEquals(accountLinkingPolicy.getMatchingProperty().getValue(), "email")
+        assertEquals(accountLinkingPolicy.getMatchingProperty(), "email")
         assertEquals(accountLinkingPolicy.getHref(), properties.href)
 
         def tenant = accountLinkingPolicy.getTenant()
@@ -104,7 +103,7 @@ public class DefaultAccountLinkingPolicyTest {
 
         accountLinkingPolicy = accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).
                                 setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).
-                                setMatchingProperty(MatchingProperty.EMAIL)
+                                setMatchingProperty("email")
 
         try {
             accountLinkingPolicy.setStatus(null)

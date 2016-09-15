@@ -3,7 +3,6 @@ package com.stormpath.sdk.impl.account;
 import com.stormpath.sdk.account.AccountLinkingPolicy;
 import com.stormpath.sdk.account.AccountLinkingStatus;
 import com.stormpath.sdk.account.AutomaticProvisioningStatus;
-import com.stormpath.sdk.account.MatchingProperty;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
@@ -20,7 +19,7 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
     // ENUM PROPERTIES
     static final EnumProperty<AccountLinkingStatus> STATUS = new EnumProperty<>(AccountLinkingStatus.class);
     static final EnumProperty<AutomaticProvisioningStatus> AUTOMATIC_PROVISIONING = new EnumProperty<>("automaticProvisioning", AutomaticProvisioningStatus.class);
-    static final EnumProperty<MatchingProperty> MATCHING_PROPERTY = new EnumProperty<>("matchingProperty", MatchingProperty.class);
+    static final StringProperty MATCHING_PROPERTY = new StringProperty("matchingProperty");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
@@ -82,18 +81,13 @@ public class DefaultAccountLinkingPolicy extends AbstractInstanceResource implem
     }
 
     @Override
-    public MatchingProperty getMatchingProperty() {
-        String value = getStringProperty(MATCHING_PROPERTY.getName());
-        if (value == null) {
-            return null;
-        }
-        return MatchingProperty.fromValue(value);
+    public String getMatchingProperty() {
+        return getStringProperty(MATCHING_PROPERTY.getName());
     }
 
     @Override
-    public AccountLinkingPolicy setMatchingProperty(MatchingProperty matchingProperty) {
-        String mp = matchingProperty == null ? null : matchingProperty.getValue();
-        setProperty(MATCHING_PROPERTY, mp, true, true);
+    public AccountLinkingPolicy setMatchingProperty(String matchingProperty) {
+        setProperty(MATCHING_PROPERTY, matchingProperty, true, true);
         return this;
     }
 

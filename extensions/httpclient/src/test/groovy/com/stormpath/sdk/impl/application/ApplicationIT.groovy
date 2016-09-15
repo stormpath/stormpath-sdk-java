@@ -21,7 +21,6 @@ import com.stormpath.sdk.account.AccountLinkingPolicy
 import com.stormpath.sdk.account.AccountLinkingStatus
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.account.AutomaticProvisioningStatus
-import com.stormpath.sdk.account.MatchingProperty
 import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
@@ -1698,7 +1697,7 @@ class ApplicationIT extends ClientIT {
 
         accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED)
         accountLinkingPolicy.setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED)
-        accountLinkingPolicy.setMatchingProperty(MatchingProperty.EMAIL)
+        accountLinkingPolicy.setMatchingProperty("Email") // case shouldn't matter
         accountLinkingPolicy.save()
 
         accountLinkingPolicy = app.getAccountLinkingPolicy()
@@ -1710,7 +1709,7 @@ class ApplicationIT extends ClientIT {
         assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
         assertTrue(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
         assertNotNull accountLinkingPolicy.getMatchingProperty()
-        assertEquals accountLinkingPolicy.getMatchingProperty().getValue(), 'email'
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'email'
     }
 
     /* @since 1.1.0 */
@@ -1756,7 +1755,7 @@ class ApplicationIT extends ClientIT {
 
         assertNull accountLinkingPolicy.getMatchingProperty()
 
-        accountLinkingPolicy.setMatchingProperty(MatchingProperty.EMAIL) // partially update matchingProperty
+        accountLinkingPolicy.setMatchingProperty("EMAIL") // partially update matchingProperty
         accountLinkingPolicy.save()
 
         accountLinkingPolicy = app.getAccountLinkingPolicy()
@@ -1768,7 +1767,7 @@ class ApplicationIT extends ClientIT {
         assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
         assertTrue(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
         assertNotNull accountLinkingPolicy.getMatchingProperty()
-        assertEquals accountLinkingPolicy.getMatchingProperty().getValue(), 'email'
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'email'
 
         accountLinkingPolicy.setMatchingProperty(null) // set matchingProperty to null
         accountLinkingPolicy.save()

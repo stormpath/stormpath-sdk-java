@@ -51,22 +51,22 @@ public interface AccountLinkingPolicy extends Resource, Saveable {
     /**
      * Returns the matchingProperty of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
-     * Possible values are : email, username. null by default.
+     * Possible values are : "email", null. null by default.
      *
      * @return the matchingProperty of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
-     * Possible values are : email, username.
      */
-    MatchingProperty getMatchingProperty();
+    String getMatchingProperty();
 
     /**
      * Sets the the matchingProperty of the accountLinkingPolicy for the
      * {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}.
-     * Possible values are : email, username. null by default.
+     * Possible values are : "email", null. null by default.
      *
      * @return this instance for method chaining.
+     * @param matchingProperty
      */
-    AccountLinkingPolicy setMatchingProperty(MatchingProperty matchingProperty);
+    AccountLinkingPolicy setMatchingProperty(String matchingProperty);
 
     /**
      * Returns the parent {@link Tenant Tenant} of the {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
