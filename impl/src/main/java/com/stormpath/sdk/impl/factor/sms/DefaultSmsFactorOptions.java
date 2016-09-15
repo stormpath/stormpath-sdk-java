@@ -25,4 +25,9 @@ public class DefaultSmsFactorOptions extends DefaultOptions<SmsFactorOptions> im
     public SmsFactorOptions withMostRecentChallenge() {
         return expand(DefaultSmsFactor.MOST_RECENT_CHALLENGE);
     }
+
+    @Override
+    public SmsFactorOptions withAccount() {
+        return expand(DefaultSmsFactor.ACCOUNT);
+    }
 }

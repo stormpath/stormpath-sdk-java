@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,16 @@
  */
 package com.stormpath.sdk.phone;
 
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupOptions;
-import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.query.Criteria;
 
 /**
- * An {@link Group}-specific {@link Criteria} class, enabling a Group-specific
- * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  GroupCriteria instances can be
- * constructed by using the {@link Groups} utility class, for example:
+ * A {@link Phone}-specific {@link Criteria} class, enabling a Phone-specific
+ * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  PhoneCriteria instances can be
+ * constructed by using the {@link Phones} utility class, for example:
  * <pre>
- * Groups.where(Groups.name().containsIgnoreCase("admin"))
- *     .and(Groups.status().eq(GroupStatus.ENABLED))
+ * Phones.where(Phones.name().containsIgnoreCase("my phone"))
+ *     .and(Phones.status().eq(PhoneStatus.ENABLED))
  *     .orderByName()
- *     .withAccounts(10, 10)
  *     .limitTo(10));
  * </pre>
  * <h2>Sort Order</h2>
@@ -52,18 +48,48 @@ import com.stormpath.sdk.query.Criteria;
  *     ...
  * </pre>
  *
- * @since 0.8
+ * @since 1.0.4
  */
+public interface PhoneCriteria extends Criteria<PhoneCriteria>,  PhoneOptions<PhoneCriteria>{
 
-// todo: mehrshad
-
-public interface PhoneCriteria extends Criteria<PhoneCriteria>{
-
-
+    /**
+     * Ensures that the query results are ordered by group {@link Phone#getName() name}.
+     * <p/>
+     * Please see the {@link PhoneCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
     PhoneCriteria orderByName();
 
+    /**
+     * Ensures that the query results are ordered by group {@link Phone#getDescription() description}.
+     * <p/>
+     * Please see the {@link PhoneCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
     PhoneCriteria orderByDescription();
 
+    /**
+     * Ensures that the query results are ordered by group {@link Phone#getStatus() status}.
+     * <p/>
+     * Please see the {@link PhoneCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
     PhoneCriteria orderByStatus();
+
+    /**
+     * Ensures that the query results are ordered by group {@link Phone#getVerificationStatus()} verificationStatus}.
+     * <p/>
+     * Please see the {@link PhoneCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
+    PhoneCriteria orderByVerificationStatus();
 
 }

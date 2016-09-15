@@ -28,6 +28,7 @@ import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.factor.FactorCriteria;
 import com.stormpath.sdk.factor.FactorList;
 import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
 import com.stormpath.sdk.group.Group;
@@ -40,6 +41,7 @@ import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
 import com.stormpath.sdk.phone.CreatePhoneRequest;
 import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneCriteria;
 import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.ResourceException;
@@ -362,5 +364,15 @@ public class ImmutableAccount implements Account {
     @Override
     public FactorList getFactors(Map<String, Object> queryParams) {
         return account.getFactors(queryParams);
+    }
+
+    @Override
+    public FactorList getFactors(FactorCriteria criteria) {
+        return account.getFactors(criteria);
+    }
+
+    @Override
+    public PhoneList getPhones(PhoneCriteria criteria) {
+        return account.getPhones(criteria);
     }
 }

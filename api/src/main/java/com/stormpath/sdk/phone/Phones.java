@@ -16,6 +16,7 @@
 package com.stormpath.sdk.phone;
 
 import com.stormpath.sdk.lang.Classes;
+import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
@@ -31,6 +32,23 @@ public final class Phones {
 
     //prevent instantiation
     private Phones() {
+    }
+
+    /**
+     * Returns a new {@link PhoneOptions} instance, used to customize how one or more {@link Phone}s are retrieved.
+     *
+     * @return a new {@link PhoneOptions} instance, used to customize how one or more {@link Phone}s are retrieved.
+     */
+    public static PhoneOptions<PhoneOptions> options() {
+        return (PhoneOptions) Classes.newInstance("com.stormpath.sdk.impl.phone.DefaultPhoneOptions");
+    }
+
+    public static PhoneCriteria criteria() {
+        return (PhoneCriteria) Classes.newInstance("com.stormpath.sdk.impl.phone.DefaultPhoneCriteria");
+    }
+
+    public static PhoneCriteria where(Criterion criterion) {
+        return criteria().add(criterion);
     }
 
 
@@ -54,10 +72,10 @@ public final class Phones {
         return newEqualsExpressionFactory("verificationStatus");
     }
 
-    public static CreatePhoneRequestBuilder newCreateRequestFor(Phone phone) {
+    /*public static CreatePhoneRequestBuilder newCreateRequestFor(Phone phone) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Phone.class);
         return (CreatePhoneRequestBuilder) Classes.instantiate(ctor, phone);
-    }
+    }*/
 
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {

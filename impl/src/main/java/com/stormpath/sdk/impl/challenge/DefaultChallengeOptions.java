@@ -10,4 +10,8 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
  */
 public class DefaultChallengeOptions extends DefaultOptions<ChallengeOptions> implements ChallengeOptions<ChallengeOptions> {
 
+    @Override
+    public ChallengeOptions withAccount() {
+        return expand(DefaultChallenge.ACCOUNT);
+    }
 }

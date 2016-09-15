@@ -23,6 +23,7 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.factor.FactorCriteria;
 import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.FactorList;
@@ -35,6 +36,7 @@ import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
 import com.stormpath.sdk.phone.CreatePhoneRequest;
 import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneCriteria;
 import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.*;
@@ -602,6 +604,41 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     PhoneList getPhones(Map<String, Object> queryParams);
 
     /**
+     * Returns a paginated list of the account's assigned phones that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.phone.Phones Phones} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getPhones(Phones.where(
+     *     Phones.description().containsIgnoreCase("foo"))
+     *     .and(Phones.name().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.phone.Phones.*;
+     *
+     * ...
+     *
+     * account.getPhones(where(
+     *      description().containsIgnoreCase("foo"))
+     *     .and(name().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's phones that match the specified query criteria.
+     * @since 1.0.4
+     */
+    PhoneList getPhones(PhoneCriteria criteria);
+
+    /**
      * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource.
      * The account can then use the Factor for Multi Factor Authentication purposes.
      *
@@ -641,4 +678,37 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.0.4
      */
     FactorList getFactors(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's assigned factors that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.factor.Factors factors} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getFactors(Factors.SMS.where(
+     *     Factors.SMS.status().eq(FactorStatus.ENABLED)
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.factor.Factors.SMS.*;
+     *
+     * ...
+     *
+     * account.getFactors(where(
+     *      status().eq(FactorStatus.ENABLED))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's factors that match the specified query criteria.
+     * @since 1.0.4
+     */
+    FactorList getFactors(FactorCriteria criteria);
 }

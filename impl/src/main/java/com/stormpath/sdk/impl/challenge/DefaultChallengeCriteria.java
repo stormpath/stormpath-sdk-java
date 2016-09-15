@@ -13,4 +13,23 @@ public class DefaultChallengeCriteria extends DefaultCriteria<ChallengeCriteria,
         super(new DefaultChallengeOptions());
     }
 
+    @Override
+    public ChallengeCriteria orderByMessage() {
+        return orderBy(DefaultChallenge.MESSAGE);
+    }
+
+    @Override
+    public ChallengeCriteria orderByMessageId() {
+        return orderBy(DefaultChallenge.MESSAGE_ID);
+    }
+
+    @Override
+    public ChallengeCriteria orderByStatus() {
+        return orderBy(DefaultChallenge.STATUS);
+    }
+
+    @Override
+    public ChallengeCriteria withAccount() {
+        return orderBy(DefaultChallenge.ACCOUNT);
+    }
 }

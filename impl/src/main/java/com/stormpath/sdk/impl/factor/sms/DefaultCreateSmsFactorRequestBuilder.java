@@ -1,8 +1,8 @@
 package com.stormpath.sdk.impl.factor.sms;
 
-import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
 import com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder;
+import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.factor.sms.SmsFactorOptions;
 import com.stormpath.sdk.lang.Assert;
 
@@ -18,9 +18,9 @@ public class DefaultCreateSmsFactorRequestBuilder implements CreateSmsFactorRequ
     private SmsFactorOptions options;
     private boolean createChallenge;
 
-    public DefaultCreateSmsFactorRequestBuilder(Factor smsFactor) {
+    public DefaultCreateSmsFactorRequestBuilder(SmsFactor smsFactor) {
         Assert.notNull(smsFactor, "Factor can't be null.");
-        this.smsFactor = (com.stormpath.sdk.factor.sms.SmsFactor) smsFactor;
+        this.smsFactor = smsFactor;
     }
 
     @Override

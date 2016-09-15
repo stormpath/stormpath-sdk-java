@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.challenge;
+package com.stormpath.sdk.factor;
 
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.query.Options;
 
-public interface CreateChallengeRequest {
+/**
+ * Phone-specific options that may be specified when retrieving {@link Phone} resources.
+ *
+ * @since 1.0.4
+ */
+public interface FactorOptions<T> extends Options {
 
     /**
-     * Returns the Challenge instance for which a new record will be created in Stormpath.
+     * Ensures that when retrieving a Phone, the Phones's assigned {@link Phone#getAccount()} account}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
      *
-     * @return the Challenge instance for which a new record will be created in Stormpath.
+     * @return this instance for method chaining.
      */
-    Challenge getChallenge();
+    T withAccount();
 
 }

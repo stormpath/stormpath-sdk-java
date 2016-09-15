@@ -41,5 +41,4 @@ public interface Phone extends Resource, Saveable, Deletable, Auditable {
     Phone setVerificationStatus(PhoneVerificationStatus verificationStatus);
     Account getAccount();
     Phone setAccount(Account account);
-
 }

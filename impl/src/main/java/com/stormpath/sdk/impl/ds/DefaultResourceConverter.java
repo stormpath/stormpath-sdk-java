@@ -118,7 +118,7 @@ public class DefaultResourceConverter implements ResourceConverter {
         }
 
         if (value instanceof Resource) {
-            if(((AbstractResource)value).isMaterialized()) {
+            if(((Resource)value).getHref() != null) {
                 return this.referenceFactory.createReference(propName, (Resource) value);
             }
             else{

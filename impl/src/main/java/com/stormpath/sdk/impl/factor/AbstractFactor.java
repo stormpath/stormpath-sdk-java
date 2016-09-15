@@ -19,7 +19,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.FactorStatus;
 import com.stormpath.sdk.factor.FactorType;
-import com.stormpath.sdk.factor.sms.FactorVerificationStatus;
+import com.stormpath.sdk.factor.FactorVerificationStatus;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
 
@@ -29,9 +29,10 @@ import java.util.Map;
 /**
  * @since 1.0.4
  */
-public class AbstractFactor extends AbstractInstanceResource implements Factor {
-    static final StatusProperty<FactorType> FACTOR_TYPE = new StatusProperty<>("type", FactorType.class);
-    static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
+public abstract class AbstractFactor extends AbstractInstanceResource implements Factor {
+
+    public static final StatusProperty<FactorType> FACTOR_TYPE = new StatusProperty<>("type", FactorType.class);
+    public static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
     public static final StatusProperty<FactorStatus> STATUS = new StatusProperty<>("status", FactorStatus.class);
     public static final StatusProperty<FactorVerificationStatus> VERIFICATION_STATUS = new StatusProperty<>("verificationStatus", FactorVerificationStatus.class);
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
@@ -40,11 +41,21 @@ public class AbstractFactor extends AbstractInstanceResource implements Factor {
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(FACTOR_TYPE, ACCOUNT, STATUS, VERIFICATION_STATUS, CREATED_AT, MODIFIED_AT);
 
     public AbstractFactor(InternalDataStore dataStore) {
-        super(dataStore);
+        super(dataStore);// Set the factor type only one the factor is instantiated via a the client (i.e. client.instantiate(SmsFactor.class)).
+        // However, when the factor is instantiated by the resource factory as a consequence of a response from the
+        // back-end, it must not be overwritten since that would cause the FactorType to be marked as 'dirty'
+        if(getFactorType() == null){
+            setFactorType(getConcreteFactorType());
+        }
     }
 
     public AbstractFactor(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+        super(dataStore, properties);// Set the factor type only one the factor is instantiated via a the client (i.e. client.instantiate(SmsFactor.class)).
+        // However, when the factor is instantiated by the resource factory as a consequence of a response from the
+        // back-end, it must not be overwritten since that would cause the FactorType to be marked as 'dirty'
+        if(getFactorType() == null){
+            setFactorType(getConcreteFactorType());
+        }
     }
 
     @Override
@@ -91,7 +102,6 @@ public class AbstractFactor extends AbstractInstanceResource implements Factor {
         return FactorType.valueOf(value.toUpperCase());
     }
 
-    @Override
     public Factor setFactorType(FactorType factorType) {
         setProperty(FACTOR_TYPE, factorType.name());
         return this;
@@ -122,4 +132,6 @@ public class AbstractFactor extends AbstractInstanceResource implements Factor {
     public Date getModifiedAt() {
         return getDateProperty(MODIFIED_AT);
     }
+
+    protected abstract FactorType getConcreteFactorType();
 }

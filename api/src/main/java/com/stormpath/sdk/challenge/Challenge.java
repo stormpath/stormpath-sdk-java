@@ -19,9 +19,6 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.resource.*;
 
-//todo: mehrshad
-
-
 /**
  * This domain object represents a challenge of {@link com.stormpath.sdk.factor.sms.SmsFactor} smsFactor for a Multi Factor Authentication.
  * <p/>
@@ -42,23 +39,100 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
     String getMessage();
 
     /**
-     * Sets the message associated with this directory.
+     * Sets the message associated with this challenge.
      * Tenant.
      *
      * @param message the message associated with this challenge.
      * @return this instance for method chaining.
      */
     Challenge setMessage(String message);
+
+    /**
+     * Returns the message id returned by external sms service provider with this challenge.
+     * for a given sms message sent
+     *
+     * @return message id associated with this challenge
+     */
     String getMessageId();
+
+    /**
+     * Sets the message id returned by external sms service provider with this challenge.
+     * for a given sms message sent
+     *
+     * @param messageId associated with this challenge
+     */
     Challenge setMessageId(String messageId);
+
+    /**
+     * Returns the status of this challenge object
+     *
+     * @return status associated with this challenge
+     */
     ChallengeStatus getStatus();
+
+    /**
+     * Sets the status associated with this challenge.
+     * Tenant.
+     *
+     * @param status the status associated with this challenge.
+     * @return this instance for method chaining.
+     */
     Challenge setStatus(ChallengeStatus status);
+
+    /**
+     * Returns the account associated with this challenge
+     *
+     * @return account associated with this challenge
+     */
     Account getAccount();
+
+    /**
+     * Sets the account associated with this challenge.
+     *
+     * @param account associated with this challenge
+     */
     Challenge setAccount(Account account);
+
+    /**
+     * Returns the sms factor associated with this challenge
+     *
+     * @return sms factor associated with this challenge
+     */
     Factor getFactor();
+
+    /**
+     * Sets the factor associated with this challenge.
+     *
+     * @param smsFactor associated with this challenge
+     */
     Challenge setFactor(Factor smsFactor);
+
+    /**
+     * Returns the token associated with this challenge
+     *
+     * @return token associated with this challenge
+     */
     String getToken();
+
+    /**
+     * Sets the token associated with this challenge.
+     *
+     * @param token associated with this challenge
+     */
     Challenge setToken(String token);
+
+    /**
+     * Returns the sent code in the sms associated with this challenge
+     *
+     * @return code in the sms associated with this challenge
+     */
     Challenge setCode(String code);
+
+    /**
+     * Returns true in case the challenge is validated with the given code
+     * and false if otherwise
+     *
+     * @return true in case the challenge is validated with the given code
+     */
     boolean validate(String code);
 }

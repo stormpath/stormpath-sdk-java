@@ -7,8 +7,8 @@ import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.FactorStatus
-import com.stormpath.sdk.factor.SmsFactors
-import com.stormpath.sdk.factor.sms.FactorVerificationStatus
+import com.stormpath.sdk.factor.Factors
+import com.stormpath.sdk.factor.FactorVerificationStatus
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.factor.sms.SmsFactorOptions
 import com.stormpath.sdk.impl.factor.sms.DefaultSmsFactor
@@ -55,15 +55,13 @@ class FactorIT extends ClientIT {
         smsFactor = smsFactor.setPhone(phone)
         smsFactor = account.createFactor(smsFactor);
 
-
-        SmsFactorOptions smsFactorOptions = SmsFactors.options().withPhone()
+        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withPhone()
         smsFactor = client.getResource(smsFactor.href, SmsFactor.class, smsFactorOptions)
 
         assertNotNull smsFactor.href
         assertNotNull phone.href
         assertEquals(smsFactor.status, FactorStatus.ENABLED)
         assertEquals(smsFactor.phone.status, PhoneStatus.ENABLED)
-
     }
 
     @Test
@@ -107,7 +105,7 @@ class FactorIT extends ClientIT {
         assertNull(((SmsFactor) factor).challenge)
 
         //test GET works
-        SmsFactorOptions smsFactorOptions = SmsFactors.options().withChallenges()
+        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withChallenges()
         factor = client.getResource(factor.href, DefaultSmsFactor.class, smsFactorOptions)
 
         assertEquals(factor.getFactorVerificationStatus(), FactorVerificationStatus.UNVERIFIED)
@@ -149,10 +147,10 @@ class FactorIT extends ClientIT {
         SmsFactor factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
 
-        def builder = SmsFactors.newCreateRequestFor(factor).createChallenge()
+        def builder = Factors.SMS.newCreateRequestFor(factor).createChallenge()
         factor = account.createFactor(builder.build())
 
-        SmsFactorOptions smsFactorOptions = SmsFactors.options().withMostRecentChallenge()
+        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withMostRecentChallenge()
         factor = client.getResource(factor.href, SmsFactor.class, smsFactorOptions)
 
         assertEquals(factor.getFactorVerificationStatus(), FactorVerificationStatus.UNVERIFIED)
@@ -189,7 +187,7 @@ class FactorIT extends ClientIT {
         def factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
 
-        def builder = SmsFactors.newCreateRequestFor(factor).createChallenge()
+        def builder = Factors.SMS.newCreateRequestFor(factor).createChallenge()
 
         try {
             account.createFactor(builder.build())
@@ -260,7 +258,7 @@ class FactorIT extends ClientIT {
         SmsFactor factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
 
-        def builder = SmsFactors.newCreateRequestFor(factor)
+        def builder = Factors.SMS.newCreateRequestFor(factor)
         factor = account.createFactor(builder.build())
 
         factor.setStatus(FactorStatus.DISABLED)
@@ -301,7 +299,7 @@ class FactorIT extends ClientIT {
 
         factor = account.createFactor(factor)
 
-        SmsFactorOptions smsFactorOptions = SmsFactors.options().withMostRecentChallenge()
+        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withMostRecentChallenge()
         factor = client.getResource(factor.href, SmsFactor.class, smsFactorOptions)
 
         assertEquals(factor.getFactorVerificationStatus(), FactorVerificationStatus.UNVERIFIED)
@@ -344,7 +342,7 @@ class FactorIT extends ClientIT {
         factor.setPhone(phone)
         factor = account.createFactor(factor)
 
-        SmsFactorOptions smsFactorOptions = SmsFactors.options().withPhone()
+        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withPhone()
         factor = client.getResource(factor.href, SmsFactor.class, smsFactorOptions)
 
         assertEquals(factor.factorVerificationStatus, FactorVerificationStatus.UNVERIFIED)
@@ -396,7 +394,7 @@ class FactorIT extends ClientIT {
         factor.setPhone(phone)
         factor = account.createFactor(factor)
 
-        SmsFactorOptions smsFactorOptions = SmsFactors.options().withPhone()
+        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withPhone()
         factor = client.getResource(factor.href, SmsFactor.class, smsFactorOptions)
 
         assertEquals(factor.factorVerificationStatus, FactorVerificationStatus.UNVERIFIED)
@@ -513,10 +511,10 @@ class FactorIT extends ClientIT {
 
         SmsFactor factor = client.instantiate(SmsFactor)
         factor.setPhone(phone)
-        def builder = SmsFactors.newCreateRequestFor(factor).createChallenge()
+        def builder = Factors.SMS.newCreateRequestFor(factor).createChallenge()
 
         account.createFactor(builder.build())
-        SmsFactorOptions smsFactorOptions = SmsFactors.options().withMostRecentChallenge()
+        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withMostRecentChallenge()
         factor = client.getResource(factor.href, SmsFactor.class, smsFactorOptions)
 
         assertEquals(factor.factorVerificationStatus, FactorVerificationStatus.UNVERIFIED)
@@ -540,6 +538,40 @@ class FactorIT extends ClientIT {
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
         }
+    }
+
+    @Test
+    void testGetFactorsWithDifferentCriteria() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir = client.currentTenant.createDirectory(dir)
+
+        assertNotNull dir.href
+
+        def email = 'johndeleteme@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('DELETEME')
+                .setEmail(email)
+                .setPassword('Changeme1!')
+
+        dir.createAccount(account)
+
+        deleteOnTeardown(account)
+        deleteOnTeardown(dir)
+        def phone = client.instantiate(Phone)
+        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone = account.createPhone(phone);
+
+        SmsFactor smsFactor = client.instantiate(DefaultSmsFactor)
+        smsFactor = smsFactor.setPhone(phone)
+        smsFactor = account.createFactor(smsFactor);
+
+        def factors = account.getFactors(Factors.SMS.criteria().orderByStatus().ascending());
+        assertEquals(factors.getLimit(), 25);
+        assertEquals(factors.getProperty("items").size, 1);
+//        assertEquals(factors.iterator().next().account.materialized, false)
     }
 
     private Object getValue(Class clazz, Object object, String fieldName) {

@@ -16,7 +16,6 @@
 package com.stormpath.sdk.factor;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.factor.sms.FactorVerificationStatus;
 import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
@@ -34,7 +33,6 @@ public interface Factor extends Resource, Saveable, Deletable, Auditable {
     FactorVerificationStatus getFactorVerificationStatus();
     Factor setFactorVerificationStatus(FactorVerificationStatus verificationStatus);
     FactorType getFactorType();
-    Factor setFactorType(FactorType factorType);
     Account getAccount();
     Factor setAccount(Account account);
 }

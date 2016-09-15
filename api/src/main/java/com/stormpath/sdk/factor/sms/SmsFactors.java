@@ -1,7 +1,5 @@
-package com.stormpath.sdk.factor;
+package com.stormpath.sdk.factor.sms;
 
-import com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder;
-import com.stormpath.sdk.factor.sms.SmsFactorOptions;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.DateExpressionFactory;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
@@ -24,19 +22,6 @@ public final class SmsFactors {
         return (SmsFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorOptions");
     }
 
-
-    public static StringExpressionFactory name() {
-        return newStringExpressionFactory("name");
-    }
-
-    public static StringExpressionFactory number() {
-        return newStringExpressionFactory("number");
-    }
-
-    public static StringExpressionFactory description() {
-        return newStringExpressionFactory("description");
-    }
-
     public static EqualsExpressionFactory status() {
         return newEqualsExpressionFactory("status");
     }
@@ -45,8 +30,8 @@ public final class SmsFactors {
         return newEqualsExpressionFactory("verificationStatus");
     }
 
-    public static CreateSmsFactorRequestBuilder newCreateRequestFor(Factor smsFactor) {
-        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Factor.class);
+    public static CreateSmsFactorRequestBuilder newCreateRequestFor(SmsFactor smsFactor) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, SmsFactor.class);
         return (CreateSmsFactorRequestBuilder) Classes.instantiate(ctor, smsFactor);
     }
 

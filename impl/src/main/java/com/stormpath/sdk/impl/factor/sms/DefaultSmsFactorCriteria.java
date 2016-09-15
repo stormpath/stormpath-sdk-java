@@ -1,5 +1,6 @@
 package com.stormpath.sdk.impl.factor.sms;
 
+import com.stormpath.sdk.factor.FactorCriteria;
 import com.stormpath.sdk.factor.sms.SmsFactorCriteria;
 import com.stormpath.sdk.factor.sms.SmsFactorOptions;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
@@ -10,30 +11,25 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 
 // todo: mehrshad
 
-public class DefaultSmsFactorCriteria extends DefaultCriteria<SmsFactorCriteria, SmsFactorOptions> implements SmsFactorCriteria {
+public class DefaultSmsFactorCriteria extends DefaultCriteria<FactorCriteria, SmsFactorOptions> implements SmsFactorCriteria {
 
     public DefaultSmsFactorCriteria() {
         super(new DefaultSmsFactorOptions());
     }
 
     @Override
-    public SmsFactorCriteria orderByPhone() {
-        return orderBy(DefaultSmsFactor.PHONE);
-    }
-
-    @Override
-    public SmsFactorCriteria orderByChallenge() {
-        return orderBy(DefaultSmsFactor.CHALLENGE);
+    public FactorCriteria orderByType() {
+        return null;
     }
 
     @Override
     public SmsFactorCriteria orderByStatus() {
-        return orderBy(DefaultSmsFactor.STATUS);
+        return (SmsFactorCriteria)orderBy(DefaultSmsFactor.STATUS);
     }
 
     @Override
     public SmsFactorCriteria orderByVerificationStatus() {
-        return orderBy(DefaultSmsFactor.VERIFICATION_STATUS);
+        return (SmsFactorCriteria)orderBy(DefaultSmsFactor.VERIFICATION_STATUS);
     }
 
     @Override
@@ -52,5 +48,10 @@ public class DefaultSmsFactorCriteria extends DefaultCriteria<SmsFactorCriteria,
     public SmsFactorCriteria withMostRecentChallenge() {
         getOptions().withMostRecentChallenge();
         return this;
+    }
+
+    @Override
+    public FactorCriteria withAccount() {
+        return null;
     }
 }

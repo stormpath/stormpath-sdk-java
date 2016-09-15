@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.factor.sms;
+package com.stormpath.sdk.impl.phone;
+
+
+import com.stormpath.sdk.impl.query.DefaultOptions;
+import com.stormpath.sdk.phone.PhoneOptions;
 
 /**
- * TODO: description
+ * @since 1.0.4
  */
+public class DefaultPhoneOptions extends DefaultOptions<PhoneOptions> implements PhoneOptions<PhoneOptions> {
 
-// todo: mehrshad
-
-
-public enum FactorVerificationStatus {
-    VERIFIED, UNVERIFIED
+    @Override
+    public PhoneOptions withAccount() {
+        return expand(DefaultPhone.ACCOUNT);
+    }
 }

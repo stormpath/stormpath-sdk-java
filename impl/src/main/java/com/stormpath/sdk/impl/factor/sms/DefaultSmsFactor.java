@@ -2,13 +2,10 @@ package com.stormpath.sdk.impl.factor.sms;
 
 import com.stormpath.sdk.challenge.Challenge;
 import com.stormpath.sdk.challenge.ChallengeList;
-import com.stormpath.sdk.challenge.Challenges;
-import com.stormpath.sdk.challenge.CreateChallengeRequest;
 import com.stormpath.sdk.factor.FactorType;
 import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.factor.AbstractFactor;
-import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -35,24 +32,10 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
 
     public DefaultSmsFactor(InternalDataStore dataStore) {
         super(dataStore);
-        // Set the factor type to 'SMS' once factor is instantiated via a client (getFactorType() == null).
-        // But when the factor is instantiated via the resource factory as a consequence of a response from t
-        // he back-end (getFactorType() != null), it should not be overwritten since it would mark the FactorType
-        // as 'dirty'. This would not be correct and leads to unforeseen side effects.
-        if(getFactorType() == null){
-            setFactorType(FactorType.SMS);
-        }
     }
 
     public DefaultSmsFactor(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
-        // Set the factor type to 'SMS' once factor is instantiated via a client (getFactorType() == null).
-        // But when the factor is instantiated via the resource factory as a consequence of a response from t
-        // he back-end (getFactorType() != null), it should not be overwritten since it would mark the FactorType
-        // as 'dirty'. This would not be correct and leads to unforeseen side effects.
-        if(getFactorType() == null){
-            setFactorType(FactorType.SMS);
-        }
     }
 
     @Override
@@ -112,21 +95,14 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
     }
 
     @Override
-    public Challenge createChallenge(CreateChallengeRequest request) throws ResourceException{
-
-        Assert.notNull(request, "Request cannot be null.");
-
-        final Challenge challenge = request.getChallenge();
+    public Challenge createChallenge(Challenge challenge) throws ResourceException {
+        Assert.notNull(challenge, "Challenge cannot be null.");
         String href = getChallenges().getHref();
-
         return getDataStore().create(href, challenge);
     }
 
-    @Override
-    public Challenge createChallenge(Challenge challenge) throws ResourceException {
-        Assert.notNull(challenge, "Phone instance cannot be null.");
-        CreateChallengeRequest request = Challenges.newCreateRequestFor(challenge).build();
-        return createChallenge(request);
+    protected FactorType getConcreteFactorType() {
+        return FactorType.SMS;
     }
 
 }

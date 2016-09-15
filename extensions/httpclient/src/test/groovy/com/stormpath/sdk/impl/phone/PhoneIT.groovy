@@ -22,6 +22,7 @@ import com.stormpath.sdk.phone.Phone
 import com.stormpath.sdk.phone.PhoneList
 import com.stormpath.sdk.phone.PhoneStatus
 import com.stormpath.sdk.phone.PhoneVerificationStatus
+import com.stormpath.sdk.phone.Phones
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
 import static org.testng.Assert.*
@@ -29,7 +30,7 @@ import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.assertNotNull
 
 /**
- * @since 0.9.3
+ * @since 1.0.4
  */
 class PhoneIT extends ClientIT {
 
@@ -560,4 +561,72 @@ class PhoneIT extends ClientIT {
         assertEquals(phoneList.size, 1)
     }
 
+    @Test
+    void testGetPhonesWithDifferentCriteria() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir = client.currentTenant.createDirectory(dir)
+
+        assertNotNull dir.href
+
+        def email = 'johndeleteme@nowhere.com'
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('DELETEME')
+                .setEmail(email)
+                .setPassword('Changeme1!')
+
+        dir.createAccount(account)
+
+        deleteOnTeardown(account)
+        deleteOnTeardown(dir)
+
+        //create 2 phones
+        def phoneNumber1 = "+18883915281"
+        def phoneNumber2 = "+18883915282"
+
+        def phone1 = client.instantiate(Phone)
+                .setNumber(phoneNumber1)
+
+        def phone2 = client.instantiate(Phone)
+                .setNumber(phoneNumber2)
+
+        phone1 = account.createPhone(phone1)
+        phone2 = account.createPhone(phone2)
+
+        deleteOnTeardown(phone1)
+        deleteOnTeardown(phone2)
+
+        //Let's check we have 2 phones and the account is not materialized
+        def phones = account.getPhones(Phones.criteria().orderByName().ascending());
+        assertEquals(phones.getLimit(), 25);
+        assertEquals(phones.getProperty("items").size, 2);
+        assertEquals(phones.iterator().next().account.materialized, false)
+
+        //Let's retrieve 1 phone per page and confirm that the account is materialized
+        phones = account.getPhones(Phones.criteria().limitTo(1).withAccount().orderByName().ascending());
+        assertEquals(phones.getLimit(), 1);
+        assertEquals(phones.getProperty("items").size, 1);
+        assertEquals(phones.getOffset(), 0);
+        assertEquals(phones.iterator().next().account.materialized, true)
+
+        Phone firstPhoneWithOffset0 = phones.iterator().next();
+
+        assertNotNull(firstPhoneWithOffset0);
+        assertEquals(firstPhoneWithOffset0.getHref(), phone1.getHref());
+
+        //Since we have 2 phones and offset = 1 here, then this page should only have 1 phone, the last one
+        phones = account.getPhones(Phones.criteria().offsetBy(1).orderByName().ascending());
+        assertEquals(phones.getLimit(), 25);
+        assertEquals(phones.getProperty("items").size, 1);
+        assertEquals(phones.getOffset(), 1);
+
+        Phone firstPhoneWithOffset1 = phones.iterator().next();
+
+        assertNotNull(firstPhoneWithOffset1);
+        assertEquals(firstPhoneWithOffset1.getHref(), phone2.getHref());
+
+        assertTrue(firstPhoneWithOffset0.getHref() != firstPhoneWithOffset1.getHref());
+    }
 }
