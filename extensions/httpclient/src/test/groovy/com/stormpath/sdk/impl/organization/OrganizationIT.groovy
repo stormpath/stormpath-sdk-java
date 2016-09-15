@@ -170,7 +170,7 @@ class OrganizationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test
+    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
     void testRetrieveAndUpdateAccountLinkingPolicy() {
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
@@ -212,7 +212,7 @@ class OrganizationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test
+    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
     void testRetrieveAndUpdateAccountLinkingPolicyPartially() {
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))

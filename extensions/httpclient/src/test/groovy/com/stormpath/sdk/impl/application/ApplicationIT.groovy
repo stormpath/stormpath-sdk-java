@@ -1679,7 +1679,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test
+    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
     void testRetrieveAndUpdateAccountLinkingPolicy() {
         def app = createTempApp()
 
@@ -1713,7 +1713,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test
+    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
     void testRetrieveAndUpdateAccountLinkingPolicyPartially() {
         def app = createTempApp()
 
