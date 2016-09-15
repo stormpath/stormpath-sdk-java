@@ -1675,9 +1675,6 @@ class ApplicationIT extends ClientIT {
         assertEquals(result.getAccessToken().getAccount().getHref(), account.getHref())
         assertEquals(result.getAccessToken().getApplication().getHref(), app.getHref())
         assertTrue Strings.hasText(result.getAccessTokenString())
-        assertEquals(result.getRefreshToken().getAccount().getHref(), account.getHref())
-        assertEquals(result.getRefreshToken().getApplication().getHref(), app.getHref())
-        assertTrue Strings.hasText(result.getRefreshTokenString())
 
         assertEquals result.getTokenType(), "Bearer"
         assertEquals result.getExpiresIn(), 3600
