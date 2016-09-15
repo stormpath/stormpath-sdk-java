@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ class PasswordStrengthPolicyIT extends ClientIT {
             fail ("Should have failed due to same password usage and password prevent reuse set to 1")
         } catch (Exception e){
             assertTrue e instanceof ResourceException
-            assertTrue e.getMessage().contains("The password specified violates the Directory's Password Policy for Strength. The password can not match the past 1 passwords.")
+            assertEquals(((ResourceException)e).getCode(), 6401)
         }
     }
 

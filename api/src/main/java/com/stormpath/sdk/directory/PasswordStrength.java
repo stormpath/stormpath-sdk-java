@@ -145,6 +145,8 @@ public interface PasswordStrength extends Resource, Saveable {
      * Returns the size of the history of passwords that cannot be reused by Accounts belonging to the associated {@link com.stormpath.sdk.directory.Directory Directory}.
      *
      * @return the size of the history of passwords that cannot be reused by Accounts belonging to the associated {@link com.stormpath.sdk.directory.Directory Directory}.
+     *
+     * @since 1.1.0
      */
     int getPreventReuse();
 
@@ -159,6 +161,8 @@ public interface PasswordStrength extends Resource, Saveable {
      * @param preventReuse any number between 1 and 25 will set the size of the old passwords that cannot be
      *                re-used. 0 disables this configuration, meaning that reusing the current password is allowed.
      * @return this instance for method chaining.
+     *
+     * @since 1.1.0
      */
     PasswordStrength setPreventReuse(int preventReuse);
 }
