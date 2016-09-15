@@ -4,7 +4,17 @@ source ./ci/common.sh
 
 if [ -n "$RUN_ITS" ]; then
   info "Running unit and IT tests..."
-  mvn -Pclover.all -DskipITs=false -q install &> $WORKDIR/target/tests.log
+  (mvn -Pclover.all -DskipITs=false -q install &> $WORKDIR/target/tests.log) &
+  PID=$!
+
+  while ps | grep " $PID "
+  do
+    echo mvn $PID is still in the ps output. Must still be running.
+    sleep 3
+  done
+
+  wait $PID ## sets exist code from command
+
   if [ $? -ne 0 ]; then
     EXIT_CODE=$?
     error "Tests failed"
