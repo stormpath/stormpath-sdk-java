@@ -1,5 +1,5 @@
 /*
-* Copyright 2015 Stormpath, Inc.
+* Copyright 2016 Stormpath, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,17 +22,63 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
 /**
- * TODO: description
+ * A factor represents an additional step in authenticating a resource in the realm of
+ * Multi Factor Authentication.
+ *
+ * @since 1.0.4
  */
-
-// todo: mehrshad
-
 public interface Factor extends Resource, Saveable, Deletable, Auditable {
+
+    /**
+     * Returns the Factors's status. {@link FactorStatus}
+     *
+     * @return the Factors's status
+     */
     FactorStatus getStatus();
+
+    /**
+     * Sets the Factor's status. {@link FactorStatus}
+     *
+     * @param status the Factor's status.
+     * @return this instance for method chaining.
+     */
     Factor setStatus(FactorStatus status);
+
+    /**
+     * Returns the Factors's {@link FactorVerificationStatus}.
+     *
+     * @return the Factors's {@link FactorVerificationStatus}
+     */
     FactorVerificationStatus getFactorVerificationStatus();
+
+    /**
+     * Sets the Factor's verification status. {@link FactorVerificationStatus}
+     *
+     * @param verificationStatus the Factor's verification status.
+     * @return this instance for method chaining.
+     */
     Factor setFactorVerificationStatus(FactorVerificationStatus verificationStatus);
+
+    /**
+     * Returns the Factors's type. {@link FactorType}
+     * There could be multiple factors by which an authentication is challenged.
+     * Sms, Google Authenticator, Email to mane a few.
+     *
+     * @return the Factors's type
+     */
     FactorType getFactorType();
+
+    /**
+     * Returns the {@link Account} to which this Factor is associated.
+     *
+     * @return the {@link Account} to which this Factor is associated.
+     */
     Account getAccount();
+
+    /**
+     * Sets the the {@link Account} associated with this Factor.
+     *
+     * @param account associated with this Factor.
+     */
     Factor setAccount(Account account);
 }

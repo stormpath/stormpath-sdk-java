@@ -20,10 +20,40 @@ import com.stormpath.sdk.phone.PhoneOptions;
 import com.stormpath.sdk.phone.Phones;
 import com.stormpath.sdk.query.Criteria;
 
-// todo: mehrshad
-
+/**
+ * A {@link Factor}-specific {@link Criteria} class, enabling a Factor-specific
+ * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. FactorCriteria instances can be
+ * constructed by using the {@link Factors} utility class, for example:
+ * <pre>
+ * Factors.SMS.where(Factors.SMS.status().eq(FactorStatus.DISABLED)
+ *     .and(Factors.SMS.verificationStatus().eq(FactorVerificationStatus.VERIFIED))
+ *     .orderByName()
+ *     .limitTo(10));
+ * </pre>
+ * <h2>Sort Order</h2>
+ * <p/>
+ * All of the {@code orderBy*} methods append an {@code orderBy} clause to the query, ensuring the query results reflect
+ * a particular sort order.
+ * <p/>
+ * The default sort order is always {@code ascending}, but can be changed to {@code descending} by calling the
+ * {@link #descending()} method <em>immediately</em> after the {@code orderBy} method call.  For example:
+ * <pre>
+ * ...criteria.orderByName()<b>.descending()</b>...
+ * </pre>
+ * <h3>Multiple Order Statements</h3>
+ * You may specify multiple {@code orderBy} clauses and the query results will ordered, reflecting {@code orderBy}
+ * statements <em>in the order they are declared</em>.  For example, to order the results first by name (ascending)
+ * and then further by status (descending), you would chain {@code orderBy} statements:
+ * <pre>
+ * ...criteria
+ *     .orderByName()
+ *     .orderByStatus().descending()
+ *     ...
+ * </pre>
+ *
+ * @since 1.0.4
+ */
 public interface FactorCriteria extends Criteria<FactorCriteria>,  FactorOptions<FactorCriteria>{
-
 
     /**
      * Ensures that the query results are ordered by group {@link Phone#getStatus() status}.
@@ -54,7 +84,4 @@ public interface FactorCriteria extends Criteria<FactorCriteria>,  FactorOptions
      * @return this instance for method chaining
      */
     FactorCriteria orderByVerificationStatus();
-
-
-
 }

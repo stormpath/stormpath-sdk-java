@@ -137,7 +137,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.baseUrl = baseUrl;
         this.clientCredentials = clientCredentials;
         this.cacheManager = cacheManager;
-        this.resourceFactory = new DefaultResourceFactory(this);
+        this.resourceFactory = new SubtypeDispatchingResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
         this.queryStringFactory = new QueryStringFactory();
         this.cacheResolver = new DefaultCacheResolver(this.cacheManager, new DefaultCacheRegionNameResolver());

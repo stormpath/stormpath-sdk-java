@@ -571,7 +571,7 @@ class FactorIT extends ClientIT {
         def factors = account.getFactors(Factors.SMS.criteria().orderByStatus().ascending());
         assertEquals(factors.getLimit(), 25);
         assertEquals(factors.getProperty("items").size, 1);
-//        assertEquals(factors.iterator().next().account.materialized, false)
+        assertEquals(factors.iterator().next().account.materialized, false)
     }
 
     private Object getValue(Class clazz, Object object, String fieldName) {

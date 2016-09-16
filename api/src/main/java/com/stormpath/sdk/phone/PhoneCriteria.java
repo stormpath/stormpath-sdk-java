@@ -19,7 +19,7 @@ import com.stormpath.sdk.query.Criteria;
 
 /**
  * A {@link Phone}-specific {@link Criteria} class, enabling a Phone-specific
- * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL.  PhoneCriteria instances can be
+ * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. PhoneCriteria instances can be
  * constructed by using the {@link Phones} utility class, for example:
  * <pre>
  * Phones.where(Phones.name().containsIgnoreCase("my phone"))
