@@ -19,7 +19,6 @@ public interface AccountLink extends Resource, Deletable {
      * Returns the leftAccount {@link Account} resource.
      *
      * @return the leftAccount {@link Account} resource.
-     * @since 1.1.0
      */
     Account getLeftAccount();
 
@@ -27,7 +26,6 @@ public interface AccountLink extends Resource, Deletable {
      * Returns the rightAccount {@link Account} resource.
      *
      * @return the rightAccount {@link Account} resource.
-     * @since 1.1.0
      */
     Account getRightAccount();
 
@@ -35,7 +33,6 @@ public interface AccountLink extends Resource, Deletable {
      * Returns the rightAccount {@link Account} resource.
      *
      * @return the rightAccount {@link Account} resource.
-     * @since 1.1.0
      */
     Date getCreatedAt();
 }

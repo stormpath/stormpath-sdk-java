@@ -6,9 +6,9 @@ package com.stormpath.sdk.account;
  * the current account (used during login), when AccountLinking is enabled
  * for the Application/Organization.
  *
- * This takes effect only if AccountLinkingStatus is {@link AccountLinkingStatus#ENABLED ENABLED}
- * and when the current account (used during login) is not already linked to an {@link Account) in the
- * default Account Store of the Application/Organization.
+ * This takes effect only if the associated {@link AccountLinkingStatus accountLinkingStatus} is
+ * {@link AccountLinkingStatus#ENABLED ENABLED} and when the current account (used during login)
+ * is not already linked to an {@link Account) in the default Account Store of the Application/Organization.
  * When, AccountLinkingStatus is {@link AccountLinkingStatus#DISABLED DISABLED}, then the value
  * of AutomaticProvisioningStatus has no effect.
  *

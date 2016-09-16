@@ -5,7 +5,7 @@ import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * An AccountLinkingPolicy resource is used to configure different aspects of the AccountLinking associated
+ * An AccountLinkingPolicy resource is used to configure different aspects of account linking associated
  * with an {@link com.stormpath.sdk.application.AccountStoreHolder accountStoreHolder}
  *
  * @since 1.1.0
@@ -64,7 +64,7 @@ public interface AccountLinkingPolicy extends Resource, Saveable {
      * Possible values are : "email", null. null by default.
      *
      * @return this instance for method chaining.
-     * @param matchingProperty
+     * @param matchingProperty - Possible values are : "email", null. null by default.
      */
     AccountLinkingPolicy setMatchingProperty(String matchingProperty);
 
