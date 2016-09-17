@@ -23,7 +23,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
@@ -39,7 +39,7 @@ public class DefaultApiKey extends AbstractInstanceResource implements ApiKey {
     // SIMPLE PROPERTIES
     static final StringProperty ID = new StringProperty("id");
     public static final StringProperty SECRET = new StringProperty("secret");
-    static final StatusProperty<ApiKeyStatus> STATUS = new StatusProperty<ApiKeyStatus>(ApiKeyStatus.class);
+    static final EnumProperty<ApiKeyStatus> STATUS = new EnumProperty<ApiKeyStatus>(ApiKeyStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);

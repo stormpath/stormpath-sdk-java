@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.impl.organization
 
+import com.stormpath.sdk.account.AccountLinkingPolicy
+import com.stormpath.sdk.account.AccountLinkingStatus
+import com.stormpath.sdk.account.AutomaticProvisioningStatus
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
@@ -27,6 +30,7 @@ import com.stormpath.sdk.organization.Organizations
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
@@ -154,7 +158,7 @@ class OrganizationIT extends ClientIT {
     }
 
     @Test
-    void testAddAccountDirWithInvalidDir(){
+    void testAddAccountDirWithInvalidDir() {
         Organization organization = client.instantiate(Organization)
         organization.name = uniquify("Java SDK: OrganizationIT.testAddAccountDirWithInvalidDir")
         organization.setNameKey(uniquify("test"))
@@ -163,6 +167,127 @@ class OrganizationIT extends ClientIT {
 
         def accountStoreMapping = organization.addAccountStore("non-existent Dir")
         assertNull accountStoreMapping
+    }
+
+    /* @since 1.1.0 */
+    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
+    void testRetrieveAndUpdateAccountLinkingPolicy() {
+        def org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test"))
+                .setStatus(OrganizationStatus.ENABLED)
+
+        org = client.createOrganization(org)
+        assertNotNull org.href
+        deleteOnTeardown(org)
+
+        AccountLinkingPolicy accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name() as String, 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertNotNull accountLinkingPolicy.getAutomaticProvisioning()
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name() as String, 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED)
+        accountLinkingPolicy.setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED)
+        accountLinkingPolicy.setMatchingProperty("email")
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNotNull accountLinkingPolicy.getMatchingProperty()
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'email'
+    }
+
+    /* @since 1.1.0 */
+    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
+    void testRetrieveAndUpdateAccountLinkingPolicyPartially() {
+        def org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test"))
+                .setStatus(OrganizationStatus.ENABLED)
+
+        org = client.createOrganization(org)
+        assertNotNull org.href
+        deleteOnTeardown(org)
+
+        AccountLinkingPolicy accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name() as String, 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertNotNull accountLinkingPolicy.getAutomaticProvisioning()
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name() as String, 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).save() // partially update status
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).save() // partially update automatic provisioning
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setMatchingProperty("email") // partially update matchingProperty
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNotNull accountLinkingPolicy.getMatchingProperty()
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'email'
+
+        accountLinkingPolicy.setMatchingProperty(null) // set matchingProperty to null
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNull accountLinkingPolicy.getMatchingProperty()
     }
 
     private assertAccountStoreMappingListSize(OrganizationAccountStoreMappingList accountStoreMappings, int expectedSize) {

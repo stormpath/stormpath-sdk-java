@@ -67,4 +67,34 @@ public class DefaultAccountOptions extends DefaultOptions<AccountOptions> implem
     public AccountOptions withGroupMemberships(int limit, int offset) {
         return expand(DefaultAccount.GROUP_MEMBERSHIPS, limit, offset);
     }
+
+    @Override
+    public AccountOptions withLinkedAccounts() {
+        return expand(DefaultAccount.LINKED_ACCOUNTS);
+    }
+
+    @Override
+    public AccountOptions withLinkedAccounts(int limit) {
+        return expand(DefaultAccount.LINKED_ACCOUNTS, limit);
+    }
+
+    @Override
+    public AccountOptions withLinkedAccounts(int limit, int offset) {
+        return expand(DefaultAccount.LINKED_ACCOUNTS, limit, offset);
+    }
+
+    @Override
+    public AccountOptions withAccountLinks() {
+        return expand(DefaultAccount.ACCOUNT_LINKS);
+    }
+
+    @Override
+    public AccountOptions withAccountLinks(int limit) {
+        return expand(DefaultAccount.ACCOUNT_LINKS, limit);
+    }
+
+    @Override
+    public AccountOptions withAccountLinks(int limit, int offset) {
+        return expand(DefaultAccount.ACCOUNT_LINKS, limit, offset);
+    }
 }

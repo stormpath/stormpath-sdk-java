@@ -5,7 +5,7 @@ import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -74,7 +74,7 @@ public class DefaultAccountModelFactory implements AccountModelFactory {
         resourceProperties.put("createdAt", resource.getProperty("createdAt"));
         resourceProperties.put("modifiedAt", resource.getProperty("modifiedAt"));
         for (Property property : resource.getPropertyDescriptors().values()) {
-            if (property instanceof StringProperty || property instanceof DateProperty || property instanceof StatusProperty) {
+            if (property instanceof StringProperty || property instanceof DateProperty || property instanceof EnumProperty) {
                 if (!"password".equals(property.getName())) {
                     resourceProperties.put(property.getName(), resource.getProperty(property.getName()));
                 }

@@ -138,4 +138,5 @@ public interface AccountStoreHolder<T extends AccountStoreHolder> {
      *                     new groups created by the Application or Organization.
      */
     void setDefaultGroupStore(AccountStore accountStore);
+
 }
