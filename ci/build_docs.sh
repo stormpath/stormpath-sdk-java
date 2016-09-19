@@ -21,7 +21,7 @@ if [ $? -ne 0 ]; then
   EXIT_CODE=$?
   error "Error generating servlet plugin docs"
   cat $WORKDIR/target/servlet-plugin-docs.log
-  exit EXIT_CODE
+  exit $EXIT_CODE
 fi
 
 # spring boot docs
@@ -41,7 +41,7 @@ if [ $? -ne 0 ]; then
   EXIT_CODE=$?
   error "Error generating SpringBoot plugin docs"
   cat $WORKDIR/target/spring-boot-docs.log
-  exit EXIT_CODE
+  exit $EXIT_CODE
 fi
 
 info "Generating JavaDocs..."
@@ -61,6 +61,6 @@ if [ $? -ne 0 ]; then
   EXIT_CODE=$?
   error "Error generating JavaDocs"
   cat $WORKDIR/target/javadocs.log
-  exit EXIT_CODE
+  exit $EXIT_CODE
 fi
 
