@@ -18,7 +18,7 @@ package com.stormpath.sdk.oauth;
 /**
  * Utility class to build {@link OAuthClientCredentialsGrantRequestAuthenticationBuilder ClientCredentialsGrantRequestBuilder} instances.
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public interface OAuthClientCredentialsGrantRequestAuthenticationBuilder extends OAuthRequestAuthenticationBuilder<OAuthClientCredentialsGrantRequestAuthentication> {
 

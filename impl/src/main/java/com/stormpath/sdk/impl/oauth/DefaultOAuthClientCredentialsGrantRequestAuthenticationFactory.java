@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthenticationB
 import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthenticationFactory;
 
 /**
- * @since 1.0.4
+ * @since 1.1.0
  */
 public class DefaultOAuthClientCredentialsGrantRequestAuthenticationFactory implements OAuthClientCredentialsGrantRequestAuthenticationFactory {
 

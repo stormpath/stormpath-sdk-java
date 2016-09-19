@@ -20,7 +20,7 @@ import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthenticationBuilder;
 
 /**
- * @since 1.0.4
+ * @since 1.1.0
  */
 public class DefaultOAuthClientCredentialsGrantRequestAuthenticationBuilder implements OAuthClientCredentialsGrantRequestAuthenticationBuilder {
 

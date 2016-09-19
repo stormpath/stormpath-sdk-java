@@ -1657,7 +1657,7 @@ class ApplicationIT extends ClientIT {
         assertNotNull(result.getRefreshToken().getExpandedJwt().get("signature"))
     }
 
-    /* @since 1.0.4 */
+    /* @since 1.1.0 */
     @Test
     void testCreateClientCredentialsTokenForAppAccount() {
 
@@ -1675,6 +1675,8 @@ class ApplicationIT extends ClientIT {
         assertEquals(result.getAccessToken().getAccount().getHref(), account.getHref())
         assertEquals(result.getAccessToken().getApplication().getHref(), app.getHref())
         assertTrue Strings.hasText(result.getAccessTokenString())
+        //according to https://tools.ietf.org/html/rfc6749#section-4.4.3 no refresh token must be obtained as a result of client_credentials
+        assertNull result.getRefreshToken()
 
         assertEquals result.getTokenType(), "Bearer"
         assertEquals result.getExpiresIn(), 3600
