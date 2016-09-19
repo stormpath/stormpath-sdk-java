@@ -128,7 +128,7 @@ public interface AccountOptions<T> extends Options {
     T withGroupMemberships(int limit, int offset);
 
     /**
-     * @since 1.0.4
+     * @since 1.1.0
      * Ensures that when retrieving an Account, the Account's associated
      * {@link Account#getFactors()} () factors} are also retrieved in the same request (paginated).
      * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
@@ -144,7 +144,7 @@ public interface AccountOptions<T> extends Options {
     T withFactors();
 
     /**
-     * @since 1.0.4
+     * @since 1.1.0
      * Ensures that when retrieving an Account, the Account's associated
      * {@link Account#getFactors()} ()} factors} are also retrieved in the same request (paginated),
      * limiting the first page of Factor results to {@code limit} items.  This enhances performance by
@@ -156,7 +156,7 @@ public interface AccountOptions<T> extends Options {
     T withFactors(int limit);
 
     /**
-     * @since 1.0.4
+     * @since 1.1.0
      * Ensures that when retrieving an Account, the Account's associated
      * {@link Account#getFactors()} factors} are also retrieved in the same request (paginated), with
      * the first page of Factor results starting at the specified {@code offset} index and limiting the number
@@ -171,7 +171,7 @@ public interface AccountOptions<T> extends Options {
     T withFactors(int limit, int offset);
 
     /**
-     * @since 1.0.4
+     * @since 1.1.0
      * Ensures that when retrieving an Account, the Account's associated
      * {@link Account#getPhones()} () phones} are also retrieved in the same request (paginated).
      * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
@@ -187,7 +187,7 @@ public interface AccountOptions<T> extends Options {
     T withPhones();
 
     /**
-     * @since 1.0.4
+     * @since 1.1.0
      * Ensures that when retrieving an Account, the Account's associated
      * {@link Account#getPhones()} ()} phones} are also retrieved in the same request (paginated),
      * limiting the first page of Phone results to {@code limit} items.  This enhances performance by
@@ -199,7 +199,7 @@ public interface AccountOptions<T> extends Options {
 
     T withPhones(int limit);
     /**
-     * @since 1.0.4
+     * @since 1.1.0
      * Ensures that when retrieving an Account, the Account's associated
      * {@link Account#getPhones()} phones} are also retrieved in the same request (paginated), with
      * the first page of Factor results starting at the specified {@code offset} index and limiting the number

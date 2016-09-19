@@ -19,7 +19,7 @@ package com.stormpath.sdk.phone;
  * A Builder to construct {@link CreatePhoneRequest}s.
  *
  * @see com.stormpath.sdk.account.Account#createPhone(CreatePhoneRequest)
- * @since 1.0.4
+ * @since 1.1.0
  */
 public interface CreatePhoneRequestBuilder {
 

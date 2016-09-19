@@ -30,7 +30,7 @@ import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.assertNotNull
 
 /**
- * @since 1.0.4
+ * @since 1.1.0
  */
 class PhoneIT extends ClientIT {
 

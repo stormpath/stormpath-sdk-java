@@ -21,7 +21,7 @@ import com.stormpath.sdk.phone.PhoneCriteria;
 import com.stormpath.sdk.phone.PhoneOptions;
 
 /**
- * @since 1.0.4
+ * @since 1.1.0
  */
 public class DefaultPhoneCriteria extends DefaultCriteria<PhoneCriteria, PhoneOptions> implements PhoneCriteria {
 

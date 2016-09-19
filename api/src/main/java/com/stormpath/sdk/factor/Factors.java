@@ -52,7 +52,7 @@ import java.lang.reflect.Constructor;
  *     .limitTo(25));
  * </pre>
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public final class Factors {
 
@@ -172,7 +172,7 @@ public final class Factors {
          *         instance reflecting the specified {@link com.stormpath.sdk.factor.sms.SmsFactor} instance.
          * @see com.stormpath.sdk.account.Account#createFactor(CreateSmsFactorRequest)
          *
-         * @since 1.0.4
+         * @since 1.1.0
          */
         public static CreateSmsFactorRequestBuilder newCreateRequestFor(SmsFactor smsFactor) {
             Constructor ctor = Classes.getConstructor(BUILDER_CLASS, SmsFactor.class);

@@ -51,7 +51,7 @@ class FactorIT extends ClientIT {
         phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
         phone = account.createPhone(phone);
 
-        SmsFactor smsFactor = client.instantiate(DefaultSmsFactor)
+        SmsFactor smsFactor = client.instantiate(SmsFactor)
         smsFactor = smsFactor.setPhone(phone)
         smsFactor = account.createFactor(smsFactor);
 
@@ -564,7 +564,7 @@ class FactorIT extends ClientIT {
         phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
         phone = account.createPhone(phone);
 
-        SmsFactor smsFactor = client.instantiate(DefaultSmsFactor)
+        SmsFactor smsFactor = client.instantiate(SmsFactor)
         smsFactor = smsFactor.setPhone(phone)
         smsFactor = account.createFactor(smsFactor);
 

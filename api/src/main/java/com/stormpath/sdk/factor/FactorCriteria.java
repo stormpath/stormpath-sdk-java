@@ -51,7 +51,7 @@ import com.stormpath.sdk.query.Criteria;
  *     ...
  * </pre>
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public interface FactorCriteria extends Criteria<FactorCriteria>,  FactorOptions<FactorCriteria>{
 

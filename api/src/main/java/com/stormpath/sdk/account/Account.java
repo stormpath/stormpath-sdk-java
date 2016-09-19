@@ -571,7 +571,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @return the newly created {@link Phone}.
      *
-     * @since 1.0.4
+     * @since 1.1.0
      */
     Phone createPhone(CreatePhoneRequest request);
 
@@ -581,7 +581,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @return the newly created {@link Phone}.
      *
-     * @since 1.0.4
+     * @since 1.1.0
      */
     Phone createPhone(Phone phone) throws ResourceException;
 
@@ -590,7 +590,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @return a paginated list of all the Account's phones.
      *
-     * @since 1.0.4
+     * @since 1.1.0
      */
     PhoneList getPhones();
 
@@ -599,7 +599,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @return a paginated list of all the Account's phones.
      *
-     * @since 1.0.4
+     * @since 1.1.0
      */
     PhoneList getPhones(Map<String, Object> queryParams);
 
@@ -634,7 +634,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the account's phones that match the specified query criteria.
-     * @since 1.0.4
+     * @since 1.1.0
      */
     PhoneList getPhones(PhoneCriteria criteria);
 
@@ -645,7 +645,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @param factor {@link Factor} pojo tho hold necessary data to send to the back- end to create a {@link Factor}.
      * @return the newly created {@link Factor}.
      *
-     * @since 1.0.4
+     * @since 1.1.0
      */
     Factor createFactor(Factor factor) throws ResourceException;
 
@@ -657,7 +657,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @param request {@link CreateSmsFactorRequest} used to create a factor with.
      * @return the newly created {@link Factor}.
      *
-     * @since 1.0.4
+     * @since 1.1.0
      */
     Factor createFactor(CreateSmsFactorRequest request) throws ResourceException;
 
@@ -666,7 +666,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @return a paginated list of all the Account's factos.
      *
-     * @since 1.0.4
+     * @since 1.1.0
      */
     FactorList getFactors();
 
@@ -675,7 +675,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @return a paginated list of all the Account's factos.
      *
-     * @since 1.0.4
+     * @since 1.1.0
      */
     FactorList getFactors(Map<String, Object> queryParams);
 
@@ -708,7 +708,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the account's factors that match the specified query criteria.
-     * @since 1.0.4
+     * @since 1.1.0
      */
     FactorList getFactors(FactorCriteria criteria);
 }

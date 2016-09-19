@@ -20,7 +20,7 @@ import com.stormpath.sdk.query.Options;
 /**
  * Challenge-specific options that may be specified when retrieving {@link Challenge} resources.
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public interface ChallengeOptions<T> extends Options {
     /**

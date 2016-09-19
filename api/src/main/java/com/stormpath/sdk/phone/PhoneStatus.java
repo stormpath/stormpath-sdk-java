@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,17 @@
 package com.stormpath.sdk.phone;
 
 /**
- * TODO: description
+ * @since 1.1.0
  */
 public enum PhoneStatus {
-    ENABLED, DISABLED
+
+    /**
+     * Phone is enabled and ready to be used for Multi factor Authentication.
+     */
+    ENABLED,
+
+    /**
+     * Phone is disabled and and can not be used for Multi factor Authentication.
+     */
+    DISABLED
 }

@@ -94,7 +94,7 @@ public abstract class AbstractResource implements Resource {
      *
      * @param props the data properties to test.
      * @return {@code true} if the specified data map contains an href property.
-     * @since 1.0.4
+     * @since 1.1.0
      */
     public static boolean hasHref(Map<String, ?> props) {
         return props != null && props.get(HREF_PROP_NAME) != null;

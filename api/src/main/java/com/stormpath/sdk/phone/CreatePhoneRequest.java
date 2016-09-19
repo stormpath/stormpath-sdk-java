@@ -20,7 +20,7 @@ package com.stormpath.sdk.phone;
  * Represents an attempt to create a new {@link Phone} record in Stormpath.
  *
  * @see com.stormpath.sdk.account.Account#createPhone(CreatePhoneRequest)
- * @since 1.0.4
+ * @since 1.1.0
  */
 public interface CreatePhoneRequest {
 

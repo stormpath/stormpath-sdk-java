@@ -25,7 +25,7 @@ import com.stormpath.sdk.resource.Saveable;
  * A factor represents an additional step in authenticating a resource in the realm of
  * Multi Factor Authentication.
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public interface Factor extends Resource, Saveable, Deletable, Auditable {
 

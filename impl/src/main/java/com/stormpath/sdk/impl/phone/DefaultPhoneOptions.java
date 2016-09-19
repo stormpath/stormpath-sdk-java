@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.phone.PhoneOptions;
 
 /**
- * @since 1.0.4
+ * @since 1.1.0
  */
 public class DefaultPhoneOptions extends DefaultOptions<PhoneOptions> implements PhoneOptions<PhoneOptions> {
 

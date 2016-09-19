@@ -29,7 +29,7 @@ import java.util.Map;
  * The background for such interception is to be able to instantiate the right implementation
  * class in cases there are more then one implementation for a given {@link Resource}
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public class SubtypeDispatchingResourceFactory implements ResourceFactory {
 

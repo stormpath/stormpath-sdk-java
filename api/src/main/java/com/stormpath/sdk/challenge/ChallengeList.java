@@ -20,7 +20,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 /**
  * A {@link CollectionResource} containing {@link Challenge} instances.
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public interface ChallengeList extends CollectionResource<Challenge> {
 }

@@ -27,7 +27,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import java.util.Map;
 
 /**
- * @since 1.0.4
+ * @since 1.1.0
  */
 public class DefaultChallengeList extends AbstractCollectionResource<Challenge> implements ChallengeList {
 

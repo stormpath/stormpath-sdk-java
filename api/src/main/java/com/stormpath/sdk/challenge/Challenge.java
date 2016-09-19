@@ -25,7 +25,7 @@ import com.stormpath.sdk.resource.*;
  * In a Multi Factor Authentication scenario a challenge would be issued to challenge the authentication by an additional {@link Factor}
  * like and {@link com.stormpath.sdk.factor.sms.SmsFactor}
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public interface Challenge extends Resource, Saveable, Deletable, Auditable {
 

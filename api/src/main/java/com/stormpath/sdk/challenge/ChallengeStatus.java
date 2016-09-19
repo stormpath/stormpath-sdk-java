@@ -18,7 +18,7 @@ package com.stormpath.sdk.challenge;
 /**
  * An {@code ChallengeStatus} represents the various states a challenge may be in.
  *
- * @since 1.0.4
+ * @since 1.1.0
  */
 public enum ChallengeStatus {
     /**
