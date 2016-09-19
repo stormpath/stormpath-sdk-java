@@ -342,7 +342,10 @@ public class RegisterControllerTest {
         //If the simple properties ever change in the account and this test fails then be sure to update RegisterController#ACCOUNT_PROPERTIES
         //in order to allow this test to pass.
 
-        final List<String> NON_SIMPLE_PROPERTIES = Collections.unmodifiableList(Arrays.asList("fullName", "status", "customData", "emailVerificationToken", "directory", "tenant", "providerData", "groups", "groupMemberships", "apiKeys", "applications", "accessTokens", "refreshTokens"));
+        final List<String> NON_SIMPLE_PROPERTIES = Collections.unmodifiableList(Arrays.asList(
+                "fullName", "status", "customData", "emailVerificationToken", "directory", "tenant",
+                "providerData", "groups", "groupMemberships", "apiKeys", "applications", "accessTokens",
+                "refreshTokens", "accountLinks", "linkedAccounts"));
 
         def defaultAccount = new DefaultAccount(createStrictMock(InternalDataStore));
         def actualSimpleProperties = defaultAccount.PROPERTY_DESCRIPTORS

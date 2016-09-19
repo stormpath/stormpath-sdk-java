@@ -18,16 +18,16 @@ package com.stormpath.sdk.impl.resource;
 /**
  * @since 0.8
  */
-public class StatusProperty<T extends Enum> extends NonStringProperty<T> {
+public class EnumProperty<T extends Enum> extends NonStringProperty<T> {
 
-    public StatusProperty(Class<T> clazz) {
+    public EnumProperty(Class<T> clazz) {
         super("status", clazz);
     }
 
     /**
      * @since 1.0.RC4
      */
-    public StatusProperty(String propertyName, Class<T> clazz) {
+    public EnumProperty(String propertyName, Class<T> clazz) {
         super(propertyName, clazz);
     }
 }

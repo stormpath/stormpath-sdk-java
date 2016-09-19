@@ -34,6 +34,7 @@
         <module>servlet</module>
         <module>servlet-plugin</module>
         <module>httpclient</module>
+        <module>zuul</module>
         <module>spring</module>
     </modules>
 

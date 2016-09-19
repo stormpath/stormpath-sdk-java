@@ -16,8 +16,7 @@
 package com.stormpath.sdk.impl.account
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
-import com.stormpath.sdk.account.AccountStatus
-import com.stormpath.sdk.account.EmailVerificationToken
+import com.stormpath.sdk.account.*
 import com.stormpath.sdk.api.ApiKeyList
 import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.ApplicationList
@@ -35,7 +34,7 @@ import com.stormpath.sdk.impl.provider.DefaultProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
+import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.oauth.AccessTokenList
@@ -61,7 +60,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 19)
+        assertEquals(propertyDescriptors.size(), 21)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -70,7 +69,7 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("givenName") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("password") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("fullName") instanceof StringProperty)
-        assertTrue(propertyDescriptors.get("status") instanceof StatusProperty && propertyDescriptors.get("status").getType().equals(AccountStatus))
+        assertTrue(propertyDescriptors.get("status") instanceof EnumProperty && propertyDescriptors.get("status").getType().equals(AccountStatus))
         assertTrue(propertyDescriptors.get("emailVerificationToken") instanceof ResourceReference && propertyDescriptors.get("emailVerificationToken").getType().equals(EmailVerificationToken))
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
         assertTrue(propertyDescriptors.get("directory") instanceof ResourceReference && propertyDescriptors.get("directory").getType().equals(Directory))
@@ -82,6 +81,9 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("applications") instanceof CollectionReference && propertyDescriptors.get("applications").getType().equals(ApplicationList))
         assertTrue(propertyDescriptors.get("accessTokens") instanceof CollectionReference && propertyDescriptors.get("accessTokens").getType().equals(AccessTokenList))
         assertTrue(propertyDescriptors.get("refreshTokens") instanceof CollectionReference && propertyDescriptors.get("refreshTokens").getType().equals(RefreshTokenList))
+        assertTrue(propertyDescriptors.get("linkedAccounts") instanceof CollectionReference && propertyDescriptors.get("linkedAccounts").getType().equals(AccountList))
+        assertTrue(propertyDescriptors.get("accountLinks") instanceof CollectionReference && propertyDescriptors.get("accountLinks").getType().equals(AccountLinkList))
+
     }
 
     @Test
@@ -98,6 +100,8 @@ class DefaultAccountTest {
                           groupMemberships: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/groupMemberships"],
                           providerData: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/providerData"],
                           apiKeys: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/apiKeys"],
+                          linkedAccounts: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/linkedAccounts"],
+                          accountLinks: [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf/accountLinks"],
                           createdAt: "2015-01-01T00:00:00Z",
                           modifiedAt: "2015-02-01T12:00:00Z"]
 
@@ -150,6 +154,26 @@ class DefaultAccountTest {
 
         expect(internalDataStore.instantiate(GroupMembershipList, properties.groupMemberships)).andReturn(new DefaultGroupMembershipList(internalDataStore, properties.groupMemberships))
 
+        expect(internalDataStore.instantiate(AccountList, properties.linkedAccounts)).andReturn(new DefaultAccountList(internalDataStore, properties.linkedAccounts))
+
+        def linkedAccountsCriteria = createStrictMock(AccountCriteria)
+        expect(internalDataStore.instantiate(AccountList, properties.linkedAccounts)).andReturn(new DefaultAccountList(internalDataStore, properties.linkedAccounts))
+        expect(internalDataStore.getResource(properties.linkedAccounts.href, AccountList, linkedAccountsCriteria)).andReturn(new DefaultAccountList(internalDataStore, properties.linkedAccounts))
+
+        def linkedAccountsCriteriaMap = [givenName: "some+search"]
+        expect(internalDataStore.instantiate(AccountList, properties.linkedAccounts)).andReturn(new DefaultAccountList(internalDataStore, properties.linkedAccounts))
+        expect(internalDataStore.getResource(properties.linkedAccounts.href, AccountList, linkedAccountsCriteriaMap)).andReturn(new DefaultAccountList(internalDataStore, properties.linkedAccounts))
+
+        expect(internalDataStore.instantiate(AccountLinkList, properties.accountLinks)).andReturn(new DefaultAccountLinkList(internalDataStore, properties.accountLinks))
+
+        def accountLinksCriteria = createStrictMock(AccountLinkCriteria)
+        expect(internalDataStore.instantiate(AccountLinkList, properties.accountLinks)).andReturn(new DefaultAccountLinkList(internalDataStore, properties.accountLinks))
+        expect(internalDataStore.getResource(properties.accountLinks.href, AccountLinkList, accountLinksCriteria)).andReturn(new DefaultAccountLinkList(internalDataStore, properties.accountLinks))
+
+        def accountLinksCriteriaMap = [createdAt: "2016-01-01"]
+        expect(internalDataStore.instantiate(AccountLinkList, properties.accountLinks)).andReturn(new DefaultAccountLinkList(internalDataStore, properties.accountLinks))
+        expect(internalDataStore.getResource(properties.accountLinks.href, AccountLinkList, accountLinksCriteriaMap)).andReturn(new DefaultAccountLinkList(internalDataStore, properties.accountLinks))
+
         expect(internalDataStore.getResource(properties.providerData.href, ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP))
                 .andReturn(new DefaultProviderData(internalDataStore, properties.providerData))
 
@@ -161,7 +185,13 @@ class DefaultAccountTest {
         expect(internalDataStore.instantiate(eq(GroupMembership.class))).andReturn(groupMembership)
         expect(internalDataStore.create(eq("/groupMemberships"), same(groupMembership))).andReturn(groupMembership)
 
-        replay internalDataStore, groupCriteria, group
+        def accountLink =  new DefaultAccountLink(internalDataStore)
+        def otherAccount = createStrictMock(Account)
+        expect(otherAccount.getHref()).andReturn("https://api.stormpath.com/v1/accounts/uouertnw48ufsjnsDFSf").times(2)
+        expect(internalDataStore.instantiate(eq(AccountLink.class))).andReturn(accountLink)
+        expect(internalDataStore.create(eq("/accountLinks"), same(accountLink))).andReturn(accountLink)
+
+        replay internalDataStore, groupCriteria, group, linkedAccountsCriteria, otherAccount, accountLinksCriteria
 
         def resource = defaultAccount.getEmailVerificationToken()
         assertTrue(resource instanceof DefaultEmailVerificationToken && resource.getHref().equals(properties.emailVerificationToken.href))
@@ -190,6 +220,24 @@ class DefaultAccountTest {
         resource = defaultAccount.getGroupMemberships()
         assertTrue(resource instanceof DefaultGroupMembershipList && resource.getHref().equals(properties.groupMemberships.href))
 
+        resource = defaultAccount.getLinkedAccounts()
+        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.linkedAccounts.href))
+
+        resource = defaultAccount.getLinkedAccounts(linkedAccountsCriteria)
+        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.linkedAccounts.href))
+
+        resource = defaultAccount.getLinkedAccounts(linkedAccountsCriteriaMap)
+        assertTrue(resource instanceof DefaultAccountList && resource.getHref().equals(properties.linkedAccounts.href))
+
+        resource = defaultAccount.getAccountLinks()
+        assertTrue(resource instanceof DefaultAccountLinkList && resource.getHref().equals(properties.accountLinks.href))
+
+        resource = defaultAccount.getAccountLinks(accountLinksCriteria)
+        assertTrue(resource instanceof DefaultAccountLinkList && resource.getHref().equals(properties.accountLinks.href))
+
+        resource = defaultAccount.getAccountLinks(accountLinksCriteriaMap)
+        assertTrue(resource instanceof DefaultAccountLinkList && resource.getHref().equals(properties.accountLinks.href))
+
         resource = defaultAccount.getProviderData()
         assertTrue(resource instanceof DefaultProviderData && resource.getHref().equals(properties.providerData.href))
         resource = defaultAccount.getProviderData() //Second invocation must not internally call internalDataStore.getResource(...) as it is already fully available in the internal properties
@@ -201,7 +249,9 @@ class DefaultAccountTest {
 
         defaultAccount.addGroup(group)
 
-        verify internalDataStore, groupCriteria, group
+        defaultAccount.link(otherAccount)
+
+        verify internalDataStore, groupCriteria, group, linkedAccountsCriteria, otherAccount
     }
 
     @Test
