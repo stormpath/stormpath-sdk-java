@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.servlet.client;
 
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -52,7 +55,10 @@ public class DefaultClientLoaderListener extends ClientLoader implements Servlet
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        createClient(sce.getServletContext());
+        Config config = ConfigResolver.INSTANCE.getConfig(sce.getServletContext());
+        if (config.isStormpathEnabled()) {
+            createClient(sce.getServletContext());
+        }
     }
 
     /**

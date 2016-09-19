@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
 
 /**
  * Factory interface to create {@link RequestAuthenticator}s out of {@link AuthenticationScheme}s.
@@ -25,6 +25,6 @@ import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
  */
 public interface RequestAuthenticatorFactory {
 
-    RequestAuthenticator create(AuthenticationScheme scheme);
+    RequestAuthenticator create(AuthenticationScheme scheme, ClientCredentials clientCredentials);
 
 }

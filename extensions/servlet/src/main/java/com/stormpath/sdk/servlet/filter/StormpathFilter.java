@@ -19,8 +19,6 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.impl.http.HttpHeadersHolder;
 import com.stormpath.sdk.lang.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -38,8 +36,6 @@ import java.util.Set;
  * @since 1.0.RC3
  */
 public class StormpathFilter extends HttpFilter {
-
-    private static final Logger log = LoggerFactory.getLogger(StormpathFilter.class);
 
     private FilterChainResolver filterChainResolver;
     private Set<String> clientRequestAttributeNames;
@@ -101,7 +97,7 @@ public class StormpathFilter extends HttpFilter {
 
         FilterChainResolver resolver = getFilterChainResolver();
         Assert.notNull(resolver, "Filter has not yet been configured. Explicitly call setFilterChainResolver or " +
-            "init(FilterConfig).");
+                "init(FilterConfig).");
 
         setRequestAttributes(request);
 
