@@ -1,5 +1,7 @@
 package com.stormpath.sdk.factor.sms;
 
+import com.stormpath.sdk.factor.CreateFactorRequest;
+
 // todo: mehrshad
 public interface CreateSmsFactorRequestBuilder {
 
@@ -7,5 +9,5 @@ public interface CreateSmsFactorRequestBuilder {
 
     CreateSmsFactorRequestBuilder createChallenge();
 
-    CreateSmsFactorRequest build();
+    CreateFactorRequest<SmsFactor, SmsFactorOptions> build();
 }

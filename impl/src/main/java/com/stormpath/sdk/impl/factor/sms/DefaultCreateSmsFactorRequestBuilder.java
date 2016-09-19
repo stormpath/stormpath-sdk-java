@@ -1,9 +1,10 @@
 package com.stormpath.sdk.impl.factor.sms;
 
-import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
+import com.stormpath.sdk.factor.CreateFactorRequest;
 import com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder;
 import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.factor.sms.SmsFactorOptions;
+import com.stormpath.sdk.impl.factor.DefaultCreateFactorRequest;
 import com.stormpath.sdk.lang.Assert;
 
 /**
@@ -38,7 +39,7 @@ public class DefaultCreateSmsFactorRequestBuilder implements CreateSmsFactorRequ
     }
 
     @Override
-    public CreateSmsFactorRequest build() {
-        return new DefaultCreateSmsFactorRequest(smsFactor, options, createChallenge);
+    public CreateFactorRequest<SmsFactor, SmsFactorOptions> build() {
+        return new DefaultCreateFactorRequest(smsFactor, options, createChallenge);
     }
 }

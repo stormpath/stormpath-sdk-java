@@ -32,7 +32,6 @@ package com.stormpath.sdk.tenant;
  import com.stormpath.sdk.organization.Organization;
  import com.stormpath.sdk.organization.OrganizationCriteria;
  import com.stormpath.sdk.organization.OrganizationList;
- import com.stormpath.sdk.phone.Phone;
  import com.stormpath.sdk.resource.ResourceException;
 
  import java.util.Map;

@@ -24,7 +24,7 @@ import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.factor.FactorCriteria;
-import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
+import com.stormpath.sdk.factor.CreateFactorRequest;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.FactorList;
 import com.stormpath.sdk.group.Group;
@@ -651,15 +651,15 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
 
     /**
      * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource
-     * based on provided {@link CreateSmsFactorRequest}
+     * based on provided {@link CreateFactorRequest}
      * The account can then use the Factor for Multi Factor Authentication purposes.
      *
-     * @param request {@link CreateSmsFactorRequest} used to create a factor with.
+     * @param request {@link CreateFactorRequest} used to create a factor with.
      * @return the newly created {@link Factor}.
      *
      * @since 1.1.0
      */
-    Factor createFactor(CreateSmsFactorRequest request) throws ResourceException;
+    Factor createFactor(CreateFactorRequest request) throws ResourceException;
 
     /**
      * Returns a paginated list of all the factors that belong to the account.

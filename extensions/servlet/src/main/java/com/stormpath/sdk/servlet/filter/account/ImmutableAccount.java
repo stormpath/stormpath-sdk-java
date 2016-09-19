@@ -30,7 +30,7 @@ import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.FactorCriteria;
 import com.stormpath.sdk.factor.FactorList;
-import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
+import com.stormpath.sdk.factor.CreateFactorRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -351,7 +351,7 @@ public class ImmutableAccount implements Account {
     }
 
     @Override
-    public Factor createFactor(CreateSmsFactorRequest request) throws ResourceException {
+    public Factor createFactor(CreateFactorRequest request) throws ResourceException {
         immutable();
         return null;
     }

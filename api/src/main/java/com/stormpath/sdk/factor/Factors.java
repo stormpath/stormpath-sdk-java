@@ -170,7 +170,7 @@ public final class Factors {
          * @param smsFactor the smsFactor to create a new record for within Stormpath
          * @return a new {@link com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder CreateSmsFactorRequestBuilder}
          *         instance reflecting the specified {@link com.stormpath.sdk.factor.sms.SmsFactor} instance.
-         * @see com.stormpath.sdk.account.Account#createFactor(CreateSmsFactorRequest)
+         * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
          *
          * @since 1.1.0
          */

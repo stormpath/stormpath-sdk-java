@@ -28,7 +28,7 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.factor.*;
-import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
+import com.stormpath.sdk.factor.CreateFactorRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupList;
@@ -534,18 +534,18 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     }
 
     @Override
-    public Factor createFactor(CreateSmsFactorRequest request) throws ResourceException {
+    public Factor createFactor(CreateFactorRequest request) throws ResourceException {
         Assert.notNull(request, "Request cannot be null.");
 
-        final Factor smsFactor = request.getSmsFactor();
+        final Factor smsFactor = request.getFactor();
         String href = getFactors().getHref();
 
         if(request.isCreateChallenge()){
             href += "?challenge=" + request.isCreateChallenge();
         }
 
-        if (request.isSmsFactorOptionsSpecified()) {
-            return getDataStore().create(href, smsFactor, request.getSmsFactorOptions());
+        if (request.hasFactorOptions()) {
+            return getDataStore().create(href, smsFactor, request.getFactorOptions());
         }
         return getDataStore().create(href, smsFactor);
     }
