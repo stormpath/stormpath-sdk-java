@@ -19,7 +19,7 @@ if [ -n "$RUN_ITS" ]; then
     EXIT_CODE=$?
     error "Tests failed"
     cat $WORKDIR/target/tests.log
-    exit EXIT_CODE
+    exit $EXIT_CODE
   fi
 fi
 
@@ -30,7 +30,7 @@ if [ -z "$RUN_ITS" ]; then
     EXIT_CODE=$?
     error "Tests failed"
     cat $WORKDIR/target/tests.log
-    exit EXIT_CODE
+    exit $EXIT_CODE
   fi
 fi
 
