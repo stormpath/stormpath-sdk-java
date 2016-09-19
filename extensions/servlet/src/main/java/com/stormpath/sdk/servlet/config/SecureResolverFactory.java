@@ -30,7 +30,6 @@ public class SecureResolverFactory extends ConfigSingletonFactory<Resolver<Boole
     @Override
     protected Resolver<Boolean> createInstance(ServletContext servletContext) throws Exception {
         Resolver<Boolean> localhostResolver = getConfig().getInstance(LOCALHOST_RESOLVER);
-        return new SecureForwardedProtoAwareResolver(new IsHTTPSForwardedProtoResolver(),
-                new SecureRequiredExceptForLocalhostResolver(localhostResolver));
+        return new SecureRequiredExceptForLocalhostResolver(localhostResolver);
     }
 }

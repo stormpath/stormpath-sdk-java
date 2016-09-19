@@ -21,18 +21,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * A Resolver that takes into account the X-Forwarded-Proto header. If the header exists
- * and its value is 'https', then the request does not need to be secure.
+ * A Resolver that takes into account the X-Forwarded-Proto header to determine if the request is secure or not.
  *
  * @since 1.1.0
  */
-public class IsHTTPSForwardedProtoResolver implements Resolver<Boolean> {
+public class IsRequestSecureResolver implements Resolver<Boolean> {
 
     private static final String HEADER_FORWARDED_PROTO = "X-Forwarded-Proto";
+
+    private static final String HTTPS = "https";
 
     @Override
     public Boolean get(HttpServletRequest request, HttpServletResponse response) {
         String protocol = request.getHeader(HEADER_FORWARDED_PROTO);
-        return "https".equalsIgnoreCase(protocol);
+        return HTTPS.equals(request.getScheme()) || HTTPS.equalsIgnoreCase(protocol);
     }
 }
