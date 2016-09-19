@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -72,7 +73,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * @since 1.0.RC4
@@ -360,16 +360,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public LocaleChangeInterceptor stormpathLocaleChangeInterceptor() {
         return super.stormpathLocaleChangeInterceptor();
-    }
-
-    @Bean
-    public Set<String> stormpathRequestClientAttributeNames() {
-        return super.stormpathRequestClientAttributeNames();
-    }
-
-    @Bean
-    public Set<String> stormpathRequestApplicationAttributeNames() {
-        return super.stormpathRequestApplicationAttributeNames();
     }
 
     @Bean

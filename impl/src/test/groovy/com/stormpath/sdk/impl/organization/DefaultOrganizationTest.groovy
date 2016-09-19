@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.organization
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
+import com.stormpath.sdk.account.AccountLinkingPolicy
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ResourceReference
@@ -43,12 +44,15 @@ class DefaultOrganizationTest {
 
         def propertyDescriptors = defaultOrganization.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 9)
+        assertEquals(propertyDescriptors.size(), 10)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("nameKey") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
+        //since 1.1.0
+        assertTrue(propertyDescriptors.get("accountLinkingPolicy") instanceof ResourceReference && propertyDescriptors.get("accountLinkingPolicy").getType().equals(AccountLinkingPolicy))
+
     }
 
     @Test

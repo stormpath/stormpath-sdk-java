@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.servlet.filter.account;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountOptions;
-import com.stormpath.sdk.account.AccountStatus;
-import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -27,11 +24,7 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
@@ -214,6 +207,21 @@ public class ImmutableAccount implements Account {
     }
 
     @Override
+    public boolean isMemberOfGroup(Group group) {
+        return account.isMemberOfGroup(group);
+    }
+
+    @Override
+    public boolean isLinkedToAccount(String href) {
+        return account.isLinkedToAccount(href);
+    }
+
+    @Override
+    public boolean isLinkedToAccount(Account otherAccount) {
+        return account.isLinkedToAccount(otherAccount);
+    }
+
+    @Override
     public ProviderData getProviderData() {
         return account.getProviderData();
     }
@@ -308,5 +316,59 @@ public class ImmutableAccount implements Account {
     @Override
     public RefreshTokenList getRefreshTokens() {
         return account.getRefreshTokens();
+    }
+
+    @Override
+    public AccountList getLinkedAccounts() {
+        return account.getLinkedAccounts();
+    }
+
+    @Override
+    public AccountList getLinkedAccounts(Map<String, Object> queryParams) {
+        return account.getLinkedAccounts(queryParams);
+    }
+
+    @Override
+    public AccountList getLinkedAccounts(AccountCriteria criteria) {
+        return account.getLinkedAccounts(criteria);
+    }
+
+    @Override
+    public AccountLink link(Account otherAccount) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public AccountLink link(String otherAccountHref) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public AccountLink unlink(Account otherAccount) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public AccountLink unlink(String otherAccountHref) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks() {
+        return account.getAccountLinks();
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks(Map<String, Object> queryParams) {
+        return account.getAccountLinks(queryParams);
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks(AccountLinkCriteria criteria) {
+        return account.getAccountLinks(criteria);
     }
 }
