@@ -37,12 +37,10 @@ case "$OPTION" in
         DIR=${OPTION_ARGUMENT01}
         if [ "${DIR}" = "NOT_SET" ] ; then DIR="stormpath-framework-tck"; fi
         echo "Checking out TCK"
-        git config user.email "evangelists@stormpath.com"
-        git config user.name "stormpath-sdk-java TCK"
         git clone git@github.com:stormpath/stormpath-framework-tck.git ${DIR}
         cd ${DIR}
+        git fetch
         git checkout master
-        git pull
         echo "TCK cloned"
         ;;
     run)
@@ -55,8 +53,7 @@ case "$OPTION" in
         echo "Using profile: ${PROFILE}"
         cd ${DIR}
         echo "Running TCK now!"
-        #We need to remove the --fail-never switch once we are spec compliant. We are using it now so we get more coverage from TCK tests
-        mvn --fail-never -P$PROFILE clean verify
+        mvn -P$PROFILE clean verify
         EXIT_STATUS="$?"
         if [ "$EXIT_STATUS" -ne 0 ]; then
             echo "TCK found errors! :^(. Exit status was $EXIT_STATUS"

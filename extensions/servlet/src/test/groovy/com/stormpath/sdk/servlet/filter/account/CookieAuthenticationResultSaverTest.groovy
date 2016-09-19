@@ -1,7 +1,5 @@
 package com.stormpath.sdk.servlet.filter.account
 
-import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.servlet.config.CookieConfig
 import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver
@@ -23,6 +21,34 @@ import static org.testng.Assert.assertFalse
 class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
 
     /**
+     * https://github.com/stormpath/stormpath-sdk-java/issues/937
+     */
+    @Test(expectedExceptions = InsecureCookieException.class)
+    void testIsCookieSecureOverHttp() {
+        HttpServletRequest request = createMock(HttpServletRequest.class)
+        CookieConfig accessTokenConfig = createMock(CookieConfig.class)
+        CookieConfig refreshTokenConfig = createMock(CookieConfig.class)
+
+        def resolver = new Resolver<Boolean>() {
+            @Override
+            Boolean get(HttpServletRequest r, HttpServletResponse response) {
+                return true
+            }
+        }
+
+        expect(accessTokenConfig.isSecure()).andReturn(true)
+        expect(request.getScheme()).andReturn "http"
+
+        replay request, accessTokenConfig, refreshTokenConfig
+
+        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver)
+
+        assertFalse saver.isCookieSecure(request, accessTokenConfig)
+
+        verify request, refreshTokenConfig, refreshTokenConfig
+    }
+
+    /**
      * https://github.com/stormpath/stormpath-sdk-java/issues/409
      */
     @Test
@@ -41,6 +67,7 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
         }
 
         expect(accessTokenConfig.isSecure()).andReturn(true)
+        expect(request.getScheme()).andReturn "https"
 
         replay request, accessTokenConfig, refreshTokenConfig, localhost
 
