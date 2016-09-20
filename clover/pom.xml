@@ -64,7 +64,7 @@
                     <plugin>
                         <groupId>com.atlassian.maven.plugins</groupId>
                         <artifactId>clover-maven-plugin</artifactId>
-                        <version>${clover.version}</version>
+                        <version>4.1.1</version>
                         <configuration>
                             <generateHistorical>true</generateHistorical>
                             <historyDir>${clover.history.dir}</historyDir>

@@ -41,7 +41,6 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
@@ -237,7 +236,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathAuthenticationResultSaver")
-    public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
+    public Saver<AuthenticationResult> stormpathAuthenticationResultSaver() {
         return super.stormpathAuthenticationResultSaver();
     }
 

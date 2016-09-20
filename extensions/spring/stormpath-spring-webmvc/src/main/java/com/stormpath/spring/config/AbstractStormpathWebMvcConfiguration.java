@@ -759,7 +759,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return savers;
     }
 
-    public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
+    public Saver<AuthenticationResult> stormpathAuthenticationResultSaver() {
 
         List<Saver<AuthenticationResult>> savers = stormpathAuthenticationResultSavers();
 
