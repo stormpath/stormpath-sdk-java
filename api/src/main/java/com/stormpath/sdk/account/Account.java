@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,7 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.factor.FactorCriteria;
-import com.stormpath.sdk.factor.CreateFactorRequest;
-import com.stormpath.sdk.factor.Factor;
-import com.stormpath.sdk.factor.FactorList;
+import com.stormpath.sdk.factor.*;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -647,7 +644,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @since 1.1.0
      */
-    Factor createFactor(Factor factor) throws ResourceException;
+    <T extends Factor> T createFactor(T factor) throws ResourceException;
 
     /**
      * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource
@@ -659,7 +656,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      *
      * @since 1.1.0
      */
-    Factor createFactor(CreateFactorRequest request) throws ResourceException;
+    <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException;
 
     /**
      * Returns a paginated list of all the factors that belong to the account.

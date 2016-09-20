@@ -79,6 +79,7 @@ public interface Factor extends Resource, Saveable, Deletable, Auditable {
      * Sets the the {@link Account} associated with this Factor.
      *
      * @param account associated with this Factor.
+     * @return this instance for method chaining.
      */
     Factor setAccount(Account account);
 }

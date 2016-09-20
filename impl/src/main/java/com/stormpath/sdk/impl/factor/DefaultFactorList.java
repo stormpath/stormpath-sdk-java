@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,8 @@ import com.stormpath.sdk.impl.resource.Property;
 
 import java.util.Map;
 
-// todo: mehrshad
-
 /**
- * @since 0.2
+ * @since 1.1.0
  */
 public class DefaultFactorList extends AbstractCollectionResource<Factor> implements FactorList {
 

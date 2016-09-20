@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.impl.phone
 
 
@@ -25,11 +23,8 @@ import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.*
 
 /**
- * @since 0.9
+ * @since 1.1.0
  */
-
-// todo: mehrshad
-
 class DefaultCreatePhoneRequestTest {
 
     @Test

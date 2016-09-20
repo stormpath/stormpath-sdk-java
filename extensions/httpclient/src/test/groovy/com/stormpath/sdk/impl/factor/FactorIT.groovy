@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.impl.factor
 
 import com.stormpath.sdk.account.Account
@@ -7,8 +22,8 @@ import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.FactorStatus
-import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.FactorVerificationStatus
+import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.factor.sms.SmsFactorOptions
 import com.stormpath.sdk.impl.factor.sms.DefaultSmsFactor
@@ -17,11 +32,12 @@ import com.stormpath.sdk.phone.Phone
 import com.stormpath.sdk.phone.PhoneStatus
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
+
 import java.lang.reflect.Field
+
 import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertNull
-import static org.testng.Assert.assertTrue
 import static org.testng.AssertJUnit.assertNotNull
+import static org.testng.AssertJUnit.assertTrue
 
 class FactorIT extends ClientIT {
 
@@ -102,7 +118,6 @@ class FactorIT extends ClientIT {
         assertNotNull(factor.getAccount().href)
         assertNotNull(((SmsFactor) factor).getPhone())
         assertNotNull(((SmsFactor) factor).getPhone().href)
-        assertNull(((SmsFactor) factor).challenge)
 
         //test GET works
         SmsFactorOptions smsFactorOptions = Factors.SMS.options().withChallenges()
@@ -114,7 +129,6 @@ class FactorIT extends ClientIT {
         assertNotNull(factor.getAccount().href)
         assertNotNull(((SmsFactor) factor).getPhone())
         assertNotNull(((SmsFactor) factor).getPhone().href)
-        assertNull(((SmsFactor) factor).challenge)
         assertNotNull(factor.getChallenges())
 
         //test search by factor type
@@ -189,13 +203,17 @@ class FactorIT extends ClientIT {
 
         def builder = Factors.SMS.newCreateRequestFor(factor).createChallenge()
 
+        Throwable e = null
         try {
             account.createFactor(builder.build())
         }
         catch (ResourceException re) {
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13110)
         }
+
+        assertTrue(e instanceof ResourceException)
 
     }
 
@@ -226,13 +244,17 @@ class FactorIT extends ClientIT {
 
         factor = client.getResource(factor.href, SmsFactor.class)
 
+        Throwable e = null
         try {
             factor.challenge()
         }
         catch (ResourceException re) {
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13109)
         }
+
+        assertTrue(e instanceof ResourceException)
     }
 
     @Test
@@ -264,13 +286,17 @@ class FactorIT extends ClientIT {
         factor.setStatus(FactorStatus.DISABLED)
         factor.save()
 
+        Throwable e = null
         try {
             factor.challenge()
         }
         catch (ResourceException re) {
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13109)
         }
+
+        assertTrue(e instanceof ResourceException)
     }
 
     @Test
@@ -350,20 +376,23 @@ class FactorIT extends ClientIT {
         assertNotNull(factor.getAccount())
         assertNotNull(factor.getAccount().href)
         assertNotNull(factor.href)
-        assertEquals(factor.getPhone().number, VALID_PHONE_NUMBER)
-        assertNull(factor.getChallenge())
 
         SmsFactor factor2 = client.instantiate(SmsFactor)
         def phone2 = client.instantiate(Phone)
         phone2.setNumber(VALID_PHONE_NUMBER)
         factor2.setPhone(phone2)
+
+        Throwable e = null
         try {
             account.createFactor(factor2)
         }
         catch (ResourceException re) {
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13105)
         }
+
+        assertTrue(e instanceof ResourceException)
     }
 
     @Test
@@ -403,18 +432,22 @@ class FactorIT extends ClientIT {
         assertNotNull(factor.getAccount().href)
         assertNotNull(factor.href)
         assertEquals(factor.getPhone().number, VALID_PHONE_NUMBER)
-        assertNull(factor.getChallenge())
 
         SmsFactor factor2 = client.instantiate(SmsFactor)
         phone2.setNumber(VALID_PHONE_NUMBER)
         factor2.setPhone(phone2)
+
+        Throwable e = null
         try {
             account.createFactor(factor2)
         }
         catch (ResourceException re) {
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13105)
         }
+
+        assertTrue(e instanceof ResourceException)
     }
 
     @Test
@@ -442,18 +475,34 @@ class FactorIT extends ClientIT {
 
         client.getResource(factor.href, SmsFactor)
 
+        factor.getPhone().delete()
         factor.delete()
 
+
+        Throwable e = null
         try{
             client.getResource(factor.href, SmsFactor)
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
         }
+
+        assertTrue(e instanceof ResourceException)
+
+        //should be able to recreate factor & phone
+        def phone2 = client.instantiate(Phone)
+        phone2.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        SmsFactor factor2 = client.instantiate(SmsFactor)
+        factor2.setPhone(phone2)
+        account.createFactor(factor2)
     }
 
-    @Test
+    @Test(enabled = false)
+    // Cascading deletes are not supported in SDK for now
+    // Following issue will address it: https://github.com/stormpath/stormpath-sdk-java/issues/985
+    // todo: Enable this test once the issue is fixed
     void testDeletePhoneDeletesFactor() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
@@ -481,16 +530,28 @@ class FactorIT extends ClientIT {
 
         factor.phone.delete()
 
+        Throwable e = null
         try{
             client.getResource(factor.href, SmsFactor)
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
         }
+
+        assertTrue(e instanceof ResourceException)
+
+        //should be able to recreate factor & phone
+        factor = client.instantiate(SmsFactor)
+        factor.setPhone(phone)
+        account.createFactor(factor)
     }
 
-    @Test
+    @Test(enabled = false)
+    // Cascading deletes are not supported in SDK for now
+    // Following issue will address it: https://github.com/stormpath/stormpath-sdk-java/issues/985
+    // todo: Enable this test once the issue is fixed
     void deletingFactorDeletesMostRecentChallenge() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
@@ -531,13 +592,17 @@ class FactorIT extends ClientIT {
 
         factor.delete()
 
+        Throwable e = null
         try{
             client.getResource(factor.getMostRecentChallenge().href, Challenge)
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
         }
+
+        assertTrue(e instanceof ResourceException)
     }
 
     @Test

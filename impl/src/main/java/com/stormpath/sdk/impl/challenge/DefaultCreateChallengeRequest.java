@@ -18,11 +18,9 @@ package com.stormpath.sdk.impl.challenge;
 import com.stormpath.sdk.challenge.Challenge;
 import com.stormpath.sdk.challenge.CreateChallengeRequest;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.phone.CreatePhoneRequest;
-import com.stormpath.sdk.phone.Phone;
-// todo: mehrshad
+
 /**
- * @since 0.9
+ * @since 1.1.0
  */
 public class DefaultCreateChallengeRequest implements CreateChallengeRequest {
 

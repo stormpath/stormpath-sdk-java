@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,19 @@
 package com.stormpath.sdk.phone;
 
 /**
- * TODO: description
+ * Represents verification states of {@link Phone}
+ *
+ * @since 1.1.0
  */
 public enum PhoneVerificationStatus {
-    VERIFIED, UNVERIFIED
+
+    /**
+     * A Phone is verified once it is successfully challenged.
+     */
+    VERIFIED,
+
+    /**
+     * A Phone is unverified once it is not yet challenged or challenging it was unsuccessful.
+     */
+    UNVERIFIED
 }

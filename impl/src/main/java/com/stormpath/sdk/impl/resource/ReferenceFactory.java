@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,6 @@ import java.util.Map;
 /**
  * @since 0.9
  */
-
-
-// todo: mehrshad
-
 public class ReferenceFactory {
 
     public ReferenceFactory(){}
@@ -77,15 +73,7 @@ public class ReferenceFactory {
         Assert.notNull(resource, "Resource argument cannot be null.");
         Assert.isNull(resource.getHref(), "Resource "+ resourceName +" must be unmaterialized and not have an 'href' property.");
 
-        // todo: Take this filtering out and put it in a Util Class
-        Map<String, String> reference = new HashMap<>();
-        for (Map.Entry<String, Object> entry : ((AbstractResource) resource).dirtyProperties.entrySet()) {
-            if (!(entry.getValue() instanceof String)) {
-                continue;
-            }
-            reference.put(entry.getKey(), (String) entry.getValue());
-        }
-
+        Map<String, String> reference = ResourceUtil.filterNonStringvalues(((AbstractResource) resource).dirtyProperties);
         return reference;
     }
 }

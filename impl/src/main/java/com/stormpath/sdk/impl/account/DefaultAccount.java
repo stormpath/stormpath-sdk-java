@@ -528,13 +528,13 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     }
 
     @Override
-    public Factor createFactor(Factor factor) throws ResourceException{
+    public <T extends Factor> T createFactor(T factor) throws ResourceException{
         Assert.notNull(factor, "Factor instance cannot be null.");
         return getDataStore().create(getFactors().getHref(), factor);
     }
 
     @Override
-    public Factor createFactor(CreateFactorRequest request) throws ResourceException {
+    public <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException {
         Assert.notNull(request, "Request cannot be null.");
 
         final Factor smsFactor = request.getFactor();
@@ -545,9 +545,9 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         }
 
         if (request.hasFactorOptions()) {
-            return getDataStore().create(href, smsFactor, request.getFactorOptions());
+            return (T) getDataStore().create(href, smsFactor, request.getFactorOptions());
         }
-        return getDataStore().create(href, smsFactor);
+        return (T) getDataStore().create(href, smsFactor);
     }
 }
 

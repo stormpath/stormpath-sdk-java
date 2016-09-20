@@ -15,7 +15,12 @@
  */
 package com.stormpath.sdk.challenge;
 
-
+/**
+ * Represents an attempt to create a new {@link com.stormpath.sdk.challenge.Challenge} record in Stormpath.
+ *
+ * @see com.stormpath.sdk.factor.sms.SmsFactor#createChallenge(Challenge)
+ * @since 1.1.0
+ */
 public interface CreateChallengeRequest {
 
     /**
@@ -24,5 +29,4 @@ public interface CreateChallengeRequest {
      * @return the Challenge instance for which a new record will be created in Stormpath.
      */
     Challenge getChallenge();
-
 }

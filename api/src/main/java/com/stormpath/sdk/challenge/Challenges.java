@@ -20,8 +20,6 @@ import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
-import java.lang.reflect.Constructor;
-
 /**
  * Static utility/helper methods for working with {@link Challenge} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
@@ -114,31 +112,6 @@ public final class Challenges {
     public static EqualsExpressionFactory status() {
         return newEqualsExpressionFactory("status");
     }
-
-    /**
-     * Creates a new {@link StringExpressionFactory} instance reflecting the Group {@link Challenge#getMessageId()} messageId}
-     * property, to be used to construct a name Criterion when building an {@link ChallengeCriteria} query.  For example:
-     * <pre>
-     * Challenges.where(<b>Challenges.messageId()</b>.startsWithIgnoreCase("foo");
-     * </pre>
-     * The above example invokes the returned factory's <code>startsWithIgnoreCase("foo")</code> method.  This
-     * produces a name-specific {@link Criterion} which is added to the criteria query (via the
-     * {@link #where(com.stormpath.sdk.query.Criterion) where} method).  For example, the following code is equivalent:
-     * <pre>
-     * ChallengeCriteria criteria = Challenges.criteria();
-     * StringExpressionFactory messageIdExpressionFactory = Challenges.messageId();
-     * Criterion messageIdStartsWithFoo = messageIdExpressionFactory.startsWithIgnoreCase("foo");
-     * criteria.add(messageIdStartsWithFoo);
-     * </pre>
-     * The first code example is clearly more succinct and readable.
-     *
-     * @return a new {@link Challenge#getMessageId()} MessageId}-specific {@link StringExpressionFactory} instance, to be
-     *         used to construct a criterion when building an {@link ChallengeCriteria} query.
-     */
-    public static StringExpressionFactory messageId() {
-        return newStringExpressionFactory("messageId");
-    }
-
 
     private static EqualsExpressionFactory newEqualsExpressionFactory(String propName) {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory";

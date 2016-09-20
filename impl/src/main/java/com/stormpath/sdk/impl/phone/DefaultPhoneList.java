@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package com.stormpath.sdk.impl.phone;
 
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
@@ -27,11 +25,8 @@ import com.stormpath.sdk.phone.PhoneList;
 import java.util.Map;
 
 /**
- * @since 0.2
+ * @since 1.1.0
  */
-
-// todo: mehrshad
-
 public class DefaultPhoneList extends AbstractCollectionResource<Phone> implements PhoneList {
 
     private static final ArrayProperty<Phone> ITEMS = new ArrayProperty<>("items", Phone.class);

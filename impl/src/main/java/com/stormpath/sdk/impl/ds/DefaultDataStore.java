@@ -73,9 +73,6 @@ import static com.stormpath.sdk.impl.http.HttpHeaders.STORMPATH_AGENT;
 /**
  * @since 0.1
  */
-
-// todo: mehrshad
-
 public class DefaultDataStore implements InternalDataStore {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultDataStore.class);
@@ -506,8 +503,8 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource, "Resource argument must be an AbstractResource.");
 
-        AbstractResource abstractResource = (AbstractResource) resource;
-        final String resourceHref = abstractResource.getHref();
+        final String resourceHref = resource.getHref();
+        Assert.hasText(resourceHref, "This resource does not have an href value, therefore it cannot be deleted.");
         final String requestHref;
         if (Strings.hasText(possiblyNullPropertyName)) { //delete just that property, not the entire resource:
             requestHref = resourceHref + "/" + possiblyNullPropertyName;

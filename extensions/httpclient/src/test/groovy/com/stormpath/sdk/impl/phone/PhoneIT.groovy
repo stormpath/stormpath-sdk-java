@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.testng.annotations.Test
 import static org.testng.Assert.*
 import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.assertNotNull
+import static org.testng.AssertJUnit.assertTrue
 
 /**
  * @since 1.1.0
@@ -181,26 +182,25 @@ class PhoneIT extends ClientIT {
         //should not be able to update to garbage number
         phone.setNumber("bogus")
 
-        try {
+        Throwable e = null;
+        try{
             phone.save()
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13101)
         }
 
-        //should not be able to post description > 140
+        assertTrue(e instanceof ResourceException)
+
+        //should be able to post long descriptions
         phone.setDescription("this is a long repeated description this is a long repeated description this is a long repeated description this is a long repeated description " +
                 "this is a long repeated description this is a long repeated description this is a long repeated description this is a long repeated description " +
                 "this is a long repeated description this is a long repeated description this is a long repeated description ")
 
-        try {
-            client.getResource(phone.href, Phone)
-        }
-        catch(ResourceException re){
-            assertEquals(re.status, 400)
-            assertEquals(re.getCode(), 2008)
-        }
+
+        client.getResource(phone.href, Phone)
 
         def newNumber = "+18888675309"
         def newName = "newName"
@@ -230,13 +230,17 @@ class PhoneIT extends ClientIT {
 
         phone.setNumber("+18008675309")
 
-        try {
+        e = null;
+        try{
             phone.save()
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13100)
         }
+
+        assertTrue(e instanceof ResourceException)
 
         //OK if number is the same
         phone.setNumber(newNumber)
@@ -306,61 +310,88 @@ class PhoneIT extends ClientIT {
         // Not a number
         def phone = client.instantiate(Phone)
                 .setNumber("notANumber")
+
+        Throwable e = null
         try{
             account.createPhone(phone);
         }
         catch(ResourceException re){
+            e=re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13101)
         }
+
+        assertTrue(e instanceof ResourceException)
 
         // Extra numbers
         phone.setNumber("+188839152822222222")
+        e = null
         try{
             account.createPhone(phone);
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13101)
         }
 
+        assertTrue(e instanceof ResourceException)
+
         // No number
         phone = client.instantiate(Phone)
+
+        e = null
         try{
             account.createPhone(phone);
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 2000)
         }
+
+        assertTrue(e instanceof ResourceException)
 
         // Null number
         phone.setNumber(null)
+
+        e = null
         try{
             account.createPhone(phone);
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 2000)
         }
 
-        //try to create duplicate phone numbers for the account
+        assertTrue(e instanceof ResourceException)
+
+        //try to create duplicate phone numbers for the same account
         def phoneNumber = "+18883915282"
         phone = client.instantiate(Phone)
         phone.setNumber(phoneNumber)
         account.createPhone(phone);
         phone = client.instantiate(Phone)
         phone.setNumber(phoneNumber)
+
+        e = null
         try{
             account.createPhone(phone);
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 409)
             assertEquals(re.getCode(), 13102)
         }
+
+        assertTrue(e instanceof ResourceException)
     }
 
-    @Test
+    @Test(enabled = false)
+    // Cascading deletes are not supported in SDK for now
+    // Following issue will address it: https://github.com/stormpath/stormpath-sdk-java/issues/985
+    // todo: Enable this test once the issue is fixed
     void testDeleteAccountDeletesPhones() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
@@ -394,43 +425,30 @@ class PhoneIT extends ClientIT {
 
         account.delete()
 
+        Throwable e = null;
+        try{
+            client.getResource(account.href, Account)
+        }
+        catch(ResourceException re){
+            e = re
+            assertEquals(re.status, 404)
+            assertEquals(re.getCode(), 404)
+        }
+
+        assertTrue(e instanceof ResourceException)
+
+        e = null;
         try{
             client.getResource(phone.href, Phone)
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
         }
+
+        assertTrue(e instanceof ResourceException)
     }
-
-    /*
-    @Test
-    void testDeletePhone() {
-        DirectoryResource directoryResource = createRandomDirectoryResource()
-
-        JsonPath account = postRestCall(directoryResource.accountsHref,
-                [givenName: "Joe",
-                 surname  : "Stormtrooper",
-                 email    : makeUniqueEmail(),
-                 password : 'Death$tar1'], 201)
-
-        String accountPhonesEndpoint = account.href + "/phones"
-
-        String phoneNumber = "+18883915282"
-        String phoneNumber2 = "+18883915283"
-        def phoneResult = postRestCall(accountPhonesEndpoint, [number: phoneNumber], 201)
-        //create second phone to make sure deletion of one phone doesn't delete all phones in collection (indexes)
-        postRestCall(accountPhonesEndpoint, [number: phoneNumber2], 201)
-
-        deleteResource(phoneResult.href)
-
-        makeErrorGetRestCall(phoneResult.href as String, 404, 404)
-
-        def response = getRestCall(account.href + "?expand=phones")
-
-        assertThat(response.phones.size, equalTo(1))
-    }
-     */
 
     @Test
     void testDeletePhone() {
@@ -468,17 +486,26 @@ class PhoneIT extends ClientIT {
 
         phone.delete()
 
+        Throwable e = null;
         try{
             client.getResource(phone.href, Phone)
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
         }
 
+        assertTrue(e instanceof ResourceException)
+
         PhoneList phoneList = client.getResource(account.href+"/phones", PhoneList)
 
         assertEquals(phoneList.size, 1)
+
+        //should be able to recreate phone
+        def phone3 = client.instantiate(Phone)
+                .setNumber(phoneNumber)
+        account.createPhone(phone3);
     }
 
     @Test

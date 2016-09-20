@@ -27,10 +27,7 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.factor.Factor;
-import com.stormpath.sdk.factor.FactorCriteria;
-import com.stormpath.sdk.factor.FactorList;
-import com.stormpath.sdk.factor.CreateFactorRequest;
+import com.stormpath.sdk.factor.*;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -55,9 +52,6 @@ import java.util.Map;
  *
  * @since 1.0.RC3
  */
-
-// todo: mehrshad
-
 public class ImmutableAccount implements Account {
 
     private static final String IMMUTABLE_MSG = "Immutable account references cannot be modified.";
@@ -344,14 +338,20 @@ public class ImmutableAccount implements Account {
         return account.getPhones(queryParams);
     }
 
+    /**
+     * @since 1.1.0
+     */
     @Override
-    public Factor createFactor(Factor factor) throws ResourceException {
+    public <T extends Factor> T createFactor(T factor) throws ResourceException {
         immutable();
         return null;
     }
 
+    /**
+     * @since 1.1.0
+     */
     @Override
-    public Factor createFactor(CreateFactorRequest request) throws ResourceException {
+    public <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException {
         immutable();
         return null;
     }

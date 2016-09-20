@@ -63,16 +63,6 @@ public interface ChallengeCriteria extends Criteria<ChallengeCriteria>, Challeng
     ChallengeCriteria orderByMessage();
 
     /**
-     * Ensures that the query results are ordered by group {@link Challenge#getMessageId()} messageId}.
-     * <p/>
-     * Please see the {@link ChallengeCriteria class-level documentation} for controlling sort order (ascending or
-     * descending) and chaining multiple {@code orderBy} clauses.
-     *
-     * @return this instance for method chaining
-     */
-    ChallengeCriteria orderByMessageId();
-
-    /**
      * Ensures that the query results are ordered by group {@link Challenge#getStatus() status}.
      * <p/>
      * Please see the {@link ChallengeCriteria class-level documentation} for controlling sort order (ascending or

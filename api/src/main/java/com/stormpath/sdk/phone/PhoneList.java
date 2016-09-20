@@ -1,5 +1,5 @@
 /*
-* Copyright 2015 Stormpath, Inc.
+* Copyright 2016 Stormpath, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package com.stormpath.sdk.phone;
 import com.stormpath.sdk.resource.CollectionResource;
 
 /**
- * TODO: description
+ * A {@link CollectionResource} containing {@link Phone} instances.
+ *
+ * @since 1.1.0
  */
 public interface PhoneList extends CollectionResource<Phone> {
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// todo: mehrshad
 
 package com.stormpath.sdk.impl.ds;
 
@@ -31,6 +29,9 @@ import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
 import java.util.*;
 
+/**
+ * @since 1.1.0
+ */
 public class DefaultResourceConverter implements ResourceConverter {
 
     private final ReferenceFactory referenceFactory;

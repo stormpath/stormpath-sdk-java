@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// todo: mehrshad
-
 package com.stormpath.sdk.impl.phone
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -29,7 +26,7 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 0.8
+ * @since 1.1.0
  */
 class DefaultPhoneListTest {
 

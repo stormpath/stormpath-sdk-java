@@ -48,22 +48,6 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
     Challenge setMessage(String message);
 
     /**
-     * Returns the message id returned by external sms service provider with this challenge.
-     * for a given sms message sent
-     *
-     * @return message id associated with this challenge
-     */
-    String getMessageId();
-
-    /**
-     * Sets the message id returned by external sms service provider with this challenge.
-     * for a given sms message sent
-     *
-     * @param messageId associated with this challenge
-     */
-    Challenge setMessageId(String messageId);
-
-    /**
      * Returns the status of this challenge object
      *
      * @return status associated with this challenge
@@ -106,20 +90,6 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
      * @param smsFactor associated with this challenge
      */
     Challenge setFactor(Factor smsFactor);
-
-    /**
-     * Returns the token associated with this challenge
-     *
-     * @return token associated with this challenge
-     */
-    String getToken();
-
-    /**
-     * Sets the token associated with this challenge.
-     *
-     * @param token associated with this challenge
-     */
-    Challenge setToken(String token);
 
     /**
      * Returns the sent code in the sms associated with this challenge

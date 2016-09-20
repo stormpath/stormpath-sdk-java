@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.impl.challenge
 
 import com.stormpath.sdk.account.Account
@@ -40,13 +55,18 @@ class ChallengeIT extends ClientIT{
         challenge.setMessage("This the message which has no place holder for the code")
 
         // A 13103 is returned sice message does not contain a ${code}
+
+        Throwable e = null
         try {
             factor.createChallenge(challenge)
         }
         catch(ResourceException re){
+            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13103)
         }
+
+        assertTrue(e instanceof ResourceException)
     }
 
     // This test and the next one (testSuccessfulChallengeVerifyChallenge) require an actual phone to complete
@@ -84,8 +104,6 @@ class ChallengeIT extends ClientIT{
         challenge = factor.createChallenge(challenge)
 
         println("Chalenge href: $challenge.href")
-
-        assertEquals(challenge.href.substring(challenge.href.lastIndexOf("/")+1), challenge.token)
     }
 
     // This test and the previous one (testSuccessfulChallengeSendCode) require an actual phone to complete

@@ -27,9 +27,6 @@ import java.util.Map;
 /**
  * @since 0.1
  */
-// todo: mehrshad
-
-
 public class DefaultResourceFactory implements ResourceFactory {
 
     private InternalDataStore dataStore;

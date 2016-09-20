@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package com.stormpath.sdk.factor;
 
 /**
- * TODO: description
+ * Represents the type for a specific {@link Factor}.
  */
 public enum FactorType {
     SMS

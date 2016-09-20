@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,13 @@
  */
 package com.stormpath.sdk.impl.phone;
 
-import com.stormpath.sdk.group.CreateGroupRequest;
-import com.stormpath.sdk.group.CreateGroupRequestBuilder;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupOptions;
-import com.stormpath.sdk.impl.group.DefaultCreateGroupRequest;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.phone.CreatePhoneRequest;
 import com.stormpath.sdk.phone.CreatePhoneRequestBuilder;
 import com.stormpath.sdk.phone.Phone;
 
-// todo: mehrshad
-
 /**
- * @since 0.9
+ * @since 1.1.0
  */
 public class DefaultCreatePhoneRequestBuilder implements CreatePhoneRequestBuilder {
 
@@ -38,7 +31,6 @@ public class DefaultCreatePhoneRequestBuilder implements CreatePhoneRequestBuild
         Assert.notNull(phone, "Phone can't be null.");
         this.phone = phone;
     }
-
 
     @Override
     public CreatePhoneRequest build() {

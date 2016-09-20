@@ -1,5 +1,5 @@
 /*
-* Copyright 2015 Stormpath, Inc.
+* Copyright 2016 Stormpath, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,23 +28,20 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * TODO: description
+ * @since 1.1.0
  */
 public class DefaultChallenge extends AbstractInstanceResource implements Challenge {
 
     static final StringProperty MESSAGE = new StringProperty("message");
     static final StringProperty MESSAGE_ID = new StringProperty("messageId");
     static final StatusProperty<ChallengeStatus> STATUS = new StatusProperty<>("status", ChallengeStatus.class);
-    static final StringProperty TOKEN = new StringProperty("token");
     static final StringProperty CODE = new StringProperty("code");
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
     static final ResourceReference<Factor> FACTOR = new ResourceReference<>("factor", Factor.class);
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
-    public static final String CHALLENGES_ENDPOINT_LAST_HREF_TOKEN = "/challenges";
-
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(MESSAGE, MESSAGE_ID, STATUS, TOKEN, CODE, ACCOUNT, FACTOR, CREATED_AT, MODIFIED_AT);
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(MESSAGE, MESSAGE_ID, STATUS, CODE, ACCOUNT, FACTOR, CREATED_AT, MODIFIED_AT);
 
     public DefaultChallenge(InternalDataStore dataStore) {
         super(dataStore);
@@ -87,17 +84,6 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
     }
 
     @Override
-    public String getMessageId() {
-        return getString(MESSAGE_ID);
-    }
-
-    @Override
-    public Challenge setMessageId(String messageId) {
-        setProperty(MESSAGE_ID, messageId);
-        return this;
-    }
-
-    @Override
     public ChallengeStatus getStatus() {
         String value = getStringProperty(STATUS.getName());
         if (value == null) {
@@ -135,17 +121,6 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
     }
 
     @Override
-    public String getToken() {
-        return getString(TOKEN);
-    }
-
-    @Override
-    public Challenge setToken(String token) {
-        setProperty(TOKEN, token);
-        return this;
-    }
-
-    @Override
     public Challenge setCode(String code) {
         setProperty(CODE, code);
         return null;
@@ -155,9 +130,8 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
     public boolean validate(String code) {
         Assert.notNull(code, "code can not be null.");
         setCode(code);
-        setToken(getToken());
         try {
-            getDataStore().create((getDataStore().getBaseUrl())+CHALLENGES_ENDPOINT_LAST_HREF_TOKEN, this);
+            getDataStore().create(getHref(), this);
         }
         catch(ResourceException re){
             return false;
