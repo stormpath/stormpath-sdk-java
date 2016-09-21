@@ -70,6 +70,20 @@ class DirectoryAccountCustomDataIT extends AbstractCustomDataIT {
     }
 
     def Account createAccount(Map postedCustomData, boolean expand) {
-        ç
+        def account = newAccountData()
+
+        account.customData.putAll(postedCustomData)
+
+        def builder = Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false)
+
+        builder = expand ? builder.withResponseOptions(Accounts.options().withCustomData()) : builder
+
+        directory.createAccount(builder.build());
+
+        assertValidCustomData(account.href + "/customData", postedCustomData, account.customData, expand)
+
+        deleteOnTeardown(account)
+
+        return account
     }
 }
