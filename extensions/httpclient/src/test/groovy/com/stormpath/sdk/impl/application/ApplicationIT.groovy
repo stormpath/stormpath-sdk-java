@@ -17,12 +17,16 @@ package com.stormpath.sdk.impl.application
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountLinkingPolicy
+import com.stormpath.sdk.account.AccountLinkingStatus
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.AutomaticProvisioningStatus
 import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.api.ApiKeyOptions
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
@@ -46,11 +50,13 @@ import com.stormpath.sdk.impl.idsite.IdSiteClaims
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.saml.SamlResultStatus
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
+import com.stormpath.sdk.lang.Strings
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult
+import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
@@ -1654,6 +1660,31 @@ class ApplicationIT extends ClientIT {
         assertNotNull(result.getRefreshToken().getExpandedJwt().get("signature"))
     }
 
+    /* @since 1.1.0 */
+    @Test
+    void testCreateClientCredentialsTokenForAppAccount() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        def apiKey = account.createApiKey()
+
+        OAuthClientCredentialsGrantRequestAuthentication request = OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder().setApiKeyId(apiKey.id).setApiKeySecret(apiKey.secret).build();
+        def result = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
+
+        assertNotNull result.getAccessTokenHref()
+        assertEquals result.getAccessToken().getHref(), result.getAccessTokenHref()
+        assertEquals(result.getAccessToken().getAccount().getHref(), account.getHref())
+        assertEquals(result.getAccessToken().getApplication().getHref(), app.getHref())
+        assertTrue Strings.hasText(result.getAccessTokenString())
+        //according to https://tools.ietf.org/html/rfc6749#section-4.4.3 no refresh token must be obtained as a result of client_credentials
+        assertNull result.getRefreshToken()
+
+        assertEquals result.getTokenType(), "Bearer"
+        assertEquals result.getExpiresIn(), 3600
+    }
+
     /* @since 1.0.RC7 */
 
     @Test
@@ -1674,6 +1705,112 @@ class ApplicationIT extends ClientIT {
         assertEquals oauthPolicy.getRefreshTokenTtl(), "P2D"
         assertEquals oauthPolicy.getApplication().getHref(), app.href
     }
+
+    /* @since 1.1.0 */
+    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
+    void testRetrieveAndUpdateAccountLinkingPolicy() {
+        def app = createTempApp()
+
+        AccountLinkingPolicy accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name() as String, 'DISABLED'
+        assertFalse(app.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertNotNull accountLinkingPolicy.getAutomaticProvisioning()
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name() as String, 'DISABLED'
+        assertFalse(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED)
+        accountLinkingPolicy.setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED)
+        accountLinkingPolicy.setMatchingProperty("Email") // case shouldn't matter
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNotNull accountLinkingPolicy.getMatchingProperty()
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'email'
+    }
+
+    /* @since 1.1.0 */
+    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
+    void testRetrieveAndUpdateAccountLinkingPolicyPartially() {
+        def app = createTempApp()
+
+        AccountLinkingPolicy accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name() as String, 'DISABLED'
+        assertFalse(app.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertNotNull accountLinkingPolicy.getAutomaticProvisioning()
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name() as String, 'DISABLED'
+        assertFalse(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).save() // partially update status
+        accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'DISABLED'
+        assertFalse(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).save() // partially update automatic provisioning
+        accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setMatchingProperty("EMAIL") // partially update matchingProperty
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNotNull accountLinkingPolicy.getMatchingProperty()
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'email'
+
+        accountLinkingPolicy.setMatchingProperty(null) // set matchingProperty to null
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = app.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(app.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNull accountLinkingPolicy.getMatchingProperty()
+    }
+
 
     /* @since 1.0.RC7 */
 

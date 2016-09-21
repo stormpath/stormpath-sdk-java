@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountOptions;
-import com.stormpath.sdk.account.AccountStatus;
-import com.stormpath.sdk.account.EmailVerificationToken;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -40,12 +37,7 @@ import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.CollectionReference;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
-import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessToken;
@@ -72,7 +64,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final StringProperty GIVEN_NAME = new StringProperty("givenName");
     static final StringProperty MIDDLE_NAME = new StringProperty("middleName");
     static final StringProperty SURNAME = new StringProperty("surname");
-    static final StatusProperty<AccountStatus> STATUS = new StatusProperty<>(AccountStatus.class);
+    static final EnumProperty<AccountStatus> STATUS = new EnumProperty<>(AccountStatus.class);
     static final StringProperty FULL_NAME = new StringProperty("fullName"); //computed property, can't set it or query based on it
 
     // INSTANCE RESOURCE REFERENCES:
@@ -105,11 +97,19 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
 
     static final CollectionReference<FactorList, Factor> FACTORS =
             new CollectionReference<>("factors", FactorList.class, Factor.class);
+            new CollectionReference<>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
+
+
+    static final CollectionReference<AccountList, Account> LINKED_ACCOUNTS =
+            new CollectionReference<>("linkedAccounts", AccountList.class, Account.class);
+
+    static final CollectionReference<AccountLinkList, AccountLink> ACCOUNT_LINKS =
+            new CollectionReference<>("accountLinks", AccountLinkList.class, AccountLink.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
-            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, PHONES, FACTORS);
+            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS, ACCOUNT_LINKS,PHONES, FACTORS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -377,6 +377,44 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         return false;
     }
 
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public boolean isMemberOfGroup(Group group) {
+        if(group == null) {
+            return false;
+        }
+        return isMemberOfGroup(group.getHref());
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public boolean isLinkedToAccount(String href) {
+        if(!Strings.hasText(href)) {
+            return false;
+        }
+        for (Account anAccount : getLinkedAccounts()) {
+            if (anAccount.getHref().equalsIgnoreCase(href)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public boolean isLinkedToAccount(Account otherAccount) {
+        if(otherAccount == null){
+            return false;
+        }
+        return isLinkedToAccount(otherAccount.getHref());
+    }
+
     @Override
     public ApiKeyList getApiKeys() {
         return getResourceProperty(API_KEYS);
@@ -508,6 +546,78 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     public RefreshTokenList getRefreshTokens() {
         return getResourceProperty(REFRESH_TOKENS);
     }
+
+    @Override
+    public AccountList getLinkedAccounts() {
+        return getResourceProperty(LINKED_ACCOUNTS);
+    }
+
+    @Override
+    public AccountList getLinkedAccounts(Map<String, Object> queryParams) {
+        AccountList list = getLinkedAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, queryParams);
+    }
+
+    @Override
+    public AccountList getLinkedAccounts(AccountCriteria criteria) {
+        AccountList list = getLinkedAccounts(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountList.class, (Criteria<AccountCriteria>) criteria);
+    }
+
+    @Override
+    public AccountLink link(Account otherAccount) {
+        Assert.notNull(otherAccount, "otherAccount cannot be null");
+        return DefaultAccountLink.create(this, otherAccount, getDataStore());
+    }
+
+    @Override
+    public AccountLink link(String otherAccountHref) {
+        Assert.hasText(otherAccountHref, "otherAccountHref cannot be null");
+        return DefaultAccountLink.create(this,
+                getDataStore().getResource(otherAccountHref, Account.class), getDataStore());
+    }
+
+    @Override
+    public AccountLink unlink(Account otherAccount) {
+        Assert.notNull(otherAccount, "otherAccount cannot be null");
+        return  unlink(otherAccount.getHref());
+    }
+
+    @Override
+    public AccountLink unlink(String otherAccountHref) {
+        Assert.hasText(otherAccountHref, "otherAccountHref cannot be null or empty");
+        AccountLink accountLink = null;
+        for (AccountLink anAccountLink : getAccountLinks()) {
+            if (anAccountLink.getLeftAccount().getHref().equals(otherAccountHref)
+                    || anAccountLink.getRightAccount().getHref().equals(otherAccountHref)) {
+                accountLink = anAccountLink;
+                break;
+            }
+        }
+        if (accountLink != null){
+            accountLink.delete();
+        }
+
+        return accountLink;
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks() {
+        return getResourceProperty(ACCOUNT_LINKS);
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks(Map<String, Object> queryParams) {
+        AccountLinkList list = getAccountLinks(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountLinkList.class, queryParams);
+    }
+
+    @Override
+    public AccountLinkList getAccountLinks(AccountLinkCriteria criteria) {
+        AccountLinkList list = getAccountLinks(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), AccountLinkList.class, (Criteria<AccountLinkCriteria>) criteria);
+    }
+}
 
 
     @Override

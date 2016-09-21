@@ -58,7 +58,6 @@ import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ServletContextAware;
@@ -73,7 +72,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * @since 1.0.RC4
@@ -201,7 +199,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
+    public Saver<AuthenticationResult> stormpathAuthenticationResultSaver() {
         return super.stormpathAuthenticationResultSaver();
     }
 
@@ -364,23 +362,8 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public Set<String> stormpathRequestClientAttributeNames() {
-        return super.stormpathRequestClientAttributeNames();
-    }
-
-    @Bean
-    public Set<String> stormpathRequestApplicationAttributeNames() {
-        return super.stormpathRequestApplicationAttributeNames();
-    }
-
-    @Bean
     public Resolver<Locale> stormpathLocaleResolver() {
         return super.stormpathLocaleResolver();
-    }
-
-    @Bean
-    public MessageSource stormpathSpringMessageSource() {
-        return super.stormpathSpringMessageSource();
     }
 
     @Bean

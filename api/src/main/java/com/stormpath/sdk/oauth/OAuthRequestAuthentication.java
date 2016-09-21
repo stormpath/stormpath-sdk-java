@@ -21,6 +21,7 @@ package com.stormpath.sdk.oauth;
  * @see OAuthPasswordGrantRequestAuthentication
  * @see OAuthRefreshTokenRequestAuthentication
  * @see OAuthBearerRequestAuthentication
+ * @see OAuthClientCredentialsGrantRequestAuthentication
  *
  * @since 1.0.RC7
  */

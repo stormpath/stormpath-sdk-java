@@ -142,4 +142,20 @@ abstract class ClientIT {
 
         return acct
     }
+
+    //@since 1.1.0
+    Account createTempAccountInDir(Directory directory){
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('DELETEME')
+                .setEmail(uniquify('randomEmail')+'@somemail.com')
+                .setPassword('Changeme1!')
+
+        account = directory.createAccount(account)
+        deleteOnTeardown(account)
+
+        return account
+
+    }
 }

@@ -1,0 +1,13 @@
+zuul:
+  routes:
+    app:
+      path: /**
+      url: http://localhost:8080
+
+server:
+  port: 8000
+  use-forward-headers: true
+
+logging:
+  level:
+    root: INFO

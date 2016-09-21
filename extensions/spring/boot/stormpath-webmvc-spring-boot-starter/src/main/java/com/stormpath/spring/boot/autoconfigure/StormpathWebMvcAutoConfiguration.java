@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -40,7 +41,6 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
@@ -59,10 +59,9 @@ import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import com.stormpath.spring.config.AccessTokenCookieProperties;
 import com.stormpath.spring.config.RefreshTokenCookieProperties;
+import com.stormpath.spring.config.StormpathMessageSourceConfiguration;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -71,14 +70,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
@@ -90,8 +85,6 @@ import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
@@ -107,6 +100,7 @@ import java.util.Set;
 @ConditionalOnProperty(name = {"stormpath.enabled", "stormpath.web.enabled"}, matchIfMissing = true)
 @ConditionalOnClass({Servlet.class, DispatcherServlet.class})
 @ConditionalOnWebApplication
+@Import(StormpathMessageSourceConfiguration.class)
 @AutoConfigureAfter({WebMvcAutoConfiguration.class, StormpathAutoConfiguration.class})
 public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcConfiguration {
 
@@ -242,7 +236,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
 
     @Bean
     @ConditionalOnMissingBean(name = "stormpathAuthenticationResultSaver")
-    public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
+    public Saver<AuthenticationResult> stormpathAuthenticationResultSaver() {
         return super.stormpathAuthenticationResultSaver();
     }
 
@@ -429,27 +423,9 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathRequestClientAttributeNames")
-    public Set<String> stormpathRequestClientAttributeNames() {
-        return super.stormpathRequestClientAttributeNames();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathRequestApplicationAttributeNames")
-    public Set<String> stormpathRequestApplicationAttributeNames() {
-        return super.stormpathRequestApplicationAttributeNames();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathLocaleResolver")
     public Resolver<Locale> stormpathLocaleResolver() {
         return super.stormpathLocaleResolver();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathSpringMessageSource")
-    public MessageSource stormpathSpringMessageSource() {
-        return super.stormpathSpringMessageSource();
     }
 
     @Bean
@@ -546,65 +522,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathMeController();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    @Configuration
-    @ConditionalOnMissingBean(MessageSource.class)
-    @ConditionalOnProperty(prefix = "spring.messages", name = "basename")
-    public static class MessageSourceConfiguration {
-
-        @Bean
-        public MessageSource messageSource(@Value("${spring.messages.basename}") String basename) {
-            List<String> list = new ArrayList<String>();
-
-            if (StringUtils.hasText(basename)) {
-                String[] basenamesArray = StringUtils.commaDelimitedListToStringArray(basename);
-                list.addAll(Arrays.asList(basenamesArray));
-            }
-
-            if (!list.contains(I18N_PROPERTIES_BASENAME)) {
-                list.add(I18N_PROPERTIES_BASENAME);
-            }
-
-            ResourceBundleMessageSource src = new ResourceBundleMessageSource();
-            String[] basenames = list.toArray(new String[list.size()]);
-            // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/811
-            src.setAlwaysUseMessageFormat(true);
-            src.setBasenames(basenames);
-            src.setDefaultEncoding("UTF-8");
-            return src;
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    @Configuration
-    @ConditionalOnMissingBean(MessageSource.class)
-    @ConditionalOnProperty(prefix = "spring.messages", name = "basename", matchIfMissing = true)
-    public static class MissingBasenameMessageSourceConfiguration {
-
-        @Autowired
-        private ApplicationContext appCtx;
-
-        @Bean
-        public MessageSource messageSource() {
-
-            List<String> list = new ArrayList<String>();
-
-            Resource resource = appCtx.getResource("classpath*:messages*.properties");
-            if (resource.exists()) {
-                list.add("messages");
-            }
-            list.add(I18N_PROPERTIES_BASENAME);
-
-            ResourceBundleMessageSource src = new ResourceBundleMessageSource();
-            String[] basenames = list.toArray(new String[list.size()]);
-            // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/811
-            src.setAlwaysUseMessageFormat(true);
-            src.setBasenames(basenames);
-            src.setDefaultEncoding("UTF-8");
-            return src;
-        }
-    }
-
     @Bean
     public ServletListenerRegistrationBean<ServletContextListener> stormpathServletContextListener() {
 
@@ -659,7 +576,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathFilter")
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter() {
         StormpathFilter filter = newStormpathFilter();

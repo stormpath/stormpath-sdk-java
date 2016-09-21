@@ -9,7 +9,7 @@ if [ -n "$BUILD_DOCS" ]; then
     EXIT_CODE=$?
     error "Error installing Sphinx"
     cat $WORKDIR/target/pip.log
-    exit EXIT_CODE
+    exit $EXIT_CODE
   fi
 fi
 
@@ -20,7 +20,7 @@ if [ -n "RUN_ITS" ]; then
     EXIT_CODE=$?
     error "Error installing AWS CLI"
     cat $WORKDIR/target/aws-cli.log
-    exit EXIT_CODE
+    exit $EXIT_CODE
   fi
 fi
 

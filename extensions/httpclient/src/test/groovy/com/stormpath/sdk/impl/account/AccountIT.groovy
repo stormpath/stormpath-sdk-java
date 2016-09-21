@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.account
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.AccountLink
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
 import com.stormpath.sdk.application.Application
@@ -32,6 +33,7 @@ import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
+import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -72,6 +74,43 @@ class AccountIT extends ClientIT {
         assertTrue acct.isMemberOfGroup(group.href)
         assertTrue acct.isMemberOfGroup(group.href.toLowerCase())
         assertFalse acct.isMemberOfGroup(group.name.substring(0, group.name.length() - 2) + "*")
+
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testIsLinkedToAccount() {
+
+        def app = createTempApp()
+
+        //create a test account:
+        def acct = createTestAccount(app)
+
+        //create a user group (to be the account store of the other account):
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testDir")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        //create another account (in a different account store)
+        def acct2 = createTempAccountInDir(dir)
+
+        //link the accounts
+        AccountLink accountLink = acct.link(acct2)
+        deleteOnTeardown(accountLink)
+
+        assertEquals acct.getLinkedAccounts().size, 1
+        assertEquals acct.getAccountLinks().size, 1
+        assertEquals accountLink.leftAccount.href, acct.href
+        assertEquals accountLink.rightAccount.href, acct2.href
+
+        assertTrue acct.isLinkedToAccount(acct2.href)
+        assertTrue acct.isLinkedToAccount(acct2.href.toLowerCase())
+        assertTrue acct.isLinkedToAccount(acct2.href.toUpperCase())
+        assertFalse acct.isLinkedToAccount(acct2.href.substring(0, acct2.href.length() - 2) + "*")
+        assertNotEquals acct.getDirectory().getHref(), acct2.getDirectory().getHref()
 
     }
 
@@ -1013,6 +1052,178 @@ class AccountIT extends ClientIT {
             assertTrue e instanceof IllegalStateException
             assertEquals "This account does not belong to the specified group.", e.getMessage()
         }
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testLinkAndUnlinkAccount() {
+
+        def app = createTempApp()
+        //create a test account:
+        def acct = createTestAccount(app)
+        deleteOnTeardown(acct)
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testDir")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        //create another account (in a different account store)
+        def acct2 = createTempAccountInDir(dir)
+
+        //link the accounts acct and acct2
+        AccountLink accountLink = acct.link(acct2)
+        deleteOnTeardown(accountLink)
+
+        assertEquals accountLink.leftAccount.href, acct.href
+        assertEquals accountLink.rightAccount.href, acct2.href
+        assertEquals acct.getLinkedAccounts().size, 1
+        assertEquals acct.getAccountLinks().size, 1
+
+        //create a second dir
+        Directory dir2 = client.instantiate(Directory)
+        dir2.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir2 = client.currentTenant.createDirectory(dir2);
+        deleteOnTeardown(dir2)
+
+        //create another account (in a different account store)
+        def acct3 = createTempAccountInDir(dir2)
+
+        //link the accounts acct and acct3
+        AccountLink accountLink2 = acct.link(acct3)
+        deleteOnTeardown(accountLink2)
+
+        assertEquals accountLink2.leftAccount.href, acct.href
+        assertEquals accountLink2.rightAccount.href, acct3.href
+        assertEquals acct.getLinkedAccounts().size, 2
+        assertEquals acct.getAccountLinks().size, 2
+
+        // Test unlink
+        acct.unlink(acct2)
+        assertEquals 1, acct.getLinkedAccounts().size
+        assertEquals 1, acct.getAccountLinks().size
+        assertEquals false, acct.isLinkedToAccount(acct2.href)
+        assertEquals true, acct.isLinkedToAccount(acct3.href)
+
+        acct.unlink(acct3)
+        assertEquals 0, acct.getLinkedAccounts().size
+        assertEquals 0, acct.getAccountLinks().size
+        assertEquals false, acct.isLinkedToAccount(acct2.href)
+        assertEquals false, acct.isLinkedToAccount(acct3.href)
+
+
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testLinkAccountErrors() {
+
+        def app = createTempApp()
+        //create a test account:
+        def acct = createTestAccount(app)
+        deleteOnTeardown(acct)
+
+        //link same account - invalid
+        try{
+            acct.link(acct)
+            fail ("Should fail because account cannot link to itself")
+        } catch (Exception e){
+            assertTrue e instanceof ResourceException
+            ResourceException re = (ResourceException) e;
+            assertEquals re.properties.status as String, '400'
+            assertEquals re.properties.code as String , '7501'
+        }
+
+        assertEquals false, acct.isLinkedToAccount(acct.href)
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testDir")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        //create another account (in a different account store)
+        def acct2 = createTempAccountInDir(dir)
+
+
+        //link the accounts acct and acct2 - vaild
+        AccountLink accountLink = acct.link(acct2)
+        deleteOnTeardown(accountLink)
+        assertEquals true, acct.isLinkedToAccount(acct2.href)
+
+        //link more than 1 account, in a given directory - invalid
+        try{
+            acct.link(acct2)
+            fail ("Should fail because an these accounts are already linked")
+        } catch (Exception e){
+            assertTrue e instanceof ResourceException
+            ResourceException re = (ResourceException) e;
+            assertEquals re.properties.status as String, '409'
+            assertEquals re.properties.code as String , '7500'
+        }
+
+        def acct3 = createTempAccountInDir(dir)
+
+        //link more than 1 account, in a given directory - invalid
+        try{
+            acct.link(acct3)
+            fail ("Should fail because an account cannot be linked to more than 1 account for a given directory. " +
+                    "Here both acct2 and acct3 are in the same dir")
+        } catch (Exception e){
+            assertTrue e instanceof ResourceException
+            ResourceException re = (ResourceException) e;
+            assertEquals re.properties.status as String, '409'
+            assertEquals re.properties.code as String , '7505'
+        }
+
+        assertEquals false, acct.isLinkedToAccount(acct3.href)
+
+        //create a second dir
+        Directory dir2 = client.instantiate(Directory)
+        dir2.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir2 = client.currentTenant.createDirectory(dir2);
+        deleteOnTeardown(dir2)
+
+        def acct4 = createTempAccountInDir(dir2)
+        def acct5 = createTempAccountInDir(dir2)
+
+        //link with invalid href
+        try{
+            acct.link('invalidHref')
+            fail ("Should fail because the provided href is not valid")
+        } catch (Exception e) {
+            assertTrue e instanceof ResourceException
+            ResourceException re = (ResourceException) e;
+            assertEquals re.properties.status as String, '404'
+            assertEquals re.properties.code as String , '404'
+        }
+
+        //link accounts in the same dir - invalid
+        try{
+            acct4.link(acct5)
+            fail ("Should fail because both accounts are in the same directory")
+        } catch (Exception e) {
+            assertTrue e instanceof ResourceException
+            ResourceException re = (ResourceException) e;
+            assertEquals re.properties.status as String, '409'
+            assertEquals re.properties.code as String , '7504'
+        }
+
+        assertEquals false, acct4.isLinkedToAccount(acct5.href)
+
+        acct.link(acct4.href) // valid
+        assertEquals true, acct.isLinkedToAccount(acct4.href)
+        acct4.unlink(acct) // valid
+        assertEquals false, acct.isLinkedToAccount(acct4.href)
+
+        acct.link(acct5) // valid (because acct4 is now unlinked)
+        assertEquals true, acct5.isLinkedToAccount(acct.href)
+        acct5.unlink(acct.href) // valid
+        assertEquals false, acct5.isLinkedToAccount(acct.href)
+
     }
 
     /**

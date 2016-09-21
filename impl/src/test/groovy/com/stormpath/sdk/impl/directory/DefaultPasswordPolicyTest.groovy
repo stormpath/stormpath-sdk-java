@@ -23,7 +23,7 @@ import com.stormpath.sdk.impl.mail.DefaultUnmodeledEmailTemplateList
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.IntegerProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
+import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.mail.ModeledEmailTemplateList
 import com.stormpath.sdk.mail.UnmodeledEmailTemplateList
@@ -47,8 +47,8 @@ class DefaultPasswordPolicyTest {
         assertEquals(propertyDescriptors.size(), 6)
 
         assertTrue(propertyDescriptors.get("resetTokenTtl") instanceof IntegerProperty)
-        assertTrue(propertyDescriptors.get("resetEmailStatus") instanceof StatusProperty<EmailStatus>)
-        assertTrue(propertyDescriptors.get("resetSuccessEmailStatus") instanceof StatusProperty<EmailStatus>)
+        assertTrue(propertyDescriptors.get("resetEmailStatus") instanceof EnumProperty<EmailStatus>)
+        assertTrue(propertyDescriptors.get("resetSuccessEmailStatus") instanceof EnumProperty<EmailStatus>)
         assertTrue(propertyDescriptors.get("strength") instanceof ResourceReference)
         assertTrue(propertyDescriptors.get("resetEmailTemplates") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("resetSuccessEmailTemplates") instanceof CollectionReference)
