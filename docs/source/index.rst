@@ -37,7 +37,7 @@ User Guide
   authorization
   forgot-password
   logout
-  http-request-authentication
+  request-authentication
   request
   access-control
   i18n

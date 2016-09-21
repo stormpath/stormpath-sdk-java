@@ -1,4 +1,4 @@
-.. _http request authentication:
+.. _request authentication:
 
 HTTP Request Authentication
 ===========================
