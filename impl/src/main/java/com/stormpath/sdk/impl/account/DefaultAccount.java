@@ -97,8 +97,6 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
 
     static final CollectionReference<FactorList, Factor> FACTORS =
             new CollectionReference<>("factors", FactorList.class, Factor.class);
-            new CollectionReference<>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
-
 
     static final CollectionReference<AccountList, Account> LINKED_ACCOUNTS =
             new CollectionReference<>("linkedAccounts", AccountList.class, Account.class);
@@ -617,7 +615,6 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         AccountLinkList list = getAccountLinks(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), AccountLinkList.class, (Criteria<AccountLinkCriteria>) criteria);
     }
-}
 
 
     @Override

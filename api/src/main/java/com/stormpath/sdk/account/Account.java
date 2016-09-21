@@ -595,6 +595,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
      * The account can then use the Phone for Multi Factor Authentication purposes.
      *
+     * @param request {@link CreatePhoneRequest} used to create a phone with.
      * @return the newly created {@link Phone}.
      *
      * @since 1.1.0
@@ -605,6 +606,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
      * The account can then use the Phone for Multi Factor Authentication purposes.
      *
+     * @param phone {@link Phone} pojo to hold necessary data to send to the back- end to create a {@link Phone}.
      * @return the newly created {@link Phone}.
      *
      * @since 1.1.0
@@ -623,6 +625,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Returns a paginated list of all the phones that belong to the account matching the query params.
      *
+     * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of all the Account's phones.
      *
      * @since 1.1.0
@@ -668,7 +671,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource.
      * The account can then use the Factor for Multi Factor Authentication purposes.
      *
-     * @param factor {@link Factor} pojo tho hold necessary data to send to the back- end to create a {@link Factor}.
+     * @param factor {@link Factor} pojo to hold necessary data to send to the back- end to create a {@link Factor}.
      * @return the newly created {@link Factor}.
      *
      * @since 1.1.0
@@ -699,6 +702,7 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     /**
      * Returns a paginated list of all the factors that belong to the account matching the query params.
      *
+     * @param queryParams the query parameters to use when performing a request to the collection.
      * @return a paginated list of all the Account's factos.
      *
      * @since 1.1.0

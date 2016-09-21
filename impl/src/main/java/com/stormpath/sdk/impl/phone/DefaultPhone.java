@@ -33,8 +33,8 @@ public class DefaultPhone extends AbstractInstanceResource implements Phone {
     static final StringProperty NUMBER = new StringProperty("number");
     static final StringProperty NAME = new StringProperty("name");
     static final StringProperty DESCRIPTION = new StringProperty("description");
-    static final StatusProperty<PhoneStatus> STATUS = new StatusProperty<>("status", PhoneStatus.class);
-    static final StatusProperty<PhoneVerificationStatus> VERIFICATION_STATUS = new StatusProperty<>("verificationStatus",PhoneVerificationStatus.class);
+    static final EnumProperty<PhoneStatus> STATUS = new EnumProperty<>("status", PhoneStatus.class);
+    static final EnumProperty<PhoneVerificationStatus> VERIFICATION_STATUS = new EnumProperty<>("verificationStatus",PhoneVerificationStatus.class);
 
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");

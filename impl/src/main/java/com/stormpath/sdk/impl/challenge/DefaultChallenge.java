@@ -34,7 +34,7 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
 
     static final StringProperty MESSAGE = new StringProperty("message");
     static final StringProperty MESSAGE_ID = new StringProperty("messageId");
-    static final StatusProperty<ChallengeStatus> STATUS = new StatusProperty<>("status", ChallengeStatus.class);
+    static final EnumProperty<ChallengeStatus> STATUS = new EnumProperty<>("status", ChallengeStatus.class);
     static final StringProperty CODE = new StringProperty("code");
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
     static final ResourceReference<Factor> FACTOR = new ResourceReference<>("factor", Factor.class);

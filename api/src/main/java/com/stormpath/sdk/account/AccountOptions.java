@@ -129,7 +129,7 @@ public interface AccountOptions<T> extends Options {
 
     /**
      * Ensures that when retrieving an Account, the Account's associated
-     * {@link Account#getFactors()} () factors} are also retrieved in the same request (paginated).
+     * {@link Account#getFactors()} are also retrieved in the same request (paginated).
      * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
      * will use.
      * <p/>
@@ -146,11 +146,11 @@ public interface AccountOptions<T> extends Options {
 
     /**
      * Ensures that when retrieving an Account, the Account's associated
-     * {@link Account#getFactors()} ()} factors} are also retrieved in the same request (paginated),
-     * limiting the first page of Factor results to {@code limit} items.  This enhances performance by
+     * {@link Account#getFactors()} factors} are also retrieved in the same request (paginated),
+     * limiting the quantity of Factors per page to {@code limit} items.  This enhances performance by
      * leveraging a single request to retrieve multiple related resources you know you will use.
      *
-     * @param limit the number of results in the Factor collection's first page.  Min: 1, Max: 100.
+     * @param limit the number of results in the Factor collection.  Min: 1, Max: 100.
      * @return this instance for method chaining.
      *
      * @since 1.1.0
@@ -160,11 +160,11 @@ public interface AccountOptions<T> extends Options {
     /**
      * Ensures that when retrieving an Account, the Account's associated
      * {@link Account#getFactors()} factors} are also retrieved in the same request (paginated), with
-     * the first page of Factor results starting at the specified {@code offset} index and limiting the number
+     * Factor results starting at the specified {@code offset} index and limiting the number
      * of results to {@code limit} items.  This enhances performance by leveraging a single request to retrieve
      * multiple related resources you know you will use.
      *
-     * @param limit  the number of results in the Factors collection's first page.  Min: 1, Max: 100.
+     * @param limit  the number of results in the Factors collection.  Min: 1, Max: 100.
      * @param offset the starting index of the first Factor to retrieve in the overall Factors
      *               collection's result set.
      * @return this instance for method chaining.
@@ -175,7 +175,7 @@ public interface AccountOptions<T> extends Options {
 
     /**
      * Ensures that when retrieving an Account, the Account's associated
-     * {@link Account#getPhones()} () phones} are also retrieved in the same request (paginated).
+     * {@link Account#getPhones()} are also retrieved in the same request (paginated).
      * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
      * will use.
      * <p/>
@@ -192,11 +192,11 @@ public interface AccountOptions<T> extends Options {
 
     /**
      * Ensures that when retrieving an Account, the Account's associated
-     * {@link Account#getPhones()} ()} phones} are also retrieved in the same request (paginated),
-     * limiting the first page of Phone results to {@code limit} items.  This enhances performance by
+     * {@link Account#getPhones()}} are also retrieved in the same request (paginated),
+     * limiting the Phone results to {@code limit} items.  This enhances performance by
      * leveraging a single request to retrieve multiple related resources you know you will use.
      *
-     * @param limit the number of results in the Phone collection's first page.  Min: 1, Max: 100.
+     * @param limit the number of results in the Phone collection.  Min: 1, Max: 100.
      * @return this instance for method chaining.
      *
      * @since 1.1.0
@@ -205,12 +205,12 @@ public interface AccountOptions<T> extends Options {
     T withPhones(int limit);
     /**
      * Ensures that when retrieving an Account, the Account's associated
-     * {@link Account#getPhones()} phones} are also retrieved in the same request (paginated), with
-     * the first page of Factor results starting at the specified {@code offset} index and limiting the number
+     * {@link Account#getPhones()} are also retrieved in the same request (paginated), with
+     * Factor results starting at the specified {@code offset} index and limiting the number
      * of results to {@code limit} items.  This enhances performance by leveraging a single request to retrieve
      * multiple related resources you know you will use.
      *
-     * @param limit  the number of results in the Factors collection's first page.  Min: 1, Max: 100.
+     * @param limit  the number of results in the Factors collection.  Min: 1, Max: 100.
      * @param offset the starting index of the first Phone to retrieve in the overall Phones
      *               collection's result set.
      * @return this instance for method chaining.

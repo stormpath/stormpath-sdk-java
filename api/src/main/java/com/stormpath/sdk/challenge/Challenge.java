@@ -17,13 +17,16 @@ package com.stormpath.sdk.challenge;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.resource.*;
 
 /**
- * This domain object represents a challenge of {@link com.stormpath.sdk.factor.sms.SmsFactor} smsFactor for a Multi Factor Authentication.
+ * This domain object represents a challenge of a {@link Factor} for a Multi Factor Authentication.
  * <p/>
- * In a Multi Factor Authentication scenario a challenge would be issued to challenge the authentication by an additional {@link Factor}
- * like and {@link com.stormpath.sdk.factor.sms.SmsFactor}
+ * In a Multi Factor Authentication scenario authenticating a user is challenged by additional {@link Factor}s like an {@link SmsFactor}.
+ *
+ * For Example: Using an {@link SmsFactor} as an additional {@link Factor} for authentication the user would receive an sms including a multi-digit code within its message.
+ * The user would verify the authentication challenge by entering the sms code back to the system.
  *
  * @since 1.1.0
  */

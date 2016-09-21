@@ -31,10 +31,10 @@ import java.util.Map;
  */
 public abstract class AbstractFactor extends AbstractInstanceResource implements Factor {
 
-    public static final StatusProperty<FactorType> FACTOR_TYPE = new StatusProperty<>("type", FactorType.class);
+    public static final EnumProperty<FactorType> FACTOR_TYPE = new EnumProperty<>("type", FactorType.class);
     public static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
-    public static final StatusProperty<FactorStatus> STATUS = new StatusProperty<>("status", FactorStatus.class);
-    public static final StatusProperty<FactorVerificationStatus> VERIFICATION_STATUS = new StatusProperty<>("verificationStatus", FactorVerificationStatus.class);
+    public static final EnumProperty<FactorStatus> STATUS = new EnumProperty<>("status", FactorStatus.class);
+    public static final EnumProperty<FactorVerificationStatus> VERIFICATION_STATUS = new EnumProperty<>("verificationStatus", FactorVerificationStatus.class);
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
