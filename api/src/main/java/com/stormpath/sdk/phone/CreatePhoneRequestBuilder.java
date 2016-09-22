@@ -24,6 +24,16 @@ package com.stormpath.sdk.phone;
 public interface CreatePhoneRequestBuilder {
 
     /**
+     * Ensures that after a Phone is created, the creation response is retrieved with the specified phone's
+     * options. This enhances performance by leveraging a single request to retrieve multiple related
+     * resources you know you will use.
+     *
+     * @return the builder instance for method chaining.
+     * @throws IllegalArgumentException if {@code options} is null.
+     */
+    CreatePhoneRequestBuilder withResponseOptions(PhoneOptions options) throws IllegalArgumentException;
+
+    /**
      * Creates a new {@code CreatePhoneRequest} instance based on the current builder state.
      *
      * @return a new {@code CreatePhoneRequest} instance based on the current builder state.

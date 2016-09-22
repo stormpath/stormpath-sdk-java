@@ -87,6 +87,39 @@ class PhoneIT extends ClientIT {
         assertNotNull phone.modifiedAt
         assertNotNull phone.account
         assertNotNull phone.account.href
+
+        // Create the phone with builder
+        def phone2 = client.instantiate(Phone)
+        phone2.setNumber("+18883915288").setAccount(account)
+        def builder = Phones.newCreateRequestFor(phone2).withResponseOptions(Phones.options().withAccount())
+
+        phone2 = account.createPhone(builder.build())
+
+        assertNotNull phone2.href
+        assertEquals phone2.number,"+18883915288"
+        assertNull phone2.name
+        assertNull phone2.description
+        assertEquals phone2.verificationStatus, PhoneVerificationStatus.UNVERIFIED
+        assertEquals phone2.status,PhoneStatus.ENABLED
+        assertNotNull phone2.createdAt
+        assertNotNull phone2.modifiedAt
+        assertNotNull phone2.account
+        assertEquals(phone2.account.fullName, account.fullName)
+
+        //validate GET on phone endpoint works
+        phone2 = client.getResource(phone2.href, Phone)
+
+        //should have same values
+        assertNotNull phone2.href
+        assertEquals phone2.number,"+18883915288"
+        assertNull phone2.name
+        assertNull phone2.description
+        assertEquals phone2.verificationStatus, PhoneVerificationStatus.UNVERIFIED
+        assertEquals phone2.status,PhoneStatus.ENABLED
+        assertNotNull phone2.createdAt
+        assertNotNull phone2.modifiedAt
+        assertNotNull phone2.account
+        assertNotNull phone2.account.href
     }
 
     @Test

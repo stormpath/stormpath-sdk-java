@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.phone.CreatePhoneRequest;
 import com.stormpath.sdk.phone.CreatePhoneRequestBuilder;
 import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneOptions;
 
 /**
  * @since 1.1.0
@@ -26,6 +27,7 @@ import com.stormpath.sdk.phone.Phone;
 public class DefaultCreatePhoneRequestBuilder implements CreatePhoneRequestBuilder {
 
     private final Phone phone;
+    private PhoneOptions options;
 
     public DefaultCreatePhoneRequestBuilder(Phone phone) {
         Assert.notNull(phone, "Phone can't be null.");
@@ -33,7 +35,14 @@ public class DefaultCreatePhoneRequestBuilder implements CreatePhoneRequestBuild
     }
 
     @Override
+    public CreatePhoneRequestBuilder withResponseOptions(PhoneOptions options) throws IllegalArgumentException {
+        Assert.notNull(options, "options can't be null.");
+        this.options = options;
+        return this;
+    }
+
+    @Override
     public CreatePhoneRequest build() {
-        return new DefaultCreatePhoneRequest(phone);
+        return new DefaultCreatePhoneRequest(phone, options);
     }
 }

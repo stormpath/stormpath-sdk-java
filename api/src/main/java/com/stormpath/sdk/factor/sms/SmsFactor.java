@@ -20,14 +20,13 @@ import com.stormpath.sdk.challenge.ChallengeCriteria;
 import com.stormpath.sdk.challenge.ChallengeList;
 import com.stormpath.sdk.challenge.CreateChallengeRequest;
 import com.stormpath.sdk.factor.Factor;
-import com.stormpath.sdk.factor.Factors;
 import com.stormpath.sdk.phone.Phone;
 import com.stormpath.sdk.resource.ResourceException;
 
 /**
- * An {@code SmsFactor} is a {@link Factor} that uses sms messages to challenge the authentication.
- * Upon challenging an SmsFactor an sms is send to the{@code SmsFactor}'s {@link Phone} including
- * a code in its text for the user to enter it back to the system for verification.
+ * An {@code SmsFactor} is a Factor that represents a phone used in SMS-based challenge workflows.
+ * When issuing a challenge via an SmsFactor, a code is sent via SMS to the phone, and the user
+ * can enter the received code back into the system to verify/complete the challenge.
  *
  * @since 1.1.0
  */
@@ -72,7 +71,7 @@ public interface SmsFactor extends Factor {
 
     /**
      * Returns a paginated list of the sms factor's assigned challenges that match the specified query criteria.  The
-     * {@link Factors.SmsFactors SmsFactors} utility class is available to help construct
+     * {@link SmsFactors SmsFactors} utility class is available to help construct
      * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
      * query-building experience.  For example:
      * <pre>

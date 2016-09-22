@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.phone;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.phone.CreatePhoneRequest;
 import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneOptions;
 
 /**
  * @since 1.1.0
@@ -25,10 +26,12 @@ import com.stormpath.sdk.phone.Phone;
 public class DefaultCreatePhoneRequest implements CreatePhoneRequest {
 
     private final Phone phone;
+    private final PhoneOptions options;
 
-    public DefaultCreatePhoneRequest(Phone phone) {
+    public DefaultCreatePhoneRequest(Phone phone, PhoneOptions options) {
         Assert.notNull(phone, "phone cannot be null.");
         this.phone = phone;
+        this.options = options;
     }
 
     @Override
