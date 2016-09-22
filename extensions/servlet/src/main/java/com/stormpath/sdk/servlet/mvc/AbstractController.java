@@ -195,7 +195,7 @@ public abstract class AbstractController implements Controller {
         return messageSource.getMessage(key, locale);
     }
 
-    protected String i18n(HttpServletRequest request, String key, String defaultMessage) {
+    protected String i18nWithDefault(HttpServletRequest request, String key, String defaultMessage) {
         Locale locale = localeResolver.get(request, null);
         return messageSource.getMessage(key, defaultMessage, locale);
     }

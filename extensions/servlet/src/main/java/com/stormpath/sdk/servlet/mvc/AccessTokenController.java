@@ -22,6 +22,7 @@ import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.authc.DefaultBasicApiAuthenticationRequest;
 import com.stormpath.sdk.impl.authc.DefaultHttpServletRequestWrapper;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthentication;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthentication;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.Authenticators;
@@ -29,6 +30,8 @@ import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthentication;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
@@ -64,9 +67,9 @@ public class AccessTokenController extends AbstractController {
 
     private static final String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
     private static final String PASSWORD_GRANT_TYPE = "password";
+    private static final String STORMPATH_SOCIAL_GRANT_TYPE = "stormpath_social";
     private static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
     private static final String GRANT_TYPE_PARAM_NAME = "grant_type";
-    private static final String AUTHORIZATION = "Authorization";
 
     private RefreshTokenResultFactory refreshTokenResultFactory;
     private RefreshTokenAuthenticationRequestFactory refreshTokenAuthenticationRequestFactory;
@@ -242,7 +245,10 @@ public class AccessTokenController extends AbstractController {
         try {
             Application app = getApplication(request);
             OAuthClientCredentialsGrantRequestAuthentication clientCredentialsGrantRequestAuthentication =
-                    new DefaultOAuthClientCredentialsGrantRequestAuthentication(authenticationRequest.getPrincipals(), authenticationRequest.getCredentials());
+                    OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()
+                            .setApiKeyId(authenticationRequest.getPrincipals())
+                            .setApiKeySecret(authenticationRequest.getCredentials())
+                            .build();
 
             authenticationResult = Authenticators.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR
                     .forApplication(app)
@@ -250,6 +256,31 @@ public class AccessTokenController extends AbstractController {
         } catch (ResourceException e) {
             log.debug("Unable to authenticate client credentials grant request: {}", e.getMessage(), e);
             throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "Unable to authenticate client credentials grant request");
+        }
+
+        return createAccessTokenResult(request, response, authenticationResult);
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    private AccessTokenResult stormpathSocialAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
+        OAuthGrantRequestAuthenticationResult authenticationResult;
+
+        try {
+            Application app = getApplication(request);
+            String providerId = request.getParameter("providerId");
+            String accessToken = request.getParameter("accessToken");
+            String code = request.getParameter("code");
+            OAuthStormpathSocialGrantRequestAuthentication grantRequestAuthentication =
+                    new DefaultOAuthStormpathSocialGrantRequestAuthentication(providerId, accessToken, code);
+
+            authenticationResult = Authenticators.OAUTH_STORMPATH_SOCIAL_GRANT_REQUEST_AUTHENTICATOR
+                    .forApplication(app)
+                    .authenticate(grantRequestAuthentication);
+        } catch (ResourceException e) {
+            log.debug("Unable to authenticate stormpath social grant request: {}", e.getMessage(), e);
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "Unable to authenticate stormpath social grant request");
         }
 
         return createAccessTokenResult(request, response, authenticationResult);
@@ -285,6 +316,14 @@ public class AccessTokenController extends AbstractController {
                 case CLIENT_CREDENTIALS_GRANT_TYPE:
                     try {
                         result = this.clientCredentialsAuthenticationRequest(request, response);
+                    } catch (HttpAuthenticationException e) {
+                        log.warn("Unable to authenticate client", e);
+                        throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
+                    }
+                    break;
+                case STORMPATH_SOCIAL_GRANT_TYPE:
+                    try {
+                        result = this.stormpathSocialAuthenticationRequest(request, response);
                     } catch (HttpAuthenticationException e) {
                         log.warn("Unable to authenticate client", e);
                         throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);

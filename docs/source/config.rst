@@ -76,7 +76,7 @@ If you're just starting out, we recommend that your configuration be specified i
 Defining properties in these locations is covered more in detail next.
 
 1. Plugin web.stormpath.properties
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This file resides in the stormpath-servlet-plugin-|version|.jar at:
 
@@ -103,14 +103,17 @@ If a file ``/WEB-INF/stormpath.properties`` exists in your web application, prop
 4. Servlet Context Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you define ``stormpath.*`` servlet context parameters in your web application's ``/WEB-INF/web.xml`` file, they will override any identically-named properties discovered in previous locations.  For example:
+If you define a block of properties in the ``stormpath.properties`` servlet context parameter in your web application's ``/WEB-INF/web.xml`` file, they will override any identically-named properties discovered in previous locations.  For example:
 
 
 .. code-block:: xml
 
     <context-param>
-        <param-name>stormpath.foo.bar</param-name>
-        <param-value>myValue</param-value>
+        <param-name>stormpath.properties</param-name>
+        <param-value><![CDATA[
+            stormpath.foo.bar = myValue
+            stormpath.other.prop = another value
+        ]]></param-value>
     </context-param>
 
 5. Environment Variables

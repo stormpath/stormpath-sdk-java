@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.servlet.application;
 
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.config.ConfigResolver;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -50,7 +53,10 @@ public class DefaultApplicationLoaderListener extends ApplicationLoader implemen
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        getApplication(sce.getServletContext());
+        Config config = ConfigResolver.INSTANCE.getConfig(sce.getServletContext());
+        if (config.isStormpathEnabled()) {
+            getApplication(sce.getServletContext());
+        }
     }
 
     /**
