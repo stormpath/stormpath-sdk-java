@@ -51,9 +51,6 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  */
 public final class Phones {
 
-    private static final Class<CreatePhoneRequestBuilder> BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.phone.DefaultCreatePhoneRequestBuilder");
-
     //prevent instantiation
     private Phones() {
     }

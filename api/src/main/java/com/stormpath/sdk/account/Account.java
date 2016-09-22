@@ -31,7 +31,6 @@ import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
-import com.stormpath.sdk.phone.CreatePhoneRequest;
 import com.stormpath.sdk.phone.Phone;
 import com.stormpath.sdk.phone.PhoneCriteria;
 import com.stormpath.sdk.phone.PhoneList;
@@ -590,17 +589,6 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.0.RC7
      */
     RefreshTokenList getRefreshTokens();
-
-    /**
-     * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
-     * The account can then use the Phone for Multi Factor Authentication purposes.
-     *
-     * @param request {@link CreatePhoneRequest} used to create a phone with.
-     * @return the newly created {@link Phone}.
-     *
-     * @since 1.1.0
-     */
-    Phone createPhone(CreatePhoneRequest request);
 
     /**
      * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.

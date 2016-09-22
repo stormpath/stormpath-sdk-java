@@ -22,7 +22,7 @@ import com.stormpath.sdk.factor.CreateFactorRequest;
  * A Builder to construct {@link CreateFactorRequest}s.
  *
  * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
- * @since 0.9
+ * @since 1.1.0
  */
 public interface CreateSmsFactorRequestBuilder {
 

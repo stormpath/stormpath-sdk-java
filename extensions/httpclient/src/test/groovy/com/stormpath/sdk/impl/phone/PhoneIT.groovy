@@ -39,7 +39,7 @@ class PhoneIT extends ClientIT {
     void testCreatePhoneDefaultValues() {
 
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testCreatePhoneDefaultValues")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -92,7 +92,7 @@ class PhoneIT extends ClientIT {
     @Test
     void testCreatePhone() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testCreatePhone")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -138,7 +138,7 @@ class PhoneIT extends ClientIT {
     @Test
     void testUpdatePhone() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testUpdatePhone")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -250,7 +250,7 @@ class PhoneIT extends ClientIT {
     @Test
     void testAccountPhonesCollection() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testAccountPhonesCollection")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -289,7 +289,7 @@ class PhoneIT extends ClientIT {
     @Test
     void testCreatePhoneErrors() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testCreatePhoneErrors")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -394,7 +394,7 @@ class PhoneIT extends ClientIT {
     // todo: Enable this test once the issue is fixed
     void testDeleteAccountDeletesPhones() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testDeleteAccountDeletesPhones")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -453,7 +453,7 @@ class PhoneIT extends ClientIT {
     @Test
     void testDeletePhone() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testDeletePhone")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -511,7 +511,7 @@ class PhoneIT extends ClientIT {
     @Test
     void testSearchOnPhoneNameDescription() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testSearchOnPhoneNameDescription")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -591,7 +591,7 @@ class PhoneIT extends ClientIT {
     @Test
     void testGetPhonesWithDifferentCriteria() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: PhoneIT.testGetPhonesWithDifferentCriteria")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href

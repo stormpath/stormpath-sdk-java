@@ -618,16 +618,6 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
 
 
     @Override
-    public Phone createPhone(CreatePhoneRequest request) {
-        Assert.notNull(request, "Request cannot be null.");
-
-        final Phone phone = request.getPhone();
-        String href = getPhones().getHref();
-
-        return getDataStore().create(href, phone);
-    }
-
-    @Override
     public Phone createPhone(Phone phone) {
         Assert.notNull(phone, "Phone instance cannot be null.");
         return getDataStore().create(getPhones().getHref(), phone);

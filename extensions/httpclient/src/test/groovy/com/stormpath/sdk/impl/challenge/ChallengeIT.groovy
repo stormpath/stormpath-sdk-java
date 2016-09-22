@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.challenge
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.Challenge
-import com.stormpath.sdk.challenge.ChallengeOptions
 import com.stormpath.sdk.challenge.Challenges
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
@@ -28,12 +27,15 @@ import org.testng.annotations.Test
 
 import static org.testng.AssertJUnit.*
 
+/**
+ * @since 1.1.0
+ */
 class ChallengeIT extends ClientIT{
 
     @Test
     void testFailedChallenge() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ChallengeIT.testFailedChallenge")
         dir = client.currentTenant.createDirectory(dir);
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -85,62 +87,4 @@ class ChallengeIT extends ClientIT{
         assertTrue(e instanceof ResourceException)
     }
 
-    // This test and the next one (testSuccessfulChallengeVerifyChallenge) require an actual phone to complete
-    // Therefore they are disabled and meant to be run manually
-    @Test(enabled = false)
-    void testSuccessfulChallengeSendCode() {
-
-        // Put your phone number here
-        def phoneNumber = "2076588575"
-
-        Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
-        dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
-        deleteOnTeardown(dir)
-
-        dir.createAccount(account)
-
-        def phone = client.instantiate(Phone)
-        phone = phone.setNumber(phoneNumber).setAccount(account)
-        SmsFactor factor = client.instantiate(SmsFactor)
-        factor = factor.setPhone(phone)
-
-        factor = account.createFactor(factor)
-
-        def challenge = client.instantiate(Challenge)
-        challenge.setMessage("This is your owesome code: \${code}")
-
-        challenge = factor.createChallenge(challenge)
-
-        println("Chalenge href: $challenge.href")
-    }
-
-    // This test and the previous one (testSuccessfulChallengeSendCode) require an actual phone to complete
-    // Therefore they are disabled and meant to be run manually
-    @Test(enabled = false)
-    void testSuccessfulVerifyChallenge() {
-
-        // Paste the value for challenge href retrieved from previous test (testSuccessfulChallengeSendCode) here
-        def href = "http://localhost:9191/v1/challenges/3YA1MvXeccKORSkX6QXkB4"
-        // Paste the code you received on your phone by running the previous test (testSuccessfulChallengeSendCode) here
-        def code = "506726"
-
-        Challenge challenge = client.getResource(href, Challenge)
-        assertTrue(challenge.validate(code))
-
-         //Test Challenges with ChallengeOptions
-        ChallengeOptions challengeOptions = Challenges.options().withFactor()
-        challenge = client.getResource(challenge.href, Challenge.class, challengeOptions)
-
-        assertNotNull(challenge.getAccount().href)
-        assertEquals(challenge.getFactor().getAccount().href, challenge.getAccount().href)
-
-    }
 }

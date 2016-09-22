@@ -33,7 +33,6 @@ import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
-import com.stormpath.sdk.phone.CreatePhoneRequest;
 import com.stormpath.sdk.phone.Phone;
 import com.stormpath.sdk.phone.PhoneCriteria;
 import com.stormpath.sdk.phone.PhoneList;
@@ -380,12 +379,6 @@ public class ImmutableAccount implements Account {
     @Override
     public AccountLinkList getAccountLinks(AccountLinkCriteria criteria) {
         return account.getAccountLinks(criteria);
-    }
-
-    @Override
-    public Phone createPhone(CreatePhoneRequest request) {
-        immutable();
-        return null;
     }
 
     @Override
