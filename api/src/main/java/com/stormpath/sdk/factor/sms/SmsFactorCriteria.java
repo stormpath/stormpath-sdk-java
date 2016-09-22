@@ -21,10 +21,10 @@ import com.stormpath.sdk.query.Criteria;
 /**
  * A {@link SmsFactor}-specific {@link Criteria} class, enabling a SmsFactor-specific
  * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. SmsFactorCriteria instances can be
- * constructed by using the {@link com.stormpath.sdk.factor.Factors.SmsFactors} utility class, for example:
+ * constructed by using the {@link com.stormpath.sdk.factor.sms.SmsFactors} utility class, for example:
  * <pre>
- * Factors.SmsFactors.where(Factors.SmsFactors.status().eq(FactorStatus.DISABLED"))
- *     .and(Factors.SmsFactors.verificationStatus().eq(FactorVerificationStatus.VERIFIED))
+ * SmsFactors.where(SmsFactors.status().eq(FactorStatus.DISABLED"))
+ *     .and(SmsFactors.verificationStatus().eq(FactorVerificationStatus.VERIFIED))
  *     .orderByType()
  *     .limitTo(10));
  * </pre>

@@ -103,6 +103,12 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
     }
 
     @Override
+    public ChallengeList getChallenges(Map<String, Object> queryParams) {
+        ChallengeList list = getChallenges(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), ChallengeList.class, queryParams);
+    }
+
+    @Override
     public SmsFactor challenge() {
         String href = getHref();
         href += "/challenges";

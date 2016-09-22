@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Static utility/helper methods for working with {@link Phone} resources.  Most methods are
@@ -50,6 +52,9 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  * @since 1.1.0
  */
 public final class Phones {
+
+    private static final Class<CreatePhoneRequestBuilder> BUILDER_CLASS =
+            Classes.forName("com.stormpath.sdk.impl.phone.DefaultCreatePhoneRequestBuilder");
 
     //prevent instantiation
     private Phones() {
@@ -271,6 +276,23 @@ public final class Phones {
     private static DateExpressionFactory newDateExpressionFactory(String propName) {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultDateExpressionFactory";
         return (DateExpressionFactory) Classes.newInstance(FQCN, propName);
+    }
+
+    /**
+     * Creates a new {@link com.stormpath.sdk.phone.CreatePhoneRequestBuilder CreatePhoneRequestBuilder}
+     * instance reflecting the specified {@link com.stormpath.sdk.phone.Phone} instance. The builder can be used to customize any
+     * creation request options as necessary.
+     *
+     * @param phone the phone to create a new record for within Stormpath
+     * @return a new {@link com.stormpath.sdk.phone.CreatePhoneRequestBuilder CreatePhoneRequestBuilder}
+     *         instance reflecting the specified {@link com.stormpath.sdk.phone.Phone} instance.
+     ** @see com.stormpath.sdk.account.Account#createPhone(CreatePhoneRequest)
+     *
+     * @since 1.1.0
+     */
+    public static CreatePhoneRequestBuilder newCreateRequestFor(Phone phone) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Phone.class);
+        return (CreatePhoneRequestBuilder) Classes.instantiate(ctor, phone);
     }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
