@@ -624,6 +624,9 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         final Phone phone = request.getPhone();
         String href = getPhones().getHref();
 
+        if (request.hasPhoneOptions()) {
+            return  getDataStore().create(href, phone, request.getPhoneOptions());
+        }
         return getDataStore().create(href, phone);
     }
 

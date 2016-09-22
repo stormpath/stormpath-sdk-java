@@ -20,7 +20,7 @@ import com.stormpath.sdk.factor.FactorOptions;
 /**
  * SmsFactor-specific options that may be specified when retrieving {@link SmsFactor} resources.
  *
- * @since 0.8
+ * @since 1.1.0
  */
 public interface SmsFactorOptions<T> extends FactorOptions<T> {
 

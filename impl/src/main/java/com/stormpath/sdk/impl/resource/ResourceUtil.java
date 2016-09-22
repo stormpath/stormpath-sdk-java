@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.impl.resource;
 
+import com.stormpath.sdk.resource.Resource;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +27,21 @@ import java.util.Map;
 public class ResourceUtil {
 
     /**
+     * Filters non- string values out of a the {@link Resource} dirty properties
+     * @param resource
+     * @return filtered map
+     */
+    public static final Map<String, String> filterNonStringvaluesWithiResourceDirtyProperties(Resource resource){
+        Map<String, Object> dirtyProperties = ((AbstractResource) resource).dirtyProperties;
+        return filterNonStringValues(dirtyProperties);
+    }
+
+    /**
      * Filters non- string values out of a Map
      * @param map input map
      * @return filtered map
      */
-    public static final Map<String, String> filterNonStringvalues(Map<String, Object> map){
+    public static final Map<String, String> filterNonStringValues(Map<String, Object> map){
         Map<String, String> filteredMap = new HashMap<>();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             if (!(entry.getValue() instanceof String)) {

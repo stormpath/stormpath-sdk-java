@@ -31,4 +31,18 @@ public interface CreatePhoneRequest {
      */
     Phone getPhone();
 
+    /**
+     * Returns true in case Phone has options.
+     *
+     * @return true in case Phone has options.
+     */
+    boolean hasPhoneOptions();
+
+    /**
+     * Returns the {@link PhoneOptions}.
+     *
+     * @return  {@link PhoneOptions}.
+     */
+    PhoneOptions getPhoneOptions() throws IllegalStateException;
+
 }

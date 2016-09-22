@@ -63,7 +63,7 @@ class FactorIT extends ClientIT {
         deleteOnTeardown(account)
         deleteOnTeardown(dir)
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
         phone = account.createPhone(phone);
 
         SmsFactor smsFactor = client.instantiate(SmsFactor)
@@ -105,7 +105,7 @@ class FactorIT extends ClientIT {
         assertTrue accountProperties.get("factors").size == 0
 
         def phone = client.instantiate(Phone)
-        phone = phone.setNumber(VALID_PHONE_NUMBER).setAccount(retrievedAccount)
+        phone = phone.setNumber(VALID_PHONE_NUMBER)
         def factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
 
@@ -156,7 +156,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone = phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone = phone.setNumber(VALID_PHONE_NUMBER)
         SmsFactor factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
 
@@ -194,7 +194,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account).setStatus(PhoneStatus.DISABLED)
+        phone.setNumber(VALID_PHONE_NUMBER).setStatus(PhoneStatus.DISABLED)
         phone = account.createPhone(phone);
 
         def factor = client.instantiate(SmsFactor)
@@ -234,7 +234,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
         phone = account.createPhone(phone);
 
         SmsFactor factor = client.instantiate(SmsFactor)
@@ -275,7 +275,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
         phone = account.createPhone(phone);
 
         SmsFactor factor = client.instantiate(SmsFactor)
@@ -318,7 +318,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
         SmsFactor factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
         def challenge = client.instantiate(Challenge)
@@ -361,7 +361,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
         phone = account.createPhone(phone);
 
         assertNotNull(phone.href)
@@ -414,7 +414,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
         phone = account.createPhone(phone);
 
         assertNotNull(phone.href)
@@ -469,7 +469,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
 
         SmsFactor factor = client.instantiate(SmsFactor)
         factor.setPhone(phone)
@@ -495,7 +495,7 @@ class FactorIT extends ClientIT {
 
         //should be able to recreate factor & phone
         def phone2 = client.instantiate(Phone)
-        phone2.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone2.setNumber(VALID_PHONE_NUMBER)
         SmsFactor factor2 = client.instantiate(SmsFactor)
         factor2.setPhone(phone2)
         account.createFactor(factor2)
@@ -521,7 +521,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
 
         SmsFactor factor = client.instantiate(SmsFactor)
         factor.setPhone(phone)
@@ -547,7 +547,11 @@ class FactorIT extends ClientIT {
         //should be able to recreate factor & phone
         factor = client.instantiate(SmsFactor)
         factor.setPhone(phone)
-        account.createFactor(factor)
+        factor = account.createFactor(factor)
+
+        assertNotNull(factor.href)
+        assertNotNull(factor.phone.href)
+        assertEquals(factor.account.href, account.href)
     }
 
     @Test(enabled = false)
@@ -570,7 +574,7 @@ class FactorIT extends ClientIT {
         dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
 
         SmsFactor factor = client.instantiate(SmsFactor)
         factor.setPhone(phone)
@@ -628,15 +632,15 @@ class FactorIT extends ClientIT {
         deleteOnTeardown(account)
         deleteOnTeardown(dir)
         def phone = client.instantiate(Phone)
-        phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
+        phone.setNumber(VALID_PHONE_NUMBER)
         phone = account.createPhone(phone);
 
         def phone2 = client.instantiate(Phone)
-        phone2.setNumber("8002346195").setAccount(account)
+        phone2.setNumber("8002346195")
         phone2 = account.createPhone(phone2);
 
         def phone3 = client.instantiate(Phone)
-        phone3.setNumber("8002346155").setAccount(account)
+        phone3.setNumber("8002346155")
         phone3 = account.createPhone(phone3);
 
         SmsFactor smsFactor = client.instantiate(SmsFactor)

@@ -23,7 +23,7 @@ import com.stormpath.sdk.query.Criteria;
  * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. SmsFactorCriteria instances can be
  * constructed by using the {@link com.stormpath.sdk.factor.sms.SmsFactors} utility class, for example:
  * <pre>
- * SmsFactors.where(SmsFactors.status().eq(FactorStatus.DISABLED"))
+ * SmsFactors.where(SmsFactors.status().eq(FactorStatus.DISABLED))
  *     .and(SmsFactors.verificationStatus().eq(FactorVerificationStatus.VERIFIED))
  *     .orderByType()
  *     .limitTo(10));

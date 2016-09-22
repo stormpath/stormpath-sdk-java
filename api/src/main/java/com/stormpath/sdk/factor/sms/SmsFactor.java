@@ -142,7 +142,7 @@ public interface SmsFactor extends Factor {
      *
      * @return created {@link Challenge}
      */
-    Challenge createChallenge(Challenge challenge)throws ResourceException;
+    Challenge createChallenge(Challenge challenge) throws ResourceException;
 
     /**
      * Creates a new {@link Challenge} assigned to this SmsFactor in the Stormpath server and returns the created resource

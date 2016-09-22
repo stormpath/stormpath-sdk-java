@@ -39,4 +39,14 @@ public class DefaultCreatePhoneRequest implements CreatePhoneRequest {
         return this.phone;
     }
 
+    @Override
+    public boolean hasPhoneOptions() {
+        return this.options != null;
+    }
+
+    @Override
+    public PhoneOptions getPhoneOptions() throws IllegalStateException {
+        return options;
+    }
+
 }

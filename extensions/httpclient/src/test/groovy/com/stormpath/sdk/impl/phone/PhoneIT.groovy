@@ -59,7 +59,7 @@ class PhoneIT extends ClientIT {
 
         //create a phone:
         def phone = client.instantiate(Phone)
-        phone.setNumber("+18883915282").setAccount(account)
+        phone.setNumber("888 391 5282")
         phone = account.createPhone(phone);
 
         assertNotNull phone.href
@@ -90,7 +90,7 @@ class PhoneIT extends ClientIT {
 
         // Create the phone with builder
         def phone2 = client.instantiate(Phone)
-        phone2.setNumber("+18883915288").setAccount(account)
+        phone2.setNumber("1-888-391-5288")
         def builder = Phones.newCreateRequestFor(phone2).withResponseOptions(Phones.options().withAccount())
 
         phone2 = account.createPhone(builder.build())
@@ -152,7 +152,6 @@ class PhoneIT extends ClientIT {
                 .setNumber(phoneNumber)
                 .setName(name)
                 .setDescription(description)
-                .setAccount(account)
                 .setVerificationStatus(PhoneVerificationStatus.VERIFIED)
                 .setStatus(PhoneStatus.DISABLED)
         phone = account.createPhone(phone);
@@ -198,7 +197,6 @@ class PhoneIT extends ClientIT {
                 .setNumber(phoneNumber)
                 .setName(name)
                 .setDescription(description)
-                .setAccount(account)
                 .setStatus(PhoneStatus.DISABLED)
         phone = account.createPhone(phone);
 
@@ -307,12 +305,12 @@ class PhoneIT extends ClientIT {
         //create a phone:
         def phoneNumber = "+18883915282"
         def phone = client.instantiate(Phone)
-        phone.setNumber(phoneNumber).setAccount(account)
+        phone.setNumber(phoneNumber)
         account.createPhone(phone);
 
         def phoneNumber2 = "+18883528249"
         phone = client.instantiate(Phone)
-        phone.setNumber(phoneNumber2).setAccount(account)
+        phone.setNumber(phoneNumber2)
         account.createPhone(phone);
 
         phoneList = client.getResource(account.href+"/phones", PhoneList)

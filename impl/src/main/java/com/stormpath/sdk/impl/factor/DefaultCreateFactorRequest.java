@@ -55,7 +55,7 @@ public class DefaultCreateFactorRequest<T extends Factor, R extends FactorOption
     @Override
     public R getFactorOptions() throws IllegalStateException {
         if(this.options == null){
-            throw new IllegalStateException("SmsFactorOptions has not been configured. Use the hasChallengeOptions method to check first before invoking this method.");
+            throw new IllegalStateException("SmsFactorOptions has not been configured. Use the hasPhoneOptions method to check first before invoking this method.");
         }
         return this.options;
     }
