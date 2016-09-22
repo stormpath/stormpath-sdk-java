@@ -4,6 +4,10 @@ jdk:
   - openjdk7
   - oraclejdk7
   - oraclejdk8
+addons:
+  apt:
+    packages:
+      - xsltproc
 before_install:
   - source ./ci/before_install.sh
   - source ./ci/stormpath_env.sh

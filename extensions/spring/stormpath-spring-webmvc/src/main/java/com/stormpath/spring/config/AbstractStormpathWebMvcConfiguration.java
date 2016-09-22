@@ -810,7 +810,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public RequestFieldValueResolver stormpathFieldValueResolver() {
-        return new ContentNegotiatingFieldValueResolver();
+        ContentNegotiatingFieldValueResolver contentNegotiatingFieldValueResolver = new ContentNegotiatingFieldValueResolver();
+        contentNegotiatingFieldValueResolver.setProduces(stormpathProducedMediaTypes());
+        return contentNegotiatingFieldValueResolver;
     }
 
     public AccessTokenResultFactory stormpathAccessTokenResultFactory() {
