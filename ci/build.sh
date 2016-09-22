@@ -37,7 +37,7 @@ fi
 if [ -n "$BUILD_DOCS" ]; then
   ./ci/build_docs.sh
   EXIT_CODE=$?
-  if [ "$EXIT_CODE"-ne 0 ]; then
+  if [ "$EXIT_CODE" -ne 0 ]; then
     # Only exit since build_docs.sh would handle its own error messages
     exit $EXIT_CODE
   fi
