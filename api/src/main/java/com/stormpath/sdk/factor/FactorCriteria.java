@@ -15,9 +15,6 @@
  */
 package com.stormpath.sdk.factor;
 
-import com.stormpath.sdk.phone.Phone;
-import com.stormpath.sdk.phone.PhoneOptions;
-import com.stormpath.sdk.phone.Phones;
 import com.stormpath.sdk.query.Criteria;
 
 /**
@@ -27,7 +24,6 @@ import com.stormpath.sdk.query.Criteria;
  * <pre>
  * Factors.SMS.where(Factors.SMS.status().eq(FactorStatus.DISABLED)
  *     .and(Factors.SMS.verificationStatus().eq(FactorVerificationStatus.VERIFIED))
- *     .orderByName()
  *     .limitTo(10));
  * </pre>
  * <h2>Sort Order</h2>
@@ -38,15 +34,14 @@ import com.stormpath.sdk.query.Criteria;
  * The default sort order is always {@code ascending}, but can be changed to {@code descending} by calling the
  * {@link #descending()} method <em>immediately</em> after the {@code orderBy} method call.  For example:
  * <pre>
- * ...criteria.orderByName()<b>.descending()</b>...
+ * ...criteria.orderByStatus()<b>.descending()</b>...
  * </pre>
  * <h3>Multiple Order Statements</h3>
  * You may specify multiple {@code orderBy} clauses and the query results will ordered, reflecting {@code orderBy}
- * statements <em>in the order they are declared</em>.  For example, to order the results first by name (ascending)
- * and then further by status (descending), you would chain {@code orderBy} statements:
+ * statements <em>in the order they are declared</em>.  For example, to order the results by status (descending),
+ * you would chain {@code orderBy} statements:
  * <pre>
  * ...criteria
- *     .orderByName()
  *     .orderByStatus().descending()
  *     ...
  * </pre>
@@ -56,7 +51,7 @@ import com.stormpath.sdk.query.Criteria;
 public interface FactorCriteria extends Criteria<FactorCriteria>,  FactorOptions<FactorCriteria>{
 
     /**
-     * Ensures that the query results are ordered by group {@link Phone#getStatus() status}.
+     * Ensures that the query results are ordered by type {@link Factor#getFactorType() type}.
      * <p/>
      * Please see the {@link FactorCriteria class-level documentation} for controlling sort order (ascending or
      * descending) and chaining multiple {@code orderBy} clauses.
@@ -66,7 +61,7 @@ public interface FactorCriteria extends Criteria<FactorCriteria>,  FactorOptions
     FactorCriteria orderByType();
 
     /**
-     * Ensures that the query results are ordered by group {@link Phone#getStatus() status}.
+     * Ensures that the query results are ordered by status {@link Factor#getStatus() status}.
      * <p/>
      * Please see the {@link FactorCriteria class-level documentation} for controlling sort order (ascending or
      * descending) and chaining multiple {@code orderBy} clauses.
@@ -76,7 +71,7 @@ public interface FactorCriteria extends Criteria<FactorCriteria>,  FactorOptions
     FactorCriteria orderByStatus();
 
     /**
-     * Ensures that the query results are ordered by group {@link Phone#getVerificationStatus()} verificationStatus}.
+     * Ensures that the query results are ordered by verificationStatus {@link Factor#getFactorVerificationStatus() verificationStatus}.
      * <p/>
      * Please see the {@link FactorCriteria class-level documentation} for controlling sort order (ascending or
      * descending) and chaining multiple {@code orderBy} clauses.

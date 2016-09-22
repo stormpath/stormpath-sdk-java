@@ -20,6 +20,8 @@ import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
+import java.lang.reflect.Constructor;
+
 /**
  * Static utility/helper methods for working with {@link Challenge} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
@@ -44,9 +46,12 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  *     .limitTo(25));
  * </pre>
  *
- * @since 1.0,4
+ * @since 1.1.0
  */
 public final class Challenges {
+
+    private static final Class<CreateChallengeRequestBuilder> BUILDER_CLASS =
+            Classes.forName("com.stormpath.sdk.impl.challenge.DefaultCreateChallengeRequestBuilder");
 
     //prevent instantiation
     private Challenges() {
@@ -58,19 +63,19 @@ public final class Challenges {
      * Note that it is usually more common to use the {@link #where(com.stormpath.sdk.query.Criterion) where} method
      * instead of this one as the {@code where} method usually lends to better readability.  For example:
      * <pre>
-     * Challenges.criteria().add(Challenges.code().eqIgnoreCase("1234))...
+     * Challenges.criteria().add(Challenges.status().eq(ChallengeStatus.CREATED))...
      * </pre>
      * versus:
      * <pre>
-     * Challenges.where(Challenges.name().eqIgnoreCase("1234"))...
+     * Challenges.where(Challenges.status().eq(ChallengeStatus.CREATED))...
      * </pre>
      * or when using static imports:
      * <pre>
-     * where(name().eqIgnoreCase("Foo"))...
+     * where(status().eq(ChallengeStatus.CREATED))
      * </pre>
      * While all three statements are equivalent, the second and third examples are shorter and probably more readable.
      *
-     * @return a new {@link ChallengeCriteria} instance to use to formulate a Group query.
+     * @return a new {@link ChallengeCriteria} instance to use to formulate a Challenge query.
      */
     public static ChallengeCriteria criteria() {
         return (ChallengeCriteria) Classes.newInstance("com.stormpath.sdk.impl.challengep.DefaultChallengeCriteria");
@@ -111,6 +116,23 @@ public final class Challenges {
      */
     public static EqualsExpressionFactory status() {
         return newEqualsExpressionFactory("status");
+    }
+
+    /**
+     * Creates a new {@link com.stormpath.sdk.challenge.CreateChallengeRequestBuilder CreateChallengeRequestBuilder}
+     * instance reflecting the specified {@link com.stormpath.sdk.challenge.Challenge} instance. The builder can be used to customize any
+     * creation request options as necessary.
+     *
+     * @param challenge the challenge to create a new record for within Stormpath
+     * @return a new {@link com.stormpath.sdk.challenge.CreateChallengeRequestBuilder CreateChallengeRequestBuilder}
+     *         instance reflecting the specified {@link com.stormpath.sdk.challenge.Challenge} instance.
+     * @see com.stormpath.sdk.factor.sms.SmsFactor#createChallenge(CreateChallengeRequest)
+     *
+     * @since 1.1.0
+     */
+    public static CreateChallengeRequestBuilder newCreateRequestFor(Challenge challenge) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Challenge.class);
+        return (CreateChallengeRequestBuilder) Classes.instantiate(ctor, challenge);
     }
 
     private static EqualsExpressionFactory newEqualsExpressionFactory(String propName) {

@@ -17,6 +17,8 @@ package com.stormpath.sdk.factor;
 
 /**
  * Represents the type for a specific {@link Factor}.
+ *
+ * @see com.stormpath.sdk.factor.sms.SmsFactor
  */
 public enum FactorType {
     SMS

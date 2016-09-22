@@ -43,9 +43,12 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
 
     /**
      * Sets the message associated with this challenge.
-     * Tenant.
+     * This is ONLY to be used upon creation of a challenge if users want to overwrite the
+     * default message used in Stormpath.
      *
-     * @param message the message associated with this challenge.
+     *
+     * @param message the message associated with this challenge. Message hast to contain a the macro
+     *                '${code}'. This would be replaced with the code sent out within the message.
      * @return this instance for method chaining.
      */
     Challenge setMessage(String message);
@@ -59,7 +62,6 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
 
     /**
      * Sets the status associated with this challenge.
-     * Tenant.
      *
      * @param status the status associated with this challenge.
      * @return this instance for method chaining.
@@ -76,36 +78,34 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
     /**
      * Sets the account associated with this challenge.
      *
-     * @param account associated with this challenge
+     * @param account associated with this challenge.
+     * @return this instance for method chaining.
      */
     Challenge setAccount(Account account);
 
     /**
-     * Returns the sms factor associated with this challenge
+     * Returns the factor associated with this challenge
      *
-     * @return sms factor associated with this challenge
+     * @return factor associated with this challenge
      */
     Factor getFactor();
 
     /**
      * Sets the factor associated with this challenge.
      *
-     * @param smsFactor associated with this challenge
+     * @param factor associated with this challenge.
+     * @return this instance for method chaining.
      */
-    Challenge setFactor(Factor smsFactor);
+    Challenge setFactor(Factor factor);
 
     /**
-     * Returns the sent code in the sms associated with this challenge
-     *
-     * @return code in the sms associated with this challenge
-     */
-    Challenge setCode(String code);
-
-    /**
+     * This is a convenience method to POST a code to an existing challenge resource in Stormpath
+     * for validation.
      * Returns true in case the challenge is validated with the given code
-     * and false if otherwise
+     * and false if otherwise.
      *
-     * @return true in case the challenge is validated with the given code
+     * @parame code  The code to be validated with this challenge.
+     * @return true in case the challenge is validated with the given code.
      */
     boolean validate(String code);
 }

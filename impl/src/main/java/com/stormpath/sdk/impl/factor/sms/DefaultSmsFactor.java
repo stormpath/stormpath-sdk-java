@@ -16,7 +16,9 @@
 package com.stormpath.sdk.impl.factor.sms;
 
 import com.stormpath.sdk.challenge.Challenge;
+import com.stormpath.sdk.challenge.ChallengeCriteria;
 import com.stormpath.sdk.challenge.ChallengeList;
+import com.stormpath.sdk.challenge.CreateChallengeRequest;
 import com.stormpath.sdk.factor.FactorType;
 import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -26,6 +28,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
 
 import java.util.Map;
@@ -94,6 +97,12 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
     }
 
     @Override
+    public ChallengeList getChallenges(ChallengeCriteria criteria) {
+        ChallengeList list = getChallenges(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), ChallengeList.class, (Criteria<ChallengeCriteria>) criteria);
+    }
+
+    @Override
     public SmsFactor challenge() {
         String href = getHref();
         href += "/challenges";
@@ -108,8 +117,20 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
         return getDataStore().create(href, challenge);
     }
 
+    @Override
+    public Challenge createChallenge(CreateChallengeRequest request) throws ResourceException {
+        Assert.notNull(request, "Request cannot be null.");
+
+        final Challenge challenge = request.getChallenge();
+        String href = getChallenges().getHref();
+
+        if (request.hasChallengeOptions()) {
+            return  getDataStore().create(href, challenge, request.getChallengeOptions());
+        }
+        return getDataStore().create(href, challenge);
+    }
+
     protected FactorType getConcreteFactorType() {
         return FactorType.SMS;
     }
-
 }

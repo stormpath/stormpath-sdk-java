@@ -62,12 +62,12 @@ public enum ChallengeStatus {
     EXPIRED,
 
     /**
-     * 	Unexpected internal server error.
+     * Unexpected internal server error.
      */
     ERROR,
 
     /**
-     * 	SMS provider sent the message (and charged us) but did not get a successful delivery notification.
+     * SMS provider sent the message (and charged us) but did not get a successful delivery notification.
      */
     UNDELIVERED
 }

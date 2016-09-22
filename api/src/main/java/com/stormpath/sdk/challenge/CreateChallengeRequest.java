@@ -29,4 +29,18 @@ public interface CreateChallengeRequest {
      * @return the Challenge instance for which a new record will be created in Stormpath.
      */
     Challenge getChallenge();
+
+    /**
+     * Returns true in case Challenge has options.
+     *
+     * @return true in case Challenge has options.
+     */
+    boolean hasChallengeOptions();
+
+    /**
+     * Returns the {@link ChallengeOptions}.
+     *
+     * @return  {@link ChallengeOptions}.
+     */
+    ChallengeOptions getChallengeOptions() throws IllegalStateException;
 }

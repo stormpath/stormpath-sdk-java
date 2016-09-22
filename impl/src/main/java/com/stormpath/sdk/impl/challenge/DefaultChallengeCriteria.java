@@ -42,4 +42,9 @@ public class DefaultChallengeCriteria extends DefaultCriteria<ChallengeCriteria,
     public ChallengeCriteria withAccount() {
         return orderBy(DefaultChallenge.ACCOUNT);
     }
+
+    @Override
+    public ChallengeCriteria withFactor() {
+        return orderBy(DefaultChallenge.FACTOR);
+    }
 }

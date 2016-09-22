@@ -30,9 +30,9 @@ import com.stormpath.sdk.resource.Saveable;
 public interface Factor extends Resource, Saveable, Deletable, Auditable {
 
     /**
-     * Returns the Factors's status. {@link FactorStatus}
+     * Returns the {@link FactorStatus Factors's status}.
      *
-     * @return the Factors's status
+     * @return the {@link FactorStatus Factors's status}.
      */
     FactorStatus getStatus();
 
@@ -45,14 +45,14 @@ public interface Factor extends Resource, Saveable, Deletable, Auditable {
     Factor setStatus(FactorStatus status);
 
     /**
-     * Returns the Factors's {@link FactorVerificationStatus}.
+     * Returns the {@link FactorVerificationStatus Factors's verification status}.
      *
-     * @return the Factors's {@link FactorVerificationStatus}
+     * @return the the {@link FactorVerificationStatus Factors's verification status}.
      */
     FactorVerificationStatus getFactorVerificationStatus();
 
     /**
-     * Sets the Factor's verification status. {@link FactorVerificationStatus}
+     * Sets the {@link FactorVerificationStatus Factors's verification status}.
      *
      * @param verificationStatus the Factor's verification status.
      * @return this instance for method chaining.
@@ -60,11 +60,12 @@ public interface Factor extends Resource, Saveable, Deletable, Auditable {
     Factor setFactorVerificationStatus(FactorVerificationStatus verificationStatus);
 
     /**
-     * Returns the Factors's type. {@link FactorType}
-     * There could be multiple factors by which an authentication is challenged.
-     * Sms, Google Authenticator, Email to mane a few.
+     * Returns the {@link FactorType type} of the concrete factor instance implementing this interface.
+     * <p>
+     * There could be multiple factors by which an authentication is challenged: SMS, Google Authenticator, Email, to name a few.
      *
      * @return the Factors's type
+     * @see com.stormpath.sdk.factor.sms.SmsFactor
      */
     FactorType getFactorType();
 

@@ -31,4 +31,13 @@ public interface ChallengeOptions<T> extends Options {
      * @return this instance for method chaining.
      */
     T withAccount();
+
+    /**
+     * Ensures that when retrieving a Challenge, the Challenge's assigned {@link Challenge#getFactor() factor}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
+    T withFactor();
 }

@@ -51,7 +51,7 @@ public class ReferenceFactory {
     }
 
     public Map<String, String> createUnmaterializedReference(String resourceName, Map map) {
-        Assert.isTrue(!map.isEmpty() && !map.containsKey(AbstractResource.HREF_PROP_NAME),
+        Assert.isTrue(!map.containsKey(AbstractResource.HREF_PROP_NAME),
                 "'" + resourceName + "' resource must be unmaterialized and not have an 'href' property.");
         Map<String, String> reference = new HashMap<>();
             reference.putAll(map);

@@ -16,8 +16,11 @@
 package com.stormpath.sdk.factor.sms;
 
 import com.stormpath.sdk.challenge.Challenge;
+import com.stormpath.sdk.challenge.ChallengeCriteria;
 import com.stormpath.sdk.challenge.ChallengeList;
+import com.stormpath.sdk.challenge.CreateChallengeRequest;
 import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.factor.Factors;
 import com.stormpath.sdk.phone.Phone;
 import com.stormpath.sdk.resource.ResourceException;
 
@@ -68,6 +71,37 @@ public interface SmsFactor extends Factor {
     ChallengeList getChallenges();
 
     /**
+     * Returns a paginated list of the sms factor's assigned challenges that match the specified query criteria.  The
+     * {@link Factors.SmsFactors SmsFactors} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * smsFactor.getChallenges(Challenges.where(
+     *     Challenges.status().eq(ChallengeStatus.WAITING_FOR_VALIDATION))
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.challenge.Challenges.*;
+     *
+     * ...
+     *
+     * smsFactor.getChallenges(where(
+     *     status().eq(ChallengeStatus.WAITING_FOR_VALIDATION))
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the smsFactor's challenges that match the specified query criteria.
+     * @since 1.1.0
+     */
+    ChallengeList getChallenges(ChallengeCriteria criteria);
+
+    /**
      * Challenges this {@code SmsFactor}.
      *
      * @return this instance for method chaining.
@@ -80,4 +114,15 @@ public interface SmsFactor extends Factor {
      * @return created {@link Challenge}
      */
     Challenge createChallenge(Challenge challenge)throws ResourceException;
+
+    /**
+     * Creates a new {@link Challenge} assigned to this SmsFactor in the Stormpath server and returns the created resource
+     * based on provided {@link CreateChallengeRequest}
+     *
+     * @param request {@link CreateChallengeRequest} used to create a challenge with.
+     * @return the newly created {@link Challenge}.
+     *
+     * @since 1.1.0
+     */
+    Challenge createChallenge(CreateChallengeRequest request)throws ResourceException;
 }

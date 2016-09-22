@@ -16,7 +16,7 @@
 package com.stormpath.sdk.factor;
 
 /**
- * Represents the status (usability) of an {@link Factor} instance.
+ * Represents the status (usability) of a {@link Factor} instance.
  *
  * @since 1.1.0
  */

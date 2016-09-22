@@ -18,35 +18,31 @@ package com.stormpath.sdk.impl.challenge;
 import com.stormpath.sdk.challenge.Challenge;
 import com.stormpath.sdk.challenge.ChallengeOptions;
 import com.stormpath.sdk.challenge.CreateChallengeRequest;
+import com.stormpath.sdk.challenge.CreateChallengeRequestBuilder;
 import com.stormpath.sdk.lang.Assert;
 
 /**
  * @since 1.1.0
  */
-public class DefaultCreateChallengeRequest implements CreateChallengeRequest {
+public class DefaultCreateChallengeRequestBuilder implements CreateChallengeRequestBuilder {
 
     private final Challenge challenge;
-    private final ChallengeOptions options;
+    private ChallengeOptions options;
 
-    public DefaultCreateChallengeRequest(Challenge challenge, ChallengeOptions options) {
-        Assert.notNull(challenge, "challenge cannot be null.");
+    public DefaultCreateChallengeRequestBuilder(Challenge challenge) {
+        Assert.notNull(challenge, "Challenge can't be null.");
         this.challenge = challenge;
+    }
+
+    @Override
+    public CreateChallengeRequestBuilder withResponseOptions(ChallengeOptions options) throws IllegalArgumentException {
+        Assert.notNull(options, "options can't be null.");
         this.options = options;
+        return this;
     }
 
     @Override
-    public Challenge getChallenge() {
-        return this.challenge;
+    public CreateChallengeRequest build() {
+        return new DefaultCreateChallengeRequest(challenge, options);
     }
-
-    @Override
-    public boolean hasChallengeOptions() {
-        return this.options != null;
-    }
-
-    @Override
-    public ChallengeOptions getChallengeOptions() throws IllegalStateException {
-        return options;
-    }
-
 }

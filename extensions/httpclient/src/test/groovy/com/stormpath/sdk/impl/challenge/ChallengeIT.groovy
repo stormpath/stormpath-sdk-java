@@ -17,14 +17,16 @@ package com.stormpath.sdk.impl.challenge
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.Challenge
+import com.stormpath.sdk.challenge.ChallengeOptions
+import com.stormpath.sdk.challenge.Challenges
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.phone.Phone
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.assertTrue
+
+import static org.testng.AssertJUnit.*
 
 class ChallengeIT extends ClientIT{
 
@@ -54,7 +56,7 @@ class ChallengeIT extends ClientIT{
         def challenge = client.instantiate(Challenge)
         challenge.setMessage("This the message which has no place holder for the code")
 
-        // A 13103 is returned sice message does not contain a ${code}
+        // A 13103 is returned since message does not contain a ${code}
 
         Throwable e = null
         try {
@@ -66,6 +68,20 @@ class ChallengeIT extends ClientIT{
             assertEquals(re.getCode(), 13103)
         }
 
+        assertTrue(e instanceof ResourceException)
+        e = null
+
+        // A 13103 is returned since message does not contain a ${code}. This time with CreateChallengeRequest
+
+        def builder = Challenges.newCreateRequestFor(challenge).withResponseOptions(Challenges.options().withAccount())
+        try{
+            factor.createChallenge(builder.build())
+        }
+        catch(ResourceException re){
+            e = re
+            assertEquals(re.status, 400)
+            assertEquals(re.getCode(), 13103)
+        }
         assertTrue(e instanceof ResourceException)
     }
 
@@ -109,7 +125,7 @@ class ChallengeIT extends ClientIT{
     // This test and the previous one (testSuccessfulChallengeSendCode) require an actual phone to complete
     // Therefore they are disabled and meant to be run manually
     @Test(enabled = false)
-    void testSuccessfulChallengeVerifyChallenge() {
+    void testSuccessfulVerifyChallenge() {
 
         // Paste the value for challenge href retrieved from previous test (testSuccessfulChallengeSendCode) here
         def href = "http://localhost:9191/v1/challenges/3YA1MvXeccKORSkX6QXkB4"
@@ -118,6 +134,13 @@ class ChallengeIT extends ClientIT{
 
         Challenge challenge = client.getResource(href, Challenge)
         assertTrue(challenge.validate(code))
+
+         //Test Challenges with ChallengeOptions
+        ChallengeOptions challengeOptions = Challenges.options().withFactor()
+        challenge = client.getResource(challenge.href, Challenge.class, challengeOptions)
+
+        assertNotNull(challenge.getAccount().href)
+        assertEquals(challenge.getFactor().getAccount().href, challenge.getAccount().href)
 
     }
 }

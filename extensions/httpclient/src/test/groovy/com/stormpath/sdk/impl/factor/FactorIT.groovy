@@ -21,6 +21,7 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.factor.Factor
 import com.stormpath.sdk.factor.FactorStatus
 import com.stormpath.sdk.factor.FactorVerificationStatus
 import com.stormpath.sdk.factor.Factors
@@ -35,9 +36,7 @@ import org.testng.annotations.Test
 
 import java.lang.reflect.Field
 
-import static org.testng.Assert.assertEquals
-import static org.testng.AssertJUnit.assertNotNull
-import static org.testng.AssertJUnit.assertTrue
+import static org.testng.AssertJUnit.*
 
 class FactorIT extends ClientIT {
 
@@ -46,7 +45,7 @@ class FactorIT extends ClientIT {
     @Test
     void testCreateFactorWithNewPhone() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: FactorIT.testCreateFactorWithNewPhone")
         dir = client.currentTenant.createDirectory(dir)
 
         assertNotNull dir.href
@@ -203,6 +202,7 @@ class FactorIT extends ClientIT {
 
         def builder = Factors.SMS.newCreateRequestFor(factor).createChallenge()
 
+        // Since phone is disabled, default challenge on factor creation should fail
         Throwable e = null
         try {
             account.createFactor(builder.build())
@@ -220,7 +220,7 @@ class FactorIT extends ClientIT {
     @Test
     void testDefaultChallengeOnFactorCreationFailsForDisabledFactor() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: FactorIT.testDefaultChallengeOnFactorCreationFailsForDisabledFactor")
         dir = client.currentTenant.createDirectory(dir);
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -244,6 +244,7 @@ class FactorIT extends ClientIT {
 
         factor = client.getResource(factor.href, SmsFactor.class)
 
+        // Since factor is disabled, default challenge on factor creation should fail
         Throwable e = null
         try {
             factor.challenge()
@@ -260,7 +261,7 @@ class FactorIT extends ClientIT {
     @Test
     void testUpdateFactorStatus() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: FactorIT.testUpdateFactorStatus")
         dir = client.currentTenant.createDirectory(dir);
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -286,6 +287,7 @@ class FactorIT extends ClientIT {
         factor.setStatus(FactorStatus.DISABLED)
         factor.save()
 
+        // Since factor is disabled, challenging it would fail
         Throwable e = null
         try {
             factor.challenge()
@@ -302,7 +304,7 @@ class FactorIT extends ClientIT {
     @Test
     void testCustomChallengeOnFactorCreation() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: FactorIT.testCustomChallengeOnFactorCreation")
         dir = client.currentTenant.createDirectory(dir);
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -320,7 +322,7 @@ class FactorIT extends ClientIT {
         SmsFactor factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
         def challenge = client.instantiate(Challenge)
-        challenge = challenge.setMessage("Your awesome code is \${code}")
+        //challenge = challenge.setMessage("Your awesome code is \${code}")
         factor = factor.setChallenge(challenge)
 
         factor = account.createFactor(factor)
@@ -331,7 +333,7 @@ class FactorIT extends ClientIT {
         assertEquals(factor.getFactorVerificationStatus(), FactorVerificationStatus.UNVERIFIED)
         assertEquals(factor.getStatus(), FactorStatus.ENABLED)
         assertNotNull(factor.getAccount())
-        assertNotNull(factor.getAccount().href)
+        assertEquals(account.href, factor.getAccount().href)
         assertNotNull(factor.getPhone())
         assertNotNull(factor.getPhone().href)
         assertNotNull(factor.getMostRecentChallenge())
@@ -374,7 +376,7 @@ class FactorIT extends ClientIT {
         assertEquals(factor.factorVerificationStatus, FactorVerificationStatus.UNVERIFIED)
         assertEquals(factor.status, FactorStatus.ENABLED)
         assertNotNull(factor.getAccount())
-        assertNotNull(factor.getAccount().href)
+        assertEquals(account.href, factor.getAccount().href)
         assertNotNull(factor.href)
 
         SmsFactor factor2 = client.instantiate(SmsFactor)
@@ -629,14 +631,34 @@ class FactorIT extends ClientIT {
         phone.setNumber(VALID_PHONE_NUMBER).setAccount(account)
         phone = account.createPhone(phone);
 
+        def phone2 = client.instantiate(Phone)
+        phone2.setNumber("8002346195").setAccount(account)
+        phone2 = account.createPhone(phone2);
+
+        def phone3 = client.instantiate(Phone)
+        phone3.setNumber("8002346155").setAccount(account)
+        phone3 = account.createPhone(phone3);
+
         SmsFactor smsFactor = client.instantiate(SmsFactor)
-        smsFactor = smsFactor.setPhone(phone)
-        smsFactor = account.createFactor(smsFactor);
+        smsFactor = smsFactor.setPhone(phone).setStatus(FactorStatus.DISABLED)
+        account.createFactor(smsFactor);
+
+        SmsFactor smsFactor2 = client.instantiate(SmsFactor)
+        smsFactor2 = smsFactor2.setPhone(phone2).setStatus(FactorStatus.ENABLED)
+        account.createFactor(smsFactor2);
+
+        SmsFactor smsFactor3 = client.instantiate(SmsFactor)
+        smsFactor3 = smsFactor3.setPhone(phone3).setStatus(FactorStatus.DISABLED)
+        account.createFactor(smsFactor3);
 
         def factors = account.getFactors(Factors.SMS.criteria().orderByStatus().ascending());
         assertEquals(factors.getLimit(), 25);
-        assertEquals(factors.getProperty("items").size, 1);
+        assertEquals(factors.getProperty("items").size, 3);
         assertEquals(factors.iterator().next().account.materialized, false)
+        List<Factor> factorList = factors.toList()
+        assertEquals(factorList.get(0).status, FactorStatus.DISABLED)
+        assertEquals(factorList.get(1).status, FactorStatus.DISABLED)
+        assertEquals(factorList.get(2).status, FactorStatus.ENABLED)
     }
 
     private Object getValue(Class clazz, Object object, String fieldName) {

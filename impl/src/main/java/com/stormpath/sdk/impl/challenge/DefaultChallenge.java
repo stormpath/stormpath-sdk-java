@@ -121,12 +121,6 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
     }
 
     @Override
-    public Challenge setCode(String code) {
-        setProperty(CODE, code);
-        return null;
-    }
-
-    @Override
     public boolean validate(String code) {
         Assert.notNull(code, "code can not be null.");
         setCode(code);
@@ -137,5 +131,10 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
             return false;
         }
         return true;
+    }
+
+    private Challenge setCode(String code) {
+        setProperty(CODE, code);
+        return null;
     }
 }

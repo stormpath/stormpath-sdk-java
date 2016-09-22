@@ -15,18 +15,17 @@
  */
 package com.stormpath.sdk.factor;
 
-import com.stormpath.sdk.phone.Phone;
 import com.stormpath.sdk.query.Options;
 
 /**
- * Phone-specific options that may be specified when retrieving {@link Phone} resources.
+ * Factor-specific options that may be specified when retrieving {@link Factor} resources.
  *
  * @since 1.1.0
  */
 public interface FactorOptions<T> extends Options {
 
     /**
-     * Ensures that when retrieving a Phone, the Phones's assigned {@link Phone#getAccount()} account}
+     * Ensures that when retrieving a Factor, the Factor's assigned {@link Factor#getAccount()} account}
      * are also retrieved in the same request.  This enhances performance by leveraging a single request
      * to retrieve multiple related resources you know you will use.
      *
