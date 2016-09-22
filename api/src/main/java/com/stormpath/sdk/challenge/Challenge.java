@@ -99,10 +99,12 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
     Challenge setFactor(Factor factor);
 
     /**
-     * This is a convenience method to POST a code to an existing challenge resource in Stormpath
-     * for validation.
+     * This is a convenience method to POST a code to an existing challenge r
+     * esource in Stormpath for validation.
      * Returns true in case the challenge is validated with the given code
      * and false if otherwise.
+     * <p><b>Immediate Execution:</b> Unlike other Challenge methods, you do <em>not</em> need to call {@link #save()}
+     * {@link Challenge#getStatus()} method will return the submission status in the event of a failure.
      *
      * @parame code  The code to be validated with this challenge.
      * @return true in case the challenge is validated with the given code.
