@@ -125,8 +125,8 @@ class PhoneIT extends ClientIT {
         phone = account.createPhone(phone);
 
         assertEquals(phone.number ,phoneNumber)
-        assertNotNull(phone.name)
-        assertNotNull(phone.description)
+        assertEquals(phone.name, name)
+        assertEquals(phone.description, description)
         assertEquals(phone.verificationStatus,PhoneVerificationStatus.VERIFIED)
         assertEquals(phone.status, PhoneStatus.DISABLED)
         assertNotNull(phone.createdAt)

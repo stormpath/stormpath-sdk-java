@@ -31,17 +31,17 @@ public class DefaultSmsFactorCriteria extends DefaultCriteria<FactorCriteria, Sm
 
     @Override
     public FactorCriteria orderByType() {
-        return null;
+        return orderBy(DefaultSmsFactor.TYPE);
     }
 
     @Override
     public SmsFactorCriteria orderByStatus() {
-        return (SmsFactorCriteria)orderBy(DefaultSmsFactor.STATUS);
+        return (SmsFactorCriteria) orderBy(DefaultSmsFactor.STATUS);
     }
 
     @Override
     public SmsFactorCriteria orderByVerificationStatus() {
-        return (SmsFactorCriteria)orderBy(DefaultSmsFactor.VERIFICATION_STATUS);
+        return (SmsFactorCriteria) orderBy(DefaultSmsFactor.VERIFICATION_STATUS);
     }
 
     @Override

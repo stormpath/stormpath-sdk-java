@@ -31,21 +31,21 @@ import java.util.Map;
  */
 public abstract class AbstractFactor extends AbstractInstanceResource implements Factor {
 
-    public static final EnumProperty<FactorType> FACTOR_TYPE = new EnumProperty<>("type", FactorType.class);
+    public static final EnumProperty<FactorType> TYPE = new EnumProperty<>("type", FactorType.class);
     public static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
     public static final EnumProperty<FactorStatus> STATUS = new EnumProperty<>("status", FactorStatus.class);
     public static final EnumProperty<FactorVerificationStatus> VERIFICATION_STATUS = new EnumProperty<>("verificationStatus", FactorVerificationStatus.class);
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(FACTOR_TYPE, ACCOUNT, STATUS, VERIFICATION_STATUS, CREATED_AT, MODIFIED_AT);
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, ACCOUNT, STATUS, VERIFICATION_STATUS, CREATED_AT, MODIFIED_AT);
 
     public AbstractFactor(InternalDataStore dataStore) {
         super(dataStore);// Set the factor type only one the factor is instantiated via a the client (i.e. client.instantiate(SmsFactor.class)).
         // However, when the factor is instantiated by the resource factory as a consequence of a response from the
         // back-end, it must not be overwritten since that would cause the FactorType to be marked as 'dirty'
-        if(getFactorType() == null){
-            setFactorType(getConcreteFactorType());
+        if(getType() == null){
+            setType(getConcreteFactorType());
         }
     }
 
@@ -53,8 +53,8 @@ public abstract class AbstractFactor extends AbstractInstanceResource implements
         super(dataStore, properties);// Set the factor type only one the factor is instantiated via a the client (i.e. client.instantiate(SmsFactor.class)).
         // However, when the factor is instantiated by the resource factory as a consequence of a response from the
         // back-end, it must not be overwritten since that would cause the FactorType to be marked as 'dirty'
-        if(getFactorType() == null){
-            setFactorType(getConcreteFactorType());
+        if(getType() == null){
+            setType(getConcreteFactorType());
         }
     }
 
@@ -94,16 +94,16 @@ public abstract class AbstractFactor extends AbstractInstanceResource implements
     }
 
     @Override
-    public FactorType getFactorType() {
-        String value = getStringProperty(FACTOR_TYPE.getName());
+    public FactorType getType() {
+        String value = getStringProperty(TYPE.getName());
         if (value == null) {
             return null;
         }
         return FactorType.valueOf(value.toUpperCase());
     }
 
-    public Factor setFactorType(FactorType factorType) {
-        setProperty(FACTOR_TYPE, factorType.name());
+    public Factor setType(FactorType factorType) {
+        setProperty(TYPE, factorType.name());
         return this;
     }
 

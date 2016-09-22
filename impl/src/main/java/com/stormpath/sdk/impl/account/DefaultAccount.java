@@ -619,7 +619,6 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
 
     @Override
     public Phone createPhone(CreatePhoneRequest request) {
-
         Assert.notNull(request, "Request cannot be null.");
 
         final Phone phone = request.getPhone();

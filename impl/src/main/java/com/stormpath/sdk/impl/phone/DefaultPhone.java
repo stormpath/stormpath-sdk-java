@@ -127,13 +127,7 @@ public class DefaultPhone extends AbstractInstanceResource implements Phone {
 
     @Override
     public Phone setAccount(Account account) {
-
-        if(((AbstractResource)account).isMaterialized()) {
-            setResourceProperty(ACCOUNT,account);
-        }
-        else{
-            setMaterializableResourceProperty(ACCOUNT,account);
-        }
+        setMaterializableResourceProperty(ACCOUNT, account);
         return this;
     }
 

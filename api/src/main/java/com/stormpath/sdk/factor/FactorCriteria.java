@@ -51,7 +51,7 @@ import com.stormpath.sdk.query.Criteria;
 public interface FactorCriteria extends Criteria<FactorCriteria>,  FactorOptions<FactorCriteria>{
 
     /**
-     * Ensures that the query results are ordered by type {@link Factor#getFactorType() type}.
+     * Ensures that the query results are ordered by type {@link Factor#getType() type}.
      * <p/>
      * Please see the {@link FactorCriteria class-level documentation} for controlling sort order (ascending or
      * descending) and chaining multiple {@code orderBy} clauses.

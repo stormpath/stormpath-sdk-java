@@ -67,7 +67,7 @@ public interface Factor extends Resource, Saveable, Deletable, Auditable {
      * @return the Factors's type
      * @see com.stormpath.sdk.factor.sms.SmsFactor
      */
-    FactorType getFactorType();
+    FactorType getType();
 
     /**
      * Returns the {@link Account} to which this Factor is associated.

@@ -508,17 +508,23 @@ public abstract class AbstractResource implements Resource {
 
 
     /**
-     * @param property
-     * @param value
-     * @param <T>
-     * @since 1.4.0
+     * This method is able to set a Reference to a resource (<code>value</code>) even though resource has not yet an href value
+     * <p>Note that this is method is analogous to the {@link #setResourceProperty(ResourceReference, Resource)} method (in fact
+     * it relies on it when the resource alredy has an href value) but this method does not complain when the href of the resource is missing.</p>
+     * @param property the property whose value is going to be set to <code>value</code>
+     * @param value the value to be set to <code>property</code>
+     * @since 1.1.0
      */
     protected <T extends Resource> void setMaterializableResourceProperty(ResourceReference<T> property, Resource value) {
         Assert.notNull(property, "Property argument cannot be null.");
         Assert.isNull(value.getHref(), "Resource must not have an 'href' property ");
-        String name = property.getName();
-        Map<String, String> reference = this.referenceFactory.createUnmaterializedReference(name, value);
-        setProperty(name, reference);
+        if (((AbstractResource) value).isMaterialized()) {
+            setResourceProperty(property, value);
+        } else {
+            String name = property.getName();
+            Map<String, String> reference = this.referenceFactory.createUnmaterializedReference(name, value);
+            setProperty(name, reference);
+        }
     }
 
     /**

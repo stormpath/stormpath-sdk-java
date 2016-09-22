@@ -62,7 +62,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 21)
+        assertEquals(propertyDescriptors.size(), 23)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
