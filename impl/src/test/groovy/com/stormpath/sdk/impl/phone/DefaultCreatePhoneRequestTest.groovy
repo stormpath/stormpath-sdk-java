@@ -30,7 +30,7 @@ class DefaultCreatePhoneRequestTest {
     @Test
     void testDefault() {
         def phone = createStrictMock(Phone)
-        def request = new DefaultCreatePhoneRequest(phone)
+        def request = new DefaultCreatePhoneRequest(phone, null)
 
         assertSame(request.phone, phone)
     }
