@@ -15,16 +15,14 @@
  */
 package com.stormpath.sdk.impl.schema;
 
-import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.schema.AccountSchema;
+import com.stormpath.sdk.schema.Schema;
 import com.stormpath.sdk.schema.Field;
-import com.stormpath.sdk.schema.FieldList;
 
 import java.util.Map;
 
@@ -35,10 +33,10 @@ public class DefaultField extends AbstractInstanceResource implements Field {
     public static final BooleanProperty REQUIRED = new BooleanProperty("required");
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<AccountSchema> ACCOUNT_SCHEMA = new ResourceReference<AccountSchema>("accountSchema", AccountSchema.class);
+    static final ResourceReference<Schema> SCHEMA = new ResourceReference<Schema>("schema", Schema.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, REQUIRED);
+            NAME, REQUIRED, SCHEMA);
 
     public DefaultField(InternalDataStore dataStore) {
         super(dataStore);
@@ -76,12 +74,12 @@ public class DefaultField extends AbstractInstanceResource implements Field {
     }
 
     @Override
-    public AccountSchema getAccountSchema() {
-        return getResourceProperty(ACCOUNT_SCHEMA);
+    public Schema getSchema() {
+        return getResourceProperty(SCHEMA);
     }
 
-    public DefaultField setAccountSchema(AccountSchema accountSchema) {
-        setResourceProperty(ACCOUNT_SCHEMA, accountSchema);
+    public DefaultField setSchema(Schema schema) {
+        setResourceProperty(SCHEMA, schema);
         return this;
     }
 

@@ -19,13 +19,13 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.schema.AccountSchema;
+import com.stormpath.sdk.schema.Schema;
 import com.stormpath.sdk.schema.Field;
 import com.stormpath.sdk.schema.FieldList;
 
 import java.util.Map;
 
-public class DefaultAccountSchema extends AbstractInstanceResource implements AccountSchema {
+public class DefaultSchema extends AbstractInstanceResource implements Schema {
 
     //COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<FieldList, Field> FIELDS =
@@ -34,11 +34,11 @@ public class DefaultAccountSchema extends AbstractInstanceResource implements Ac
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             FIELDS);
 
-    public DefaultAccountSchema(InternalDataStore dataStore) {
+    public DefaultSchema(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultAccountSchema(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultSchema(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 

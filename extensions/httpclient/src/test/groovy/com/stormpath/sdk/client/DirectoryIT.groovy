@@ -32,7 +32,7 @@ import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.saml.AttributeStatementMappingRule
 import com.stormpath.sdk.saml.AttributeStatementMappingRules
 import com.stormpath.sdk.saml.SamlAttributeStatementMappingRules
-import com.stormpath.sdk.schema.AccountSchema
+import com.stormpath.sdk.schema.Schema
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
@@ -818,7 +818,7 @@ class DirectoryIT extends ClientIT {
         assertNotNull accountSchema
         assertNotNull accountSchema.getHref()
 
-        def accountSchema1 = client.getResource(accountSchema.getHref(), AccountSchema)
+        def accountSchema1 = client.getResource(accountSchema.getHref(), Schema)
 
         assertFalse(accountSchema.equals(accountSchema1))  //not expanded -> must be different
     }
@@ -844,7 +844,7 @@ class DirectoryIT extends ClientIT {
         assertNotNull accountSchema
         assertNotNull accountSchema.getHref()
 
-        def accountSchema1 = client.getResource(accountSchema.getHref(), AccountSchema)
+        def accountSchema1 = client.getResource(accountSchema.getHref(), Schema)
 
         assertEquals(accountSchema, accountSchema1)  //expanded -> must be equals
     }

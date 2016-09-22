@@ -18,7 +18,6 @@ package com.stormpath.sdk.schema;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 public interface Field extends Resource, Saveable, Deletable {
 
@@ -30,6 +29,6 @@ public interface Field extends Resource, Saveable, Deletable {
 
     Field setRequired(boolean required);
 
-    AccountSchema getAccountSchema();
+    Schema getSchema();
 
 }

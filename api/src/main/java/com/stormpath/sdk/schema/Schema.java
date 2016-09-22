@@ -18,7 +18,7 @@ package com.stormpath.sdk.schema;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
-public interface AccountSchema extends Resource, Saveable {
+public interface Schema extends Resource, Saveable {
 
     FieldList getFields();
 

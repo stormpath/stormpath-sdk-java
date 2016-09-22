@@ -33,7 +33,7 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Extendable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
-import com.stormpath.sdk.schema.AccountSchema;
+import com.stormpath.sdk.schema.Schema;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -558,5 +558,5 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      */
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
 
-    AccountSchema getAccountSchema();
+    Schema getAccountSchema();
 }
