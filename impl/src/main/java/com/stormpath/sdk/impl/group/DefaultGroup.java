@@ -27,7 +27,7 @@ import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.query.Criteria;
@@ -44,7 +44,7 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
     // SIMPLE PROPERTIES
     static final StringProperty NAME = new StringProperty("name");
     static final StringProperty DESCRIPTION = new StringProperty("description");
-    static final StatusProperty<GroupStatus> STATUS = new StatusProperty<GroupStatus>(GroupStatus.class);
+    static final EnumProperty<GroupStatus> STATUS = new EnumProperty<GroupStatus>(GroupStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Directory> DIRECTORY = new ResourceReference<Directory>("directory", Directory.class);

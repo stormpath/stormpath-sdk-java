@@ -1,40 +1,22 @@
 language: java
 sudo: false
 jdk:
-- openjdk7
-- oraclejdk7
-- oraclejdk8
+  - openjdk7
+  - oraclejdk7
+  - oraclejdk8
+addons:
+  apt:
+    packages:
+      - xsltproc
 before_install:
-- ./travis_bootstrap.sh
-- source env.sh
-- source stormpath_env.sh
-- cp id_rsa_stormpath.github.io ~/.ssh/id_rsa 
-- chmod 600 ~/.ssh/id_rsa
-- mkdir -p ~/.stormpath/clover
-- cp clover.license ~/.stormpath/clover
-- export RELEASE_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
-  -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
-- export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH == 'master' ] && echo 'true')"
-- export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
-- export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk7' ] && echo 'true')"
+  - source ./ci/before_install.sh
+  - source ./ci/stormpath_env.sh
 install:
-- test -z "$BUILD_DOCS" || pip -q install --user sphinx
-- test -z "$RUN_ITS" || ./install_aws_cli.sh
+  - ./ci/install.sh
 script:
-- test -z "$RUN_ITS" || mvn -Pclover.all -DskipITs=false -q install
-- test -n "$RUN_ITS" || mvn -q install
-- test -z "$BUILD_DOCS" || ./build_docs.sh
+  - ./ci/build.sh
 after_success:
-- test -z "$BUILD_DOCS" || test -z "$IS_RELEASE" || ./publish_docs.sh
-- test -z "$RUN_ITS" || ./publish_coverage_report.sh
+  - ./ci/after_success.sh
 notifications:
-  hipchat:
-    on_success: always
-    on_failure: always
-    rooms:
-      secure: WXJLZTnleKQd5DIfdPSNYk4ZT7bssV9esdaacZjwb9sdKLZAQ+ujL97uuVK4oDMbua9XJxYTsKK45QQp56+PgJc4KG0Regvs/e7NtoxahrNnpsHCob4+Hc2MSmFfJgsdAQ9dFemNZ3BQ2ec1gO6SToYk+7pwMPScUYnmAOrsHjU=
-    template:
-      '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)' 
-    format: html
   slack:
     secure: INiA7V4aXvimkImaErVH94ZSmFNuOgun9aurmf3BiE2Qq0EfNiEaWK9pp6hfkv+wSls4LXNDLaYVzdoMECVLh+Dv9VLHIABnaNEmMStXUlyZ+sOpdayl/47gnNr0G1cr06eqbikGVqWtQaxDz2Psaejq2D/6WYw5Vnqk4BjWQHw=

@@ -15,9 +15,7 @@
 */
 package com.stormpath.sdk.impl.organization;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.Accounts;
-import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
@@ -31,7 +29,7 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -57,7 +55,7 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
     static final StringProperty NAME = new StringProperty("name");
     static final StringProperty DESCRIPTION = new StringProperty("description");
     static final StringProperty NAME_KEY = new StringProperty("nameKey");
-    static final StatusProperty<OrganizationStatus> STATUS = new StatusProperty<OrganizationStatus>(OrganizationStatus.class);
+    static final EnumProperty<OrganizationStatus> STATUS = new EnumProperty<OrganizationStatus>(OrganizationStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
@@ -65,6 +63,9 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
             new ResourceReference<OrganizationAccountStoreMapping>("defaultAccountStoreMapping", OrganizationAccountStoreMapping.class);
     static final ResourceReference<OrganizationAccountStoreMapping> DEFAULT_GROUP_STORE_MAPPING   =
             new ResourceReference<OrganizationAccountStoreMapping>("defaultGroupStoreMapping", OrganizationAccountStoreMapping.class);
+    static final ResourceReference<AccountLinkingPolicy> ACCOUNT_LINKING_POLICY =
+            new ResourceReference<AccountLinkingPolicy>("accountLinkingPolicy", AccountLinkingPolicy.class);
+
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<OrganizationAccountStoreMappingList, OrganizationAccountStoreMapping> ACCOUNT_STORE_MAPPINGS =
@@ -74,7 +75,7 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
 
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, DESCRIPTION, NAME_KEY, STATUS, TENANT, CUSTOM_DATA, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNT_STORE_MAPPINGS);
+            NAME, DESCRIPTION, NAME_KEY, STATUS, TENANT, CUSTOM_DATA, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNT_STORE_MAPPINGS, ACCOUNT_LINKING_POLICY);
 
     public DefaultOrganization(InternalDataStore dataStore) {
         super(dataStore);
@@ -383,5 +384,11 @@ public class DefaultOrganization extends AbstractExtendableInstanceResource impl
             }
         }
         return foundGroup;
+    }
+
+    /* @since 1.1.0 */
+    @Override
+    public AccountLinkingPolicy getAccountLinkingPolicy() {
+        return getResourceProperty(ACCOUNT_LINKING_POLICY);
     }
 }

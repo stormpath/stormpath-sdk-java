@@ -63,6 +63,10 @@ public class UserAgent {
     //SDK
     private static final String STORMPATH_SDK_STRING = "stormpath-sdk-java";
 
+    //Stormpath Zuul support
+    private static final String STORMPATH_ZUUL_ID = "stormpath-zuul";
+    private static final String STORMPATH_ZUUL_CLASS = "com.stormpath.zuul.filter.AppliedRequestHeaderFilter";
+
     //Stormpath Java Servlet Plugin
     private static final String STORMPATH_SDK_SERVLET_ID = "stormpath-servlet-java";
     private static final String STORMPATH_SDK_SERVLET_CLASS = "com.stormpath.sdk.servlet.config.Config";
@@ -180,6 +184,7 @@ public class UserAgent {
     }
 
     private static String getSecurityFrameworkString() {
+
         String securityFrameworkString;
         securityFrameworkString = getFullEntryStringUsingManifest(SECURITY_FRAMEWORK_SHIRO_CLASS, SECURITY_FRAMEWORK_SHIRO_ID);
         if(Strings.hasText(securityFrameworkString)) {
@@ -194,24 +199,21 @@ public class UserAgent {
 
     //Stormpath SDK Components
     private static String getStormpathSDKComponentsString() {
-        StringBuffer stormpathComponentsString = new StringBuffer();
 
-        String sdkServletString = getFullEntryStringUsingSDKVersion(STORMPATH_SDK_SERVLET_CLASS, STORMPATH_SDK_SERVLET_ID);
-        if (Strings.hasText(sdkServletString)) {
-            stormpathComponentsString.append(sdkServletString);
+        StringBuilder sb = new StringBuilder();
+
+        append(sb, getFullEntryStringUsingSDKVersion(STORMPATH_ZUUL_CLASS, STORMPATH_ZUUL_ID));
+        append(sb, getFullEntryStringUsingSDKVersion(STORMPATH_SDK_SERVLET_CLASS, STORMPATH_SDK_SERVLET_ID));
+        append(sb, getFullEntryStringUsingSDKVersion(STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_CLASS, STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_ID));
+        append(sb, getFullEntryStringUsingSDKVersion(STORMPATH_SDK_SPRING_BOOT_STARTER_CLASS, STORMPATH_SDK_SPRING_BOOT_STARTER_ID));
+
+        return sb.toString();
+    }
+
+    private static void append(StringBuilder sb, String value) {
+        if (Strings.hasText(value)) {
+            sb.append(value);
         }
-
-        String stormpathSpringWebMvcString = getFullEntryStringUsingSDKVersion(STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_CLASS, STORMPATH_SDK_RUNTIME_SPRING_WEBMVC_ID);
-        if (Strings.hasText(stormpathSpringWebMvcString)) {
-            stormpathComponentsString.append(stormpathSpringWebMvcString);
-        }
-
-        String stormpathSpringBootStarterString = getFullEntryStringUsingSDKVersion(STORMPATH_SDK_SPRING_BOOT_STARTER_CLASS, STORMPATH_SDK_SPRING_BOOT_STARTER_ID);
-        if (Strings.hasText(stormpathSpringBootStarterString)) {
-            stormpathComponentsString.append(stormpathSpringBootStarterString);
-        }
-
-        return stormpathComponentsString.toString();
     }
 
     private static String getWebServerString() {

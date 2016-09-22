@@ -111,4 +111,40 @@ public class DefaultAccountCriteria extends DefaultCriteria<AccountCriteria, Acc
         getOptions().withGroupMemberships(limit, offset);
         return this;
     }
+
+    @Override
+    public AccountCriteria withLinkedAccounts() {
+        getOptions().withLinkedAccounts();
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withLinkedAccounts(int limit) {
+        getOptions().withLinkedAccounts(limit);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withLinkedAccounts(int limit, int offset) {
+        getOptions().withLinkedAccounts(limit, offset);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withAccountLinks() {
+        getOptions().withAccountLinks();
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withAccountLinks(int limit) {
+        getOptions().withAccountLinks(limit);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withAccountLinks(int limit, int offset) {
+        getOptions().withAccountLinks(limit, offset);
+        return this;
+    }
 }

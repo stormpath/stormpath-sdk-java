@@ -7,6 +7,7 @@ package com.stormpath.sdk.oauth;
  * @since 1.1.0
  */
 public interface OAuthStormpathSocialGrantRequestAuthentication extends OAuthGrantRequestAuthentication {
+
     String getProviderId();
 
     String getAccessToken();

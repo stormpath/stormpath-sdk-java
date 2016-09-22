@@ -269,6 +269,27 @@ public abstract class AbstractResource implements Resource {
      * @since 0.6.0
      */
     protected Object setProperty(String name, Object value, final boolean dirty) {
+        return setProperty(name, value, dirty, false);
+    }
+
+    /**
+     * Use this method and the set the isNullable flag to true, to set the value to
+     * null for the Property. Certain properties can have a value=null in the REST API
+     * and therefore, this method will allow to explicitly do that.
+     * All other overloaded implementations of setProperty method will assume isNullable=false
+     * and therefore setting the value to null by calling those methods, will take no effect and
+     * retain the old/previous value for the property.
+     *
+     * @since 1.1.0
+     */
+    protected void setProperty(Property property, Object value, final boolean dirty, final boolean isNullable) {
+        setProperty(property.getName(), value, dirty, isNullable);
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    private Object setProperty(String name, Object value, final boolean dirty, final boolean isNullable) {
         writeLock.lock();
         Object previous;
         try {
@@ -276,9 +297,23 @@ public abstract class AbstractResource implements Resource {
             if(previous == null) {
                 previous = this.properties.get(name);
             }
-            this.dirty = true;
-            if (this.deletedPropertyNames.contains(name)) {
-                this.deletedPropertyNames.remove(name);
+            this.dirty = dirty;
+
+            /**
+             * The instance variable "deletedPropertyNames" is overloaded here.
+             * For "CustomData" value=null means that the property/field has been deleted from custom data,
+             * hence it is added to "deletedPropertyNames". See DefaultCustomData.java
+             * In this case, where value=null and the field is nullable, adding it to "deletedPropertyNames" forces
+             * and makes sure that the property is saved with value=null (but not deleted).
+             * e.g. matchingProperty in AccountLinkingPolicy
+             *
+             */
+            if(isNullable && value == null) { //fix for https://github.com/stormpath/stormpath-sdk-java/issues/966
+                this.deletedPropertyNames.add(name);
+            } else {
+                if (this.deletedPropertyNames.contains(name)) {
+                    this.deletedPropertyNames.remove(name);
+                }
             }
         } finally {
             writeLock.unlock();
