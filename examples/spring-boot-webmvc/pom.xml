@@ -137,8 +137,9 @@
                                 </goals>
                                 <configuration>
                                     <executable>/bin/bash</executable>
+                                    <workingDirectory>${project.basedir}/../../</workingDirectory>
                                     <arguments>
-                                        <argument>${project.basedir}/../../tck.sh</argument>
+                                        <argument>tck.sh</argument>
                                         <argument>run</argument>
                                         <argument>java</argument>
                                         <argument>${project.build.directory}/stormpath-framework-tck</argument>

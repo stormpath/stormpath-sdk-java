@@ -35,7 +35,7 @@ class DefaultPasswordStrengthTest {
 
         def propertyDescriptors = strength.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 7)
+        assertEquals(propertyDescriptors.size(), 8)
 
         assertTrue(propertyDescriptors.get("minSymbol") instanceof IntegerProperty)
         assertTrue(propertyDescriptors.get("minDiacritic") instanceof IntegerProperty)
@@ -44,6 +44,7 @@ class DefaultPasswordStrengthTest {
         assertTrue(propertyDescriptors.get("minLowerCase") instanceof IntegerProperty)
         assertTrue(propertyDescriptors.get("maxLength") instanceof IntegerProperty)
         assertTrue(propertyDescriptors.get("minNumeric") instanceof IntegerProperty)
+        assertTrue(propertyDescriptors.get("preventReuse") instanceof IntegerProperty)
     }
 
 
@@ -59,7 +60,8 @@ class DefaultPasswordStrengthTest {
                 minLength: 8,
                 minLowerCase: 1,
                 maxLength: 100,
-                minNumeric: 1
+                minNumeric: 1,
+                preventReuse: 0
         ]
 
         PasswordStrength strength = new DefaultPasswordStrength(internalDataStore, properties)
@@ -73,6 +75,7 @@ class DefaultPasswordStrengthTest {
                 .setMinLowerCase(5)
                 .setMaxLength(6)
                 .setMinNumeric(7)
+                .setPreventReuse(8)
 
         assertEquals(strength.getMinSymbol(), 1)
         assertEquals(strength.getMinDiacritic(), 2)
@@ -81,6 +84,7 @@ class DefaultPasswordStrengthTest {
         assertEquals(strength.getMinLowerCase(), 5)
         assertEquals(strength.getMaxLength(), 6)
         assertEquals(strength.getMinNumeric(), 7)
+        assertEquals(strength.getPreventReuse(), 8)
     }
 
 
@@ -95,7 +99,8 @@ class DefaultPasswordStrengthTest {
                           minLength: 8,
                           minLowerCase: 1,
                           maxLength: 100,
-                          minNumeric: 1
+                          minNumeric: 1,
+                          preventReuse: 0
         ]
 
         PasswordStrength strength = new DefaultPasswordStrength(internalDataStore, properties)
@@ -180,6 +185,20 @@ class DefaultPasswordStrengthTest {
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "minNumeric cannot be a negative number.")
         }
+
+        try {
+            strength.setPreventReuse(-1) //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "preventReuse cannot be a negative number.")
+        }
+
+        try {
+            strength.setPreventReuse(26) //must throw
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "preventReuse cannot be larger than 25.")
+        }
     }
 
     @Test
@@ -193,7 +212,8 @@ class DefaultPasswordStrengthTest {
                           minLength : 8,
                           minLowerCase: 1,
                           maxLength : 100,
-                          minNumeric: 1
+                          minNumeric: 1,
+                          preventReuse: 5
         ]
 
         PasswordStrength strength = new DefaultPasswordStrength(internalDataStore, properties)
