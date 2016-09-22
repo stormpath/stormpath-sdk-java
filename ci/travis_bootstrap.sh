@@ -12,10 +12,11 @@ export STORMPATH_AUTHORS_URL="$S3_BASE/$STORMPATH_AUTHORS"
 wget $STORMPATH_AUTHORS_URL
 if [ -e $STORMPATH_AUTHORS ]; then echo "$STORMPATH_AUTHORS_URL found. Proceeding."; else echo "$STORMPATH_AUTHORS_URL not found. Exiting."; exit 1; fi
 export AUTHOR_EMAIL=$(git show --format="%ae" | head -n 1)
+echo "Author email is: $AUTHOR_EMAIL"
 source $STORMPATH_AUTHORS $AUTHOR_EMAIL
 test $TRAVIS_BRANCH = master && MIDDLE="/" || MIDDLE="/$AUTHOR/"
 export ENC_ENV="stormpath_env.sh.enc"
 export ENC_ENV_URL="$S3_BASE$MIDDLE$ENC_ENV"
 wget $ENC_ENV_URL
 if [ -e $ENC_ENV ]; then echo "$ENC_ENV_URL found. Proceeding."; else echo "$ENC_ENV_URL not found. Exiting."; exit 1; fi
-openssl aes-256-cbc -K $ENCRYPT_KEY -iv $ENCRYPT_IV -in $ENC_ENV -out stormpath_env.sh -d
+openssl aes-256-cbc -K $ENCRYPT_KEY -iv $ENCRYPT_IV -in $ENC_ENV -out ci/stormpath_env.sh -d

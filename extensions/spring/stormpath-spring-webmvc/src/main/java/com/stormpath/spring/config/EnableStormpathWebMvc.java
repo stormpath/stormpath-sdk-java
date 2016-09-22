@@ -30,5 +30,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @EnableStormpath
 @EnableWebMvc
-@Import(StormpathWebMvcConfiguration.class)
-public @interface EnableStormpathWebMvc {}
+@Import({StormpathMessageSourceConfiguration.class, StormpathWebMvcConfiguration.class})
+public @interface EnableStormpathWebMvc {
+}

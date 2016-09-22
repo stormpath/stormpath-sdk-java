@@ -144,7 +144,6 @@ import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
 import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import com.stormpath.sdk.servlet.util.SubdomainResolver;
-import com.stormpath.spring.context.CompositeMessageSource;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.DisabledHandlerMapping;
 import com.stormpath.spring.mvc.ForgotPasswordControllerConfig;
@@ -153,6 +152,7 @@ import com.stormpath.spring.mvc.LogoutControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
 import com.stormpath.spring.mvc.RegisterControllerConfig;
 import com.stormpath.spring.mvc.SingleNamedViewResolver;
+import com.stormpath.spring.mvc.SpringMessageSource;
 import com.stormpath.spring.mvc.SpringView;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import com.stormpath.spring.mvc.VerifyControllerConfig;
@@ -167,9 +167,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.support.DelegatingMessageSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -223,11 +220,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     private static final String PRODUCES_SUPPORTED_TYPES_MSG = "stormpath.web.produces property value must " +
         "specify either " + MediaType.APPLICATION_JSON_VALUE + " or " + MediaType.TEXT_HTML_VALUE + " or both.  " +
         "Other media types for this property are not currently supported.";
-
-    protected static final String I18N_PROPERTIES_BASENAME = "com.stormpath.sdk.servlet.i18n";
-
-    //corresponding value should be present in a message source:
-    protected static final String I18N_TEST_KEY = "stormpath.web.login.title";
 
     // =================== Authentication Components ==========================
 
@@ -426,7 +418,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Qualifier("stormpathApplication")
     protected Application application;
 
-    @Autowired(required = false)
+    @Autowired //will never be null because of our MessageSourceDefinitionPostProcessor
     protected MessageSource messageSource;
 
     @Autowired(required = false)
@@ -437,11 +429,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Autowired(required = false)
     @Qualifier("springSecurityIdSiteResultListener")
-    IdSiteResultListener springSecurityIdSiteResultListener;
+    protected IdSiteResultListener springSecurityIdSiteResultListener;
 
     @Autowired(required = false)
     @Qualifier("springSecuritySamlResultListener")
-    SamlResultListener springSecuritySamlResultListener;
+    protected SamlResultListener springSecuritySamlResultListener;
 
     @Autowired(required = false)
     protected ErrorModelFactory loginErrorModelFactory;
@@ -552,10 +544,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             //me filter is a little different than the others:
             addMeFilter(mgr);
         }
-
-        // stormpathHandlerMapping() had the following logic, setting up interceptors
-        // TODO: should we do something similar here?
-        // mapping.setInterceptors(new Object[]{stormpathLocaleChangeInterceptor(), stormpathLayoutInterceptor()});
     }
 
     public View stormpathControllerView() {
@@ -771,7 +759,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return savers;
     }
 
-    public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
+    public Saver<AuthenticationResult> stormpathAuthenticationResultSaver() {
 
         List<Saver<AuthenticationResult>> savers = stormpathAuthenticationResultSavers();
 
@@ -822,7 +810,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public RequestFieldValueResolver stormpathFieldValueResolver() {
-        return new ContentNegotiatingFieldValueResolver();
+        ContentNegotiatingFieldValueResolver contentNegotiatingFieldValueResolver = new ContentNegotiatingFieldValueResolver();
+        contentNegotiatingFieldValueResolver.setProduces(stormpathProducedMediaTypes());
+        return contentNegotiatingFieldValueResolver;
     }
 
     public AccessTokenResultFactory stormpathAccessTokenResultFactory() {
@@ -1091,114 +1081,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         };
     }
 
-    public MessageSource stormpathSpringMessageSource() {
-
-        //we need the default i18n keys if the user hasn't configured their own:
-
-        MessageSource messageSource = this.messageSource;
-
-        if (messageSource == null || isPlaceholder(messageSource)) {
-            messageSource = createI18nPropertiesMessageSource();
-        } else {
-
-            //not null, so the user configured their own.  Need to ensure the stormpath keys are resolvable:
-
-            boolean stormpathI18nAlreadyConfigured = false;
-
-            try {
-                String value = messageSource.getMessage(I18N_TEST_KEY, null, Locale.ENGLISH);
-                Assert.hasText(value, "i18n message key " + I18N_TEST_KEY + " must resolve to a non-empty value.");
-                stormpathI18nAlreadyConfigured = true;
-            } catch (NoSuchMessageException e) {
-                log.debug("Stormpath i18n properties have not been specified during message source configuration.  " +
-                    "Adding these property values as a fallback. Exception for reference (this and the " +
-                    "stack trace can safely be ignored): " + e.getMessage(), e);
-            }
-
-            if (!stormpathI18nAlreadyConfigured) {
-
-                //we need to 'wrap' the existing message source and ensure it can fall back to our default values.
-                //ensure the user-configured message source is first to take precedence:
-                messageSource = new CompositeMessageSource(messageSource, createI18nPropertiesMessageSource());
-            }
-        }
-
-        return messageSource;
-    }
-
     public MessageContextRegistrar stormpathMessageContextRegistrar() {
         MessageContext ctx = new DefaultMessageContext(stormpathMessageSource(), stormpathLocaleResolver());
         return new MessageContextRegistrar(ctx, servletContext);
     }
 
-    /**
-     * At ApplicationContext startup, Spring creates a placeholder in the ApplicationContext to await a 'real' message
-     * source.  This method returns {@code true} if the specified message source is just a placeholder (and not relevant
-     * for our needs) or {@code false} if the message source is a 'real' message source and usable.
-     *
-     * @param messageSource the message source to check
-     * @return {@code true} if the specified message source is just a placeholder (and not relevant for our needs) or
-     * {@code false} if the message source is a 'real' message source and usable.
-     */
-    //
-    protected boolean isPlaceholder(MessageSource messageSource) {
-        return messageSource instanceof DelegatingMessageSource &&
-            ((DelegatingMessageSource) messageSource).getParentMessageSource() == null;
-    }
-
-    protected MessageSource createI18nPropertiesMessageSource() {
-        ResourceBundleMessageSource src = new ResourceBundleMessageSource();
-        // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/811
-        // Force same behavior as servlet i18n - all single quotes need to have double quotes.
-        // http://stackoverflow.com/a/19187306/65681
-        src.setAlwaysUseMessageFormat(true);
-        src.setBasename(I18N_PROPERTIES_BASENAME);
-        src.setDefaultEncoding("UTF-8");
-        return src;
-    }
-
     public com.stormpath.sdk.servlet.i18n.MessageSource stormpathMessageSource() {
-
-        final MessageSource springMessageSource = stormpathSpringMessageSource();
-
-        return new com.stormpath.sdk.servlet.i18n.MessageSource() {
-
-            @Override
-            public String getMessage(String key, Locale locale) {
-                return getMessage(key, locale, new Object[0]);
-            }
-
-            @Override
-            public String getMessage(String key, String defaultMessage, Locale locale, Object... args) {
-                try {
-                    return springMessageSource.getMessage(key, args, locale);
-                } catch (NoSuchMessageException e) {
-                    //Same behavior as com.stormpath.sdk.servlet.i18n.DefaultMessageSource
-                    log.debug("Couldn't load the i18n property: {}", key);
-                    return defaultMessage;
-                }
-            }
-
-            @Override
-            public String getMessage(String key, String defaultMessage, Locale locale) {
-                try {
-                    return springMessageSource.getMessage(key, new Object[0], locale);
-                } catch (NoSuchMessageException e) {
-                    //Same behavior as com.stormpath.sdk.servlet.i18n.DefaultMessageSource
-                    return defaultMessage;
-                }
-            }
-
-            @Override
-            public String getMessage(String key, Locale locale, Object... args) {
-                try {
-                    return springMessageSource.getMessage(key, args, locale);
-                } catch (NoSuchMessageException e) {
-                    //Same behavior as com.stormpath.sdk.servlet.i18n.DefaultMessageSource
-                    return '!' + key + '!';
-                }
-            }
-        };
+        return new SpringMessageSource(this.messageSource);
     }
 
     public ControllerConfig stormpathRegisterConfig() {

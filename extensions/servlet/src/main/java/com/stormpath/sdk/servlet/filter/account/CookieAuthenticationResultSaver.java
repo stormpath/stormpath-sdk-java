@@ -166,7 +166,32 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             log.warn(msg);
         }
 
-        return configSecure && resolverSecure;
+        boolean isSecure = configSecure && resolverSecure;
+
+        //since 1.1.0
+        //https://github.com/stormpath/stormpath-sdk-java/issues/937
+        if ("http".equals(request.getScheme()) && isSecure) {
+            String msg = "INSECURE IDENTITY COOKIE RUNTIME: Your current Stormpath SDK cookie " +
+                    "config doesn't allow insecure identity cookies (transmission over non-HTTPS connections)! " +
+                    "This should typically never occur otherwise your users will be " +
+                    "susceptible to man-in-the-middle attacks." +
+                    "For more information in Servlet-only " +
+                    "environments, please see the Security Notice here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#https-required and the " +
+                    "documentation on authentication state here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#authentication-state and here: " +
+                    "https://docs.stormpath.com/java/servlet-plugin/login.html#cookie-config (the " +
+                    "callout entitled 'Secure Cookies').  If you are using Spring Boot, Spring Boot-specific " +
+                    "documentation for these concepts are here: " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#security-notice " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#authentication-state and " +
+                    "https://docs.stormpath.com/java/spring-boot-web/login.html#cookie-storage";
+            log.error(msg);
+            //Send a general error message back to the user, since this is a config error not a user error
+            throw new InsecureCookieException("Authentication error");
+        }
+
+        return isSecure;
     }
 
     private CookieSaver getRefreshTokenCookieSaver(final HttpServletRequest request, final int maxAge) {
@@ -233,7 +258,6 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(clientSecret).parseClaimsJws(token);
         DateTime issueAt = new DateTime(claimsJws.getBody().getIssuedAt());
         DateTime expiration = new DateTime(claimsJws.getBody().getExpiration());
-
 
 
         return Seconds.secondsBetween(issueAt, expiration).getSeconds() - Seconds.secondsBetween(issueAt, DateTime.now()).getSeconds();
