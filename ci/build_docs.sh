@@ -2,7 +2,9 @@
 
 source ./ci/common.sh
 
-info "Generating guide guides..."
+info "Generating guide docs..."
+git submodule init
+git submodule update
 (cd docs && make allhtml &> $WORKDIR/target/sphinx.log) &
 PID=$!
 show_spinner "$PID"
