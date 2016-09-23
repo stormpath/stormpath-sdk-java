@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.provider.saml.SamlProvider;
+import com.stormpath.sdk.provider.SamlProvider;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 import com.stormpath.sdk.saml.SamlServiceProviderMetadata;
 
