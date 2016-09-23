@@ -16,9 +16,9 @@
 package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.provider.saml.SamlRequestFactory;
-import com.stormpath.sdk.provider.saml.CreateSamlProviderRequestBuilder;
-import com.stormpath.sdk.provider.saml.SamlAccountRequestBuilder;
+import com.stormpath.sdk.provider.SamlRequestFactory;
+import com.stormpath.sdk.provider.CreateSamlProviderRequestBuilder;
+import com.stormpath.sdk.provider.SamlAccountRequestBuilder;
 
 /**
  * @since 1.0.RC8

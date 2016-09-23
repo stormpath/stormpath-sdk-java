@@ -27,7 +27,7 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.provider.OAuthProvider;
 import com.stormpath.sdk.provider.Provider;
-import com.stormpath.sdk.provider.saml.SamlProvider;
+import com.stormpath.sdk.provider.SamlProvider;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 
 import javax.servlet.http.HttpServletRequest;
