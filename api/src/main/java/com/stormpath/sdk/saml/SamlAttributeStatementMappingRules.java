@@ -16,7 +16,6 @@
 package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.provider.SamlProvider;
 
 /**
  * Static utility/helper methods for working with SAML-related resources. Most methods are
@@ -39,7 +38,7 @@ public final class SamlAttributeStatementMappingRules {
 
     /**
      * Returns a new {@link AttributeStatementMappingRulesBuilder} instance, used to construct {@link AttributeStatementMappingRules},
-     * to be added to the {@link SamlProvider} entity, for example, when creating a new Saml Directory.
+     * to be added to the {@link com.stormpath.sdk.provider.saml.SamlProvider} entity, for example, when creating a new Saml Directory.
      *
      * @return a new {@link AttributeStatementMappingRuleBuilder} instance, used to construct {@link AttributeStatementMappingRules}.
      */

@@ -435,7 +435,7 @@ public class DefaultDataStore implements InternalDataStore {
 
                 if (Collections.isEmpty(responseBody)) {
                     // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/218
-                    if ( response.getHttpStatus() == 202) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
+                    if ( response.getHttpStatus() == 202 ) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
                         responseBody = java.util.Collections.emptyMap();
                     } else {
                         throw new IllegalStateException("Unable to obtain resource data from the API server.");
@@ -539,8 +539,12 @@ public class DefaultDataStore implements InternalDataStore {
         return this.cacheManager != null && !(this.cacheManager instanceof DisabledCacheManager);
     }
 
+    /**
+     * @return the Base URL (i.e. https://api.stormpaht.com/v1) at which the current SDK instance is connected to.
+     * @since 1.1.0
+     */
     @Override
-    public String getBaseUrl(){
+    public String getBaseUrl() {
         return this.baseUrl;
     }
 

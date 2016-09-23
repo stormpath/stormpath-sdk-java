@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.provider.saml;
+
+import com.stormpath.sdk.provider.ProviderData;
 
 /**
- * @since 1.0.0
+ * SAML-specific {@link com.stormpath.sdk.provider.ProviderData} Resource.
+ *
+ * @since 1.0.RC8
  */
-public interface StormpathProvider extends Provider {
+public interface SamlProviderData extends ProviderData {
 }

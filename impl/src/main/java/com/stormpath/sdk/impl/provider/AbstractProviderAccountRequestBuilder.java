@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @since 1.0.beta
  */
-abstract class AbstractProviderAccountRequestBuilder<T extends ProviderAccountRequestBuilder<T>> implements ProviderAccountRequestBuilder<T> {
+public abstract class AbstractProviderAccountRequestBuilder<T extends ProviderAccountRequestBuilder<T>> implements ProviderAccountRequestBuilder<T> {
 
     protected String accessToken;
 

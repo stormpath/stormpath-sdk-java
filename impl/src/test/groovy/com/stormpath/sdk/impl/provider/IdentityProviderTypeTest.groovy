@@ -16,8 +16,8 @@
 package com.stormpath.sdk.impl.provider
 
 import com.stormpath.sdk.provider.*
-import com.stormpath.sdk.provider.SamlProvider
-import com.stormpath.sdk.provider.SamlProviderData
+import com.stormpath.sdk.provider.saml.SamlProvider
+import com.stormpath.sdk.provider.saml.SamlProviderData
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
