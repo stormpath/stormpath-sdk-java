@@ -13,7 +13,7 @@ if [ -n "$RUN_ITS" ]; then
   EXIT_CODE=$?
   if [ "$EXIT_CODE" -ne 0 ]; then
     error "Tests failed"
-    ./ci/junit-errors-to-stdout.sh
+    ./ci/transfer_logs_to_s3.sh
     exit $EXIT_CODE
   fi
 fi
@@ -29,7 +29,7 @@ if [ -z "$RUN_ITS" ]; then
   EXIT_CODE=$?
   if [ "$EXIT_CODE" -ne 0 ]; then
     error "Tests failed"
-    ./ci/junit-errors-to-stdout.sh
+    ./ci/transfer_logs_to_s3.sh
     exit $EXIT_CODE
   fi
 fi
