@@ -40,7 +40,7 @@ import static org.testng.AssertJUnit.*
 
 class FactorIT extends ClientIT {
 
-    private static final String VALID_PHONE_NUMBER = "+15005550006"
+    private static final String VALID_PHONE_NUMBER = "+18883915282"
 
     @Test
     void testCreateFactorWithNewPhone() {
