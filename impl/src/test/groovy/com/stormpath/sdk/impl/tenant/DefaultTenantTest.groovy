@@ -42,6 +42,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationList
+import com.stormpath.sdk.phone.PhoneList
 import com.stormpath.sdk.provider.Provider
 import com.stormpath.sdk.provider.Providers
 import org.easymock.IArgumentMatcher
@@ -65,7 +66,7 @@ class DefaultTenantTest {
 
         def propertyDescriptors = defaultTenant.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 8)
+        assertEquals(propertyDescriptors.size(), 9)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("key") instanceof StringProperty)
@@ -75,6 +76,7 @@ class DefaultTenantTest {
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference && propertyDescriptors.get("groups").getType().equals(GroupList))
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference && propertyDescriptors.get("accounts").getType().equals(AccountList))
         assertTrue(propertyDescriptors.get("organizations") instanceof CollectionReference && propertyDescriptors.get("organizations").getType().equals(OrganizationList))
+        assertTrue(propertyDescriptors.get("phones") instanceof CollectionReference && propertyDescriptors.get("phones").getType().equals(PhoneList))
     }
 
     @Test

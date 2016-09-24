@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.provider
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.provider.saml.DefaultSamlProvider
 import com.stormpath.sdk.impl.saml.DefaultAttributeStatementMappingRules
 import com.stormpath.sdk.provider.CreateProviderRequest
 import com.stormpath.sdk.provider.saml.CreateSamlProviderRequestBuilder

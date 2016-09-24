@@ -142,19 +142,4 @@ class PasswordStrengthPolicyIT extends ClientIT {
         assertEquals loginAccount.username, acct.username
     }
 
-    private Account createTestAccount(def application) {
-
-        //create a test account:
-        def acct = client.instantiate(Account)
-        def password = 'Changeme1!'
-        acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
-        acct.password = password
-        acct.email = acct.username + '@nowhere.com'
-        acct.givenName = 'Joe'
-        acct.surname = 'Smith'
-        acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
-        deleteOnTeardown(acct)
-
-        return acct
-    }
 }

@@ -97,4 +97,34 @@ public class DefaultAccountOptions extends DefaultOptions<AccountOptions> implem
     public AccountOptions withAccountLinks(int limit, int offset) {
         return expand(DefaultAccount.ACCOUNT_LINKS, limit, offset);
     }
+
+    @Override
+    public AccountOptions withFactors() {
+        return expand(DefaultAccount.FACTORS);
+    }
+
+    @Override
+    public AccountOptions withFactors(int limit) {
+        return expand(DefaultAccount.FACTORS, limit);
+    }
+
+    @Override
+    public AccountOptions withFactors(int limit, int offset) {
+        return expand(DefaultAccount.FACTORS, limit, offset);
+    }
+
+    @Override
+    public AccountOptions withPhones() {
+        return expand(DefaultAccount.PHONES);
+    }
+
+    @Override
+    public AccountOptions withPhones(int limit) {
+        return expand(DefaultAccount.PHONES, limit);
+    }
+
+    @Override
+    public AccountOptions withPhones(int limit, int offset) {
+        return expand(DefaultAccount.PHONES, limit, offset);
+    }
 }
