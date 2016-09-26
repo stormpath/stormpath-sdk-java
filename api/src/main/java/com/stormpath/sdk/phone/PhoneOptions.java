@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.provider;
+package com.stormpath.sdk.phone;
+
+import com.stormpath.sdk.query.Options;
 
 /**
- * @since 1.0.0
+ * Phone-specific options that may be specified when retrieving {@link Phone} resources.
+ *
+ * @since 1.1.0
  */
-public interface StormpathProvider extends Provider {
+public interface PhoneOptions<T> extends Options {
+
+    /**
+     * Ensures that when retrieving a Phone, the Phones's assigned {@link Phone#getAccount()} account}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
+    T withAccount();
+
 }

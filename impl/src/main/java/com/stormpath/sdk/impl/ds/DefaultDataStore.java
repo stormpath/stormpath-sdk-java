@@ -134,7 +134,7 @@ public class DefaultDataStore implements InternalDataStore {
         this.baseUrl = baseUrl;
         this.clientCredentials = clientCredentials;
         this.cacheManager = cacheManager;
-        this.resourceFactory = new DefaultResourceFactory(this);
+        this.resourceFactory = new SubtypeDispatchingResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
         this.queryStringFactory = new QueryStringFactory();
         this.cacheResolver = new DefaultCacheResolver(this.cacheManager, new DefaultCacheRegionNameResolver());
@@ -503,8 +503,8 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.notNull(resource, "resource argument cannot be null.");
         Assert.isInstanceOf(AbstractResource.class, resource, "Resource argument must be an AbstractResource.");
 
-        AbstractResource abstractResource = (AbstractResource) resource;
-        final String resourceHref = abstractResource.getHref();
+        final String resourceHref = resource.getHref();
+        Assert.hasText(resourceHref, "This resource does not have an href value, therefore it cannot be deleted.");
         final String requestHref;
         if (Strings.hasText(possiblyNullPropertyName)) { //delete just that property, not the entire resource:
             requestHref = resourceHref + "/" + possiblyNullPropertyName;
@@ -537,6 +537,15 @@ public class DefaultDataStore implements InternalDataStore {
      */
     public boolean isCachingEnabled() {
         return this.cacheManager != null && !(this.cacheManager instanceof DisabledCacheManager);
+    }
+
+    /**
+     * @return the Base URL (i.e. https://api.stormpaht.com/v1) at which the current SDK instance is connected to.
+     * @since 1.1.0
+     */
+    @Override
+    public String getBaseUrl() {
+        return this.baseUrl;
     }
 
     /**

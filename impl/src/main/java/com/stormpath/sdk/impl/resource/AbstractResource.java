@@ -65,12 +65,12 @@ public abstract class AbstractResource implements Resource {
         this.readLock = rwl.readLock();
         this.writeLock = rwl.writeLock();
         this.dataStore = dataStore;
-        this.dirtyProperties = new LinkedHashMap<String, Object>();
-        this.deletedPropertyNames = new HashSet<String>();
+        this.dirtyProperties = new LinkedHashMap<>();
+        this.deletedPropertyNames = new HashSet<>();
         if (properties instanceof Enlistment) {
             this.properties = properties;
         } else {
-            this.properties = new LinkedHashMap<String, Object>();
+            this.properties = new LinkedHashMap<>();
         }
         setProperties(properties);
     }
@@ -87,6 +87,17 @@ public abstract class AbstractResource implements Resource {
      */
     public static boolean isMaterialized(Map<String, ?> props) {
         return props != null && props.get(HREF_PROP_NAME) != null && props.size() > 1;
+    }
+
+    /**
+     * Returns {@code true} if the specified data map contains an href property.
+     *
+     * @param props the data properties to test.
+     * @return {@code true} if the specified data map contains an href property.
+     * @since 1.1.0
+     */
+    public static boolean hasHref(Map<String, ?> props) {
+        return props != null && props.get(HREF_PROP_NAME) != null;
     }
 
     protected static Map<String, Property> createPropertyDescriptorMap(Property... props) {
@@ -131,7 +142,7 @@ public abstract class AbstractResource implements Resource {
         return this.dataStore;
     }
 
-    protected final boolean isMaterialized() {
+    public final boolean isMaterialized() {
         return this.materialized;
     }
 
@@ -188,7 +199,7 @@ public abstract class AbstractResource implements Resource {
         readLock.lock();
         try {
             Set<String> keys = this.properties.keySet();
-            return new LinkedHashSet<String>(keys);
+            return new LinkedHashSet<>(keys);
         } finally {
             readLock.unlock();
         }
@@ -198,7 +209,7 @@ public abstract class AbstractResource implements Resource {
         readLock.lock();
         try {
             Set<String> keys = this.dirtyProperties.keySet();
-            return new LinkedHashSet<String>(keys);
+            return new LinkedHashSet<>(keys);
         } finally {
             readLock.unlock();
         }
@@ -207,7 +218,7 @@ public abstract class AbstractResource implements Resource {
     protected Set<String> getDeletedPropertyNames() {
         readLock.lock();
         try {
-            return new LinkedHashSet<String>(this.deletedPropertyNames);
+            return new LinkedHashSet<>(this.deletedPropertyNames);
         } finally {
             readLock.unlock();
         }
@@ -493,6 +504,27 @@ public abstract class AbstractResource implements Resource {
         String name = property.getName();
         Map<String, String> reference = this.referenceFactory.createReference(name, value);
         setProperty(name, reference);
+    }
+
+
+    /**
+     * This method is able to set a Reference to a resource (<code>value</code>) even though resource has not yet an href value
+     * <p>Note that this is method is analogous to the {@link #setResourceProperty(ResourceReference, Resource)} method (in fact
+     * it relies on it when the resource alredy has an href value) but this method does not complain when the href of the resource is missing.</p>
+     * @param property the property whose value is going to be set to <code>value</code>
+     * @param value the value to be set to <code>property</code>
+     * @since 1.1.0
+     */
+    protected <T extends Resource> void setMaterializableResourceProperty(ResourceReference<T> property, Resource value) {
+        Assert.notNull(property, "Property argument cannot be null.");
+        Assert.isNull(value.getHref(), "Resource must not have an 'href' property ");
+        if (((AbstractResource) value).isMaterialized()) {
+            setResourceProperty(property, value);
+        } else {
+            String name = property.getName();
+            Map<String, String> reference = this.referenceFactory.createUnmaterializedReference(name, value);
+            setProperty(name, reference);
+        }
     }
 
     /**

@@ -22,6 +22,7 @@ import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.ApplicationList
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.factor.FactorList
 import com.stormpath.sdk.group.*
 import com.stormpath.sdk.impl.directory.DefaultDirectory
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -39,6 +40,7 @@ import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.oauth.AccessTokenList
 import com.stormpath.sdk.oauth.RefreshTokenList
+import com.stormpath.sdk.phone.PhoneList
 import com.stormpath.sdk.provider.ProviderData
 import com.stormpath.sdk.tenant.Tenant
 import org.testng.annotations.Test
@@ -60,7 +62,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 21)
+        assertEquals(propertyDescriptors.size(), 23)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -83,7 +85,8 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("refreshTokens") instanceof CollectionReference && propertyDescriptors.get("refreshTokens").getType().equals(RefreshTokenList))
         assertTrue(propertyDescriptors.get("linkedAccounts") instanceof CollectionReference && propertyDescriptors.get("linkedAccounts").getType().equals(AccountList))
         assertTrue(propertyDescriptors.get("accountLinks") instanceof CollectionReference && propertyDescriptors.get("accountLinks").getType().equals(AccountLinkList))
-
+        assertTrue(propertyDescriptors.get("phones") instanceof CollectionReference && propertyDescriptors.get("phones").getType().equals(PhoneList))
+        assertTrue(propertyDescriptors.get("factors") instanceof CollectionReference && propertyDescriptors.get("factors").getType().equals(FactorList))
     }
 
     @Test

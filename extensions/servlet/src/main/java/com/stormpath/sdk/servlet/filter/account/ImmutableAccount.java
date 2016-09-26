@@ -24,11 +24,21 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.factor.*;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
+import com.stormpath.sdk.phone.CreatePhoneRequest;
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneCriteria;
+import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Date;
@@ -370,5 +380,65 @@ public class ImmutableAccount implements Account {
     @Override
     public AccountLinkList getAccountLinks(AccountLinkCriteria criteria) {
         return account.getAccountLinks(criteria);
+    }
+
+    @Override
+    public Phone createPhone(CreatePhoneRequest request) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public Phone createPhone(Phone phone) {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public PhoneList getPhones() {
+        return account.getPhones();
+    }
+
+    @Override
+    public PhoneList getPhones(Map<String, Object> queryParams) {
+        return account.getPhones(queryParams);
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public <T extends Factor> T createFactor(T factor) throws ResourceException {
+        immutable();
+        return null;
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException {
+        immutable();
+        return null;
+    }
+
+    @Override
+    public FactorList getFactors() {
+        return account.getFactors();
+    }
+
+    @Override
+    public FactorList getFactors(Map<String, Object> queryParams) {
+        return account.getFactors(queryParams);
+    }
+
+    @Override
+    public FactorList getFactors(FactorCriteria criteria) {
+        return account.getFactors(criteria);
+    }
+
+    @Override
+    public PhoneList getPhones(PhoneCriteria criteria) {
+        return account.getPhones(criteria);
     }
 }
