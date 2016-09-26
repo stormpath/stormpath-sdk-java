@@ -36,15 +36,3 @@ git add --all
 git commit -m "stormpath-sdk-java release $RELEASE_VERSION"
 ls -la source/java/servlet-plugin
 git push origin source
-gem install bundler
-bundle install
-rake setup_github_pages[git@github.com:stormpath/stormpath.github.io.git]
-cd _deploy
-git pull --no-edit -s recursive -X theirs https://github.com/stormpath/stormpath.github.io.git
-cd ..
-rake generate > /tmp/docs_generate.log
-cd _deploy
-git pull --no-edit -s recursive -X theirs https://github.com/stormpath/stormpath.github.io.git
-cd ..
-rake deploy
-cd ..
