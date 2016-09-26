@@ -56,6 +56,7 @@ public class IsRequestSecureResolver implements Resolver<Boolean> {
 
         boolean result = secureRequiredExceptForLocalhostResolver.get(request, response); //is the request coming from localhost?
         if (!result) {
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/139
             result = secureForwardedProtoAwareResolver.get(request, response); //does the request have a X-Forwarded-Proto header whose value is HTTPS?
         }
         return result;

@@ -64,20 +64,16 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
     private final CookieConfig accessTokenCookieConfig;
     private final CookieConfig refreshTokenCookieConfig;
-    private final Resolver<Boolean> requestSecureResolver;
 
     public CookieAuthenticationResultSaver(CookieConfig accessTokenCookieConfig,
                                            CookieConfig refreshTokenCookieConfig,
-                                           Resolver<Boolean> secureCookieRequired,
-                                            Resolver<Boolean> requestSecureResolver) {
+                                           Resolver<Boolean> secureCookieRequired) {
         Assert.notNull(accessTokenCookieConfig, "accessTokenCookieConfig cannot be null.");
         Assert.notNull(refreshTokenCookieConfig, "refreshTokenCookieConfig cannot be null.");
         Assert.notNull(secureCookieRequired, "secureCookieRequired cannot be null.");
-        Assert.notNull(requestSecureResolver, "requestSecureResolver cannot be null.");
         this.accessTokenCookieConfig = accessTokenCookieConfig;
         this.refreshTokenCookieConfig = refreshTokenCookieConfig;
         this.secureCookieRequired = secureCookieRequired;
-        this.requestSecureResolver = requestSecureResolver;
     }
 
     @Override
@@ -170,15 +166,11 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             log.warn(msg);
         }
 
-        //Cookies should be secured if, the user configured as secured or not or if the request is from localhost it overrides what ever the user configured
-        //so it can use insecure cookies
-        boolean isCookieSecure = configSecure && resolverSecure;
+        boolean isSecure = configSecure && resolverSecure;
 
         //since 1.1.0
         //https://github.com/stormpath/stormpath-sdk-java/issues/937
-        //Check if the request is actually secured via explicit https protocol or via TLS termination using the X-Forwarded-Proto header
-        boolean isRequestSecured = requestSecureResolver.get(request, null);
-        if (isRequestSecured && isCookieSecure) {
+        if ("http".equals(request.getScheme()) && isSecure) {
             String msg = "INSECURE IDENTITY COOKIE RUNTIME: Your current Stormpath SDK cookie " +
                     "config doesn't allow insecure identity cookies (transmission over non-HTTPS connections)! " +
                     "This should typically never occur otherwise your users will be " +
@@ -199,7 +191,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             throw new InsecureCookieException("Authentication error");
         }
 
-        return isCookieSecure;
+        return isSecure;
     }
 
     private CookieSaver getRefreshTokenCookieSaver(final HttpServletRequest request, final int maxAge) {

@@ -32,7 +32,6 @@ import javax.servlet.ServletContext;
 public class CookieAuthenticationResultSaverFactory extends ConfigSingletonFactory<Saver<AuthenticationResult>> {
 
     protected static final String COOKIE_SECURE_RESOLVER = "stormpath.web.cookie.secure.resolver";
-    protected static final String SECURE_RESOLVER_FACTORY = "stormpath.web.oauth2.authorizer.secure.resolver";
 
     @Override
     protected Saver<AuthenticationResult> createInstance(ServletContext servletContext) throws Exception {
@@ -40,12 +39,10 @@ public class CookieAuthenticationResultSaverFactory extends ConfigSingletonFacto
         CookieConfig accessTokenCookieConfig = config.getAccessTokenCookieConfig();
         CookieConfig refreshTokenCookieConfig = config.getRefreshTokenCookieConfig();
         Resolver<Boolean> secureCookieRequired = config.getInstance(COOKIE_SECURE_RESOLVER);
-        Resolver<Boolean> secureResolverFactory = config.getInstance(SECURE_RESOLVER_FACTORY);
         return new CookieAuthenticationResultSaver(
                 accessTokenCookieConfig,
                 refreshTokenCookieConfig,
-                secureCookieRequired,
-                secureResolverFactory
+                secureCookieRequired
         );
     }
 }
