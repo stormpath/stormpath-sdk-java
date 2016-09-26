@@ -33,9 +33,9 @@ import java.util.Map;
 public abstract class AbstractProvider extends AbstractResource implements Provider {
 
     // SIMPLE PROPERTIES
-    static final StringProperty PROVIDER_ID = new StringProperty("providerId");
-    static final DateProperty CREATED_AT = new DateProperty("createdAt");
-    static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
+    public static final StringProperty PROVIDER_ID = new StringProperty("providerId");
+    public static final DateProperty CREATED_AT = new DateProperty("createdAt");
+    public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
     public AbstractProvider(InternalDataStore dataStore) {
         this(dataStore, null);

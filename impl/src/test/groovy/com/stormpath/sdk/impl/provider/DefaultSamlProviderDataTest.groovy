@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.provider
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.provider.saml.DefaultSamlProviderData
 import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.provider.saml.SamlProviderData

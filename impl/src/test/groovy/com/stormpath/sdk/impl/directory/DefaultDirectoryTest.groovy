@@ -39,7 +39,7 @@ import com.stormpath.sdk.impl.provider.DefaultProvider
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
+import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList
@@ -68,7 +68,7 @@ class DefaultDirectoryTest {
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
-        assertTrue(propertyDescriptors.get("status") instanceof StatusProperty)
+        assertTrue(propertyDescriptors.get("status") instanceof EnumProperty)
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference)
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference)

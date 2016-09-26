@@ -16,7 +16,7 @@
 package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.impl.idsite.IdSiteResultStatus;
+import com.stormpath.sdk.idsite.IdSiteResultStatus;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.Resolver;
@@ -45,7 +45,7 @@ public class AuthorizationHeaderAccountResolver implements Resolver<Account> {
 
     public AuthorizationHeaderAccountResolver(HttpAuthenticator authenticator, String idSiteResultURI) {
         Assert.notNull(authenticator, "HttpAuthenticator argument cannot be null.");
-        Assert.notNull(authenticator, "idSiteResultURI argument cannot be null.");
+        Assert.notNull(idSiteResultURI, "idSiteResultURI argument cannot be null.");
         this.httpAuthenticator = authenticator;
         this.idSiteResultURI = idSiteResultURI;
     }

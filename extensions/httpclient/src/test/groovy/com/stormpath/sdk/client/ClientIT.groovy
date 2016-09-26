@@ -17,6 +17,8 @@
 
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
@@ -120,5 +122,40 @@ abstract class ClientIT {
         deleteOnTeardown(app.getDefaultAccountStore() as Directory)
         deleteOnTeardown(app)
         return app
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    protected Account createTestAccount(def application) {
+
+        //create a test account:
+        def acct = client.instantiate(Account)
+        def password = 'Changeme1!'
+        acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        acct.password = password
+        acct.email = acct.username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+
+        return acct
+    }
+
+    //@since 1.1.0
+    Account createTempAccountInDir(Directory directory){
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('DELETEME')
+                .setEmail(uniquify('randomEmail')+'@somemail.com')
+                .setPassword('Changeme1!')
+
+        account = directory.createAccount(account)
+        deleteOnTeardown(account)
+
+        return account
+
     }
 }

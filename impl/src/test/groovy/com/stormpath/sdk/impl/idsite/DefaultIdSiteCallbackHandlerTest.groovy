@@ -27,6 +27,7 @@ import com.stormpath.sdk.idsite.IDSiteException
 import com.stormpath.sdk.idsite.IDSiteRuntimeException
 import com.stormpath.sdk.idsite.IDSiteSessionTimeoutException
 import com.stormpath.sdk.idsite.IdSiteResultListener
+import com.stormpath.sdk.idsite.IdSiteResultStatus
 import com.stormpath.sdk.idsite.InvalidIDSiteTokenException
 import com.stormpath.sdk.idsite.LogoutResult
 import com.stormpath.sdk.idsite.NonceStore

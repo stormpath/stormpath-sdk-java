@@ -19,7 +19,10 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
+import com.stormpath.spring.context.MessageSourceDefinitionPostProcessor
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.MessageSource
+import org.springframework.context.support.ResourceBundleMessageSource
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
@@ -54,6 +57,9 @@ class MinimalStormpathWebMvcConfigurationIT extends AbstractTestNGSpringContextT
     @Autowired
     Filter stormpathFilter;
 
+    @Autowired
+    MessageSource messageSource;
+
     @Test
     void test() {
         assertNotNull c
@@ -62,5 +68,9 @@ class MinimalStormpathWebMvcConfigurationIT extends AbstractTestNGSpringContextT
         assertNotNull client
         assertNotNull application
         assertNotNull stormpathFilter
+
+        assert messageSource instanceof ResourceBundleMessageSource
+        assert messageSource.basenameSet.size() == 1
+        assert messageSource.basenameSet.iterator().next() == MessageSourceDefinitionPostProcessor.I18N_PROPERTIES_BASENAME
     }
 }

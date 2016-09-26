@@ -35,22 +35,22 @@ import com.stormpath.sdk.lang.Classes;
  *      <td>Validation Criteria</td><td>Locally</td><td>Stormpath</td>
  *   <tr/>
  *   <tr>
- *      <td>Token hasnt been tampered with</td><td>yes</td><td>yes</td>
+ *      <td>Token hasn't been tampered with</td><td>yes</td><td>yes</td>
  *   </tr>
  *   <tr>
- *      <td>Token hasnt expired</td><td>yes</td><td>yes</td>
+ *      <td>Token hasn't expired</td><td>yes</td><td>yes</td>
  *   </tr>
  *   <tr>
- *      <td>Token hasnt been revoked</td><td>no</td><td>yes</td>
+ *      <td>Token hasn't been revoked</td><td>no</td><td>yes</td>
  *   </tr>
  *   <tr>
- *      <td>Account hasnt been disabled, and hasnt been deleted</td><td>no</td><td>yes</td>
+ *      <td>Account hasn't been disabled, and hasn't been deleted</td><td>no</td><td>yes</td>
  *   </tr>
  *   <tr>
  *      <td>Issuer is Stormpath</td><td>yes</td><td>yes</td>
  *   </tr>
  *   <tr>
- *      <td>Issuing application is still enabled, and hasnt been deleted</td><td>no</td><td>yes</td>
+ *      <td>Issuing application is still enabled, and hasn't been deleted</td><td>no</td><td>yes</td>
  *   </tr>
  *   <tr>
  *      <td>Account is still in an account store for the issuing application</td><td>no</td><td>yes</td>
@@ -120,5 +120,13 @@ public class Authenticators {
      */
     public static final OAuthClientCredentialsRequestAuthenticatorFactory OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST_AUTHENTICATOR =
             (OAuthClientCredentialsRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsRequestAuthenticatorFactory");
+
+    /**
+     * Constructs {@link OAuthStormpathSocialGrantRequestAuthenticator}s.
+     *
+     * @since 1.1.0
+     */
+    public static final OAuthStormpathSocialRequestAuthenticatorFactory OAUTH_STORMPATH_SOCIAL_GRANT_REQUEST_AUTHENTICATOR =
+            (OAuthStormpathSocialRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialRequestAuthenticatorFactory");
 }
 

@@ -84,4 +84,6 @@ public interface InternalDataStore extends DataStore {
 
     CacheResolver getCacheResolver();
 
+    String getBaseUrl();
+
 }

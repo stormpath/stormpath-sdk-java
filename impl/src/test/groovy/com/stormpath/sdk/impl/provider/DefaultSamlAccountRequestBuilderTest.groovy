@@ -15,6 +15,7 @@
 */
 package com.stormpath.sdk.impl.provider
 
+import com.stormpath.sdk.impl.provider.saml.DefaultSamlProviderData
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.Providers

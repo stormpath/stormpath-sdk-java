@@ -16,12 +16,7 @@
 package com.stormpath.sdk.application;
 
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.account.AccountCriteria;
-import com.stormpath.sdk.account.AccountList;
-import com.stormpath.sdk.account.CreateAccountRequest;
-import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.account.VerificationEmailRequest;
+import com.stormpath.sdk.account.*;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
@@ -61,7 +56,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Application extends AccountStoreHolder<Application>, Resource, Saveable, Deletable, Extendable, Auditable {
+public interface Application extends AccountStoreHolder<Application>, Resource, Saveable, Deletable, Extendable, Auditable, AccountLinker {
 
     /**
      * Returns the Application's name.  An application's name must be unique across all other applications in the
