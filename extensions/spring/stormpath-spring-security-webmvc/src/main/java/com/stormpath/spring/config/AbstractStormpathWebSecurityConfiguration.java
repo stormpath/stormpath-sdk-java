@@ -42,6 +42,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.NullRequestCache;
 
 
@@ -83,6 +84,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     @Value("#{ @environment['stormpath.web.csrf.token.enabled'] ?: true }")
     protected boolean csrfTokenEnabled;
+
+    @Value("#{ @environment['stormpath.spring.security.csrf.token.repository'] ?: 'session' }")
+    protected String csrfTokenRepository;
 
     @Value("#{ @environment['stormpath.web.oauth2.enabled'] ?: true }")
     protected boolean accessTokenEnabled;
@@ -128,12 +132,23 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public CsrfTokenRepository stormpathCsrfTokenRepository() {
-        // 918: Use cookie-based repository instead of HttpSessionCsrfTokenRepository so
-        // Spring Security can be configured stateless with
-        // sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
-        csrfTokenRepository.setParameterName(csrfTokenName);
-        return csrfTokenRepository;
+        // 918: Use session-based CSRF token repository by default, since that's what Spring Security uses by default
+        if ("session".equals(csrfTokenRepository)) {
+            HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
+            csrfTokenRepository.setParameterName(csrfTokenName);
+            return csrfTokenRepository;
+        } else if ("cookie".equals(csrfTokenRepository)) {
+            // 918: Allow cookie-based repository instead of HttpSessionCsrfTokenRepository so
+            // Spring Security can be configured stateless with
+            // sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            // This is used when `stormpath.web.csrf.token.repository` is set to `cookie`.
+            CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
+            csrfTokenRepository.setParameterName(csrfTokenName);
+            return csrfTokenRepository;
+        } else {
+            throw new IllegalArgumentException("CSRF Token Repository '" + csrfTokenRepository +
+                    "' is not supported. Please set stormpath.spring.security.csrf.token.repository to 'session' or 'cookie'.");
+        }
     }
 
     public CsrfTokenManager stormpathCsrfTokenManager() {
