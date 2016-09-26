@@ -15,17 +15,14 @@
  */
 package com.stormpath.sdk.servlet.config;
 
-import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.http.Resolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Requires all HTTP clients to be secure (that is, {@link javax.servlet.http.HttpServletRequest#isSecure()
- * request.isSecure()} must be {@code true}) <em>except</em> for clients that send 'X-Forwarded-Proto' as
- * a header with a value of 'https'.
- *
+ * This {@link Resolver} inspects the the request lookind for the <code>X-Forwarded-Proto</code> header.
+ * <p>If the value of the header equals <code>HTTPS</code> then it will return <code>true</code>. Otherwise it will return <code>false</code></p>
  * <p>This solves https://github.com/stormpath/stormpath-sdk-java/issues/139: support X-Forwarded-Proto HTTP header
  * if SSL termination is offloaded to dedicated hardware.</p>
  *
@@ -33,21 +30,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SecureForwardedProtoAwareResolver implements Resolver<Boolean> {
 
-    private final Resolver<Boolean> isHTTPSForwardedProtoResolver;
-    private final Resolver<Boolean> secureRequiredExceptForLocalhostResolver;
-
-    public SecureForwardedProtoAwareResolver(Resolver<Boolean> isHTTPSForwardedProtoResolver, Resolver<Boolean> secureRequiredExceptForLocalhostResolver) {
-        Assert.notNull(isHTTPSForwardedProtoResolver, "isHTTPSForwardedProtoResolver resolver cannot be null.");
-        Assert.notNull(secureRequiredExceptForLocalhostResolver, "secureRequiredExceptForLocalhost resolver cannot be null.");
-        this.isHTTPSForwardedProtoResolver = isHTTPSForwardedProtoResolver;
-        this.secureRequiredExceptForLocalhostResolver = secureRequiredExceptForLocalhostResolver;
-    }
+    private static final String HEADER_FORWARDED_PROTO = "X-Forwarded-Proto";
+    private static final String HTTPS = "https";
 
     @Override
     public Boolean get(HttpServletRequest request, HttpServletResponse response) {
-        if (this.isHTTPSForwardedProtoResolver.get(request, response)) {
-            return false;
-        }
-        return this.secureRequiredExceptForLocalhostResolver.get(request, response);
+        String xForwardedProtoValue = request.getHeader(HEADER_FORWARDED_PROTO);
+        return HTTPS.equalsIgnoreCase(xForwardedProtoValue);
     }
 }
