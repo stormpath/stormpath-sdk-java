@@ -58,6 +58,7 @@ import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,6 +96,8 @@ public class DefaultConfig implements Config {
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
     public static final String STORMPATH_ENABLED = "stormpath.enabled";
     public static final String STORMPATH_WEB_ENABLED = "stormpath.web.enabled";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_ORIGINS = "stormpath.web.cors.allowed.origins";
+    public static final String STORMPATH_WEB_CORS_ENABLED = "stormpath.web.cors.enabled";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -573,5 +576,21 @@ public class DefaultConfig implements Config {
     @Override
     public Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver() {
         return this.getRuntimeInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
+    }
+
+    @Override
+    public List<String> getAllowedOrigins() {
+        String allowedOrigins = get(STORMPATH_WEB_CORS_ALLOWED_ORIGINS);
+
+        if(Strings.hasText(allowedOrigins)) {
+            return Arrays.asList(Strings.split(allowedOrigins));
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isCorsEnabled() {
+        return CFG.getBoolean(STORMPATH_WEB_CORS_ENABLED);
     }
 }

@@ -176,6 +176,9 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
@@ -404,6 +407,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.jsp.view.resolver.order'] ?: T(org.springframework.core.Ordered).LOWEST_PRECEDENCE}")
     protected int jspViewResolverOrder;
+
+    @Value("#{ @environment['stormpath.web.cors.enabled'] ?: true }")
+    protected boolean corsEnabled;
+
+    @Value("#{ @environment['stormpath.web.cors.allowed.origins'] }")
+    protected String corsAllowedOrigins;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -1390,7 +1399,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         accountResolverFilter.setEnabled(stormpathFilterEnabled);
         accountResolverFilter.setResolvers(stormpathAccountResolvers());
         accountResolverFilter.setOauthEndpointUri(accessTokenUri);
+
         List<Filter> priorityFilters = Collections.<Filter>toList(accountResolverFilter);
+
+        if(corsEnabled) {
+            priorityFilters.add(newCorsFilter());
+        }
 
         return new PrioritizedFilterChainResolver(resolver, priorityFilters);
     }
@@ -1484,6 +1498,25 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
             aBase.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    public Filter newCorsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(stormpathCorsAllowedOrigins());
+        config.setAllowedHeaders(Arrays.asList("Content-Type", "Accept", "X-Requested-With", "remember-me"));
+        config.setAllowedMethods(Arrays.asList("POST", "GET", "OPTIONS", "DELETE"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+    public List<String> stormpathCorsAllowedOrigins() {
+        if(Strings.hasText(corsAllowedOrigins)) {
+            return Arrays.asList(Strings.split(corsAllowedOrigins));
+        }
+
+        return java.util.Collections.emptyList();
     }
 }
 
