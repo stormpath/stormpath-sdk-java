@@ -4,12 +4,16 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.impl.client.DefaultClient
+import com.stormpath.sdk.servlet.application.ApplicationResolver
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver
 import com.stormpath.sdk.servlet.cache.PropertiesCacheManagerFactory
 import com.stormpath.sdk.servlet.client.ClientLoader
 import com.stormpath.sdk.servlet.config.Config
 import com.stormpath.sdk.servlet.config.ConfigLoader
 import com.stormpath.sdk.servlet.filter.DefaultFilterConfig
+import com.stormpath.sdk.servlet.filter.FilterChainResolver
+import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory
+import com.stormpath.sdk.servlet.filter.config.StormpathServletRequestFactoryFactory
 import com.stormpath.sdk.servlet.utils.ConfigTestUtils
 import org.springframework.mock.web.MockServletContext
 import org.testng.annotations.BeforeMethod
@@ -34,32 +38,31 @@ class SelfConfiguredStormpathFilterTest {
 
     @Test
     public void testStormpathFilterEnabledByDefault() {
-        config = new ConfigLoader().createConfig(mockServletContext)
-
-        // make SelfConfiguredStormpathFilter think a client has already been initialized
+        Config config = createMock(Config)
         DefaultClient defaultClient = createMock(DefaultClient)
-        expect(defaultClient.getResource("http://app", Application.class)).andReturn(createMock(Application))
+        ApplicationResolver applicationResolver = createMock(ApplicationResolver)
+        FilterChainResolver filterChainResolver = createMock(FilterChainResolver)
+        WrappedServletRequestFactory stormpathServletRequestFactoryFactory = createMock(WrappedServletRequestFactory)
 
-        // create cacheManagerFactory
-        PropertiesCacheManagerFactory factory = new PropertiesCacheManagerFactory();
-        CacheManager cacheManager = factory.createCacheManager(config);
+        mockServletContext.setAttribute(ConfigLoader.CONFIG_ATTRIBUTE_NAME, config)
 
-        ApiKey apiKey = createMock(ApiKey)
-        expect(apiKey.getSecret()).andReturn("secret")
-        expect(defaultClient.getCacheManager()).andReturn(cacheManager)
-        expect(defaultClient.getApiKey()).andReturn(apiKey)
+        expect(config.isStormpathWebEnabled()).andReturn true
+        expect(config.getClient()).andReturn defaultClient
+        expect(config.getApplicationResolver()).andReturn applicationResolver
+        expect(applicationResolver.getApplication(mockServletContext)).andReturn createMock(Application)
+        expect(config.getInstance("stormpath.web.filter.chain.resolver")).andReturn filterChainResolver
+        expect(config.get("stormpath.web.request.client.attributeNames")).andReturn "client"
+        expect(config.get("stormpath.web.request.application.attributeNames")).andReturn "application"
+        expect(config.getInstance("stormpath.web.request.factory")).andReturn stormpathServletRequestFactoryFactory
 
-        mockServletContext.setAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY, defaultClient);
-        mockServletContext.setAttribute(DefaultApplicationResolver.STORMPATH_APPLICATION_HREF, "http://app")
-
-        replay apiKey, defaultClient
+        replay config, defaultClient, applicationResolver, filterChainResolver, stormpathServletRequestFactoryFactory
 
         SelfConfiguredStormpathFilter filter = new SelfConfiguredStormpathFilter()
         DefaultFilterConfig filterConfig = new DefaultFilterConfig(mockServletContext, 'filter', null)
         filter.init(filterConfig)
         assertTrue filter.isEnabled()
 
-        verify apiKey, defaultClient
+        verify config, defaultClient, applicationResolver, filterChainResolver, stormpathServletRequestFactoryFactory
     }
 
     @Test
