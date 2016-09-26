@@ -63,7 +63,7 @@ class OrganizationIT extends ClientIT {
         tenant.getOrganizations()
 
         // get organizations with criteria
-        orgList = tenant.getOrganizations(Organizations.where(Organizations.name().containsIgnoreCase("JSDK_OrganizationIT_testCreateOrganization")))
+        orgList = tenant.getOrganizations(Organizations.where(Organizations.name().containsIgnoreCase(org.getName())))
         assertTrue orgList.iterator().hasNext()
         def retrieved = orgList.iterator().next()
         assertEquals org.href, retrieved.href
@@ -170,7 +170,7 @@ class OrganizationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
+    @Test
     void testRetrieveAndUpdateAccountLinkingPolicy() {
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
@@ -212,7 +212,7 @@ class OrganizationIT extends ClientIT {
     }
 
     /* @since 1.1.0 */
-    @Test(enabled = false) //TODO: enable this test when AM-3404 from REST API is available in Production
+    @Test
     void testRetrieveAndUpdateAccountLinkingPolicyPartially() {
         def org = client.instantiate(Organization)
         org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))

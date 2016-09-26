@@ -23,6 +23,7 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.factor.*;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -30,12 +31,12 @@ import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
+import com.stormpath.sdk.phone.CreatePhoneRequest;
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneCriteria;
+import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
-import com.stormpath.sdk.resource.Auditable;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.*;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -589,6 +590,157 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.0.RC7
      */
     RefreshTokenList getRefreshTokens();
+
+    /**
+     * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Phone for Multi Factor Authentication purposes.
+     *
+     * @param request {@link CreatePhoneRequest} used to create a phone with.
+     * @return the newly created {@link Phone}.
+     *
+     * @since 1.1.0
+     */
+    Phone createPhone(CreatePhoneRequest request);
+
+    /**
+     * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Phone for Multi Factor Authentication purposes.
+     *
+     * @param phone {@link Phone} pojo to hold necessary data to send to the back- end to create a {@link Phone}.
+     * @return the newly created {@link Phone}.
+     *
+     * @since 1.1.0
+     */
+    Phone createPhone(Phone phone) throws ResourceException;
+
+    /**
+     * Returns a paginated list of all the phones that belong to the account.
+     *
+     * @return a paginated list of all the Account's phones.
+     *
+     * @since 1.1.0
+     */
+    PhoneList getPhones();
+
+    /**
+     * Returns a paginated list of all the phones that belong to the account matching the query params.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of all the Account's phones.
+     *
+     * @since 1.1.0
+     */
+    PhoneList getPhones(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's assigned phones that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.phone.Phones Phones} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getPhones(Phones.where(
+     *     Phones.description().containsIgnoreCase("foo"))
+     *     .and(Phones.name().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.phone.Phones.*;
+     *
+     * ...
+     *
+     * account.getPhones(where(
+     *      description().containsIgnoreCase("foo"))
+     *     .and(name().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's phones that match the specified query criteria.
+     * @since 1.1.0
+     */
+    PhoneList getPhones(PhoneCriteria criteria);
+
+    /**
+     * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Factor for Multi Factor Authentication purposes.
+     *
+     * @param factor {@link Factor} pojo to hold necessary data to send to the back- end to create a {@link Factor}.
+     * @return the newly created {@link Factor}.
+     *
+     * @since 1.1.0
+     */
+    <T extends Factor> T createFactor(T factor) throws ResourceException;
+
+    /**
+     * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource
+     * based on provided {@link CreateFactorRequest}
+     * The account can then use the Factor for Multi Factor Authentication purposes.
+     *
+     * @param request {@link CreateFactorRequest} used to create a factor with.
+     * @return the newly created {@link Factor}.
+     *
+     * @since 1.1.0
+     */
+    <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException;
+
+    /**
+     * Returns a paginated list of all the factors that belong to the account.
+     *
+     * @return a paginated list of all the Account's factos.
+     *
+     * @since 1.1.0
+     */
+    FactorList getFactors();
+
+    /**
+     * Returns a paginated list of all the factors that belong to the account matching the query params.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of all the Account's factos.
+     *
+     * @since 1.1.0
+     */
+    FactorList getFactors(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's assigned factors that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.factor.Factors factors} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getFactors(Factors.SMS.where(
+     *     Factors.SMS.status().eq(FactorStatus.ENABLED)
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.factor.Factors.SMS.*;
+     *
+     * ...
+     *
+     * account.getFactors(where(
+     *      status().eq(FactorStatus.ENABLED))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's factors that match the specified query criteria.
+     * @since 1.1.0
+     */
+    FactorList getFactors(FactorCriteria criteria);
 
     /**
      * Returns a paginated list of the account's linked accounts.

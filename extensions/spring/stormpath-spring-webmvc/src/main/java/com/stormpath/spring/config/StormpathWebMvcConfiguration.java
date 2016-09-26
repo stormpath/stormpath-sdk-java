@@ -15,7 +15,6 @@
  */
 package com.stormpath.spring.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -200,7 +199,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public AuthenticationResultSaver stormpathAuthenticationResultSaver() {
+    public Saver<AuthenticationResult> stormpathAuthenticationResultSaver() {
         return super.stormpathAuthenticationResultSaver();
     }
 

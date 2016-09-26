@@ -24,7 +24,14 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.factor.*;
+import com.stormpath.sdk.factor.CreateFactorRequest;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -37,6 +44,7 @@ import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.oauth.RefreshTokenList;
+import com.stormpath.sdk.phone.*;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
@@ -84,6 +92,11 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<RefreshTokenList, RefreshToken> REFRESH_TOKENS =
             new CollectionReference<>("refreshTokens", RefreshTokenList.class, RefreshToken.class);
 
+    static final CollectionReference<PhoneList, Phone> PHONES =
+            new CollectionReference<>("phones", PhoneList.class, Phone.class);
+
+    static final CollectionReference<FactorList, Factor> FACTORS =
+            new CollectionReference<>("factors", FactorList.class, Factor.class);
 
     static final CollectionReference<AccountList, Account> LINKED_ACCOUNTS =
             new CollectionReference<>("linkedAccounts", AccountList.class, Account.class);
@@ -94,7 +107,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
-            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS, ACCOUNT_LINKS);
+            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS, ACCOUNT_LINKS,PHONES, FACTORS);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -210,6 +223,41 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     public GroupList getGroups(GroupCriteria criteria) {
         GroupList list = getGroups(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), GroupList.class, (Criteria<GroupCriteria>) criteria);
+    }
+
+    @Override
+    public PhoneList getPhones() {
+        return getResourceProperty(PHONES);
+    }
+
+    @Override
+    public PhoneList getPhones(Map<String, Object> queryParams) {
+        PhoneList list = getPhones(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), PhoneList.class, queryParams);
+    }
+
+
+    @Override
+    public FactorList getFactors(){
+        return getResourceProperty(FACTORS);
+    }
+
+    @Override
+    public FactorList getFactors(Map<String, Object> queryParams) {
+        FactorList list = getFactors(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), FactorList.class, queryParams);
+    }
+
+    @Override
+    public FactorList getFactors(FactorCriteria criteria) {
+        FactorList list = getFactors(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), FactorList.class, (Criteria<FactorCriteria>) criteria);
+    }
+
+    @Override
+    public PhoneList getPhones(PhoneCriteria criteria){
+        PhoneList list = getPhones(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), PhoneList.class, (Criteria<PhoneCriteria>) criteria);
     }
 
     @Override
@@ -567,4 +615,48 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
         AccountLinkList list = getAccountLinks(); //safe to get the href: does not execute a query until iteration occurs
         return getDataStore().getResource(list.getHref(), AccountLinkList.class, (Criteria<AccountLinkCriteria>) criteria);
     }
+
+
+    @Override
+    public Phone createPhone(CreatePhoneRequest request) {
+        Assert.notNull(request, "Request cannot be null.");
+
+        final Phone phone = request.getPhone();
+        String href = getPhones().getHref();
+
+        if (request.hasPhoneOptions()) {
+            return  getDataStore().create(href, phone, request.getPhoneOptions());
+        }
+        return getDataStore().create(href, phone);
+    }
+
+    @Override
+    public Phone createPhone(Phone phone) {
+        Assert.notNull(phone, "Phone instance cannot be null.");
+        return getDataStore().create(getPhones().getHref(), phone);
+    }
+
+    @Override
+    public <T extends Factor> T createFactor(T factor) throws ResourceException{
+        Assert.notNull(factor, "Factor instance cannot be null.");
+        return getDataStore().create(getFactors().getHref(), factor);
+    }
+
+    @Override
+    public <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException {
+        Assert.notNull(request, "Request cannot be null.");
+
+        final Factor smsFactor = request.getFactor();
+        String href = getFactors().getHref();
+
+        if(request.isCreateChallenge()){
+            href += "?challenge=" + request.isCreateChallenge();
+        }
+
+        if (request.hasFactorOptions()) {
+            return (T) getDataStore().create(href, smsFactor, request.getFactorOptions());
+        }
+        return (T) getDataStore().create(href, smsFactor);
+    }
 }
+

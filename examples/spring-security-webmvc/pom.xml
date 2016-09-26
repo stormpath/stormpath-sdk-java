@@ -131,8 +131,6 @@
         <profile>
             <id>clover.all</id>
             <properties>
-                <clover.version>4.1.1</clover.version>
-
                 <!-- clover - for internal use -->
                 <clover.coverage.percentage>30%</clover.coverage.percentage>
                 <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
@@ -147,7 +145,7 @@
                 <dependency>
                     <groupId>com.atlassian.clover</groupId>
                     <artifactId>clover</artifactId>
-                    <version>${clover.version}</version>
+                    <version>4.1.1</version>
                 </dependency>
             </dependencies>
             <build>
@@ -233,7 +231,7 @@
                     <plugin>
                         <groupId>com.atlassian.maven.plugins</groupId>
                         <artifactId>clover-maven-plugin</artifactId>
-                        <version>${clover.version}</version>
+                        <version>4.1.1</version>
                         <configuration>
                             <generateHistorical>true</generateHistorical>
                             <historyDir>${clover.history.dir}</historyDir>

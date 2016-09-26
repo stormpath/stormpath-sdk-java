@@ -25,6 +25,7 @@ import com.stormpath.sdk.application.Application;
  * @see OAuthPasswordRequestAuthenticatorFactory
  * @see OAuthRefreshTokenRequestAuthenticatorFactory
  * @see OAuthBearerRequestAuthenticatorFactory
+ * @see OAuthClientCredentialsRequestAuthenticatorFactory
  *
  * @since 1.0.RC7
  */
@@ -36,6 +37,6 @@ public interface OAuthRequestAuthenticatorFactory<T extends OAuthRequestAuthenti
      * @param application the application that will internally be used by the {@link OAuthRequestAuthenticator}
      * @return the concrete {@link OAuthRequestAuthenticator} that this factory will create.
      */
-    public T forApplication(Application application);
+    T forApplication(Application application);
 
 }
