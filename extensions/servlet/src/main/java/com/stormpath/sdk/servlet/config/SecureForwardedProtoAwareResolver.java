@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * This {@link Resolver} inspects the the request lookind for the <code>X-Forwarded-Proto</code> header.
+ * This {@link Resolver} inspects the request looking for the <code>X-Forwarded-Proto</code> header.
  * <p>If the value of the header equals <code>HTTPS</code> then it will return <code>true</code>. Otherwise it will return <code>false</code></p>
  * <p>This solves https://github.com/stormpath/stormpath-sdk-java/issues/139: support X-Forwarded-Proto HTTP header
  * if SSL termination is offloaded to dedicated hardware.</p>
