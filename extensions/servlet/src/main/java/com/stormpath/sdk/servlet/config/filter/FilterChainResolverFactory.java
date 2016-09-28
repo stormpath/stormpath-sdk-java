@@ -24,8 +24,6 @@ import com.stormpath.sdk.servlet.filter.PrioritizedFilterChainResolver;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,7 +47,7 @@ public class FilterChainResolverFactory extends ConfigSingletonFactory<FilterCha
         priorityFilters.add(accountFilter);
 
         if (getConfig().isCorsEnabled()) {
-            CORSFilterFactory corsFilterFactory = new CORSFilterFactory();
+            CorsFilterFactory corsFilterFactory = new CorsFilterFactory();
             corsFilterFactory.init(servletContext);
             priorityFilters.add(corsFilterFactory.getInstance());
         }

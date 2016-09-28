@@ -96,7 +96,9 @@ public class DefaultConfig implements Config {
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
     public static final String STORMPATH_ENABLED = "stormpath.enabled";
     public static final String STORMPATH_WEB_ENABLED = "stormpath.web.enabled";
-    public static final String STORMPATH_WEB_CORS_ALLOWED_ORIGINS = "stormpath.web.cors.allowed.origins";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_ORIGINS = "stormpath.web.cors.originUris";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_HEADERS = "stormpath.web.cors.headers";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_METHODS = "stormpath.web.cors.methods";
     public static final String STORMPATH_WEB_CORS_ENABLED = "stormpath.web.cors.enabled";
 
     private final ServletContext servletContext;
@@ -579,11 +581,33 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public List<String> getAllowedOrigins() {
+    public List<String> getAllowedCorsOrigins() {
         String allowedOrigins = get(STORMPATH_WEB_CORS_ALLOWED_ORIGINS);
 
         if(Strings.hasText(allowedOrigins)) {
             return Arrays.asList(Strings.split(allowedOrigins));
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getAllowedCorsHaders() {
+        String allowedHeaders = get(STORMPATH_WEB_CORS_ALLOWED_HEADERS);
+
+        if(Strings.hasText(allowedHeaders)) {
+            return Arrays.asList(Strings.split(allowedHeaders));
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getAllowedCorsMethods() {
+        String allowedMethods = get(STORMPATH_WEB_CORS_ALLOWED_METHODS);
+
+        if(Strings.hasText(allowedMethods)) {
+            return Arrays.asList(Strings.split(allowedMethods));
         }
 
         return Collections.emptyList();

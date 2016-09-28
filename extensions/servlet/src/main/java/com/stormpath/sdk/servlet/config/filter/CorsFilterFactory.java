@@ -19,19 +19,18 @@ import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.cors.CorsFilter;
 
 import javax.servlet.ServletContext;
-import java.util.Arrays;
 
 /**
  * @since 1.1.0
  */
-public class CORSFilterFactory extends FilterFactory<CorsFilter> {
+public class CorsFilterFactory extends FilterFactory<CorsFilter> {
 
     @Override
     protected CorsFilter createInstance(ServletContext servletContext, Config config) throws Exception {
         CorsFilter filter = new CorsFilter();
-        filter.setAllowedOrigins(getConfig().getAllowedOrigins());
-        filter.setAllowedHttpHeaders(Arrays.asList("Content-Type", "Accept", "X-Requested-With", "remember-me"));
-        filter.setAllowedHttpMethods(Arrays.asList("POST", "GET", "OPTIONS", "DELETE"));
+        filter.setAllowedOrigins(getConfig().getAllowedCorsOrigins());
+        filter.setAllowedHttpHeaders(getConfig().getAllowedCorsHaders());
+        filter.setAllowedHttpMethods(getConfig().getAllowedCorsMethods());
         filter.setEnabled(getConfig().isCorsEnabled());
 
         return filter;

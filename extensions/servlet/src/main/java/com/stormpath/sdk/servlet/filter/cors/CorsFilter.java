@@ -36,14 +36,18 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * <p>
- * A {@link HttpFilter} that enable client-side cross-origin requests by
- * implementing W3C's CORS (<b>C</b>ross-<b>O</b>rigin <b>R</b>esource
- * <b>S</b>haring) specification for resources. Each {@link HttpServletRequest}
- * request is inspected as per specification, and appropriate response headers
+ * An {@link HttpFilter} that enables client-side cross-origin requests
+ * by implementing W3C's <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>
+ * (<b>C</b>ross-<b>O</b>rigin <b>R</b>esource<b>S</b>haring) specification for resources.
+ * Each {@link HttpServletRequest} request is inspected as per specification, and appropriate response headers
  * are added to {@link HttpServletResponse}.
  * </p>
- * Implementation extracted from {@link org.apache.catalina.filters.CorsFilter} and modified accordingly
+ * This class was borrowed from Apache Tomcat's {@link org.apache.catalina.filters.CorsFilter} with additional modifications.
+ * <p>
+ * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
+ *
+ * @see <a href="http://www.w3.org/TR/cors/">CORS specification</a>
+ * @since 1.1.0
  **/
 public class CorsFilter extends HttpFilter {
 

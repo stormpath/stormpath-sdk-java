@@ -19,8 +19,8 @@ import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.config.filter.AccessTokenFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.AccountAuthorizationFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.AuthenticationFilterFactory;
-import com.stormpath.sdk.servlet.config.filter.CORSFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.ChangePasswordFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.CorsFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.FacebookCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.ForgotPasswordFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.GithubCallbackFilterFactory;
@@ -57,7 +57,7 @@ public enum DefaultFilter {
     anon(AnonymousFilter.class, null),
     authc(AuthenticationFilter.class, AuthenticationFilterFactory.class),
     change(ControllerFilter.class, ChangePasswordFilterFactory.class),
-    cors(CorsFilter.class, CORSFilterFactory.class),
+    cors(CorsFilter.class, CorsFilterFactory.class),
     facebookCallback(ControllerFilter.class, FacebookCallbackFilterFactory.class),
     forgot(ControllerFilter.class, ForgotPasswordFilterFactory.class),
     githubCallback(ControllerFilter.class, GithubCallbackFilterFactory.class),
