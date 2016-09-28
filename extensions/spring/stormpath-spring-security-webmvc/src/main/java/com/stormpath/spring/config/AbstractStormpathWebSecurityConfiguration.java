@@ -132,14 +132,15 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public CsrfTokenRepository stormpathCsrfTokenRepository() {
-        // 918: Use session-based CSRF token repository by default, since that's what Spring Security uses by default
+        // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/918: Use session-based CSRF token repository
+        // by default, since that's what Spring Security uses by default
         if ("session".equals(csrfTokenRepository)) {
             HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
             csrfTokenRepository.setParameterName(csrfTokenName);
             return csrfTokenRepository;
         } else if ("cookie".equals(csrfTokenRepository)) {
-            // 918: Allow cookie-based repository instead of HttpSessionCsrfTokenRepository so
-            // Spring Security can be configured stateless with
+            // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/918: Allow cookie-based repository instead of
+            // HttpSessionCsrfTokenRepository so Spring Security can be configured stateless with
             // sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             // This is used when `stormpath.web.csrf.token.repository` is set to `cookie`.
             CookieCsrfTokenRepository csrfTokenRepository = new CookieCsrfTokenRepository();
