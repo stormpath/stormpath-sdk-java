@@ -580,6 +580,9 @@ public class DefaultConfig implements Config {
         return this.getRuntimeInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
     }
 
+    /**
+     * @since 1.1.0
+     */
     @Override
     public List<String> getAllowedCorsOrigins() {
         String allowedOrigins = get(STORMPATH_WEB_CORS_ALLOWED_ORIGINS);
@@ -591,6 +594,9 @@ public class DefaultConfig implements Config {
         return Collections.emptyList();
     }
 
+    /**
+     * @since 1.1.0
+     */
     @Override
     public List<String> getAllowedCorsHaders() {
         String allowedHeaders = get(STORMPATH_WEB_CORS_ALLOWED_HEADERS);
@@ -602,6 +608,9 @@ public class DefaultConfig implements Config {
         return Collections.emptyList();
     }
 
+    /**
+     * @since 1.1.0
+     */
     @Override
     public List<String> getAllowedCorsMethods() {
         String allowedMethods = get(STORMPATH_WEB_CORS_ALLOWED_METHODS);
@@ -613,6 +622,9 @@ public class DefaultConfig implements Config {
         return Collections.emptyList();
     }
 
+    /**
+     * @since 1.1.0
+     */
     @Override
     public boolean isCorsEnabled() {
         return CFG.getBoolean(STORMPATH_WEB_CORS_ENABLED);
