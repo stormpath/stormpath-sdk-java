@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.EnumSet;
 
 /**
  * @since 1.0.0
@@ -37,6 +38,16 @@ public class DefaultLoginFormStatusResolver implements LoginFormStatusResolver {
 
     @Override
     public String getStatusMessage(HttpServletRequest request, String status) {
-        return messageSource.getMessage("stormpath.web.login.form.status." + status, request.getLocale(), verifyEmailUri);
+        EnumSet<LoginStatus> validStatus = EnumSet.allOf(LoginStatus.class);
+
+        try {
+            if (validStatus.contains(LoginStatus.valueOf(status.toUpperCase()))) {
+                return messageSource.getMessage("stormpath.web.login.form.status." + status, request.getLocale(), verifyEmailUri);
+            }
+        } catch (IllegalArgumentException e) {
+            // ignore exception, happens when status not in LoginStatus enum
+        }
+
+        return "";
     }
 }

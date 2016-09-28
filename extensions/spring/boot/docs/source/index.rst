@@ -21,6 +21,8 @@ This part of the documentation will show you how to get started right away.  If 
    config
    registration
    login
+   social
+   authorization
    forgot-password
    logout
    http-request-authentication

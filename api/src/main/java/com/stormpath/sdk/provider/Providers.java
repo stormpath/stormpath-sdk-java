@@ -83,6 +83,6 @@ public final class Providers {
      * @return a new {@link com.stormpath.sdk.provider.saml.SamlRequestFactory} instance, used to construct Saml requests, like Saml Directory creation.
      * @since 1.0.RC8
      */
-    public static final SamlRequestFactory SAML = (SamlRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultSamlRequestFactory");
+    public static final SamlRequestFactory SAML = (SamlRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.saml.DefaultSamlRequestFactory");
 }
 

@@ -1,58 +1,22 @@
 language: java
 sudo: false
 jdk:
-- openjdk7
-- oraclejdk7
-- oraclejdk8
+  - openjdk7
+  - oraclejdk7
+  - oraclejdk8
+addons:
+  apt:
+    packages:
+      - xsltproc
 before_install:
-- export S3_BASE="http://stormpath-sdk-java-travis-setup.s3-website-us-east-1.amazonaws.com"
-- export ENC_TARBALL="stormpath_travis_setup.tar.enc"
-- export ENC_ENV="stormpath_env.sh.enc"
-- export STORMPATH_AUTHORS="stormpath_authors.sh"
-- export AUTHOR=$(git show --format="%ae" | head -n 1)
-- test $TRAVIS_BRANCH = master && MIDDLE="/" || MIDDLE="/$AUTHOR/"
-- export ENC_TARBALL_URL="$S3_BASE/$ENC_TARBALL"
-- export ENC_ENV_URL="$S3_BASE$MIDDLE$ENC_ENV"
-- export STORMPATH_AUTHORS_URL="$S3_BASE/$STORMPATH_AUTHORS"
-- wget $STORMPATH_AUTHORS_URL
-- if [ -e $STORMPATH_AUTHORS ]; then echo "$STORMPATH_AUTHORS_URL found. Proceeding."; else echo "$STORMPATH_AUTHORS_URL not found. Exiting."; exit 1; fi
-- source $STORMPATH_AUTHORS $AUTHOR
-- wget $ENC_TARBALL_URL
-- if [ -e $ENC_TARBALL ]; then echo "$ENC_TARBALL_URL found. Proceeding."; else echo "$ENC_TARBALL_URL not found. Exiting."; exit 1; fi
-- wget $ENC_ENV_URL
-- if [ -e $ENC_ENV ]; then echo "$ENC_ENV_URL found. Proceeding."; else echo "$ENC_ENV_URL not found. Exiting."; exit 1; fi
-- openssl aes-256-cbc -K $encrypted_0b7f5d43be1f_key -iv $encrypted_0b7f5d43be1f_iv -in $ENC_TARBALL -out stormpath_travis_setup.tar -d
-- tar xvf stormpath_travis_setup.tar
-- source env.sh
-- openssl aes-256-cbc -K $ENCRYPT_KEY -iv $ENCRYPT_IV -in $ENC_ENV -out stormpath_env.sh -d
-- source stormpath_env.sh
-- cp id_rsa_stormpath.github.io ~/.ssh/id_rsa 
-- chmod 600 ~/.ssh/id_rsa
-- mkdir -p ~/.stormpath/clover
-- cp clover.license ~/.stormpath/clover
-- export RELEASE_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
-  -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')"
-- export IS_RELEASE="$([ ${RELEASE_VERSION/SNAPSHOT} == $RELEASE_VERSION ] && [ $TRAVIS_BRANCH == 'master' ] && echo 'true')"
-- export BUILD_DOCS="$([ $TRAVIS_JDK_VERSION == 'oraclejdk8' ] && echo 'true')"
-- export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk7' ] && echo 'true')"
+  - source ./ci/before_install.sh
+  - source ./ci/stormpath_env.sh
 install:
-- test -z "$BUILD_DOCS" || pip -q install --user sphinx
-- test -z "$RUN_ITS" || ./install_aws_cli.sh
+  - ./ci/install.sh
 script:
-- test -z "$RUN_ITS" || mvn -Pclover.all -DskipITs=false -q install
-- test -n "$RUN_ITS" || mvn -q install
-- test -z "$BUILD_DOCS" || ./build_docs.sh
+  - ./ci/build.sh
 after_success:
-- test -z "$BUILD_DOCS" || test -z "$IS_RELEASE" || ./publish_docs.sh
-- test -z "$RUN_ITS" || ./publish_coverage_report.sh
+  - ./ci/after_success.sh
 notifications:
-  hipchat:
-    on_success: always
-    on_failure: always
-    rooms:
-      secure: WXJLZTnleKQd5DIfdPSNYk4ZT7bssV9esdaacZjwb9sdKLZAQ+ujL97uuVK4oDMbua9XJxYTsKK45QQp56+PgJc4KG0Regvs/e7NtoxahrNnpsHCob4+Hc2MSmFfJgsdAQ9dFemNZ3BQ2ec1gO6SToYk+7pwMPScUYnmAOrsHjU=
-    template:
-      '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)' 
-    format: html
   slack:
     secure: INiA7V4aXvimkImaErVH94ZSmFNuOgun9aurmf3BiE2Qq0EfNiEaWK9pp6hfkv+wSls4LXNDLaYVzdoMECVLh+Dv9VLHIABnaNEmMStXUlyZ+sOpdayl/47gnNr0G1cr06eqbikGVqWtQaxDz2Psaejq2D/6WYw5Vnqk4BjWQHw=

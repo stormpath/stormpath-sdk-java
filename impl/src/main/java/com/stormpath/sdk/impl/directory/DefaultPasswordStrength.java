@@ -36,9 +36,10 @@ public class DefaultPasswordStrength extends AbstractInstanceResource implements
     static final IntegerProperty MIN_LOWERCASE = new IntegerProperty("minLowerCase");
     static final IntegerProperty MAX_LENGTH = new IntegerProperty("maxLength");
     static final IntegerProperty MIN_NUMERIC = new IntegerProperty("minNumeric");
+    static final IntegerProperty PREVENT_REUSE = new IntegerProperty("preventReuse");
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            MIN_SYMBOL, MIN_DIACRITIC, MIN_UPPERCASE, MIN_LENGTH, MIN_LOWERCASE, MAX_LENGTH, MIN_NUMERIC);
+            MIN_SYMBOL, MIN_DIACRITIC, MIN_UPPERCASE, MIN_LENGTH, MIN_LOWERCASE, MAX_LENGTH, MIN_NUMERIC, PREVENT_REUSE);
 
     public DefaultPasswordStrength(InternalDataStore dataStore) {
         super(dataStore);
@@ -134,6 +135,27 @@ public class DefaultPasswordStrength extends AbstractInstanceResource implements
     public PasswordStrength setMinNumeric(int minNumeric) {
         Assert.isTrue(minNumeric >= 0, "minNumeric cannot be a negative number.");
         setProperty(MIN_NUMERIC, minNumeric);
+        return this;
+    }
+
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public int getPreventReuse() {
+        return getInt(PREVENT_REUSE);
+    }
+
+
+    /**
+     * @since 1.1.0
+     */
+    @Override
+    public PasswordStrength setPreventReuse(int preventReuse) {
+        Assert.isTrue(preventReuse >= 0, "preventReuse cannot be a negative number.");
+        Assert.isTrue(preventReuse <= 25, "preventReuse cannot be larger than 25.");
+        setProperty(PREVENT_REUSE, preventReuse);
         return this;
     }
 

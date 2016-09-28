@@ -93,6 +93,18 @@
   ],
   "properties": [
     {
+      "name": "stormpath.web.account.jwt.ttl",
+      "type": "java.lang.Long",
+      "description": "Time to live for Account JWT. Default is 3 days.",
+      "defaultValue": 259200
+    },
+    {
+      "name": "stormpath.web.account.jwt.signatureAlgorithm",
+      "type": "io.jsonwebtoken.SignatureAlgorithm",
+      "description": "The signature algorithm to use for signing a JWT.",
+      "defaultValue": "HS256"
+    },
+    {
       "name": "stormpath.web.authc.savers.cookie.enabled",
       "type": "java.lang.Boolean",
       "description": "Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie.  To ensure HTTP Sessions (which force server state) are not required, this property is true by default.  The cookie's properties are configurable via the stormpath.web.account.cookie.* properties.",
@@ -129,10 +141,10 @@
       "defaultValue": "application"
     },
     {
-      "name": "stormpath.web.handlerMapping.order",
-      "type": "java.lang.Integer",
-      "description": "The numeric order of the Stormpath Spring WebMVC HandlerMapping instance.  When finding a controller to render a view, Spring consults all registered HandlerMappings in ascending order, and the first one to handle a request wins.  The Stormpath starter's default value is 10 to ensure that the Spring Boot default RequestMappingHandlerMapping (value of zero) takes precedence over this one, to ensure user-defined controllers override Stormpath's by default.  This property value can be changed if you want to customize when the mapping is invoked relative to other registered HandlerMappings.",
-      "defaultValue": 10
+      "name": "stormpath.web.csrf.token.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Wether or not to enable CSRF tokens.",
+      "defaultValue": true
     },
     {
       "name": "stormpath.web.csrf.token.ttl",
@@ -281,12 +293,6 @@
       "type": "java.lang.String",
       "description": "The name of the Spring MVC view that should be rendered when visiting the stormpath.web.register.uri.  This is the name provided to the Spring MVC view resolver.  The default value is 'stormpath/register' which will render a convenient default view provided by the Stormpath starter.  If you want to render your own template instead of the default, set the name of your custom view here.",
       "defaultValue": "stormpath/register"
-    },
-    {
-      "name": "stormpath.web.register.form.fields",
-      "type": "java.lang.String",
-      "description": "A comma-delimited list of form field names and optional directives indicating which form fields should be displayed in the registration view.  The currently supported field names are Stormpath Account field names: 'givenName', 'middleName', 'surname', 'username', 'email', 'password'. Field names may have optional directives in parenthesis immediately following the field name that define additional behavior for the field: `fieldName(directive1, directive2, ..., directiveN)`. The currently supported directives are 'required': the form field must be populated before the form can be submitted and 'password': the form field is a password field; show '*' characters instead of raw password characters. Fields specified without a directive will be optional (displayed, but not required to be filled in). The 'email' form field is always required. If you customize your form fields, ensure that you always have at least an 'email(required)' list entry.",
-      "defaultValue": "givenName, surname, email(required), password(required,password)"
     },
     {
       "name": "stormpath.web.verifyEmail.enabled",
@@ -440,34 +446,6 @@
       "name": "stormpath.application.href",
       "type": "java.lang.String",
       "description": ""
-    },
-    {
-      "name": "stormpath.application.name",
-      "type": "java.lang.String",
-      "description": ""
-    },
-    {
-      "name": "stormpath.web.basePath",
-      "type": "java.lang.String",
-      "description": ""
-    },
-    {
-      "name": "stormpath.web.oauth2.client_credentials.enabled",
-      "type": "java.lang.Boolean",
-      "description": "",
-      "defaultValue": true
-    },
-    {
-      "name": "stormpath.web.oauth2.client_credentials.accessToken.ttl",
-      "type": "java.lang.Integer",
-      "description": "",
-      "defaultValue": 3600
-    },
-    {
-      "name": "stormpath.web.oauth2.password.enabled",
-      "type": "java.lang.Boolean",
-      "description": "",
-      "defaultValue": true
     },
     {
       "name": "stormpath.web.oauth2.password.validationStrategy",
@@ -896,22 +874,10 @@
       "defaultValue": "/callbacks/facebook"
     },
     {
-      "name": "stormpath.web.social.facebook.scope",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "email"
-    },
-    {
       "name": "stormpath.web.social.github.uri",
       "type": "java.lang.String",
       "description": "",
       "defaultValue": "/callbacks/github"
-    },
-    {
-      "name": "stormpath.web.social.github.scope",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "user:email"
     },
     {
       "name": "stormpath.web.social.google.uri",
@@ -920,22 +886,10 @@
       "defaultValue": "/callbacks/google"
     },
     {
-      "name": "stormpath.web.social.google.scope",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "email profile"
-    },
-    {
       "name": "stormpath.web.social.linkedin.uri",
       "type": "java.lang.String",
       "description": "",
       "defaultValue": "/callbacks/linkedin"
-    },
-    {
-      "name": "stormpath.web.social.linkedin.scope",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "r_basicprofile r_emailaddress"
     },
     {
       "name": "stormpath.web.me.enabled",
@@ -998,262 +952,52 @@
       "defaultValue": false
     },
     {
-      "name": "stormpath.client.cacheManager",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.cache.config.DefaultCacheManagerFactory"
-    },
-    {
-      "name": "stormpath.web.unauthorized.uri",
-      "type": "java.lang.String",
-      "description": "The context-relative path where an authenticated (already logged in) user will be redirected when attempting to access a url they are not allowed to access.",
-      "defaultValue": "/unauthorized"
-    },
-    {
-      "name": "stormpath.web.request.event.publisher",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.event.impl.EventPublisherFactory"
-    },
-    {
-      "name": "stormpath.web.request.event.listener",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.event.RequestEventListenerAdapter"
-    },
-    {
-      "name": "stormpath.web.cookie.secure.resolver",
-      "type": "java.lang.String",
-      "description": "THE FOLLOWING SECURE RESOLVER SHOULD *ALWAYS* RETURN TRUE IN PRODUCTION, EVEN IN INTRANET/PRIVATE COMPANY APPS. A 'false' value *will* make your application vulnerable to identity hijacking attacks. The default implementation however allows localhost clients to use non-TLS connections for development convenience. TLS is required for all other clients in order for the cookie to be set.",
-      "defaultValue": "com.stormpath.sdk.servlet.config.SecureResolverFactory"
-    },
-    {
-      "name": "stormpath.web.account.session.attribute.names",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.account.Account, account"
-    },
-    {
-      "name": "stormpath.web.account.jwt.resolver",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "om.stormpath.sdk.servlet.filter.account.config.JwtAccountResolverFactory"
-    },
-    {
-      "name": "stormpath.web.account.jwt.factory",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.AuthenticationJwtFactoryFactory"
-    },
-    {
-      "name": "stormpath.web.account.jwt.signingKey.resolver",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.account.DefaultJwtSigningKeyResolver"
-    },
-    {
-      "name": "stormpath.web.csrf.token.manager",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.csrf.config.CsrfTokenManagerFactory"
-    },
-    {
-      "name": "stormpath.client.cacheManager.caches.com.stormpath.sdk.servlet.nonces.ttl",
-      "type": "java.lang.Long",
-      "description": "",
-      "defaultValue": 3600000
-    },
-    {
-      "name": "stormpath.web.request.factory",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.config.StormpathServletRequestFactoryFactory"
-    },
-    {
-      "name": "stormpath.web.message.source",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.i18n.DefaultMessageSource"
-    },
-    {
-      "name": "stormpath.web.locale.resolver",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.i18n.DefaultLocaleResolver"
-    },
-    {
-      "name": "stormpath.web.account.resolvers",
-      "type": "java.lang.String",
-      "description": "When a Resolver returns an Account instance, all remaining Resolvers are ignored.  Resolvers are invoked in the order that they are specified in this comma-delimited list. Be sure to specify resolver names in the order that you prefer request locations to be checked.",
-      "defaultValue": "header, cookie, session"
-    },
-    {
-      "name": "stormpath.web.account.resolvers.header",
-      "type": "java.lang.String",
-      "description": "Authorization Header Account Resolver: inspects the HTTP 'Authorization' header using all available HTTP Authentication Schemes. Available schemes are defined by the following property name/value convention: stormpath.web.http.authc.schemes.SCHEME_NAME = SCHEME_IMPLEMENTATION_FULLY_QUALIFIED_CLASS_NAME",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.AuthorizationHeaderAccountResolverFactory"
-    },
-    {
-      "name": "stormpath.web.account.resolvers.cookie",
-      "type": "java.lang.String",
-      "description": "Cookie Account Resolver: looks for a secure digitally signed cookie that contains the account's information. The cookie itself is created and set by the stormpath.web.authc.saver.cookie implementation.",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.CookieAccountResolverFactory"
-    },
-    {
-      "name": "stormpath.web.account.resolvers.session",
-      "type": "java.lang.String",
-      "description": "Session Account Resolver: looks in an available HTTP session for the account. This implementation does not create sessions - it will only look in the request's session if the session already exists.",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.account.SessionAccountResolver"
-    },
-    {
-      "name": "stormpath.web.localhost.resolver",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.util.IsLocalhostResolver"
-    },
-    {
-      "name": "stormpath.web.oauth2.authorizer",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.AccessTokenRequestAuthorizerFactory"
-    },
-    {
-      "name": "stormpath.web.oauth2.authorizer.secure.resolver",
-      "type": "java.lang.String",
-      "description": "THE SECURE RESOLVER MUST *ALWAYS* RETURN TRUE IN PRODUCTION, EVEN IN INTRANET/PRIVATE COMPANY APPS. This is required by the OAuth 2 specification: https://tools.ietf.org/html/rfc6749#section-3.2 A 'false' value *will* make your application vulnerable to identity hijacking attacks. The default implementation however allows localhost clients to use non-TLS connections for development convenience.  TLS is required for all other clients in order for the request to be processed.",
-      "defaultValue": "com.stormpath.sdk.servlet.config.SecureResolverFactory"
-    },
-    {
-      "name": "stormpath.web.oauth2.origin.authorizer",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.OriginAccessTokenRequestAuthorizerFactory"
-    },
-    {
-      "name": "stormpath.web.oauth2.origin.authorizer.serverUriResolver",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.DefaultServerUriResolver"
-    },
-    {
-      "name": "stormpath.web.oauth2.authenticationRequestFactory",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.AccessTokenAuthenticationRequestFactoryFactory"
-    },
-    {
-      "name": "stormpath.web.oauth2.resultFactory",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.AccessTokenResultFactoryFactory"
-    },
-    {
-      "name": "stormpath.web.refreshToken.authenticationRequestFactory",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.RefreshTokenAuthenticationRequestFactoryFactory"
-    },
-    {
-      "name": "stormpath.web.refreshToken.resultFactory",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.oauth.config.RefreshTokenResultFactoryFactory"
-    },
-    {
-      "name": "stormpath.web.accountStoreResolver",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.http.authc.DisabledAccountStoreResolver"
-    },
-    {
-      "name": "stormpath.web.authc.saver",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.AuthenticationResultSaverFactory"
-    },
-    {
-      "name": "stormpath.web.authc.savers",
-      "type": "java.lang.String",
-      "description": "The storage locations that should be used to save account state after successful authentication. The value is a comma-delimited list of one or more of cookie, session, or disabled.",
-      "defaultValue": "cookie"
-    },
-    {
-      "name": "stormpath.web.authc.savers.cookie",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.CookieAuthenticationResultSaverFactory"
-    },
-    {
-      "name": "stormpath.web.authc.unauthenticatedHandler",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.config.UnauthenticatedHandlerFactory"
-    },
-    {
-      "name": "stormpath.web.authc.usernamePasswordRequestFactory",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.config.UsernamePasswordRequestFactoryFactory"
-    },
-    {
-      "name": "stormpath.web.authc.savers.session",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.account.config.SessionAuthenticationResultSaverFactory"
-    },
-    {
-      "name": "stormpath.web.http.authc",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.http.authc.config.HttpAuthenticatorFactory"
-    },
-    {
       "name": "stormpath.web.http.authc.challenge",
       "type": "java.lang.Boolean",
       "description": "Whether or not a failed HTTP Authentication attempt (via the Authorization header) should result in a HTTP 401 authentication challenge response, setting the WWW-Authenticate header.  This is expected behavior for HTTP Authentication, so the default value is true, but may be set to false you desire an exception be thrown instead.  This is mostly useful in certain testing scenarios, and it is strongly recommended to keep this value set to true to retain HTTP-compliant behavior.",
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.http.authc.schemes",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "basic, bearer"
+      "name": "stormpath.web.json.view.resolver.order",
+      "type": "java.lang.Integer",
+      "description": "The resolver order for the InternalResourceViewResolver.",
+      "defaultValue": 2147483637
     },
     {
-      "name": "stormpath.web.http.authc.schemes.basic",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.http.authc.config.BasicAuthenticationSchemeFactory"
+      "name": "stormpath.web.jsp.view.resolver.order",
+      "type": "java.lang.Integer",
+      "description": "The resolver order for the InternalResourceViewResolver.",
+      "defaultValue": 2147483647
     },
     {
-      "name": "stormpath.web.http.authc.schemes.bearer",
+      "name": "stormpath.web.assets.defaultServletName",
       "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.http.authc.config.BearerAuthenticationSchemeFactory"
+      "description": "The default servlet name for serving up static assets.",
+      "defaultValue": null
     },
     {
-      "name": "stormpath.web.authz.unauthorizedHandler",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.filter.config.UnauthorizedHandlerFactory"
+      "name": "stormpath.web.assets.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether or not to enable static assets.",
+      "defaultValue": true
     },
     {
-      "name": "stormpath.web.filter.chain.resolver",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "com.stormpath.sdk.servlet.config.DefaultFilterChainResolverFactory"
+      "name": "stormpath.web.assets.css.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether or not to enable CSS assets.",
+      "defaultValue": true
     },
     {
-      "name": "stormpath.web.uris./assets/css/stormpath.css",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "anon"
+      "name": "stormpath.web.assets.js.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether or not to enable JavaScript assets.",
+      "defaultValue": true
     },
     {
-      "name": "stormpath.web.uris./assets/css/custom.stormpath.css",
-      "type": "java.lang.String",
-      "description": "",
-      "defaultValue": "anon"
+      "name": "stormpath.web.assets.handlerMapping.order",
+      "type": "java.lang.Integer",
+      "description": "The resolver order for the static handlerMapping.",
+      "defaultValue": 2147483647
     }
   ]
 }

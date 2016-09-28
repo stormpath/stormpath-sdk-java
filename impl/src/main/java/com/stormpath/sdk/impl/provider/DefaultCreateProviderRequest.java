@@ -26,7 +26,7 @@ public class DefaultCreateProviderRequest implements CreateProviderRequest {
 
     Provider provider;
 
-    protected DefaultCreateProviderRequest(Provider provider) {
+    public DefaultCreateProviderRequest(Provider provider) {
         Assert.notNull(provider, "provider cannot be null.");
         Assert.hasText(provider.getProviderId(), "providerId within Provider instance must be specified.");
         this.provider = provider;

@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.provider.StormpathProvider;
+import com.stormpath.sdk.provider.saml.StormpathProvider;
 
 import java.util.Map;
 

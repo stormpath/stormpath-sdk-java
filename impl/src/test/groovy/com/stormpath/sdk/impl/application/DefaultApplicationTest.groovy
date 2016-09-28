@@ -18,11 +18,11 @@ package com.stormpath.sdk.impl.application
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountCriteria
+import com.stormpath.sdk.account.AccountLinkingPolicy
 import com.stormpath.sdk.account.AccountList
 import com.stormpath.sdk.account.CreateAccountRequest
 import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
-import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
@@ -43,6 +43,7 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
@@ -62,7 +63,7 @@ import com.stormpath.sdk.impl.provider.ProviderAccountAccess
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ListProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
+import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.saml.DefaultSamlPolicy
 import com.stormpath.sdk.impl.tenant.DefaultTenant
@@ -99,11 +100,11 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 14)
+        assertEquals( propertyDescriptors.size(), 15)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
-        assertTrue(propertyDescriptors.get("status") instanceof StatusProperty && propertyDescriptors.get("status").getType().equals(ApplicationStatus))
+        assertTrue(propertyDescriptors.get("status") instanceof EnumProperty && propertyDescriptors.get("status").getType().equals(ApplicationStatus))
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference && propertyDescriptors.get("tenant").getType().equals(Tenant))
         assertTrue(propertyDescriptors.get("defaultAccountStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultAccountStoreMapping").getType().equals(ApplicationAccountStoreMapping))
         assertTrue(propertyDescriptors.get("defaultGroupStoreMapping") instanceof ResourceReference && propertyDescriptors.get("defaultGroupStoreMapping").getType().equals(ApplicationAccountStoreMapping))
@@ -118,6 +119,9 @@ class DefaultApplicationTest {
         //since 1.0.RC8
         assertTrue(propertyDescriptors.get("samlPolicy") instanceof ResourceReference && propertyDescriptors.get("samlPolicy").getType().equals(SamlPolicy))
         assertTrue(propertyDescriptors.get("authorizedCallbackUris") instanceof ListProperty)
+        //since 1.1.0
+        assertTrue(propertyDescriptors.get("accountLinkingPolicy") instanceof ResourceReference && propertyDescriptors.get("accountLinkingPolicy").getType().equals(AccountLinkingPolicy))
+
     }
 
     @Test
@@ -495,8 +499,8 @@ class DefaultApplicationTest {
         def newAccountStoreMapping = createStrictMock(ApplicationAccountStoreMapping)
         def customData = new DefaultCustomData(dataStore)
         def requestExecutor = createStrictMock(RequestExecutor)
-        def apiKey = createStrictMock(ApiKey)
-        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials)
 
         expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
         expect(dataStore.instantiate(ApplicationAccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
@@ -537,13 +541,13 @@ class DefaultApplicationTest {
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
-        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor
 
         def app = new DefaultApplication(dataStore, properties)
         app.setDefaultAccountStore(group)
         app.setDefaultAccountStore(accountStore)
 
-        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor
     }
 
     //@since 1.0.RC
@@ -573,8 +577,8 @@ class DefaultApplicationTest {
         def newAccountStoreMapping = createStrictMock(ApplicationAccountStoreMapping)
         def customData = new DefaultCustomData(dataStore)
         def requestExecutor = createStrictMock(RequestExecutor)
-        def apiKey = createStrictMock(ApiKey)
-        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials)
 
         expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
         expect(dataStore.instantiate(ApplicationAccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
@@ -615,13 +619,13 @@ class DefaultApplicationTest {
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
-        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor
 
         def app = new DefaultApplication(dataStore, properties)
         app.setDefaultGroupStore(group)
         app.setDefaultGroupStore(accountStore)
 
-        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKey, requestExecutor
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor
     }
 
     //@since 1.0.beta
@@ -984,6 +988,7 @@ class DefaultApplicationTest {
         ]
 
         def apiKey = ApiKeys.builder().setId('foo').setSecret('bar').build()
+        def apiKeyCredentials = new ApiKeyCredentials(apiKey)
         def cacheManager = new DefaultCacheManager()
         def requestExecutor = createStrictMock(RequestExecutor)
         def response = createStrictMock(Response)
@@ -998,7 +1003,7 @@ class DefaultApplicationTest {
 
         replay requestExecutor, response
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKey, cacheManager)
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, cacheManager)
 
         def application = new DefaultApplication(dataStore, properties)
         //Since this issue shows up only when the caching is enabled, let's make sure that it is indeed enabled, otherwise

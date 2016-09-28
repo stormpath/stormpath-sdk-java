@@ -26,7 +26,7 @@ public class DefaultProviderAccountRequest implements ProviderAccountRequest {
 
     ProviderData providerData;
 
-    protected DefaultProviderAccountRequest(ProviderData providerData) {
+    public DefaultProviderAccountRequest(ProviderData providerData) {
         Assert.notNull(providerData, "providerData cannot be null.");
         Assert.hasText(providerData.getProviderId(), "providerId within ProviderData instance must be specified.");
         this.providerData = providerData;

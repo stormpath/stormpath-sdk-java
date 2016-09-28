@@ -23,7 +23,7 @@ import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.IntegerProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.mail.EmailStatus;
 import com.stormpath.sdk.mail.ModeledEmailTemplate;
@@ -40,8 +40,8 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
 
     // SIMPLE PROPERTIES
     static final IntegerProperty RESET_TOKEN_TTL = new IntegerProperty("resetTokenTtl");
-    static final StatusProperty<EmailStatus> RESET_EMAIL_STATUS = new StatusProperty<EmailStatus>("resetEmailStatus", EmailStatus.class);
-    static final StatusProperty<EmailStatus> RESET_SUCCESS_EMAIL_STATUS = new StatusProperty<EmailStatus>("resetSuccessEmailStatus", EmailStatus.class);
+    static final EnumProperty<EmailStatus> RESET_EMAIL_STATUS = new EnumProperty<EmailStatus>("resetEmailStatus", EmailStatus.class);
+    static final EnumProperty<EmailStatus> RESET_SUCCESS_EMAIL_STATUS = new EnumProperty<EmailStatus>("resetSuccessEmailStatus", EmailStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<PasswordStrength> STRENGTH = new ResourceReference<PasswordStrength>("strength", PasswordStrength.class);
