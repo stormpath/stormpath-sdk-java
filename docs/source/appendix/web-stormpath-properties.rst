@@ -1,7 +1,7 @@
 .. _web.stormpath.properties:
 
-A: web.stormpath.properties
-===============================
+web.stormpath.properties
+========================
 
 In stormpath-sdk-servlet-|version|.jar: ``/com/stormpath/sdk/servlet/config/web.stormpath.properties``
 
