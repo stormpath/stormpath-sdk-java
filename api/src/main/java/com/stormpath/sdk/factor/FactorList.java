@@ -22,5 +22,5 @@ import com.stormpath.sdk.resource.CollectionResource;
  *
  * @since 1.1.0
  */
-public interface FactorList extends CollectionResource<Factor> {
+public interface FactorList<T extends Factor> extends CollectionResource<T> {
 }

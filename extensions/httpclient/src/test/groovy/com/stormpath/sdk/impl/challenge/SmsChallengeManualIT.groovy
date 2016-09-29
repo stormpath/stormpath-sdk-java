@@ -19,11 +19,11 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.challenge.ChallengeOptions
 import com.stormpath.sdk.challenge.Challenges
+import com.stormpath.sdk.challenge.sms.SmsChallenge
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.phone.Phone
-import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
 
 import static org.testng.AssertJUnit.*
@@ -31,62 +31,7 @@ import static org.testng.AssertJUnit.*
 /**
  * @since 1.1.0
  */
-class ChallengeIT extends ClientIT{
-
-    @Test
-    void testFailedChallenge() {
-        Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: ChallengeIT.testFailedChallenge")
-        dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
-        deleteOnTeardown(dir)
-
-        dir.createAccount(account)
-
-        def phone = client.instantiate(Phone)
-        phone = phone.setNumber("6123438710")
-        SmsFactor factor = client.instantiate(SmsFactor)
-        factor = factor.setPhone(phone)
-
-        factor = account.createFactor(factor)
-
-        def challenge = client.instantiate(Challenge)
-        challenge.setMessage("This the message which has no place holder for the code")
-
-        // A 13103 is returned since message does not contain a ${code}
-
-        Throwable e = null
-        try {
-            factor.createChallenge(challenge)
-        }
-        catch(ResourceException re){
-            e = re
-            assertEquals(re.status, 400)
-            assertEquals(re.getCode(), 13103)
-        }
-
-        assertTrue(e instanceof ResourceException)
-        e = null
-
-        // A 13103 is returned since message does not contain a ${code}. This time with CreateChallengeRequest
-
-        def builder = Challenges.newCreateRequestFor(challenge).withResponseOptions(Challenges.options().withAccount())
-        try{
-            factor.createChallenge(builder.build())
-        }
-        catch(ResourceException re){
-            e = re
-            assertEquals(re.status, 400)
-            assertEquals(re.getCode(), 13103)
-        }
-        assertTrue(e instanceof ResourceException)
-    }
+class SmsChallengeManualIT extends ClientIT{
 
     // This test and the next one (testSuccessfulChallengeVerifyChallenge) require an actual phone to complete
     // Therefore they are disabled and meant to be run manually
@@ -117,7 +62,7 @@ class ChallengeIT extends ClientIT{
 
         factor = account.createFactor(factor)
 
-        def challenge = client.instantiate(Challenge)
+        def challenge = client.instantiate(SmsChallenge)
         challenge.setMessage("This is your owesome code: \${code}")
 
         challenge = factor.createChallenge(challenge)
@@ -131,17 +76,17 @@ class ChallengeIT extends ClientIT{
     void testSuccessfulVerifyChallenge() {
 
         // Paste the value for challenge href retrieved from previous test (testSuccessfulChallengeSendCode) here
-        def href = "http://localhost:9191/v1/challenges/23t3i4MgFbSlAMFKG2U1e"
+        def href = "https://dev.i.stormpath.com/v1/challenges/5Ybc0WUcv7J0hpgy7UCO4O"
         // Paste the code you received on your phone by running the previous test (testSuccessfulChallengeSendCode) here
-        def code = "033568"
+        def code = "658063"
 
 
-        Challenge challenge = client.getResource(href, Challenge)
+        Challenge challenge = client.getResource(href, SmsChallenge)
         assertTrue(challenge.validate(code))
 
-         //Test Challenges with ChallengeOptions
-        ChallengeOptions challengeOptions = Challenges.options().withFactor()
-        challenge = client.getResource(challenge.href, Challenge.class, challengeOptions)
+        //Test Challenges with ChallengeOptions
+        ChallengeOptions challengeOptions = Challenges.SMS.options().withFactor()
+        challenge = client.getResource(challenge.href, SmsChallenge.class, challengeOptions)
 
         assertNotNull(challenge.getAccount().href)
         assertEquals(challenge.getFactor().getAccount().href, challenge.getAccount().href)

@@ -21,7 +21,7 @@ package com.stormpath.sdk.factor;
  * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
  * @since 1.1.0
  */
-public interface CreateFactorRequest<T extends Factor, R extends FactorOptions>{
+public interface CreateFactorRequest<T extends Factor, O extends FactorOptions>{
 
     /**
      * Returns the Factor instance for which a new record will be created in Stormpath.
@@ -38,17 +38,9 @@ public interface CreateFactorRequest<T extends Factor, R extends FactorOptions>{
     boolean hasFactorOptions();
 
     /**
-     * Returns true in case Factor should be challenged upon creation.
-     * In which case a challenge resource is also created.
-     *
-     * @return rtue in case Factor should be challenged upon creation..
-     */
-    boolean isCreateChallenge();
-
-    /**
      * Returns the {@link FactorOptions}.
      *
      * @return  {@link FactorOptions}.
      */
-    R getFactorOptions() throws IllegalStateException;
+    O getFactorOptions() throws IllegalStateException;
 }

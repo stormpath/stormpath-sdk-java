@@ -34,6 +34,10 @@
         any time without warning - use it with runtime scope only.
     </description>
     <packaging>jar</packaging>
+    <properties>
+        <zxing.version>3.2.1</zxing.version>
+        <qrgen.version>2.0</qrgen.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -58,6 +62,23 @@
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-oauth</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>${zxing.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.glxn.qrgen</groupId>
+            <artifactId>javase</artifactId>
+            <version>${qrgen.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jfree</groupId>
+                    <artifactId>jfreesvg</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

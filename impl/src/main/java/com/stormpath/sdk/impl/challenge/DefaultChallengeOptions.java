@@ -25,11 +25,11 @@ public class DefaultChallengeOptions extends DefaultOptions<ChallengeOptions> im
 
     @Override
     public ChallengeOptions withAccount() {
-        return expand(DefaultChallenge.ACCOUNT);
+        return expand(AbstractChallenge.ACCOUNT);
     }
 
     @Override
     public ChallengeOptions withFactor() {
-        return expand(DefaultChallenge.FACTOR);
+        return expand(AbstractChallenge.FACTOR);
     }
 }

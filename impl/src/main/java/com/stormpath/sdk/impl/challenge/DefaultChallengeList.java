@@ -17,8 +17,6 @@ package com.stormpath.sdk.impl.challenge;
 
 import com.stormpath.sdk.challenge.Challenge;
 import com.stormpath.sdk.challenge.ChallengeList;
-import com.stormpath.sdk.factor.Factor;
-import com.stormpath.sdk.factor.FactorList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
@@ -29,7 +27,7 @@ import java.util.Map;
 /**
  * @since 1.1.0
  */
-public class DefaultChallengeList extends AbstractCollectionResource<Challenge> implements ChallengeList {
+public class DefaultChallengeList<T extends Challenge> extends AbstractCollectionResource<T> implements ChallengeList<T> {
 
     private static final ArrayProperty<Challenge> ITEMS = new ArrayProperty<>("items", Challenge.class);
 
@@ -48,8 +46,8 @@ public class DefaultChallengeList extends AbstractCollectionResource<Challenge> 
     }
 
     @Override
-    protected Class<Challenge> getItemType() {
-        return Challenge.class;
+    protected Class<T> getItemType() {
+        return (Class<T>) Challenge.class;
     }
 
     @Override

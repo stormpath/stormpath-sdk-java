@@ -23,7 +23,7 @@ package com.stormpath.sdk.challenge;
  * @see com.stormpath.sdk.factor.sms.SmsFactor#createChallenge(CreateChallengeRequest)
  * @since 0.9
  */
-public interface CreateChallengeRequestBuilder {
+public interface CreateChallengeRequestBuilder<T extends Challenge> {
 
     /**
      * Ensures that after a Challenge is created, the creation response is retrieved with the specified challenge's

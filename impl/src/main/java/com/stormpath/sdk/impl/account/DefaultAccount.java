@@ -26,6 +26,7 @@ import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.factor.*;
 import com.stormpath.sdk.factor.CreateFactorRequest;
+import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupList;
@@ -95,7 +96,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<PhoneList, Phone> PHONES =
             new CollectionReference<>("phones", PhoneList.class, Phone.class);
 
-    static final CollectionReference<FactorList, Factor> FACTORS =
+    static final CollectionReference<? extends FactorList, Factor> FACTORS =
             new CollectionReference<>("factors", FactorList.class, Factor.class);
 
     static final CollectionReference<AccountList, Account> LINKED_ACCOUNTS =
@@ -646,17 +647,24 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     public <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException {
         Assert.notNull(request, "Request cannot be null.");
 
-        final Factor smsFactor = request.getFactor();
+        final Factor factor = request.getFactor();
         String href = getFactors().getHref();
 
-        if(request.isCreateChallenge()){
-            href += "?challenge=" + request.isCreateChallenge();
-        }
+        if(request instanceof CreateSmsFactorRequest){
+            CreateSmsFactorRequest smsRequest = (CreateSmsFactorRequest) request;
+            if(smsRequest.isCreateChallenge()){
+                href += "?challenge=" + smsRequest.isCreateChallenge();
+            }
 
-        if (request.hasFactorOptions()) {
-            return (T) getDataStore().create(href, smsFactor, request.getFactorOptions());
+            if (request.hasFactorOptions()) {
+                return (T) getDataStore().create(href, factor, request.getFactorOptions());
+            }
+            return (T) getDataStore().create(href, factor);
+
         }
-        return (T) getDataStore().create(href, smsFactor);
+        // todo mehrshad: implement for google auth
+        return null;
+
     }
 }
 

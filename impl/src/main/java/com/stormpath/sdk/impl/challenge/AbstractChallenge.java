@@ -17,7 +17,7 @@ package com.stormpath.sdk.impl.challenge;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.challenge.Challenge;
-import com.stormpath.sdk.challenge.ChallengeStatus;
+import com.stormpath.sdk.challenge.sms.SmsChallengeStatus;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
@@ -30,24 +30,23 @@ import java.util.Map;
 /**
  * @since 1.1.0
  */
-public class DefaultChallenge extends AbstractInstanceResource implements Challenge {
+public abstract class AbstractChallenge<T extends Factor> extends AbstractInstanceResource implements Challenge<T> {
 
-    static final StringProperty MESSAGE = new StringProperty("message");
-    static final StringProperty MESSAGE_ID = new StringProperty("messageId");
-    static final EnumProperty<ChallengeStatus> STATUS = new EnumProperty<>("status", ChallengeStatus.class);
+
+    static final EnumProperty<SmsChallengeStatus> STATUS = new EnumProperty<>("status", SmsChallengeStatus.class);
     static final StringProperty CODE = new StringProperty("code");
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
     static final ResourceReference<Factor> FACTOR = new ResourceReference<>("factor", Factor.class);
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(MESSAGE, MESSAGE_ID, STATUS, CODE, ACCOUNT, FACTOR, CREATED_AT, MODIFIED_AT);
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(STATUS, CODE, ACCOUNT, FACTOR, CREATED_AT, MODIFIED_AT);
 
-    public DefaultChallenge(InternalDataStore dataStore) {
+    public AbstractChallenge(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultChallenge(InternalDataStore dataStore, Map<String, Object> properties) {
+    public AbstractChallenge(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -71,31 +70,13 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
         return PROPERTY_DESCRIPTORS;
     }
 
-
     @Override
-    public String getMessage() {
-        return getString(MESSAGE);
-    }
-
-    @Override
-    public Challenge setMessage(String message) {
-        setProperty(MESSAGE, message);
-        return this;
-    }
-
-    @Override
-    public ChallengeStatus getStatus() {
+    public SmsChallengeStatus getStatus() {
         String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
         }
-        return ChallengeStatus.valueOf(value.toUpperCase());
-    }
-
-    @Override
-    public Challenge setStatus(ChallengeStatus status) {
-        setProperty(STATUS, status.name());
-        return this;
+        return SmsChallengeStatus.valueOf(value.toUpperCase());
     }
 
     @Override
@@ -110,13 +91,13 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
     }
 
     @Override
-    public Factor getFactor() {
-        return getResourceProperty(FACTOR);
+    public T getFactor() {
+        return (T) getResourceProperty(FACTOR);
     }
 
     @Override
-    public Challenge setFactor(Factor smsFactor) {
-        setResourceProperty(FACTOR, smsFactor);
+    public Challenge setFactor(T factor) {
+        setResourceProperty(FACTOR, factor);
         return this;
     }
 
@@ -135,6 +116,6 @@ public class DefaultChallenge extends AbstractInstanceResource implements Challe
 
     private Challenge setCode(String code) {
         setProperty(CODE, code);
-        return null;
+        return this;
     }
 }

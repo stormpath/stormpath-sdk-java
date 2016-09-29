@@ -30,11 +30,6 @@ public class DefaultSmsFactorCriteria extends DefaultCriteria<FactorCriteria, Sm
     }
 
     @Override
-    public FactorCriteria orderByType() {
-        return orderBy(DefaultSmsFactor.TYPE);
-    }
-
-    @Override
     public SmsFactorCriteria orderByStatus() {
         return (SmsFactorCriteria) orderBy(DefaultSmsFactor.STATUS);
     }
@@ -64,6 +59,7 @@ public class DefaultSmsFactorCriteria extends DefaultCriteria<FactorCriteria, Sm
 
     @Override
     public FactorCriteria withAccount() {
-        return null;
+        getOptions().withAccount();
+        return this;
     }
 }

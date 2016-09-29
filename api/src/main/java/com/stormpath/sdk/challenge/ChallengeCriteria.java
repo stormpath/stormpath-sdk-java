@@ -53,16 +53,6 @@ import com.stormpath.sdk.query.Criteria;
 public interface ChallengeCriteria extends Criteria<ChallengeCriteria>, ChallengeOptions<ChallengeCriteria> {
 
     /**
-     * Ensures that the query results are ordered by group {@link Challenge#getMessage()} message}.
-     * <p/>
-     * Please see the {@link ChallengeCriteria class-level documentation} for controlling sort order (ascending or
-     * descending) and chaining multiple {@code orderBy} clauses.
-     *
-     * @return this instance for method chaining
-     */
-    ChallengeCriteria orderByMessage();
-
-    /**
      * Ensures that the query results are ordered by group {@link Challenge#getStatus() status}.
      * <p/>
      * Please see the {@link ChallengeCriteria class-level documentation} for controlling sort order (ascending or

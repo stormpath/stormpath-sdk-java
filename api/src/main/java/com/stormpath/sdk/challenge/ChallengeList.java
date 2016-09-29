@@ -22,5 +22,5 @@ import com.stormpath.sdk.resource.CollectionResource;
  *
  * @since 1.1.0
  */
-public interface ChallengeList extends CollectionResource<Challenge> {
+public interface ChallengeList<T extends Challenge> extends CollectionResource<T> {
 }

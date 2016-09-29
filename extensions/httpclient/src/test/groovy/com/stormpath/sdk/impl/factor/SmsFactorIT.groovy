@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountOptions
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.challenge.Challenge
+import com.stormpath.sdk.challenge.sms.SmsChallenge
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.Factor
@@ -38,7 +39,7 @@ import java.lang.reflect.Field
 
 import static org.testng.AssertJUnit.*
 
-class FactorIT extends ClientIT {
+class SmsFactorIT extends ClientIT {
 
     private static final String VALID_PHONE_NUMBER = "+18883915282"
 
@@ -321,7 +322,7 @@ class FactorIT extends ClientIT {
         phone.setNumber(VALID_PHONE_NUMBER)
         SmsFactor factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
-        def challenge = client.instantiate(Challenge)
+        def challenge = client.instantiate(SmsChallenge)
         //challenge = challenge.setMessage("Your awesome code is \${code}")
         factor = factor.setChallenge(challenge)
 

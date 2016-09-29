@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.factor.sms;
 
-import com.stormpath.sdk.factor.CreateFactorRequest;
-import com.stormpath.sdk.factor.Factor;
-import com.stormpath.sdk.factor.FactorCriteria;
-import com.stormpath.sdk.factor.FactorOptions;
+import com.stormpath.sdk.factor.*;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
@@ -63,11 +60,11 @@ public final class SmsFactors {
         INSTANCE = new SmsFactors();
     }
 
-    private static final Class<CreateSmsFactorRequestBuilder> BUILDER_CLASS =
+    private static final Class<CreateFactorRequestBuilder> BUILDER_CLASS =
             Classes.forName("com.stormpath.sdk.impl.factor.sms.DefaultCreateSmsFactorRequestBuilder");
 
     //prevent instantiation outside of outer class.
-    // Use getInstance() to retrieve the singeton instance.
+    // Use getInstance() to retrieve the singleton instance.
     private SmsFactors() {
     }
 
@@ -168,19 +165,19 @@ public final class SmsFactors {
     }
 
     /**
-     * Creates a new {@link com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder CreateSmsFactorRequestBuilder}
+     * Creates a new {@link com.stormpath.sdk.factor.CreateFactorRequestBuilder CreateSmsFactorRequestBuilder}
      * instance reflecting the specified {@link com.stormpath.sdk.factor.sms.SmsFactor} instance. The builder can be used to customize any
      * creation request options as necessary.
      *
      * @param smsFactor the smsFactor to create a new record for within Stormpath
-     * @return a new {@link com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder CreateSmsFactorRequestBuilder}
+     * @return a new {@link com.stormpath.sdk.factor.CreateFactorRequestBuilder CreateSmsFactorRequestBuilder}
      * instance reflecting the specified {@link com.stormpath.sdk.factor.sms.SmsFactor} instance.
      * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
      * @since 1.1.0
      */
-    public static CreateSmsFactorRequestBuilder newCreateRequestFor(SmsFactor smsFactor) {
+    public static CreateFactorRequestBuilder newCreateRequestFor(SmsFactor smsFactor) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, SmsFactor.class);
-        return (CreateSmsFactorRequestBuilder) Classes.instantiate(ctor, smsFactor);
+        return (CreateFactorRequestBuilder) Classes.instantiate(ctor, smsFactor);
     }
 
     /**
