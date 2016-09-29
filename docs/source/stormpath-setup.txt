@@ -1,5 +1,3 @@
-.. _get-api-key:
-
 Get an API Key
 --------------
 

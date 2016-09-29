@@ -86,7 +86,7 @@ stormpath.web.stormpathFilter.urlPatterns
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``/*``
 
-A comma-delimited list of ant-style patterns that indicate when the StormpathFilter should filter a request.  Any request not matching these patterns will bypass the StormpathFilter.  The default value is everything (/*) to ensure identity behavior can function for all application URIs.
+A comma-delimited list of ant-style patterns that indicate when the StormpathFilter should filter a request.  Any request not matching these patterns will bypass the StormpathFilter.  The default value is everything (``/*``) to ensure identity behavior can function for all application URIs.
 
 stormpath.web.stormpathFilter.servletNames
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
