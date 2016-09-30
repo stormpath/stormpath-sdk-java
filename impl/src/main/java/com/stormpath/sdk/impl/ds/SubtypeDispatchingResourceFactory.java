@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.challenge.Challenge;
+import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenge;
 import com.stormpath.sdk.challenge.sms.SmsChallenge;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor;
@@ -42,13 +43,18 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
     private static final Map<String, Class> specifiedChallengeAttributeToResolvedTypeMap = new HashMap<>(2);
     private static final String TYPE = "type";
     private static final String MESSAGE = "message";
+    private static final String NO_MESSAGE = "noMessage";
 
-    // There is no "DefaultFactor" and at this point the only supported cocrete Factor is SmsFactor
+    // There is no "DefaultFactor" or "DefaultChallenge" and at this point supported
+    // Factor(s) are "DefaultSmsFactor" and "DefaultGoogleAuthenticatorFactor" and
+    // supported Challenge(s) are "DefaultSmsChallenge" and "DefaultGoogleAuthenticatorChallenge"
     // Add more types to the map as new Factors get introduced
+    // todo: mehrshad elaborate more on this comment
     static{
         specifiedFactorAttributeToResolvedTypeMap.put("SMS",SmsFactor.class);
-        specifiedFactorAttributeToResolvedTypeMap.put("GOOGLE_AUTHENTICATOR",GoogleAuthenticatorFactor.class);
+        specifiedFactorAttributeToResolvedTypeMap.put("GOOGLE-AUTHENTICATOR",GoogleAuthenticatorFactor.class);
         specifiedChallengeAttributeToResolvedTypeMap.put(MESSAGE, SmsChallenge.class);
+        specifiedChallengeAttributeToResolvedTypeMap.put(NO_MESSAGE, GoogleAuthenticatorChallenge.class);
     }
 
     public SubtypeDispatchingResourceFactory(InternalDataStore dataStore){
@@ -58,14 +64,13 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
     @Override
     public <T extends Resource> T instantiate(Class<T> clazz, Object... constructorArgs) {
         if(clazz.equals(Factor.class) && constructorArgs.length > 0){
-            return (T) defaultResourceFactory.instantiate(specifiedFactorAttributeToResolvedTypeMap.get(((Map)constructorArgs[0]).get(TYPE)), constructorArgs);
+            return (T) defaultResourceFactory.instantiate(specifiedFactorAttributeToResolvedTypeMap.get(((Map)constructorArgs[0]).get(TYPE).toString().toUpperCase()), constructorArgs);
         }
         else if(clazz.equals(Challenge.class) && constructorArgs.length > 0){
             if(((Map)constructorArgs[0]).get(MESSAGE) != null){
                 return (T) defaultResourceFactory.instantiate(specifiedChallengeAttributeToResolvedTypeMap.get(MESSAGE), constructorArgs);
             }else{
-                //todo mehrshad reserved for google authenticator
-                return null;
+                return (T) defaultResourceFactory.instantiate(specifiedChallengeAttributeToResolvedTypeMap.get(NO_MESSAGE), constructorArgs);
             }
         }
         else{

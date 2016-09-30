@@ -1,8 +1,6 @@
 package com.stormpath.sdk.challenge.google;
 
 import com.stormpath.sdk.challenge.*;
-import com.stormpath.sdk.challenge.sms.SmsChallenge;
-import com.stormpath.sdk.challenge.sms.SmsChallengeCriteria;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.EqualsExpressionFactory;
@@ -61,11 +59,11 @@ public class GoogleAuthenticatorChallenges {
     }
 
     /**
-     * Creates a new {@link SmsChallengeCriteria} instance using the specified {@code criterion} as the first query condition.
+     * Creates a new {@link GoogleAuthenticatorChallengeCriteria} instance using the specified {@code criterion} as the first query condition.
      *
-     * @return a new {@link SmsChallengeCriteria} instance using the specified {@code criterion} as the first query condition.
+     * @return a new {@link GoogleAuthenticatorChallengeCriteria} instance using the specified {@code criterion} as the first query condition.
      */
-    public static SmsChallengeCriteria where(Criterion criterion) {return (SmsChallengeCriteria)criteria().add(criterion);}
+    public static GoogleAuthenticatorChallengeCriteria where(Criterion criterion) {return (GoogleAuthenticatorChallengeCriteria)criteria().add(criterion);}
 
     /**
      * Creates a new {@link EqualsExpressionFactory} instance reflecting the Challenge {@link Challenge#getStatus() status}
@@ -99,13 +97,13 @@ public class GoogleAuthenticatorChallenges {
      * @param challenge the challenge to create a new record for within Stormpath
      * @return a new {@link CreateChallengeRequestBuilder CreateChallengeRequestBuilder}
      *         instance reflecting the specified {@link Challenge} instance.
-     * @see com.stormpath.sdk.factor.sms.SmsFactor#createChallenge(CreateChallengeRequest)
+     * @see com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor#createChallenge(CreateChallengeRequest)
      *
      * @since 1.1.0
      */
-    public static CreateChallengeRequestBuilder<SmsChallenge> newCreateRequestFor(SmsChallenge challenge) {
+    public static CreateChallengeRequestBuilder<GoogleAuthenticatorChallenge> newCreateRequestFor(GoogleAuthenticatorChallenge challenge) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Challenge.class);
-        return (CreateChallengeRequestBuilder<SmsChallenge>) Classes.instantiate(ctor, challenge);
+        return (CreateChallengeRequestBuilder<GoogleAuthenticatorChallenge>) Classes.instantiate(ctor, challenge);
     }
 
     private static EqualsExpressionFactory newEqualsExpressionFactory(String propName) {

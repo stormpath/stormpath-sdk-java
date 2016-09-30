@@ -15,29 +15,26 @@
  */
 package com.stormpath.sdk.impl.challenge
 
-import com.google.zxing.BinaryBitmap
-import com.google.zxing.DecodeHintType
-import com.google.zxing.LuminanceSource
-import com.google.zxing.client.j2se.BufferedImageLuminanceSource
-import com.google.zxing.common.HybridBinarizer
-import com.google.zxing.qrcode.QRCodeReader
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.challenge.ChallengeOptions
+import com.stormpath.sdk.challenge.Challenges
+import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenge
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.factor.FactorStatus
 import com.stormpath.sdk.factor.FactorType
-import com.stormpath.sdk.factor.FactorVerificationStatus
+import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor
+import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactorOptions
+import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
+import org.apache.commons.codec.binary.Base32
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import org.testng.annotations.Test
 
-import javax.imageio.ImageIO
-import java.awt.image.BufferedImage
-
+import static com.stormpath.sdk.impl.challenge.TOTPService.getTotpPassword
 import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.assertNotNull
-import static org.testng.AssertJUnit.assertNull
 
-class GoogleAuthenticatorChallengeIT extends ClientIT{
+class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
 
     @Test
     void testSuccessfulGoogleAuthenticatorChallenge() {
@@ -62,76 +59,81 @@ class GoogleAuthenticatorChallengeIT extends ClientIT{
         factor.issuer = randomIssuer
 
         factor = account.createFactor(factor)
+        def retrievedFactor = client.getResource(factor.href, GoogleAuthenticatorFactor.class)
 
-        assertGoogleAuthenticatorFactorFields(factor, randomIssuer, randomAccountName)
+        assertGoogleAuthenticatorFactorFields(retrievedFactor, randomIssuer, randomAccountName)
+
+        sleepToAvoidCrossingThirtySecondMark()
+
+        assertGoogleAuthenticatorChallengeResponse(retrievedFactor, getCurrentValidCode(factor), 'SUCCESS')
 
     }
 
-    private void assertGoogleAuthenticatorFactorFields(GoogleAuthenticatorFactor factor, String expectedIssuer = null, String expectedAccountName = null, boolean enabled = true) {
-        assertNotNull factor.href
-        assertEquals(factor.type, FactorType.GOOGLE_AUTHENTICATOR)
-        assertEquals(factor.factorVerificationStatus, FactorVerificationStatus.UNVERIFIED)
-        if(enabled) {
-            assertEquals(factor.status, FactorStatus.ENABLED)
-        }
-        else{
-            assertEquals(factor.status, FactorStatus.DISABLED)
-        }
 
-        assertEquals(factor.accountName, expectedAccountName)
-        assertEquals(factor.issuer, expectedIssuer)
-        assertNotNull(factor.secret)
+    private void assertGoogleAuthenticatorChallengeResponse(GoogleAuthenticatorFactor factor, String code, String status, String verificationStatus = 'VERIFIED') {
+        String factorHref = factor.href
+        GoogleAuthenticatorChallenge challenge = createChallenge(factor, code)
+        assertInitialChallengeFields(challenge, status, false)
 
-        String actualKeyUri = factor.getKeyUri()
+        GoogleAuthenticatorFactorOptions options = Factors.GOOGLE_AUTHENTICATOR.options().withChallenges().withMostRecentChallenge()
+        def retrievedFactor = client.getResource(factorHref, GoogleAuthenticatorFactor.class, options)
+        assertNotNull(retrievedFactor.mostRecentChallenge)
+        assertNotNull(retrievedFactor.mostRecentChallenge.href)
 
-        String expectedKeyUri
+        GoogleAuthenticatorFactorOptions factorOptions = Factors.GOOGLE_AUTHENTICATOR.options().withChallenges().withMostRecentChallenge()
+        retrievedFactor = client.getResource(factorHref, GoogleAuthenticatorFactor.class, factorOptions)
 
-        if (expectedIssuer == null) {
-            if (expectedAccountName == null) {
-                expectedKeyUri = "otpauth://totp/?secret=" + factor.secret
-            } else {
-                String urlEncodedExpectedAccountName = URLEncoder.encode(expectedAccountName, "UTF-8")
-                expectedKeyUri = "otpauth://totp/" + urlEncodedExpectedAccountName + "?secret=" + factor.secret
-            }
-        } else {
-            String urlEncodedExpectedIssuer = URLEncoder.encode(expectedIssuer, "UTF-8")
-            if (expectedAccountName == null) {
-                expectedKeyUri = "otpauth://totp/?secret=" + factor.secret + "&issuer=" + urlEncodedExpectedIssuer
-            } else {
-                String urlEncodedExpectedAccountName = URLEncoder.encode(expectedAccountName, "UTF-8")
-                expectedKeyUri = "otpauth://totp/" + urlEncodedExpectedIssuer + ":" + urlEncodedExpectedAccountName + "?secret=" + factor.secret + "&issuer=" + urlEncodedExpectedIssuer
-            }
-        }
+        assertNotNull(retrievedFactor)
+        assertEquals(retrievedFactor.challenges.size, 1)
 
-        assertEquals(actualKeyUri, expectedKeyUri)
-        assertNotNull(factor.getBase64QrImage())
-        assertBase64EncodedQRCodeEncodesString(factor.getBase64QrImage(), expectedKeyUri)
+        ChallengeOptions challengeOptions = Challenges.GOOGLE_AUTHENTICATOR.options().withFactor().withAccount()
+        def retrievedChallenge = client.getResource(retrievedFactor.mostRecentChallenge.href, GoogleAuthenticatorChallenge.class, challengeOptions)
 
-        assertNotNull(factor.getAccount())
-        assertNotNull(factor.getAccount().href)
+        assertEquals(retrievedChallenge.status.name(), status)
+        assertEquals(retrievedChallenge.factor.type, FactorType.GOOGLE_AUTHENTICATOR)
+        assertNotNull(retrievedChallenge.factor.secret)
 
-        assertNull(factor.getMostRecentChallenge())
-
-        assertNotNull(factor.getChallenges())
-        assertNotNull(factor.getChallenges().href)
+        retrievedFactor = client.getResource(factorHref, GoogleAuthenticatorFactor.class)
+        assertEquals(retrievedFactor.factorVerificationStatus.name(), verificationStatus)
     }
 
-    protected void assertBase64EncodedQRCodeEncodesString(String base64EncodedQRCode, String expectedString) {
-        assertNotNull(base64EncodedQRCode)
-        try {
-            Map hints = [:]
-            hints.put(DecodeHintType.PURE_BARCODE, true)
-            byte[] qrImageBytes = Base64.getDecoder().decode(base64EncodedQRCode)
-            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(qrImageBytes))
-            LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage)
-            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source))
+    private void sleepToAvoidCrossingThirtySecondMark() {
+        DateTime now = new DateTime(DateTimeZone.UTC)
+        int seconds = now.getSecondOfMinute()
+        int secondsToWait
+        if ((seconds <= 30) && (seconds > 25)) {
+            secondsToWait = 31 - seconds
+        }
+        else if ((seconds <= 60) && (seconds > 55)) {
+            secondsToWait = 61 - seconds
+        }
 
-            String stringFromImage = new QRCodeReader().decode(bitmap, hints).getText()
+        sleep(secondsToWait * 1000)
+    }
 
-            assertEquals(stringFromImage, expectedString)
-        } catch (Exception e) {
-            println "Base64String: ${base64EncodedQRCode}, expectedString: ${expectedString}"
-            assert "MFA2IT EXCEPTION: " + e
+    private GoogleAuthenticatorChallenge createChallenge(GoogleAuthenticatorFactor factor, String code = null) {
+        def challenge = client.instantiate(GoogleAuthenticatorChallenge.class)
+        challenge.setCode(code)
+        ChallengeOptions options = Challenges.GOOGLE_AUTHENTICATOR.options().withFactor()
+        return factor.createChallenge(Challenges.GOOGLE_AUTHENTICATOR.newCreateRequestFor(challenge).withResponseOptions(options).build())
+    }
+
+    private String getCurrentValidCode(GoogleAuthenticatorFactor factor) {
+        return getCurrentCode(factor, true)
+    }
+
+
+    private String getCurrentCode(GoogleAuthenticatorFactor factor, boolean valid) {
+        String secret = factor.getSecret()
+        byte[] bytes = new Base32().decode(secret)
+        String currentValidCode = getTotpPassword(bytes, new DateTime(DateTimeZone.UTC).getMillis())
+
+        if (valid) {
+            return currentValidCode
+        }
+        else {
+            int badValue = (Integer.valueOf(currentValidCode) + 1) % 1000000
+            return String.format("%06d", badValue)
         }
     }
 

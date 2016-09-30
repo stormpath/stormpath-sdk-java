@@ -40,7 +40,7 @@ public abstract class AbstractChallenge<T extends Factor> extends AbstractInstan
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(STATUS, CODE, ACCOUNT, FACTOR, CREATED_AT, MODIFIED_AT);
+    protected static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(STATUS, CODE, ACCOUNT, FACTOR, CREATED_AT, MODIFIED_AT);
 
     public AbstractChallenge(InternalDataStore dataStore) {
         super(dataStore);
@@ -72,6 +72,7 @@ public abstract class AbstractChallenge<T extends Factor> extends AbstractInstan
 
     @Override
     public SmsChallengeStatus getStatus() {
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         String value = getStringProperty(STATUS.getName());
         if (value == null) {
             return null;
@@ -114,7 +115,7 @@ public abstract class AbstractChallenge<T extends Factor> extends AbstractInstan
         return true;
     }
 
-    private Challenge setCode(String code) {
+    protected Challenge setCode(String code) {
         setProperty(CODE, code);
         return this;
     }

@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.challenge;
 
+import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenges;
 import com.stormpath.sdk.challenge.sms.SmsChallenges;
 
 /**
@@ -46,6 +47,7 @@ import com.stormpath.sdk.challenge.sms.SmsChallenges;
 public final class Challenges {
 
     public static final SmsChallenges SMS = SmsChallenges.getInstance();
+    public static final GoogleAuthenticatorChallenges GOOGLE_AUTHENTICATOR = GoogleAuthenticatorChallenges.getInstance();
 
     //prevent instantiation
     private Challenges() {

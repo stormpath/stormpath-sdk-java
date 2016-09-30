@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public class DefaultGoogleAuthenticatorChallenge extends AbstractChallenge implements GoogleAuthenticatorChallenge {
 
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = AbstractChallenge.PROPERTY_DESCRIPTORS;
 
     public DefaultGoogleAuthenticatorChallenge(InternalDataStore dataStore) {
         super(dataStore);

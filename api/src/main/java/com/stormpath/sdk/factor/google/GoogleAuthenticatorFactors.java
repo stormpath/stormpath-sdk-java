@@ -16,9 +16,6 @@
 package com.stormpath.sdk.factor.google;
 
 import com.stormpath.sdk.factor.*;
-import com.stormpath.sdk.factor.sms.SmsFactor;
-import com.stormpath.sdk.factor.sms.SmsFactorCriteria;
-import com.stormpath.sdk.factor.sms.SmsFactorOptions;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
@@ -28,9 +25,9 @@ import com.stormpath.sdk.query.StringExpressionFactory;
 import java.lang.reflect.Constructor;
 
 /**
- * Static utility/helper methods for working with {@link SmsFactor} resources.  Most methods are
+ * Static utility/helper methods for working with {@link GoogleAuthenticatorFactor} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
- * SmsFactor-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
+ * GoogleAuthenticatorFactor-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
  * <pre>
  * <b>Factors.SMS.where(Factors.SMS.status()</b>.eq(FactorStatus.ENABLED)<b>)</b>
  *     .and(<b>Factors.verificationsStatus()</b>.eq(FactorVerificationStatus.VERIFIED))
@@ -82,8 +79,8 @@ public final class GoogleAuthenticatorFactors {
      *
      * @return a new {@link FactorOptions} instance, used to customize how one or more {@link Factor}s are retrieved.
      */
-    public static SmsFactorOptions<SmsFactorOptions> options() {
-        return (SmsFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorOptions");
+    public static GoogleAuthenticatorFactorOptions<GoogleAuthenticatorFactorOptions> options() {
+        return (GoogleAuthenticatorFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.google.DefaultGoogleAuthenticatorFactorOptions");
     }
 
     /**
@@ -106,8 +103,8 @@ public final class GoogleAuthenticatorFactors {
      *
      * @return a new {@link FactorCriteria} instance to use to formulate a Factor query.
      */
-    public static SmsFactorCriteria criteria() {
-        return (SmsFactorCriteria) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorCriteria");
+    public static GoogleAuthenticatorFactorCriteria criteria() {
+        return (GoogleAuthenticatorFactorCriteria) Classes.newInstance("com.stormpath.sdk.impl.factor.google.DefaultGoogleAuthenticatorFactorCriteria");
     }
 
     /**
@@ -115,8 +112,8 @@ public final class GoogleAuthenticatorFactors {
      *
      * @return a new {@link FactorCriteria} instance using the specified {@code criterion} as the first query condition.
      */
-    public static SmsFactorCriteria where(Criterion criterion) {
-        return (SmsFactorCriteria) criteria().add(criterion);
+    public static GoogleAuthenticatorFactorCriteria where(Criterion criterion) {
+        return (GoogleAuthenticatorFactorCriteria) criteria().add(criterion);
     }
 
     /**
@@ -168,18 +165,18 @@ public final class GoogleAuthenticatorFactors {
     }
 
     /**
-     * Creates a new {@link CreateFactorRequestBuilder CreateSmsFactorRequestBuilder}
-     * instance reflecting the specified {@link SmsFactor} instance. The builder can be used to customize any
+     * Creates a new {@link CreateFactorRequestBuilder CreateGoogleAuthenticatorFactorRequestBuilder}
+     * instance reflecting the specified {@link GoogleAuthenticatorFactor} instance. The builder can be used to customize any
      * creation request options as necessary.
      *
      * @param smsFactor the smsFactor to create a new record for within Stormpath
-     * @return a new {@link CreateFactorRequestBuilder CreateSmsFactorRequestBuilder}
-     * instance reflecting the specified {@link SmsFactor} instance.
+     * @return a new {@link CreateFactorRequestBuilder CreateGoogleAuthenticatorFactorRequestBuilder}
+     * instance reflecting the specified {@link GoogleAuthenticatorFactor} instance.
      * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
      * @since 1.1.0
      */
-    public static CreateFactorRequestBuilder newCreateRequestFor(SmsFactor smsFactor) {
-        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, SmsFactor.class);
+    public static CreateFactorRequestBuilder newCreateRequestFor(GoogleAuthenticatorFactor smsFactor) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, GoogleAuthenticatorFactor.class);
         return (CreateFactorRequestBuilder) Classes.instantiate(ctor, smsFactor);
     }
 
