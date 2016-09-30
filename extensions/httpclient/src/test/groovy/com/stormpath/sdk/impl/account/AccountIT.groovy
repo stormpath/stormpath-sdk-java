@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.account
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
@@ -1058,6 +1059,73 @@ class AccountIT extends ClientIT {
         def secret = encryptionService.decryptBase64String(cacheMap['secret'])
 
         return secret
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testFilterAccount() {
+
+        def app = createTempApp()
+
+        def email1 = uniquify('deleteme1') + '@nowhere.com'
+        def email2 = uniquify('deleteme2') + '@nowhere.com'
+        def email3 = uniquify('deleteme3') + '@nowhere.com'
+
+        def surname = 'DELETEME'
+
+        Account account1 = client.instantiate(Account)
+        account1.givenName = 'John'
+        account1.surname = surname
+        account1.email = email1
+        account1.password = 'Changeme1!'
+
+        def created1 = app.createAccount(account1)
+
+        Account account2 = client.instantiate(Account)
+        account2.givenName = 'John'
+        account2.surname = surname
+        account2.email = email2
+        account2.password = 'Changeme1!'
+
+        def created2 = app.createAccount(account2)
+
+        Account account3 = client.instantiate(Account)
+        account3.givenName = 'Joe'
+        account3.surname = surname
+        account3.email = email3
+        account3.password = 'Changeme1!'
+
+        def created3 = app.createAccount(account3)
+
+        //verify that the filter search works with a combination of criteria
+        def unverifiedAccounts = app.getAccounts(Accounts.where(Accounts.filter(surname)).and(Accounts.givenName().eqIgnoreCase('joe')))
+        def unverifiedAccount = unverifiedAccounts.iterator().next()
+        assertEquals(unverifiedAccount.href, created3.href)
+
+        //verify that the filter search works
+        def allAccounts = app.getAccounts(Accounts.where(Accounts.filter(surname)))
+        assertTrue(allAccounts.size() == 3)
+
+        //verify that the filter search returns an empty collection if there is no match
+        def emptyCollection = app.getAccounts(Accounts.where(Accounts.filter('not_found')))
+        assertTrue(emptyCollection.size() == 0)
+
+        //verify that a non matching criteria added to a matching criteria is working as a final non matching criteria
+        //ie. there are no properties matching 'not_found' but there are 1 account matching 'givenName=joe'
+        def emptyCollection2 = app.getAccounts(Accounts.where(Accounts.filter('not_found')).and(Accounts.givenName().eqIgnoreCase('joe')))
+        assertTrue(emptyCollection2.size() == 0)
+
+        //verify that the filter search match with substrings
+        def allAccounts2 = app.getAccounts(Accounts.where(Accounts.filter("delete")))
+        assertTrue(allAccounts2.size() == 3)
+
+        //test delete:
+        for (def acct : allAccounts){
+            acct.delete()
+        }
+
     }
 
 }

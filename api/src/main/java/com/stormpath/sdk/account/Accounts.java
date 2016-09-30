@@ -297,6 +297,9 @@ public final class Accounts {
         return newDateExpressionFactory("modifiedAt");
     }
 
+    public static Criterion filter(String value){
+        return newStringExpressionFactory("q").eqIgnoreCase(value);
+    }
     /**
      * Creates a new {@link com.stormpath.sdk.account.CreateAccountRequestBuilder CreateAccountRequestBuilder}
      * instance reflecting the specified {@link Account} instance.  The builder can be used to customize any
@@ -311,15 +314,6 @@ public final class Accounts {
     public static CreateAccountRequestBuilder newCreateRequestFor(Account account) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Account.class);
         return (CreateAccountRequestBuilder) Classes.instantiate(ctor, account);
-    }
-
-    /**
-     * @since 1.1.0
-     */
-    public static Map<String, Object> filter(String query) {
-        Map<String, Object> result =  new HashMap<String, Object>();
-        result.put("q", new String(query));
-        return result;
     }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
