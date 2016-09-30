@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.account
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeyStatus
