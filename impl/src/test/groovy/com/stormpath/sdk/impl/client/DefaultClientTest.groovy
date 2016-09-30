@@ -2,6 +2,7 @@ package com.stormpath.sdk.impl.client
 
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.AuthenticationScheme
+import com.stormpath.sdk.impl.api.ApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory
 import com.stormpath.sdk.lang.Classes
@@ -27,6 +28,7 @@ class DefaultClientTest extends PowerMockTestCase {
     void testCreateRequestExecutor() {
 
         def apiKeyCredentials = createMock(ApiKeyCredentials)
+        def apiKeyResolver = createNiceMock(ApiKeyResolver)
         def cacheManager = createMock(CacheManager)
         def requestAuthenticatorFactory = createNiceMock(RequestAuthenticatorFactory)
 
@@ -39,7 +41,7 @@ class DefaultClientTest extends PowerMockTestCase {
         replayAll()
 
         try {
-            new DefaultClient(apiKeyCredentials, baseUrl, null, cacheManager, AuthenticationScheme.BASIC, requestAuthenticatorFactory, 3600)
+            new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrl, null, cacheManager, AuthenticationScheme.BASIC, requestAuthenticatorFactory, 3600)
             fail("shouldn't be here")
         } catch (Exception e) {
             assertEquals e.getMessage(), "Unable to find the '" + className +

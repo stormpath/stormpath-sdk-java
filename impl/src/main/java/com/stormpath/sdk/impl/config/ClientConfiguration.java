@@ -1,5 +1,6 @@
 package com.stormpath.sdk.impl.config;
 
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.client.AuthenticationScheme;
@@ -21,6 +22,7 @@ public class ClientConfiguration {
     private String apiKeyFile;
     private String apiKeyId;
     private String apiKeySecret;
+    private ApiKeyResolver apiKeyResolver;
     private boolean cacheManagerEnabled;
     private long cacheManagerTtl;
     private long cacheManagerTti;
@@ -56,6 +58,14 @@ public class ClientConfiguration {
 
     public void setApiKeySecret(String apiKeySecret) {
         this.apiKeySecret = apiKeySecret;
+    }
+
+    public ApiKeyResolver getApiKeyResolver() {
+        return apiKeyResolver;
+    }
+
+    public void setApiKeyResolver(ApiKeyResolver apiKeyResolver) {
+        this.apiKeyResolver = apiKeyResolver;
     }
 
     public AuthenticationScheme getAuthenticationScheme() {
