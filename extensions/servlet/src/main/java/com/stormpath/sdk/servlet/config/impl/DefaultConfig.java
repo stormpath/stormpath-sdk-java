@@ -96,9 +96,9 @@ public class DefaultConfig implements Config {
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
     public static final String STORMPATH_ENABLED = "stormpath.enabled";
     public static final String STORMPATH_WEB_ENABLED = "stormpath.web.enabled";
-    public static final String STORMPATH_WEB_CORS_ALLOWED_ORIGINS = "stormpath.web.cors.originUris";
-    public static final String STORMPATH_WEB_CORS_ALLOWED_HEADERS = "stormpath.web.cors.headers";
-    public static final String STORMPATH_WEB_CORS_ALLOWED_METHODS = "stormpath.web.cors.methods";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_ORIGINS = "stormpath.web.cors.allowed.originUris";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_HEADERS = "stormpath.web.cors.allowed.headers";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_METHODS = "stormpath.web.cors.allowed.methods";
     public static final String STORMPATH_WEB_CORS_ENABLED = "stormpath.web.cors.enabled";
 
     private final ServletContext servletContext;

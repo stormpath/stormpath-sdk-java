@@ -413,13 +413,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.cors.enabled'] ?: true }")
     protected boolean corsEnabled;
 
-    @Value("#{ @environment['stormpath.web.cors.originUris'] }")
+    @Value("#{ @environment['stormpath.web.cors.allowed.originUris'] }")
     protected String corsAllowedOrigins;
 
-    @Value("#{ @environment['stormpath.web.cors.headers'] }")
+    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] }")
     protected String corsAllowedHeaders;
 
-    @Value("#{ @environment['stormpath.web.cors.methods'] }")
+    @Value("#{ @environment['stormpath.web.cors.allowed.methods'] }")
     protected String corsAllowedMethods;
 
     @Autowired(required = false)
@@ -1509,6 +1509,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
+     *
      * @since 1.1.0
      */
     public Filter newCorsFilter() {
