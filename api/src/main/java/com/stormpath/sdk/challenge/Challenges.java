@@ -17,27 +17,29 @@ package com.stormpath.sdk.challenge;
 
 import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenges;
 import com.stormpath.sdk.challenge.sms.SmsChallenges;
+import com.stormpath.sdk.factor.FactorOptions;
+import com.stormpath.sdk.lang.Classes;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Static utility/helper methods for working with {@link Challenge} resources.  Most methods are
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
- * Group-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
+ * Challenge-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
  * <pre>
- * <b>Challenges.where(Challenges.messageId()</b>.containsIgnoreCase("2345")<b>)</b>
- *     .and(<b>Challenges.status()</b>.eq(ChallengeStatus.DENIED))
+ * <b>Challenges.SMS.where(Challenges.SMS.status()</b>..eq(ChallengeStatus.ENABLED)<b>)</b>
  *     .orderByCode().descending()
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>
  * or, if using static imports:
  * <pre>
- * import static com.stormpath.sdk.challenge.Challenges.*;
+ * import static com.stormpath.sdk.challenge.Challenges.SMS*;
  *
  * ...
  *
- * <b>where(code()</b>.containsIgnoreCase("3569")<b>)</b>
- *     .and(<b>status()</b>.eq(ChallengeStatus.WAITING_FOR_PROVIDER))
- *     .orderByName().descending()
+ * <b>where(status()</b>.eq(ChallengeStatus.ENABLED)<b>)</b>
+ *     .orderByCode().descending()
  *     .offsetBy(50)
  *     .limitTo(25));
  * </pre>
@@ -51,5 +53,19 @@ public final class Challenges {
 
     //prevent instantiation
     private Challenges() {
+    }
+
+    public static ChallengeOptions<? extends ChallengeOptions> options() {
+        return (ChallengeOptions) Classes.newInstance("com.stormpath.sdk.impl.challenge.DefaultChallengeOptions");
+    }
+
+    public static ChallengeCriteria criteria() {
+        try {
+            Class defaultChallengeCriteriaClazz = Class.forName("com.stormpath.sdk.impl.challenge.DefaultChallengeCriteria");
+            Constructor c = defaultChallengeCriteriaClazz.getDeclaredConstructor(FactorOptions.class);
+            return (ChallengeCriteria) c.newInstance(options());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

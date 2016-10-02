@@ -48,8 +48,7 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
     // There is no "DefaultFactor" or "DefaultChallenge" and at this point supported
     // Factor(s) are "DefaultSmsFactor" and "DefaultGoogleAuthenticatorFactor" and
     // supported Challenge(s) are "DefaultSmsChallenge" and "DefaultGoogleAuthenticatorChallenge"
-    // Add more types to the map as new Factors get introduced
-    // todo: mehrshad elaborate more on this comment
+    // Add more types to the map as new Factors get introduced.
     static{
         specifiedFactorAttributeToResolvedTypeMap.put("SMS",SmsFactor.class);
         specifiedFactorAttributeToResolvedTypeMap.put("GOOGLE-AUTHENTICATOR",GoogleAuthenticatorFactor.class);

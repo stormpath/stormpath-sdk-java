@@ -19,36 +19,22 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.Challenges
 import com.stormpath.sdk.challenge.sms.SmsChallenge
 import com.stormpath.sdk.challenge.sms.SmsChallenges
-import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.sms.SmsFactor
+import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
 import com.stormpath.sdk.phone.Phone
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
 
 import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.assertTrue
-
 /**
  * @since 1.1.0
  */
-class SmsChallengeIT extends ClientIT{
+class SmsChallengeIT extends AbstractMultiFactorIT{
 
     @Test
     void testFailedChallenge() {
-        Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: ChallengeIT.testFailedChallenge")
-        dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
-        deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
 
         def phone = client.instantiate(Phone)
         phone = phone.setNumber("6123438710")

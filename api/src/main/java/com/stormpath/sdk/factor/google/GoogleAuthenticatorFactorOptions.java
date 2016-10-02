@@ -16,10 +16,9 @@
 package com.stormpath.sdk.factor.google;
 
 import com.stormpath.sdk.factor.FactorOptions;
-import com.stormpath.sdk.factor.sms.SmsFactor;
 
 /**
- * SmsFactor-specific options that may be specified when retrieving {@link SmsFactor} resources.
+ * GoogleAuthenticatorFactor-specific options that may be specified when retrieving {@link GoogleAuthenticatorFactor} resources.
  *
  * @since 1.1.0
  */

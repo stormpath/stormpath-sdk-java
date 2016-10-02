@@ -73,6 +73,7 @@ public class DefaultSmsFactor extends AbstractFactor<SmsChallenge> implements Sm
         return getDataStore().create(href, this);
     }
 
+    @Override
     protected FactorType getConcreteFactorType() {
         return FactorType.SMS;
     }

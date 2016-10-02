@@ -29,8 +29,7 @@ import java.lang.reflect.Constructor;
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
  * GoogleAuthenticatorFactor-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
  * <pre>
- * <b>Factors.SMS.where(Factors.SMS.status()</b>.eq(FactorStatus.ENABLED)<b>)</b>
- *     .and(<b>Factors.verificationsStatus()</b>.eq(FactorVerificationStatus.VERIFIED))
+ * <b>Factors.GOOGLE_AUTHENTICATOR.where(Factors.GOOGLE_AUTHENTICATOR.status()</b>.eq(FactorStatus.ENABLED)<b>)</b>
  *     .orderByStatus().descending()
  *     .withAccounts(10, 10)
  *     .offsetBy(50)
@@ -38,12 +37,11 @@ import java.lang.reflect.Constructor;
  * </pre>
  * or, if using static imports:
  * <pre>
- * import static com.stormpath.sdk.factor.Factors.SMS.*;
+ * import static com.stormpath.sdk.factor.Factors.GOOGLE_AUTHENTICATOR.*;
  *
  * ...
  *
  * <b>where(status()</b>.eq(FactorStatus.ENABLED)<b>)</b>
- *     .and(<b>verificationStatus()</b>.eq(FactorVerificationStatus.VERIFIED))
  *     .orderByStatus().descending()
  *     .withAccounts(10, 10)
  *     .offsetBy(50)
@@ -73,16 +71,16 @@ public final class GoogleAuthenticatorFactors {
     }
 
     /**
-     * Returns a new {@link FactorCriteria} instance to use to formulate a Factor query.
+     * Returns a new {@link GoogleAuthenticatorFactorCriteria} instance to use to formulate a Factor query.
      * <p/>
      * Note that it is usually more common to use the {@link #where(Criterion) where} method
      * instead of this one as the {@code where} method usually lends to better readability.  For example:
      * <pre>
-     * Factors.criteria().add(Factors.SMS.status().eq(FactorStatus.ENABLED))...
+     * Factors.criteria().add(Factors.GOOGLE_AUTHENTICATOR.status().eq(FactorStatus.ENABLED))...
      * </pre>
      * versus:
      * <pre>
-     * Factors.where(Factors.SMS.status().eq(FactorStatus.ENABLED))...
+     * Factors.GOOGLE_AUTHENTICATOR.where(Factors.GOOGLE_AUTHENTICATOR.status().eq(FactorStatus.ENABLED))...
      * </pre>
      * or when using static imports:
      * <pre>
@@ -90,16 +88,16 @@ public final class GoogleAuthenticatorFactors {
      * </pre>
      * While all three statements are equivalent, the second and third examples are shorter and probably more readable.
      *
-     * @return a new {@link FactorCriteria} instance to use to formulate a Factor query.
+     * @return a new {@link GoogleAuthenticatorFactorCriteria} instance to use to formulate a Factor query.
      */
     public static GoogleAuthenticatorFactorCriteria criteria() {
         return (GoogleAuthenticatorFactorCriteria) Classes.newInstance("com.stormpath.sdk.impl.factor.google.DefaultGoogleAuthenticatorFactorCriteria");
     }
 
     /**
-     * Creates a new {@link FactorCriteria} instance using the specified {@code criterion} as the first query condition.
+     * Creates a new {@link GoogleAuthenticatorFactorCriteria} instance using the specified {@code criterion} as the first query condition.
      *
-     * @return a new {@link FactorCriteria} instance using the specified {@code criterion} as the first query condition.
+     * @return a new {@link GoogleAuthenticatorFactorCriteria} instance using the specified {@code criterion} as the first query condition.
      */
     public static GoogleAuthenticatorFactorCriteria where(Criterion criterion) {
         return (GoogleAuthenticatorFactorCriteria) criteria().add(criterion);
@@ -107,16 +105,16 @@ public final class GoogleAuthenticatorFactors {
 
     /**
      * Creates a new {@link EqualsExpressionFactory} instance reflecting the Group {@link Factor#getStatus() status}
-     * property, to be used to construct a status Criterion when building an {@link FactorCriteria} query.  For example:
+     * property, to be used to construct a status Criterion when building an {@link GoogleAuthenticatorFactorCriteria} query.  For example:
      * <pre>
-     * Factors.where(Factors.SMS.status().eq(FactorStatus.ENABLED));
+     * Factors.GOOGLE_AUTHENTICATOR.where(Factors.GOOGLE_AUTHENTICATOR.status().eq(FactorStatus.ENABLED));
      * </pre>
      * The above example invokes the returned factory's <code>eq()</code> method.  This
      * produces a status-specific {@link Criterion} which is added to the criteria query (via the
      * {@link #where(Criterion) where} method).  For example, the following code is equivalent:
      * <pre>
      * FactorCriteria criteria = Factors.criteria();
-     * StringExpressionFactory statusExpressionFactory = Factors.status();
+     * StringExpressionFactory statusExpressionFactory = Factors.GOOGLE_AUTHENTICATOR.status();
      * Criterion statusEqualsEnabled = statusExpressionFactory.eq(FactorStatus.ENABLED);
      * criteria.add(statusEqualsEnabled);
      * </pre>
@@ -130,17 +128,17 @@ public final class GoogleAuthenticatorFactors {
     }
 
     /**
-     * Creates a new {@link EqualsExpressionFactory} instance reflecting the Group {@link Factor#getFactorVerificationStatus() status}
+     * Creates a new {@link EqualsExpressionFactory} instance reflecting the Factor {@link Factor#getFactorVerificationStatus() status}
      * property, to be used to construct a status Criterion when building an {@link FactorCriteria} query.  For example:
      * <pre>
-     * Factors.where(Factors.SMS.verificationStatus().eq(FactorVerificationStatus.VERIFIED));
+     * Factors.GOOGLE_AUTHENTICATOR.where(Factors.GOOGLE_AUTHENTICATOR.verificationStatus().eq(FactorVerificationStatus.VERIFIED));
      * </pre>
      * The above example invokes the returned factory's <code>eq()</code> method.  This
      * produces a status-specific {@link Criterion} which is added to the criteria query (via the
      * {@link #where(Criterion) where} method).  For example, the following code is equivalent:
      * <pre>
      * FactorCriteria criteria = Factors.criteria();
-     * StringExpressionFactory statusExpressionFactory = Factors.verificationStatus();
+     * StringExpressionFactory statusExpressionFactory = Factors.status();
      * Criterion statusEqualsVerified = statusExpressionFactory.eq(FactorStatus.ENABLED);
      * criteria.add(statusEqualsEnabled);
      * </pre>
@@ -158,15 +156,15 @@ public final class GoogleAuthenticatorFactors {
      * instance reflecting the specified {@link GoogleAuthenticatorFactor} instance. The builder can be used to customize any
      * creation request options as necessary.
      *
-     * @param smsFactor the smsFactor to create a new record for within Stormpath
+     * @param googleAuthenticatorFactor the googleAuthenticatorFactor to create a new record for within Stormpath
      * @return a new {@link CreateFactorRequestBuilder CreateGoogleAuthenticatorFactorRequestBuilder}
      * instance reflecting the specified {@link GoogleAuthenticatorFactor} instance.
      * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
      * @since 1.1.0
      */
-    public static CreateFactorRequestBuilder newCreateRequestFor(GoogleAuthenticatorFactor smsFactor) {
+    public static CreateGoogleAuthenticatorFactorRequestBuilder newCreateRequestFor(GoogleAuthenticatorFactor googleAuthenticatorFactor) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, GoogleAuthenticatorFactor.class);
-        return (CreateFactorRequestBuilder) Classes.instantiate(ctor, smsFactor);
+        return (CreateGoogleAuthenticatorFactorRequestBuilder) Classes.instantiate(ctor, googleAuthenticatorFactor);
     }
 
     /**

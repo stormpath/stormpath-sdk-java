@@ -28,27 +28,10 @@ import com.stormpath.sdk.factor.CreateFactorRequestBuilder;
 public interface CreateGoogleAuthenticatorFactorRequestBuilder <T extends GoogleAuthenticatorFactor, O extends GoogleAuthenticatorFactorOptions> extends CreateFactorRequestBuilder<T,O> {
 
     /**
-     * Ensures that after a Factor is created, the creation response is retrieved with the specified factors's
-     * options. This enhances performance by leveraging a single request to retrieve multiple related
-     * resources you know you will use.
-     *
-     * @return the builder instance for method chaining.
-     * @throws IllegalArgumentException if {@code options} is null.
-     */
-    //CreateGoogleAuthenticatorFactorRequestBuilder withResponseOptions(FactorOptions options) throws IllegalArgumentException;
-
-    /**
      * Ensures that once a Factor is created, it is also challened at the same time.
      * This will also create a {@link Challenge} resource
      *
      * @return the builder instance for method chaining.
      */
     CreateGoogleAuthenticatorFactorRequestBuilder createChallenge();
-
-    /**
-     * Creates a new {@code CreateFactorRequest} instance based on the current builder state.
-     *
-     * @return a new {@code CreateFactorRequest} instance based on the current builder state.
-     */
-    //CreateFactorRequest<GoogleAuthenticatorFactor, FactorOptions> build();
 }

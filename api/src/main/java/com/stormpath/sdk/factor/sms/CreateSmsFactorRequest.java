@@ -16,10 +16,9 @@
 package com.stormpath.sdk.factor.sms;
 
 import com.stormpath.sdk.factor.CreateFactorRequest;
-import com.stormpath.sdk.factor.Factor;
 
 /**
- * Represents an attempt to create a new {@link Factor} record in Stormpath.
+ * Represents an attempt to create a new {@link SmsFactor} record in Stormpath.
  *
  * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
  * @since 1.1.0

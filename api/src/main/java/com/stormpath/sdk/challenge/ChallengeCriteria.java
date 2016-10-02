@@ -43,7 +43,6 @@ import com.stormpath.sdk.query.Criteria;
  * and then further by status (descending), you would chain {@code orderBy} statements:
  * <pre>
  * ...criteria
- *     .orderByMessageId()
  *     .orderByStatus().descending()
  *     ...
  * </pre>

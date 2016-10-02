@@ -1,6 +1,20 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.impl.challenge.sms;
 
-import com.stormpath.sdk.challenge.Challenge;
 import com.stormpath.sdk.challenge.sms.SmsChallenge;
 import com.stormpath.sdk.challenge.sms.SmsChallengeStatus;
 import com.stormpath.sdk.factor.sms.SmsFactor;
@@ -12,7 +26,7 @@ import com.stormpath.sdk.impl.resource.StringProperty;
 import java.util.Map;
 
 /**
- * Created by mehrshadrafiei on 9/26/16.
+ * @since 1.1.0
  */
 public class DefaultSmsChallenge extends AbstractChallenge<SmsFactor, SmsChallengeStatus> implements SmsChallenge<SmsFactor, SmsChallengeStatus>{
 
@@ -41,7 +55,7 @@ public class DefaultSmsChallenge extends AbstractChallenge<SmsFactor, SmsChallen
     }
 
     @Override
-    public Challenge setMessage(String message) {
+    public SmsChallenge setMessage(String message) {
         setProperty(MESSAGE, message);
         return this;
     }

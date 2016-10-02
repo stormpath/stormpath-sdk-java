@@ -17,16 +17,14 @@ package com.stormpath.sdk.factor.google;
 
 import com.stormpath.sdk.factor.FactorCriteria;
 import com.stormpath.sdk.factor.FactorOptions;
-import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.query.Criteria;
 
 /**
- * A {@link SmsFactor}-specific {@link Criteria} class, enabling a SmsFactor-specific
- * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. SmsFactorCriteria instances can be
- * constructed by using the {@link com.stormpath.sdk.factor.sms.SmsFactors} utility class, for example:
+ * A {@link GoogleAuthenticatorFactor}-specific {@link Criteria} class, enabling a GoogleAuthenticatorFactor-specific
+ * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. GoogleAuthenticatorFactorCriteria instances can be
+ * constructed by using the {@link com.stormpath.sdk.factor.google.GoogleAuthenticatorFactors} utility class, for example:
  * <pre>
- * SmsFactors.where(SmsFactors.status().eq(FactorStatus.DISABLED))
- *     .and(SmsFactors.verificationStatus().eq(FactorVerificationStatus.VERIFIED))
+ * Factors.GOOGLE_AUTHENTICATOR.where(Factors.GOOGLE_AUTHENTICATOR.status().eq(FactorStatus.DISABLED))
  *     .orderByType()
  *     .limitTo(10));
  * </pre>

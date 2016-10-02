@@ -16,7 +16,7 @@
 package com.stormpath.sdk.challenge.google;
 
 /**
- * An {@code ChallengeStatus} represents the various states a challenge may be in.
+ * An {@code GoogleAuthenticatorChallengeStatus} represents the various states a GoogleAuthenticatorChallenge may be in.
  *
  * @since 1.1.0
  */

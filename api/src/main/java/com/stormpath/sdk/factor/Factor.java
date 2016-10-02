@@ -20,7 +20,6 @@ import com.stormpath.sdk.challenge.Challenge;
 import com.stormpath.sdk.challenge.ChallengeCriteria;
 import com.stormpath.sdk.challenge.ChallengeList;
 import com.stormpath.sdk.challenge.CreateChallengeRequest;
-import com.stormpath.sdk.factor.sms.SmsFactors;
 import com.stormpath.sdk.resource.*;
 
 import java.util.Map;
@@ -79,36 +78,35 @@ public interface Factor<T extends Challenge> extends Resource, Saveable, Deletab
     Factor setAccount(Account account);
 
     /**
-     * Returns the most recent {@link Challenge} resource associated with this {@code SmsFactor}.
+     * Returns the most recent {@link Challenge} resource associated with this {@code Factor}.
      *
-     * @return the most recent {@link Challenge} resource associated with this {@code SmsFactor}.
+     * @return the most recent {@link Challenge} resource associated with this {@code Factor}.
      */
     T getMostRecentChallenge();
 
     /**
-     * Returns a paginated list of all {@link Challenge}es associated with this {@code SmsFactor}.
+     * Returns a paginated list of all {@link Challenge}es associated with this {@code Factor}.
      *
-     * @return a paginated list of all {@link Challenge}es associated with this {@code SmsFactor}.
+     * @return a paginated list of all {@link Challenge}es associated with this {@code Factor}.
      */
     ChallengeList getChallenges();
 
     /**
-     * Sets the {@link Challenge} resource to be associated with this {@code SmsFactor}.
-     * @param challenge {@link Challenge} resource to be associated with this {@code SmsFactor}
+     * Sets the {@link Challenge} resource to be associated with this {@code Factor}.
+     * @param challenge {@link Challenge} resource to be associated with this {@code Factor}
      *
      * @return this instance for method chaining.
      */
     Factor setChallenge(T challenge);
 
-    // TODO: mehrshad  change javadoc "SmsFactors"
     /**
-     * Returns a paginated list of the sms factor's assigned challenges that match the specified query criteria.  The
-     * {@link SmsFactors SmsFactors} utility class is available to help construct
+     * Returns a paginated list of the factor's assigned challenges that match the specified query criteria.  The
+     * {@link Factors Factors} utility class is available to help construct
      * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
      * query-building experience.  For example:
      * <pre>
-     * smsFactor.getChallenges(Challenges.where(
-     *     Challenges.status().eq(ChallengeStatus.WAITING_FOR_VALIDATION))
+     * factor.getChallenges(Challenges.SMS.where(
+     *     Challenges.SMS.status().eq(ChallengeStatus.SMS.WAITING_FOR_VALIDATION))
      *     .orderByStatus().descending()
      *     .offsetBy(20)
      *     .limitTo(25));
@@ -119,8 +117,8 @@ public interface Factor<T extends Challenge> extends Resource, Saveable, Deletab
      *
      * ...
      *
-     * smsFactor.getChallenges(where(
-     *     status().eq(ChallengeStatus.WAITING_FOR_VALIDATION))
+     * factor.getChallenges(where(
+     *     status().eq(ChallengeStatus.SMS.WAITING_FOR_VALIDATION))
      *     .orderByStatus().descending()
      *     .offsetBy(20)
      *     .limitTo(25));
@@ -140,7 +138,7 @@ public interface Factor<T extends Challenge> extends Resource, Saveable, Deletab
      * the
      * JVM (for example, with Groovy):
      * <pre>
-     * def challenges = smsFactor.getChallenges([createdAt: '2016-01-01', orderBy: 'createdAt desc', limit: 5])
+     * def challenges = factor.getChallenges([createdAt: '2016-01-01', orderBy: 'createdAt desc', limit: 5])
      * </pre>
      * The query parameter names and values must be equal to those documented in the Stormpath REST API product guide.
      * <p/>
@@ -155,20 +153,20 @@ public interface Factor<T extends Challenge> extends Resource, Saveable, Deletab
      * via type-safe guarantees that can be auto-completed by most IDEs.
      *
      * @param queryParams the query parameters to use when performing a request to the collection.
-     * @return a paginated list of the smsFactor's challenges that match the specified query criteria.
+     * @return a paginated list of the factor's challenges that match the specified query criteria.
      * @since 1.1.0
      */
     ChallengeList getChallenges(Map<String, Object> queryParams);
 
     /**
-     * Challenges this {@code SmsFactor} by passing a {@link Challenge} instance.
+     * Challenges this {@code Factor} by passing a {@link Challenge} instance.
      *
      * @return created {@link Challenge}
      */
     T createChallenge(T challenge) throws ResourceException;
 
     /**
-     * Creates a new {@link Challenge} assigned to this SmsFactor in the Stormpath server and returns the created resource
+     * Creates a new {@link Challenge} assigned to this Factor in the Stormpath server and returns the created resource
      * based on provided {@link CreateChallengeRequest}
      *
      * @param request {@link CreateChallengeRequest} used to create a challenge with.

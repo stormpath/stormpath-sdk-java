@@ -69,6 +69,11 @@ public final class SmsFactors {
         super();
     }
 
+    /**
+     * Returns a new {@link SmsFactorOptions} instance, used to customize how one or more {@link SmsFactor}s are retrieved.
+     *
+     * @return a new {@link SmsFactorOptions} instance, used to customize how one or more {@link SmsFactor}s are retrieved.
+     */
     public static SmsFactorOptions<SmsFactorOptions> options() {
         return (SmsFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorOptions");
     }
@@ -169,9 +174,9 @@ public final class SmsFactors {
      * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
      * @since 1.1.0
      */
-    public static CreateFactorRequestBuilder newCreateRequestFor(SmsFactor smsFactor) {
+    public static CreateSmsFactorRequestBuilder newCreateRequestFor(SmsFactor smsFactor) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, SmsFactor.class);
-        return (CreateFactorRequestBuilder) Classes.instantiate(ctor, smsFactor);
+        return (CreateSmsFactorRequestBuilder) Classes.instantiate(ctor, smsFactor);
     }
 
     /**

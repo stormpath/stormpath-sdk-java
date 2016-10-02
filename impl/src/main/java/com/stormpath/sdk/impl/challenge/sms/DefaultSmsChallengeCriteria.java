@@ -4,7 +4,7 @@ import com.stormpath.sdk.challenge.sms.SmsChallengeCriteria;
 import com.stormpath.sdk.impl.challenge.AbstractChallengeCriteria;
 
 /**
- * Created by mehrshadrafiei on 9/26/16.
+ * @since 1.1.0
  */
 public class DefaultSmsChallengeCriteria extends AbstractChallengeCriteria implements SmsChallengeCriteria{
 

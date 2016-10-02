@@ -38,7 +38,7 @@ import java.awt.image.BufferedImage
 
 import static org.testng.AssertJUnit.*
 /**
- * Created by mehrshadrafiei on 9/29/16.
+ * @since 1.1.0
  */
 abstract class AbstractMultiFactorIT extends ClientIT{
 

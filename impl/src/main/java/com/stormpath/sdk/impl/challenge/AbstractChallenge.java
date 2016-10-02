@@ -31,7 +31,6 @@ import java.util.Map;
  */
 public abstract class AbstractChallenge<T extends Factor, R extends Enum> extends AbstractInstanceResource implements Challenge<T,R> {
 
-
     public static final EnumProperty<Enum> STATUS = new EnumProperty<>("status", Enum.class);
     static final StringProperty CODE = new StringProperty("code");
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);

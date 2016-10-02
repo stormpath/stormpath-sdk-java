@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.sdk.challenge.sms;
 
 import com.stormpath.sdk.challenge.*;
@@ -9,9 +24,32 @@ import com.stormpath.sdk.query.StringExpressionFactory;
 import java.lang.reflect.Constructor;
 
 /**
- * todo: mehrshad
+ * Static utility/helper methods for working with {@link SmsChallenge} resources.  Most methods are
+ * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
+ * SmsChallenge-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
+ * <pre>
+ * <b>Challenges.SMS.where(Challenges.SMS.status()</b>.eq(SmsChallengeStatus.WAITING_FOR_VALIDATION)<b>)</b>
+ *     .orderByStatus().descending()
+ *     .withAccounts(10, 10)
+ *     .offsetBy(50)
+ *     .limitTo(25));
+ * </pre>
+ * or, if using static imports:
+ * <pre>
+ * import static com.stormpath.sdk.challenge.Challenges.SMS.*;
+ *
+ * ...
+ *
+ * <b>where(status()</b>.eq(SmsChallengeStatus.WAITING_FOR_VALIDATION)<b>)</b>
+ *     .orderByStatus().descending()
+ *     .withAccounts(10, 10)
+ *     .offsetBy(50)
+ *     .limitTo(25));
+ * </pre>
+ *
+ * @since 1.1.0
  */
-public class SmsChallenges {
+public final class SmsChallenges {
     private static final SmsChallenges INSTANCE;
 
     static{
@@ -69,7 +107,7 @@ public class SmsChallenges {
      * Creates a new {@link EqualsExpressionFactory} instance reflecting the Challenge {@link Challenge#getStatus() status}
      * property, to be used to construct a status Criterion when building an {@link ChallengeCriteria} query.  For example:
      * <pre>
-     * Challenges.where(<b>Challenges.status()</b>.eq(ChallengeStatus.CREATED);
+     * Challenges.SMS.where(<b>Challenges.SMS.status()</b>.eq(SmsChallengeStatus.WAITING_FOR_VALIDATION);
      * </pre>
      * The above example invokes the returned factory's <code>eq()</code> method.  This
      * produces a status-specific {@link Criterion} which is added to the criteria query (via the
@@ -77,7 +115,7 @@ public class SmsChallenges {
      * <pre>
      * ChallengeCriteria criteria = Challenges.criteria();
      * StringExpressionFactory statusExpressionFactory = Challenges.status();
-     * Criterion statusEqualsEnabled = statusExpressionFactory.eq(ChallengeStatus.CREATED);
+     * Criterion statusEqualsEnabled = statusExpressionFactory.eq(SmsChallengeStatus.CREATED);
      * criteria.add(statusEqualsEnabled);
      * </pre>
      * The first code example is clearly more succinct and readable.
