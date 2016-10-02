@@ -312,6 +312,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
      * @since 0.8
      */
     private <T extends Resource> Property getPropertyDescriptor(Class<T> clazz, String propertyName) {
+        clazz = SubtypeDispatchingResourceFactory.getImplementationClass(clazz, propertyName);
         Map<String, Property> descriptors = getPropertyDescriptors(clazz);
         return descriptors.get(propertyName);
     }

@@ -66,21 +66,15 @@ public final class SmsFactors {
     //prevent instantiation outside of outer class.
     // Use getInstance() to retrieve the singleton instance.
     private SmsFactors() {
+        super();
+    }
+
+    public static SmsFactorOptions<SmsFactorOptions> options() {
+        return (SmsFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorOptions");
     }
 
     public static final SmsFactors getInstance(){
         return INSTANCE;
-    }
-
-
-
-    /**
-     * Returns a new {@link FactorOptions} instance, used to customize how one or more {@link Factor}s are retrieved.
-     *
-     * @return a new {@link FactorOptions} instance, used to customize how one or more {@link Factor}s are retrieved.
-     */
-    public static SmsFactorOptions<SmsFactorOptions> options() {
-        return (SmsFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorOptions");
     }
 
     /**

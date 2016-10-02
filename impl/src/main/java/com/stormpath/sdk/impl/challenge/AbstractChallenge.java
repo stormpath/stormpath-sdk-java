@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.challenge;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.challenge.Challenge;
-import com.stormpath.sdk.challenge.sms.SmsChallengeStatus;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
@@ -30,13 +29,13 @@ import java.util.Map;
 /**
  * @since 1.1.0
  */
-public abstract class AbstractChallenge<T extends Factor> extends AbstractInstanceResource implements Challenge<T> {
+public abstract class AbstractChallenge<T extends Factor, R extends Enum> extends AbstractInstanceResource implements Challenge<T,R> {
 
 
-    static final EnumProperty<SmsChallengeStatus> STATUS = new EnumProperty<>("status", SmsChallengeStatus.class);
+    public static final EnumProperty<Enum> STATUS = new EnumProperty<>("status", Enum.class);
     static final StringProperty CODE = new StringProperty("code");
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
-    static final ResourceReference<Factor> FACTOR = new ResourceReference<>("factor", Factor.class);
+    static final ResourceReference<? extends Factor> FACTOR = new ResourceReference<>("factor", Factor.class);
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
@@ -68,16 +67,6 @@ public abstract class AbstractChallenge<T extends Factor> extends AbstractInstan
     @Override
     public Map<String, Property> getPropertyDescriptors() {
         return PROPERTY_DESCRIPTORS;
-    }
-
-    @Override
-    public SmsChallengeStatus getStatus() {
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        String value = getStringProperty(STATUS.getName());
-        if (value == null) {
-            return null;
-        }
-        return SmsChallengeStatus.valueOf(value.toUpperCase());
     }
 
     @Override

@@ -16,7 +16,6 @@
 package com.stormpath.sdk.challenge;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.challenge.sms.SmsChallengeStatus;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.resource.Auditable;
@@ -34,14 +33,14 @@ import com.stormpath.sdk.resource.Saveable;
  *
  * @since 1.1.0
  */
-public interface Challenge<T extends Factor> extends Resource, Saveable, Deletable, Auditable {
+public interface Challenge<T extends Factor, R extends Enum> extends Resource, Saveable, Deletable, Auditable {
 
     /**
      * Returns the status of this challenge object
      *
      * @return status associated with this challenge
      */
-    SmsChallengeStatus getStatus();
+    R getStatus();
 
     /**
      * Returns the account associated with this challenge

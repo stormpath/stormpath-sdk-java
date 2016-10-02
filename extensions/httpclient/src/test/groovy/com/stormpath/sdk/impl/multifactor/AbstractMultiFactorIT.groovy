@@ -21,12 +21,17 @@ import com.google.zxing.LuminanceSource
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
+import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.factor.Factor
 import com.stormpath.sdk.factor.FactorStatus
 import com.stormpath.sdk.factor.FactorType
 import com.stormpath.sdk.factor.FactorVerificationStatus
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor
+import com.stormpath.sdk.factor.sms.SmsFactor
+import com.stormpath.sdk.phone.Phone
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -36,6 +41,9 @@ import static org.testng.AssertJUnit.*
  * Created by mehrshadrafiei on 9/29/16.
  */
 abstract class AbstractMultiFactorIT extends ClientIT{
+
+    protected static final String VALID_PHONE_NUMBER = "+15005550006"
+    protected static final String INVALID_PHONE_NUMBER = "+15005550001"
 
     protected void assertGoogleAuthenticatorFactorFields(GoogleAuthenticatorFactor factor, String expectedIssuer = null, String expectedAccountName = null, boolean enabled = true) {
         assertNotNull factor.href
@@ -48,8 +56,24 @@ abstract class AbstractMultiFactorIT extends ClientIT{
             assertEquals(factor.status, FactorStatus.DISABLED)
         }
 
-        assertEquals(factor.accountName, expectedAccountName)
-        assertEquals(factor.issuer, expectedIssuer)
+        def actualAccountName = factor.accountName
+
+        if (expectedAccountName == null) {
+            assertNull(actualAccountName)
+        }
+        else {
+            assertEquals(actualAccountName, expectedAccountName)
+        }
+
+        def actualIssuer = factor.issuer
+
+        if (expectedIssuer == null) {
+            assertNull(actualIssuer)
+        }
+        else {
+            assertEquals(actualIssuer,expectedIssuer)
+        }
+
         assertNotNull(factor.secret)
 
         String actualKeyUri = factor.getKeyUri()
@@ -73,7 +97,7 @@ abstract class AbstractMultiFactorIT extends ClientIT{
             }
         }
 
-        assertEquals(actualKeyUri, expectedKeyUri)
+        assertEquals(URLDecoder.decode(expectedKeyUri, "UTF-8"), URLDecoder.decode(actualKeyUri, "UTF-8"))
         assertNotNull(factor.getBase64QrImage())
         assertBase64EncodedQRCodeEncodesString(factor.getBase64QrImage(), expectedKeyUri)
 
@@ -98,7 +122,7 @@ abstract class AbstractMultiFactorIT extends ClientIT{
 
             String stringFromImage = new QRCodeReader().decode(bitmap, hints).getText()
 
-            assertEquals(stringFromImage, expectedString)
+            assertEquals(URLDecoder.decode(stringFromImage, "UTF-8"), URLDecoder.decode(expectedString, "UTF-8"))
         } catch (Exception e) {
             println "Base64String: ${base64EncodedQRCode}, expectedString: ${expectedString}"
             assert "MFA2IT EXCEPTION: " + e
@@ -114,5 +138,58 @@ abstract class AbstractMultiFactorIT extends ClientIT{
         assertNotNull(challenge.factor.href)
         assertNotNull(challenge.account)
         assertNotNull(challenge.account.href)
+    }
+
+    protected GoogleAuthenticatorFactor createGoogleAuthenticatorFactor(Account account, String issuer = null, String accountName = null, boolean enabled = true) {
+        def factor = client.instantiate(GoogleAuthenticatorFactor.class)
+        factor.accountName = accountName
+        factor.issuer = issuer
+        if(!enabled){
+            factor.status = FactorStatus.DISABLED
+        }
+        factor = account.createFactor(factor)
+        factor
+    }
+
+    protected SmsFactor createSmsFactor(Account account, String suppliedPhoneNumber = null) {
+        String phoneNumber = suppliedPhoneNumber == null ? VALID_PHONE_NUMBER : suppliedPhoneNumber
+        def factor = client.instantiate(SmsFactor.class)
+        Phone phone = client.instantiate(Phone.class)
+        phone.setNumber(phoneNumber)
+        factor.setPhone(phone)
+        factor = account.createFactor(factor)
+        factor
+    }
+
+    protected Account createNewAccount(String testName) {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: " + testName)
+        dir = client.currentTenant.createDirectory(dir);
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('DELETEME')
+                .setEmail('johndeleteme@nowhere.com')
+                .setPassword('Changeme1!')
+
+        deleteOnTeardown(account)
+        deleteOnTeardown(dir)
+
+        dir.createAccount(account)
+        account
+    }
+
+    protected Account createGoogleAuthenticatorFactorAndSmsFactor(String issuer = null, String accountName = null){
+        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        createSmsFactor(account)
+        createGoogleAuthenticatorFactor(account, issuer, accountName)
+        account
+    }
+
+    protected Factor createChallenge(Factor factor, String code = null){
+        Map map = [:]
+        if (code != null) {
+            map.put("code", code)
+        }
+        factor.createChallenge()
     }
 }

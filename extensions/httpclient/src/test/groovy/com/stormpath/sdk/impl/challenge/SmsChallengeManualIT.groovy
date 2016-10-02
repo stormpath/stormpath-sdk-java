@@ -39,7 +39,7 @@ class SmsChallengeManualIT extends ClientIT{
     void testSuccessfulChallengeSendCode() {
 
         // Put your phone number here
-        def phoneNumber = "2016589573"
+        def phoneNumber = "2016589574"
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")

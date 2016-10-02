@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class SubtypeDispatchingResourceFactory implements ResourceFactory {
 
-    private DefaultResourceFactory defaultResourceFactory;
+    private static DefaultResourceFactory defaultResourceFactory;
     private static final Map<String, Class> specifiedFactorAttributeToResolvedTypeMap = new HashMap<>(2);
     private static final Map<String, Class> specifiedChallengeAttributeToResolvedTypeMap = new HashMap<>(2);
     private static final String TYPE = "type";
@@ -76,5 +76,29 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
         else{
             return defaultResourceFactory.instantiate(clazz,constructorArgs);
         }
+    }
+
+    // This method is needed to address the following scenario:
+    // The implementation class of the interface based on the type of ITEMS within "DefaultFactorList" (Factor) is
+    // required in order to retrieve the "PROPERTY_DESCRIPTORS" and gain access to a materialized resource (Phone)
+    // Following code would trigger such scenario:
+    // "account.getFactors(Factors.SMS.criteria().withPhone().orderByStatus().ascending())"
+    // and this code would hit "WriteCacheFilter#getPropertyDescriptor(Class<T> clazz, String propertyName)" with "clazz" as
+    // the interface with no direct default implementation (Factor)
+    // The way this problem is addressed is by inspecting the materialized property name (Phone) in order to find the
+    // concrete class of the nesting resource "DefaultSmsFactor"
+    public static <T extends Resource> Class<T> getImplementationClass(Class<T> clazz, String propertyName) {
+        if(clazz.equals(Factor.class)){
+            if("phone".equals(propertyName)) {
+                clazz = (Class<T>) SmsFactor.class;
+            }
+            else{
+                clazz = (Class<T>) GoogleAuthenticatorFactor.class;
+            }
+        }
+        if (clazz.isInterface()) {
+            return defaultResourceFactory.convertToImplClass(clazz);
+        }
+        return clazz;
     }
 }

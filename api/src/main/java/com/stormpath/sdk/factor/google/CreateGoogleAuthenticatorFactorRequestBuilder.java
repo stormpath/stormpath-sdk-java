@@ -17,7 +17,7 @@ package com.stormpath.sdk.factor.google;
 
 import com.stormpath.sdk.challenge.Challenge;
 import com.stormpath.sdk.factor.CreateFactorRequest;
-import com.stormpath.sdk.factor.FactorOptions;
+import com.stormpath.sdk.factor.CreateFactorRequestBuilder;
 
 /**
  * A Builder to construct {@link CreateFactorRequest}s.
@@ -25,7 +25,7 @@ import com.stormpath.sdk.factor.FactorOptions;
  * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
  * @since 1.1.0
  */
-public interface CreateGoogleAuthenticatorFactorRequestBuilder {
+public interface CreateGoogleAuthenticatorFactorRequestBuilder <T extends GoogleAuthenticatorFactor, O extends GoogleAuthenticatorFactorOptions> extends CreateFactorRequestBuilder<T,O> {
 
     /**
      * Ensures that after a Factor is created, the creation response is retrieved with the specified factors's
@@ -35,7 +35,7 @@ public interface CreateGoogleAuthenticatorFactorRequestBuilder {
      * @return the builder instance for method chaining.
      * @throws IllegalArgumentException if {@code options} is null.
      */
-    CreateGoogleAuthenticatorFactorRequestBuilder withResponseOptions(FactorOptions options) throws IllegalArgumentException;
+    //CreateGoogleAuthenticatorFactorRequestBuilder withResponseOptions(FactorOptions options) throws IllegalArgumentException;
 
     /**
      * Ensures that once a Factor is created, it is also challened at the same time.
@@ -50,5 +50,5 @@ public interface CreateGoogleAuthenticatorFactorRequestBuilder {
      *
      * @return a new {@code CreateFactorRequest} instance based on the current builder state.
      */
-    CreateFactorRequest<GoogleAuthenticatorFactor, FactorOptions> build();
+    //CreateFactorRequest<GoogleAuthenticatorFactor, FactorOptions> build();
 }

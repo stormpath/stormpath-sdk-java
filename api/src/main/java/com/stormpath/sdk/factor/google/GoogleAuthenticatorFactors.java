@@ -72,17 +72,6 @@ public final class GoogleAuthenticatorFactors {
         return INSTANCE;
     }
 
-
-
-    /**
-     * Returns a new {@link FactorOptions} instance, used to customize how one or more {@link Factor}s are retrieved.
-     *
-     * @return a new {@link FactorOptions} instance, used to customize how one or more {@link Factor}s are retrieved.
-     */
-    public static GoogleAuthenticatorFactorOptions<GoogleAuthenticatorFactorOptions> options() {
-        return (GoogleAuthenticatorFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.google.DefaultGoogleAuthenticatorFactorOptions");
-    }
-
     /**
      * Returns a new {@link FactorCriteria} instance to use to formulate a Factor query.
      * <p/>

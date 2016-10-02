@@ -70,4 +70,14 @@ public interface FactorCriteria extends Criteria<FactorCriteria>,  FactorOptions
      * @return this instance for method chaining
      */
     FactorCriteria orderByVerificationStatus();
+
+    /**
+     * Ensures that the query results are ordered by createdAt Date {@link Factor#getCreatedAt() createdAt}.
+     * <p/>
+     * Please see the {@link FactorCriteria class-level documentation} for controlling sort order (ascending or
+     * descending).
+     *
+     * @return this instance for method chaining
+     */
+    FactorCriteria orderByCreatedAt();
 }

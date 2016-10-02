@@ -19,54 +19,84 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.ChallengeOptions
 import com.stormpath.sdk.challenge.Challenges
 import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenge
-import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.FactorType
 import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor
-import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactorOptions
+import com.stormpath.sdk.impl.factor.DefaultFactorOptions
 import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
+import com.stormpath.sdk.resource.ResourceException
 import org.apache.commons.codec.binary.Base32
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.impl.challenge.TOTPService.getTotpPassword
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.assertNotNull
+import static org.testng.AssertJUnit.*
 
 class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
 
     @Test
     void testSuccessfulGoogleAuthenticatorChallenge() {
-        Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: GoogleAuthenticatorChallengeIT.testSuccessfulGoogleAuthenticatorChallenge")
-        dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
-        deleteOnTeardown(dir)
-
-        dir.createAccount(account)
-
+        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         def randomAccountName = uniquify("Random Account Name")
         def randomIssuer = uniquify("Random Issuer")
-        def factor = client.instantiate(GoogleAuthenticatorFactor.class)
-        factor.accountName = randomAccountName
-        factor.issuer = randomIssuer
-
-        factor = account.createFactor(factor)
-        def retrievedFactor = client.getResource(factor.href, GoogleAuthenticatorFactor.class)
-
-        assertGoogleAuthenticatorFactorFields(retrievedFactor, randomIssuer, randomAccountName)
+        def factor = createGoogleAuthenticatorFactor(account, randomIssuer, randomAccountName)
+        assertGoogleAuthenticatorFactorFields(factor, randomIssuer, randomAccountName)
 
         sleepToAvoidCrossingThirtySecondMark()
 
-        assertGoogleAuthenticatorChallengeResponse(retrievedFactor, getCurrentValidCode(factor), 'SUCCESS')
+        assertGoogleAuthenticatorChallengeResponse(factor, getCurrentValidCode(factor), 'SUCCESS')
+    }
 
+
+    @Test
+    void testGoogleAuthenticatorChallengeWithGarbageCode() {
+        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        def randomAccountName = uniquify("Random Account Name")
+        def factor = createGoogleAuthenticatorFactor(account, null, randomAccountName)
+        assertGoogleAuthenticatorFactorFields(factor, null, randomAccountName)
+
+        Throwable e = null
+        try {
+            createChallenge(factor, "bogus")
+        }
+        catch(ResourceException re){
+            e = re
+            assertEquals(re.status, 400)
+            assertEquals(re.getCode(), 2002)
+        }
+        assertTrue(e instanceof ResourceException)
+    }
+
+    @Test
+    void testGoogleAuthenticatorChallengeAgainstDisabledFactor() {
+        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        def randomAccountName = uniquify("Random Account Name")
+        def factor = createGoogleAuthenticatorFactor(account, null, randomAccountName,false)
+        assertGoogleAuthenticatorFactorFields(factor, null, randomAccountName, false)
+
+        Throwable e = null
+        try {
+            createChallenge(factor, "123456")
+        }
+        catch(ResourceException re){
+            e = re
+            assertEquals(re.status, 400)
+            assertEquals(re.getCode(), 13109)
+        }
+        assertTrue(e instanceof ResourceException)
+    }
+
+    @Test
+    void testGoogleAuthenticatorChallengeWithInvalidCode() {
+        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        def randomAccountName = uniquify("Random Account Name")
+        def factor = createGoogleAuthenticatorFactor(account, null, randomAccountName)
+        assertGoogleAuthenticatorFactorFields(factor, null, randomAccountName)
+
+        sleepToAvoidCrossingThirtySecondMark()
+
+        assertGoogleAuthenticatorChallengeResponse(factor, getCurrentInvalidCode(factor), 'FAILED', 'UNVERIFIED')
     }
 
 
@@ -75,12 +105,12 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         GoogleAuthenticatorChallenge challenge = createChallenge(factor, code)
         assertInitialChallengeFields(challenge, status, false)
 
-        GoogleAuthenticatorFactorOptions options = Factors.GOOGLE_AUTHENTICATOR.options().withChallenges().withMostRecentChallenge()
+        DefaultFactorOptions options = Factors.options().withChallenges().withMostRecentChallenge()
         def retrievedFactor = client.getResource(factorHref, GoogleAuthenticatorFactor.class, options)
         assertNotNull(retrievedFactor.mostRecentChallenge)
         assertNotNull(retrievedFactor.mostRecentChallenge.href)
 
-        GoogleAuthenticatorFactorOptions factorOptions = Factors.GOOGLE_AUTHENTICATOR.options().withChallenges().withMostRecentChallenge()
+        DefaultFactorOptions factorOptions = Factors.options().withChallenges().withMostRecentChallenge()
         retrievedFactor = client.getResource(factorHref, GoogleAuthenticatorFactor.class, factorOptions)
 
         assertNotNull(retrievedFactor)
@@ -122,6 +152,9 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         return getCurrentCode(factor, true)
     }
 
+    private String getCurrentInvalidCode(GoogleAuthenticatorFactor factor) {
+        return getCurrentCode(factor, false)
+    }
 
     private String getCurrentCode(GoogleAuthenticatorFactor factor, boolean valid) {
         String secret = factor.getSecret()
@@ -136,5 +169,4 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
             return String.format("%06d", badValue)
         }
     }
-
 }

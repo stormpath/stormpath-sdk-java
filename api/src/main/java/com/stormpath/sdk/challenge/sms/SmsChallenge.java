@@ -1,9 +1,10 @@
 package com.stormpath.sdk.challenge.sms;
 
 import com.stormpath.sdk.challenge.Challenge;
+import com.stormpath.sdk.factor.Factor;
 
 // todo mehrshad
-public interface SmsChallenge extends Challenge{
+public interface SmsChallenge<T extends Factor, R extends Enum>  extends Challenge<T,R>{
     /**
      * Returns the message associated with this challenge.
      * The message contains a code sent to the user to be sent back

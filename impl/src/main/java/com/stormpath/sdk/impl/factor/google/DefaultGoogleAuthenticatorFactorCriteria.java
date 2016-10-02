@@ -16,44 +16,19 @@
 package com.stormpath.sdk.impl.factor.google;
 
 import com.stormpath.sdk.factor.FactorCriteria;
+import com.stormpath.sdk.factor.FactorType;
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactorCriteria;
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactorOptions;
-import com.stormpath.sdk.impl.query.DefaultCriteria;
+import com.stormpath.sdk.impl.factor.DefaultFactorCriteria;
 
 /**
  * @since 1.1.0
  */
-public class DefaultGoogleAuthenticatorFactorCriteria extends DefaultCriteria<FactorCriteria, GoogleAuthenticatorFactorOptions> implements GoogleAuthenticatorFactorCriteria {
+public class DefaultGoogleAuthenticatorFactorCriteria extends DefaultFactorCriteria<FactorCriteria, GoogleAuthenticatorFactorOptions> implements GoogleAuthenticatorFactorCriteria {
 
     public DefaultGoogleAuthenticatorFactorCriteria() {
         super(new DefaultGoogleAuthenticatorFactorOptions());
+        getCustomAttributes().put("type", FactorType.GOOGLE_AUTHENTICATOR.getName());
     }
 
-    @Override
-    public GoogleAuthenticatorFactorCriteria orderByStatus() {
-        return (GoogleAuthenticatorFactorCriteria) orderBy(DefaultGoogleAuthenticatorFactor.STATUS);
-    }
-
-    @Override
-    public GoogleAuthenticatorFactorCriteria orderByVerificationStatus() {
-        return (GoogleAuthenticatorFactorCriteria) orderBy(DefaultGoogleAuthenticatorFactor.VERIFICATION_STATUS);
-    }
-
-    @Override
-    public GoogleAuthenticatorFactorCriteria withChallenges(){
-        getOptions().withChallenges();
-        return this;
-    }
-
-    @Override
-    public GoogleAuthenticatorFactorCriteria withMostRecentChallenge() {
-        getOptions().withMostRecentChallenge();
-        return this;
-    }
-
-    @Override
-    public FactorCriteria withAccount() {
-        getOptions().withAccount();
-        return this;
-    }
 }

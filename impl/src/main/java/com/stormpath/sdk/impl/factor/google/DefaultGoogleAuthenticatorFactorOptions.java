@@ -16,27 +16,11 @@
 package com.stormpath.sdk.impl.factor.google;
 
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactorOptions;
-import com.stormpath.sdk.impl.factor.sms.DefaultSmsFactor;
-import com.stormpath.sdk.impl.query.DefaultOptions;
+import com.stormpath.sdk.impl.factor.DefaultFactorOptions;
 
 /**
  * @since 1.1.0
  */
-public class DefaultGoogleAuthenticatorFactorOptions extends DefaultOptions<GoogleAuthenticatorFactorOptions> implements GoogleAuthenticatorFactorOptions<GoogleAuthenticatorFactorOptions> {
+public class DefaultGoogleAuthenticatorFactorOptions extends DefaultFactorOptions<GoogleAuthenticatorFactorOptions> implements GoogleAuthenticatorFactorOptions<GoogleAuthenticatorFactorOptions> {
 
-
-    @Override
-    public GoogleAuthenticatorFactorOptions withChallenges() {
-        return expand(DefaultGoogleAuthenticatorFactor.CHALLENGES);
-    }
-
-    @Override
-    public GoogleAuthenticatorFactorOptions withMostRecentChallenge() {
-        return expand(DefaultGoogleAuthenticatorFactor.MOST_RECENT_CHALLENGE);
-    }
-
-    @Override
-    public GoogleAuthenticatorFactorOptions withAccount() {
-        return expand(DefaultGoogleAuthenticatorFactor.ACCOUNT);
-    }
 }
