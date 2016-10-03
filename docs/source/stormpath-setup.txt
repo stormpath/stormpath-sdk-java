@@ -1,0 +1,36 @@
+Get an API Key
+--------------
+
+All communication with Stormpath must be authenticated with an API Key.
+
+#. If you haven’t already, `sign up for Stormpath for free`_.  You’ll be sent a verification email.
+
+#. Click the link in the verification email.
+
+#. Log in to the `Stormpath Admin Console`_ using the email address and password you used during registration and the assigned tenant id.
+
+#. Click the **Create API** Key or **Manage Existing Keys** button.
+
+#. Under **Security Credentials**, click **Create API Key**.
+
+   This will generate your API Key and download it to your computer as an ``apiKey.properties`` file.
+
+#. Save the file in your home directory in the following location:
+
+   * ``~/.stormpath/apiKey.properties`` on Unix, Linux and Mac OS
+   * ``C:\Users\YOUR_USERNAME\.stormpath\apiKey.properties`` on Windows
+
+#. Change the file permissions to ensure only you can read this file and not accidentally write or modify it. For example:
+
+    .. code-block:: bash
+
+     $ chmod go-rwx ~/.stormpath/apiKey.properties
+     $ chmod u-w ~/.stormpath/apiKey.properties
+
+On Windows, you can `set file permissions similarly`_.
+
+.. _examples: https://github.com/stormpath/stormpath-sdk-java/tree/master/examples
+.. _sign up for Stormpath for free: https://api.stormpath.com/register
+.. _Stormpath Admin Console: https://api.stormpath.com
+.. _set file permissions similarly: http://msdn.microsoft.com/en-us/library/bb727008.aspx
+.. _Support Team: https://support.stormpath.com
