@@ -77,7 +77,7 @@ public class DefaultUsernamePasswordRequestBuilder implements UsernamePasswordRe
      * @since 1.1.0
      */
     @Override
-    public UsernamePasswordRequestBuilder withOrganizationNameKey(String orgNameKey) {
+    public UsernamePasswordRequestBuilder setOrganizationNameKey(String orgNameKey) {
         Assert.hasText(orgNameKey, "orgNameKey cannot be null or empty.");
         this.organizationNameKey = orgNameKey;
         return this;

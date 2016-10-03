@@ -104,6 +104,6 @@ public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBui
      * @param orgNameKey An organization name key
      * @return the instance of the method chaining
      */
-    UsernamePasswordRequestBuilder withOrganizationNameKey(String orgNameKey);
+    UsernamePasswordRequestBuilder setOrganizationNameKey(String orgNameKey);
 
 }

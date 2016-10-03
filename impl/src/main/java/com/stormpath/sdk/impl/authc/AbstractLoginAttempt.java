@@ -37,6 +37,16 @@ public abstract class AbstractLoginAttempt extends AbstractResource implements L
     // INSTANCE RESOURCE REFERENCES:
     protected static final MapProperty ACCOUNT_STORE = new MapProperty("accountStore");
 
+    /**
+     * This is a transient variable use to keep compatibility with the getAccountStore method, since the ACCOUNT_STORE property was change
+     * to a MapProperty to accommodate the Organization nameKey.
+     * <p>
+     * https://github.com/stormpath/stormpath-sdk-java/issues/284
+     *
+     * @since 1.1.0
+     */
+    private AccountStore accountStore;
+
     public AbstractLoginAttempt(InternalDataStore dataStore) {
         super(dataStore);
     }
@@ -62,8 +72,19 @@ public abstract class AbstractLoginAttempt extends AbstractResource implements L
         accountStoreRef.put(HREF, accountStore.getHref());
 
         setProperty(ACCOUNT_STORE, accountStoreRef);
+
+        this.accountStore = accountStore;
     }
 
+    @Deprecated
+    @Override
+    public AccountStore getAccountStore() {
+        return this.accountStore;
+    }
+
+    /**
+     * since 1.1.0
+     */
     @Override
     public void setOrganizationNameKey(String nameKey) {
         Map<String, String> accountStoreRef = new HashMap<>();
@@ -71,5 +92,7 @@ public abstract class AbstractLoginAttempt extends AbstractResource implements L
         accountStoreRef.put(NAME_KEY, nameKey);
 
         setProperty(ACCOUNT_STORE, accountStoreRef);
+
+        this.accountStore = null;
     }
 }

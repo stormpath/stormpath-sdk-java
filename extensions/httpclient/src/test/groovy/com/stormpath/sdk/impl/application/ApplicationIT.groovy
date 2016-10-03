@@ -26,7 +26,6 @@ import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
-import com.stormpath.sdk.api.ApiKeyOptions
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
@@ -57,8 +56,6 @@ import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult
 import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication
-import com.stormpath.sdk.oauth.OAuthRequests
-import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication
@@ -143,7 +140,7 @@ class ApplicationIT extends ClientIT {
         def app = createTempApp()
 
         Organization org = client.instantiate(Organization)
-        org.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore"))
+        org.setName(uniquify("JSDK_testLoginWithOrgNameKey"))
                 .setDescription("Organization Description")
                 .setNameKey(uniquify("test"))
                 .setStatus(OrganizationStatus.ENABLED)
@@ -151,7 +148,7 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(org)
 
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: ApplicationIT.testLoginWithOrganizationAccountStore")
+        dir.name = uniquify("Java SDK: ApplicationIT.testLoginWithOrgNameKey")
         dir = client.createDirectory(dir);
         deleteOnTeardown(dir)
 
@@ -174,7 +171,7 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(accountStoreMapping)
 
         //Account belongs to org, therefore login must succeed
-        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).withOrganizationNameKey(org.nameKey).build()
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).setOrganizationNameKey(org.nameKey).build()
         def result = app.authenticateAccount(request)
         assertEquals(result.getAccount().getUsername(), acct.username)
 
@@ -184,7 +181,7 @@ class ApplicationIT extends ClientIT {
         assertEquals(result.getAccount().getUsername(), acct.username)
 
         Organization org2 = client.instantiate(Organization)
-        org2.setName(uniquify("JSDK_testLoginWithOrganizationAccountStore_org2"))
+        org2.setName(uniquify("JSDK_testLoginWithOrgNameKey_org2"))
                 .setDescription("Organization Description 2")
                 .setNameKey(uniquify("test").substring(2, 8))
                 .setStatus(OrganizationStatus.ENABLED)
@@ -193,7 +190,7 @@ class ApplicationIT extends ClientIT {
 
         //Account does not belong to org2, therefore login must fail
         try {
-            request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).withOrganizationNameKey(org2.nameKey).build()
+            request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).setOrganizationNameKey(org2.nameKey).build()
             app.authenticateAccount(request)
             fail("Should have thrown due to invalid username/password");
         } catch (com.stormpath.sdk.resource.ResourceException e) {

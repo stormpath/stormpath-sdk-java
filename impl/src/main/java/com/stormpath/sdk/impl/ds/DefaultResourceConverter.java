@@ -109,6 +109,8 @@ public class DefaultResourceConverter implements ResourceConverter {
             //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
             //do need to have an href property
             if ((resource instanceof ModeledEmailTemplate && propName.equals("defaultModel")) ||
+                    //Check for accountStore in BasicLoginAttempt cause we change it to map to accommodate the organization name key use case
+                    //see https://github.com/stormpath/stormpath-sdk-java/issues/284
                     resource instanceof BasicLoginAttempt && propName.equals("accountStore")) {
                 return value;
             } else {
