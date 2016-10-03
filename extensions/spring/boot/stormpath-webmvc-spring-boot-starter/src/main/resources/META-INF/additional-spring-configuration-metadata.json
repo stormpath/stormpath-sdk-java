@@ -1009,19 +1009,19 @@
       "defaultValue": true
     },
     {
-      "name": "stormpath.web.cors.originUris",
+      "name": "stormpath.web.cors.allowed.originUris",
       "type": "java.lang.String",
       "description": "Comma separated list of allowed origins for a CORS request.",
       "defaultValue": ""
     },
     {
-      "name": "stormpath.web.cors.headers",
+      "name": "stormpath.web.cors.allowed.headers",
       "type": "java.lang.String",
       "description": "Comma separated list of allowed headers for a CORS request.",
       "defaultValue": "Content-Type,Accept,X-Requested-With,remember-me"
     },
     {
-      "name": "stormpath.web.cors.methods",
+      "name": "stormpath.web.cors.allowed.methods",
       "type": "java.lang.String",
       "description": "Comma separated list of allowed methods for a CORS request.",
       "defaultValue": "POST,GET,OPTIONS,DELETE"
