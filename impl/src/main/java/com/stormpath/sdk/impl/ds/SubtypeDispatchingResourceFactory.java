@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class SubtypeDispatchingResourceFactory implements ResourceFactory {
 
-    private static DefaultResourceFactory defaultResourceFactory;
+    private DefaultResourceFactory defaultResourceFactory;
     private static final Map<String, Class> specifiedFactorAttributeToResolvedTypeMap = new HashMap<>(2);
     private static final Map<String, Class> specifiedChallengeAttributeToResolvedTypeMap = new HashMap<>(2);
     private static final String TYPE = "type";
@@ -96,7 +96,7 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
             }
         }
         if (clazz.isInterface()) {
-            return defaultResourceFactory.convertToImplClass(clazz);
+            return DefaultResourceFactory.convertToImplClass(clazz);
         }
         return clazz;
     }
