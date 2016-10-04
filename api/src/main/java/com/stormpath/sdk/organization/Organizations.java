@@ -225,6 +225,28 @@ public final class Organizations {
         return newEqualsExpressionFactory("status");
     }
 
+    /**
+     * This operation will ask the backend to do a case-insensitive matching query on all viewable attributes in all the resources in the Collection.
+     *
+     * So the following query:
+     *
+     * tenant.getOrganizations(Organizations.where(Organization.filter("FilterOrganizations"));
+     *
+     * Returns all Organizations where:
+     *
+     * Each Organization exists inside an OrganizationStore belonging to the Tenant `tenant`
+     * The Organizations’s name equals or contains “FilterOrganizations” (case insensitive) OR
+     * The Organizations’s description equals or contains “FilterOrganizations” (case insensitive) OR
+     * And so on
+     *
+     * @param value The value to search for
+     * @return A Criterion representing the filter query
+     * @since 1.1.0
+     */
+    public static Criterion filter(String value){
+        return newStringExpressionFactory("q").eqIgnoreCase(value);
+    }
+
     public static CreateOrganizationRequestBuilder newCreateRequestFor(Organization organization) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Organization.class);
         return (CreateOrganizationRequestBuilder) Classes.instantiate(ctor, organization);
