@@ -2,6 +2,8 @@
 
 source ./ci/common.sh
 
+source ./env.sh
+
 export PATH=$PATH:~/usr/local/bin
 
 info "Publishing coverage results to S3"
