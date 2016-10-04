@@ -153,6 +153,4 @@ class DefaultClientBuilderTestCustomCredentials{
         assertEquals testClient.dataStore.apiKey.id, keyId
         assertEquals testClient.dataStore.apiKey.secret, keySecret
     }
-
-
 }

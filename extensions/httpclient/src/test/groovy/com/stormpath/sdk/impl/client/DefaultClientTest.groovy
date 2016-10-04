@@ -104,10 +104,10 @@ class DefaultClientTest {
     void testConstructorApiKeyResolverNull() {
 
         String baseUrl = "http://localhost:8080/v1"
-        def proxy = createMock(com.stormpath.sdk.client.Proxy)
-        def cacheManager = createMock(CacheManager)
+        def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
+        def cacheManager = createStrictMock(CacheManager)
         def authcScheme = AuthenticationScheme.SAUTHC1
-        def clientCredentials = createNiceMock(ClientCredentials)
+        def clientCredentials = createStrictMock(ClientCredentials)
 
         try {
             new DefaultClient(clientCredentials, null, baseUrl, proxy, cacheManager, authcScheme, null, 10000)
@@ -120,8 +120,8 @@ class DefaultClientTest {
     @Test
     void testGetDataStore() {
 
-        def apiKeyCredentials = createNiceMock(ApiKeyCredentials)
-        def apiKeyResolver = createNiceMock(ApiKeyResolver)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
         String baseUrl = "http://localhost:8080/v1"
         def authcScheme = AuthenticationScheme.SAUTHC1
         def cacheManager = Caches.newDisabledCacheManager();
@@ -135,8 +135,8 @@ class DefaultClientTest {
     //@since 1.0.RC3
     @Test
     void testDirtyPropertiesNotSharedAmongDifferentResourcesWithSameHref() {
-        def apiKeyCredentials = createNiceMock(ApiKeyCredentials)
-        def apiKeyResolver = createNiceMock(ApiKeyResolver)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
         def requestExecutor = createStrictMock(RequestExecutor)
         def resourceFactory = createStrictMock(ResourceFactory)
         def response = createStrictMock(Response)

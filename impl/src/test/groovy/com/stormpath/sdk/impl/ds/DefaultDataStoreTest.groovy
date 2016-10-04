@@ -404,10 +404,10 @@ class DefaultDataStoreTest {
     }
 
     @Test
-    void testApiKeyResolverReturnsCorrectApiKey(){
-        def requestExecutor = createNiceMock(RequestExecutor)
-        def apiKeyForCredentials = createNiceMock(ApiKey)
-        def apiKeyForResolver = createNiceMock(ApiKey)
+    void testApiKeyResolverReturnsCorrectApiKey() {
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def apiKeyForCredentials = createStrictMock(ApiKey)
+        def apiKeyForResolver = createStrictMock(ApiKey)
 
         def apiKeyCredentials = new ApiKeyCredentials(apiKeyForCredentials)
         def apiKeyResolver = new DefaultApiKeyResolver(apiKeyForResolver)
@@ -418,5 +418,4 @@ class DefaultDataStoreTest {
         assertEquals(defaultDataStore.getApiKey(), apiKeyForResolver)
 
     }
-
 }

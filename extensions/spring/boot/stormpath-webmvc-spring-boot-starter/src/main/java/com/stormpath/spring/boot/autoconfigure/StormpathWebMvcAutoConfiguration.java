@@ -434,7 +434,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathRequestApplicationAttributeNames();
     }
 
-
     @Bean
     @ConditionalOnMissingBean(name = "stormpathLocaleResolver")
     public Resolver<Locale> stormpathLocaleResolver() {
