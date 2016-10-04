@@ -244,6 +244,9 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
+    /**
+     * @since 1.1.0
+     */
     public ClientBuilder setApiKeyResolver(ApiKeyResolver apiKeyResolver) {
         Assert.notNull(apiKeyResolver, "apiKeyResolver must not be null.");
         this.clientConfig.setApiKeyResolver(apiKeyResolver);

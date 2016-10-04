@@ -100,6 +100,9 @@ class DefaultClientTest {
         }
     }
 
+    /**
+     * @since 1.1.0
+     */
     @Test
     void testConstructorApiKeyResolverNull() {
 

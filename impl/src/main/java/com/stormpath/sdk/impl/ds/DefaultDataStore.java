@@ -114,18 +114,30 @@ public class DefaultDataStore implements InternalDataStore {
      */
     public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
+    /**
+     * @since 1.1.0
+     */
     public DefaultDataStore(RequestExecutor requestExecutor, ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver) {
         this(requestExecutor, DEFAULT_API_VERSION, apiKeyCredentials, apiKeyResolver);
     }
 
+    /**
+     * @since 1.1.0
+     */
     public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver) {
         this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKeyCredentials, apiKeyResolver);
     }
 
+    /**
+     * @since 1.1.0
+     */
     public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver) {
         this(requestExecutor, baseUrl, apiKeyCredentials, apiKeyResolver, new DisabledCacheManager());
     }
 
+    /**
+     * @since 1.1.0
+     */
     public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");

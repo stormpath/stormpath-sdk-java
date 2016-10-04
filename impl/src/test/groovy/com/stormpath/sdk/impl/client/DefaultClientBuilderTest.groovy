@@ -91,6 +91,9 @@ class DefaultClientBuilderTestCustomCredentials{
         assertEquals client.dataStore.apiKey.secret, secret
     }
 
+    /**
+     * @since 1.1.0
+     */
     @Test
     void testCustomClientCredentialsRequireApiKeyResolver(){
         def credentialsId = UUID.randomUUID().toString()

@@ -60,10 +60,16 @@ public class ClientConfiguration {
         this.apiKeySecret = apiKeySecret;
     }
 
+    /**
+     * @since 1.1.0
+     */
     public ApiKeyResolver getApiKeyResolver() {
         return apiKeyResolver;
     }
 
+    /**
+     * @since 1.1.0
+     */
     public void setApiKeyResolver(ApiKeyResolver apiKeyResolver) {
         this.apiKeyResolver = apiKeyResolver;
     }
