@@ -22,8 +22,6 @@ import com.stormpath.sdk.query.EqualsExpressionFactory;
 import com.stormpath.sdk.query.StringExpressionFactory;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Static utility/helper methods for working with {@link Group} resources.  Most methods are
