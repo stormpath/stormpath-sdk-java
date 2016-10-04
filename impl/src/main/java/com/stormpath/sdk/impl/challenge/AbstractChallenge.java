@@ -21,7 +21,6 @@ import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.resource.ResourceException;
 
 import java.util.Date;
 import java.util.Map;
@@ -94,13 +93,11 @@ public abstract class AbstractChallenge<T extends Factor, R extends Enum> extend
     public boolean validate(String code) {
         Assert.notNull(code, "code can not be null.");
         setCode(code);
-        try {
-            getDataStore().create(getHref(), this);
+        Challenge returnedChallenge = getDataStore().create(getHref(), this);
+        if ((returnedChallenge.getStatus()).name().equals("SUCCESS")) {
+            return true;
         }
-        catch(ResourceException re){
-            return false;
-        }
-        return true;
+        return false;
     }
 
     protected Challenge setCode(String code) {

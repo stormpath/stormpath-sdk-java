@@ -17,7 +17,6 @@ package com.stormpath.sdk.challenge;
 
 import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenges;
 import com.stormpath.sdk.challenge.sms.SmsChallenges;
-import com.stormpath.sdk.factor.FactorOptions;
 import com.stormpath.sdk.lang.Classes;
 
 import java.lang.reflect.Constructor;
@@ -46,23 +45,23 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class Challenges {
+public abstract class Challenges {
 
     public static final SmsChallenges SMS = SmsChallenges.getInstance();
     public static final GoogleAuthenticatorChallenges GOOGLE_AUTHENTICATOR = GoogleAuthenticatorChallenges.getInstance();
 
     //prevent instantiation
-    private Challenges() {
+    protected Challenges() {
     }
 
-    public static ChallengeOptions<? extends ChallengeOptions> options() {
+    public static ChallengeOptions<ChallengeOptions> options() {
         return (ChallengeOptions) Classes.newInstance("com.stormpath.sdk.impl.challenge.DefaultChallengeOptions");
     }
 
     public static ChallengeCriteria criteria() {
         try {
             Class defaultChallengeCriteriaClazz = Class.forName("com.stormpath.sdk.impl.challenge.DefaultChallengeCriteria");
-            Constructor c = defaultChallengeCriteriaClazz.getDeclaredConstructor(FactorOptions.class);
+            Constructor c = defaultChallengeCriteriaClazz.getDeclaredConstructor(ChallengeOptions.class);
             return (ChallengeCriteria) c.newInstance(options());
         } catch (Exception e) {
             throw new IllegalStateException(e);

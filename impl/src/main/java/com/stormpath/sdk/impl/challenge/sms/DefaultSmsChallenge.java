@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * @since 1.1.0
  */
-public class DefaultSmsChallenge extends AbstractChallenge<SmsFactor, SmsChallengeStatus> implements SmsChallenge<SmsFactor, SmsChallengeStatus>{
+public class DefaultSmsChallenge extends AbstractChallenge<SmsFactor, SmsChallengeStatus> implements SmsChallenge{
 
     static final StringProperty MESSAGE = new StringProperty("message");
     static final StringProperty MESSAGE_ID = new StringProperty("messageId");

@@ -15,12 +15,17 @@
  */
 package com.stormpath.sdk.impl.challenge.google;
 
+import com.stormpath.sdk.challenge.ChallengeOptions;
 import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallengeCriteria;
-import com.stormpath.sdk.impl.challenge.AbstractChallengeCriteria;
+import com.stormpath.sdk.impl.challenge.DefaultChallengeCriteria;
+import com.stormpath.sdk.impl.challenge.DefaultChallengeOptions;
 
 /**
  * @since 1.1.0
  */
-public class DefaultGoogleAuthenticatorChallengeCriteria extends AbstractChallengeCriteria implements GoogleAuthenticatorChallengeCriteria {
+public class DefaultGoogleAuthenticatorChallengeCriteria extends DefaultChallengeCriteria<GoogleAuthenticatorChallengeCriteria, DefaultChallengeOptions> implements GoogleAuthenticatorChallengeCriteria {
 
+    public DefaultGoogleAuthenticatorChallengeCriteria(ChallengeOptions options) {
+        super((DefaultChallengeOptions) options);
+    }
 }

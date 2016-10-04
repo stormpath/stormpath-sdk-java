@@ -20,6 +20,8 @@ import com.stormpath.sdk.resource.CollectionResource;
 /**
  * A {@link CollectionResource} containing {@link Challenge} instances.
  *
+ * @param <T> a subclass of {@link Challenge} specifying the type of elements in this {@code ChallengeList}.
+ *
  * @since 1.1.0
  */
 public interface ChallengeList<T extends Challenge> extends CollectionResource<T> {

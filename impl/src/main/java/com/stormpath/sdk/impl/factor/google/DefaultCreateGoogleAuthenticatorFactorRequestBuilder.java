@@ -24,7 +24,7 @@ import com.stormpath.sdk.impl.factor.AbstractCreateFactorRequestBuilder;
 /**
  * @since 1.1.0
  */
-public class DefaultCreateGoogleAuthenticatorFactorRequestBuilder extends AbstractCreateFactorRequestBuilder<GoogleAuthenticatorFactor, GoogleAuthenticatorFactorOptions> implements CreateGoogleAuthenticatorFactorRequestBuilder<GoogleAuthenticatorFactor, GoogleAuthenticatorFactorOptions> {
+public class DefaultCreateGoogleAuthenticatorFactorRequestBuilder extends AbstractCreateFactorRequestBuilder<GoogleAuthenticatorFactor, GoogleAuthenticatorFactorOptions> implements CreateGoogleAuthenticatorFactorRequestBuilder {
 
     private boolean createChallenge;
 

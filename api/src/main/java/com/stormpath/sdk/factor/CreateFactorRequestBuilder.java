@@ -21,6 +21,9 @@ import com.stormpath.sdk.challenge.Challenge;
  * A Builder to construct {@link CreateFactorRequest}s.
  *
  * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
+ *
+ * @param <T> a subclass of {@link Factor} specifying the kind of {@code Factor} created by this {@code CreateFactorRequest}.
+ * @param <O> a subclass of {@link FactorOptions} specifying the kind of {@code FactorOptions} to be used for creating a {@link Factor}.
  * @since 1.1.0
  */
 public interface CreateFactorRequestBuilder <T extends Factor, O extends FactorOptions>{

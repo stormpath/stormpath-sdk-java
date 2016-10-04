@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.AccountOptions
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.challenge.sms.SmsChallenge
+import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.*
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.factor.sms.SmsFactorOptions
@@ -41,7 +42,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testCreateFactorWithNewPhone() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -62,7 +67,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testCreateFactorWithoutChallenge() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         AccountOptions accountOptions = Accounts.options().withFactors()
         Account retrievedAccount = client.getResource(account.href, Account.class, accountOptions)
@@ -106,7 +115,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testDefaultChallengeOnFactorCreation() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone = phone.setNumber(VALID_PHONE_NUMBER)
@@ -132,7 +145,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testDefaultChallengeOnFactorCreationFailsForDisabledPhone() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER).setStatus(PhoneStatus.DISABLED)
@@ -160,7 +177,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testDefaultChallengeOnFactorCreationFailsForDisabledFactor() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -189,7 +210,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testUpdateFactorStatus() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -220,7 +245,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testCustomChallengeOnFactorCreation() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -251,7 +280,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void createFactorWithExistingPhone() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -292,7 +325,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void createFactorWithExistingPhoneByHref() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -335,7 +372,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testDeleteFactor() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -375,7 +416,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
     // Following issue will address it: https://github.com/stormpath/stormpath-sdk-java/issues/985
     // todo: Enable this test once the issue is fixed
     void testDeletePhoneDeletesFactor() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -416,7 +461,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
     // Following issue will address it: https://github.com/stormpath/stormpath-sdk-java/issues/985
     // todo: Enable this test once the issue is fixed
     void deletingFactorDeletesMostRecentChallenge() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -458,7 +507,11 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
     @Test
     void testGetFactorsWithDifferentCriteria() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)

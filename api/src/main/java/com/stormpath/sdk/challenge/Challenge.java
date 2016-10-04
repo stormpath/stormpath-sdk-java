@@ -31,6 +31,9 @@ import com.stormpath.sdk.resource.Saveable;
  * For Example: Using an {@link SmsFactor} as an additional {@link Factor} for authentication the user would receive an sms including a multi-digit code within its message.
  * The user would verify the authentication challenge by entering the sms code back to the system.
  *
+ * @param <T> a subclass of {@link Factor} specifying the kind of Factor associated with this {@code Challenge}.
+ * @param <R> a subclass of {@link Enum} specifying the status associated with this {@code Challenge}.
+ *
  * @since 1.1.0
  */
 public interface Challenge<T extends Factor, R extends Enum> extends Resource, Saveable, Deletable, Auditable {

@@ -25,7 +25,7 @@ import com.stormpath.sdk.factor.CreateFactorRequestBuilder;
  * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
  * @since 1.1.0
  */
-public interface CreateGoogleAuthenticatorFactorRequestBuilder <T extends GoogleAuthenticatorFactor, O extends GoogleAuthenticatorFactorOptions> extends CreateFactorRequestBuilder<T,O> {
+public interface CreateGoogleAuthenticatorFactorRequestBuilder extends CreateFactorRequestBuilder<GoogleAuthenticatorFactor,GoogleAuthenticatorFactorOptions> {
 
     /**
      * Ensures that once a Factor is created, it is also challened at the same time.

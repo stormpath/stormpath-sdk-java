@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @since 1.1.0
  */
-public class DefaultGoogleAuthenticatorChallenge extends AbstractChallenge<GoogleAuthenticatorFactor, GoogleAuthenticatorChallengeStatus> implements GoogleAuthenticatorChallenge<GoogleAuthenticatorFactor, GoogleAuthenticatorChallengeStatus>{
+public class DefaultGoogleAuthenticatorChallenge extends AbstractChallenge<GoogleAuthenticatorFactor, GoogleAuthenticatorChallengeStatus> implements GoogleAuthenticatorChallenge{
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = AbstractChallenge.PROPERTY_DESCRIPTORS;
 

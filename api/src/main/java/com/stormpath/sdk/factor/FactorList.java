@@ -20,6 +20,8 @@ import com.stormpath.sdk.resource.CollectionResource;
 /**
  * A {@link CollectionResource} containing {@link Factor} instances.
  *
+ * @param <T> a subclass of {@link Factor} specifying the type of elements in this {@code FactorList}.
+ *
  * @since 1.1.0
  */
 public interface FactorList<T extends Factor> extends CollectionResource<T> {

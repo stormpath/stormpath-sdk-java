@@ -49,7 +49,7 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class SmsChallenges {
+public final class SmsChallenges extends Challenges{
     private static final SmsChallenges INSTANCE;
 
     static{
@@ -62,6 +62,7 @@ public final class SmsChallenges {
     //prevent instantiation outside of outer class.
     // Use getInstance() to retrieve the singleton instance.
     private SmsChallenges() {
+        super();
     }
 
     public static final SmsChallenges getInstance(){
@@ -90,10 +91,6 @@ public final class SmsChallenges {
      */
     public static SmsChallengeCriteria criteria() {
         return (SmsChallengeCriteria) Classes.newInstance("com.stormpath.sdk.impl.challenge.sms.DefaultSmsChallengeCriteria");
-    }
-
-    public static ChallengeOptions<ChallengeOptions> options() {
-        return (ChallengeOptions) Classes.newInstance("com.stormpath.sdk.impl.challenge.DefaultChallengeOptions");
     }
 
     /**

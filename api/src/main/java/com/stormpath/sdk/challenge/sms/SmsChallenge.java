@@ -29,7 +29,7 @@ import com.stormpath.sdk.factor.sms.SmsFactor;
  *
  * @since 1.1.0
  */
-public interface SmsChallenge<T extends Factor, R extends Enum>  extends Challenge<T,R>{
+public interface SmsChallenge extends Challenge<SmsFactor, SmsChallengeStatus>{
     /**
      * Returns the message associated with this challenge.
      * The message contains a code sent to the user to be sent back

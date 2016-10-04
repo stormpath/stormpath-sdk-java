@@ -24,7 +24,6 @@ import com.google.zxing.qrcode.QRCodeReader
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.Factor
 import com.stormpath.sdk.factor.FactorStatus
 import com.stormpath.sdk.factor.FactorType
@@ -161,25 +160,7 @@ abstract class AbstractMultiFactorIT extends ClientIT{
         factor
     }
 
-    protected Account createNewAccount(String testName) {
-        Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: " + testName)
-        dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
-        deleteOnTeardown(dir)
-
-        dir.createAccount(account)
-        account
-    }
-
-    protected Account createGoogleAuthenticatorFactorAndSmsFactor(String issuer = null, String accountName = null){
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+    protected Account createGoogleAuthenticatorFactorAndSmsFactor(String issuer = null, String accountName = null, Account account){
         createSmsFactor(account)
         createGoogleAuthenticatorFactor(account, issuer, accountName)
         account

@@ -28,6 +28,8 @@ import java.util.Map;
  * A factor represents an additional step in authenticating a resource in the realm of
  * Multi Factor Authentication.
  *
+ * @param <T> a subclass of {@link Challenge} specifying the kind of Challenge associated with this {@code Factor}.
+ *
  * @since 1.1.0
  */
 public interface Factor<T extends Challenge> extends Resource, Saveable, Deletable, Auditable {
@@ -89,7 +91,7 @@ public interface Factor<T extends Challenge> extends Resource, Saveable, Deletab
      *
      * @return a paginated list of all {@link Challenge}es associated with this {@code Factor}.
      */
-    ChallengeList getChallenges();
+    ChallengeList<T> getChallenges();
 
     /**
      * Sets the {@link Challenge} resource to be associated with this {@code Factor}.
@@ -128,7 +130,7 @@ public interface Factor<T extends Challenge> extends Resource, Saveable, Deletab
      * @return a paginated list of the smsFactor's challenges that match the specified query criteria.
      * @since 1.1.0
      */
-    ChallengeList getChallenges(ChallengeCriteria criteria);
+    ChallengeList<T> getChallenges(ChallengeCriteria criteria);
 
     /**
      * Returns a paginated list of the sms factor's assigned challenges that match the specified query criteria.
@@ -156,7 +158,7 @@ public interface Factor<T extends Challenge> extends Resource, Saveable, Deletab
      * @return a paginated list of the factor's challenges that match the specified query criteria.
      * @since 1.1.0
      */
-    ChallengeList getChallenges(Map<String, Object> queryParams);
+    ChallengeList<T> getChallenges(Map<String, Object> queryParams);
 
     /**
      * Challenges this {@code Factor} by passing a {@link Challenge} instance.

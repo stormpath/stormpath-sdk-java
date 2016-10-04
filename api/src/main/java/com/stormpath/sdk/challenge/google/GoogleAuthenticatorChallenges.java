@@ -28,8 +28,8 @@ import java.lang.reflect.Constructor;
  * <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method</a>s used for forming
  * GoogleAuthenticatorChallenge-specific <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent DSL</a> queries. For example:
  * <pre>
- * <b>Challenges.GOOGLE_AUTHENTICATOR.where(Challenges.GOOGLE_AUTHENTICATOR.status()</b>.eq(ChallengeStatus.ENABLED)<b>)</b>
- *     .orderByStatus().descending()
+ * <b>Challenges.GOOGLE_AUTHENTICATOR.where(Challenges.GOOGLE_AUTHENTICATOR.status()</b>.eq(GoogleAuthenticatorChallengeStatus.SUCCESS)<b>)</b>
+ *     .descending()
  *     .withAccounts(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
@@ -40,8 +40,8 @@ import java.lang.reflect.Constructor;
  *
  * ...
  *
- * <b>where(status()</b>.eq(ChallengeStatus.ENABLED)<b>)</b>
- *     .orderByStatus().descending()
+ * <b>where(status()</b>.eq(GoogleAuthenticatorChallengeStatus.SUCCESS)<b>)</b>
+*      .descending()
  *     .withAccounts(10, 10)
  *     .offsetBy(50)
  *     .limitTo(25));
@@ -49,7 +49,7 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class GoogleAuthenticatorChallenges {
+public final class GoogleAuthenticatorChallenges extends Challenges{
     private static final GoogleAuthenticatorChallenges INSTANCE;
 
     static{
@@ -62,6 +62,7 @@ public final class GoogleAuthenticatorChallenges {
     //prevent instantiation outside of outer class.
     // Use getInstance() to retrieve the singleton instance.
     private GoogleAuthenticatorChallenges() {
+        super();
     }
 
     public static final GoogleAuthenticatorChallenges getInstance(){
@@ -90,10 +91,6 @@ public final class GoogleAuthenticatorChallenges {
      */
     public static GoogleAuthenticatorChallengeCriteria criteria() {
         return (GoogleAuthenticatorChallengeCriteria) Classes.newInstance("com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorChallengeCriteria");
-    }
-
-    public static ChallengeOptions<ChallengeOptions> options() {
-        return (ChallengeOptions) Classes.newInstance("com.stormpath.sdk.impl.challenge.DefaultChallengeOptions");
     }
 
     /**

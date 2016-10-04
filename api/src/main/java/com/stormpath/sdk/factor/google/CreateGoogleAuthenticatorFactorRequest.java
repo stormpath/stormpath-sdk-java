@@ -23,6 +23,6 @@ import com.stormpath.sdk.factor.CreateFactorRequest;
  * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
  * @since 1.1.0
  */
-public interface CreateGoogleAuthenticatorFactorRequest<T extends GoogleAuthenticatorFactor, O extends GoogleAuthenticatorFactorOptions> extends CreateFactorRequest<T,O>{
+public interface CreateGoogleAuthenticatorFactorRequest extends CreateFactorRequest<GoogleAuthenticatorFactor,GoogleAuthenticatorFactorOptions>{
 
 }

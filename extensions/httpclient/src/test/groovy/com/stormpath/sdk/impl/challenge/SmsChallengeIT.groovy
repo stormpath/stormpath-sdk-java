@@ -19,6 +19,7 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.Challenges
 import com.stormpath.sdk.challenge.sms.SmsChallenge
 import com.stormpath.sdk.challenge.sms.SmsChallenges
+import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
 import com.stormpath.sdk.phone.Phone
@@ -34,7 +35,11 @@ class SmsChallengeIT extends AbstractMultiFactorIT{
 
     @Test
     void testFailedChallenge() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone = phone.setNumber("6123438710")

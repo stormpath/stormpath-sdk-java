@@ -181,6 +181,13 @@ public class DefaultCriteria<T extends Criteria<T>, O extends Options> implement
             sb.append("expand ").append(Strings.collectionToDelimitedString(expandable.getExpansions(), ", "));
         }
 
+        if(hasCustomAttributes()){
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append("custom attributes: ").append(getCustomAttributes().toString());
+        }
+
         return sb.toString();
     }
 

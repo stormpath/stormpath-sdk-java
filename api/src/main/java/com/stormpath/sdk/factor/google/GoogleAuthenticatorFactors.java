@@ -104,7 +104,7 @@ public final class GoogleAuthenticatorFactors {
     }
 
     /**
-     * Creates a new {@link EqualsExpressionFactory} instance reflecting the Group {@link Factor#getStatus() status}
+     * Creates a new {@link EqualsExpressionFactory} instance reflecting the GoogleAuthenticatorFactor {@link Factor#getStatus() status}
      * property, to be used to construct a status Criterion when building an {@link GoogleAuthenticatorFactorCriteria} query.  For example:
      * <pre>
      * Factors.GOOGLE_AUTHENTICATOR.where(Factors.GOOGLE_AUTHENTICATOR.status().eq(FactorStatus.ENABLED));
@@ -168,7 +168,7 @@ public final class GoogleAuthenticatorFactors {
     }
 
     /**
-     * Creates a new {@link DateExpressionFactory} instance reflecting the Group {@link Factor#getCreatedAt() createdAt}
+     * Creates a new {@link DateExpressionFactory} instance reflecting the GoogleAuthenticatorFactor {@link Factor#getCreatedAt() createdAt}
      * property, to be used to construct a createdAt Criterion when building an {@link FactorCriteria} query. For example:
      * <pre>
      * Factors.where(<b>Factors.SMS.createdAt()</b>.matches("[,2014-04-05T12:00:00]");

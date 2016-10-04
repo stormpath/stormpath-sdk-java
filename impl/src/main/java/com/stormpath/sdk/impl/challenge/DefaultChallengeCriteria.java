@@ -22,10 +22,10 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 /**
  * @since 1.1.0
  */
-public abstract class AbstractChallengeCriteria extends DefaultCriteria<ChallengeCriteria, ChallengeOptions> implements ChallengeCriteria {
+public class DefaultChallengeCriteria<T extends ChallengeCriteria, R extends ChallengeOptions>  extends DefaultCriteria<ChallengeCriteria, R> implements ChallengeCriteria {
 
-    public AbstractChallengeCriteria() {
-        super(new DefaultChallengeOptions());
+    public DefaultChallengeCriteria(R options) {
+        super(options);
     }
 
     @Override
@@ -35,11 +35,13 @@ public abstract class AbstractChallengeCriteria extends DefaultCriteria<Challeng
 
     @Override
     public ChallengeCriteria withAccount() {
-        return orderBy(AbstractChallenge.ACCOUNT);
+        getOptions().withAccount();
+        return this;
     }
 
     @Override
     public ChallengeCriteria withFactor() {
-        return orderBy(AbstractChallenge.FACTOR);
+        getOptions().withFactor();
+        return this;
     }
 }

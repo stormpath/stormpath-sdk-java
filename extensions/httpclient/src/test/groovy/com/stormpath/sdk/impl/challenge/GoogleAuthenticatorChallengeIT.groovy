@@ -16,9 +16,12 @@
 package com.stormpath.sdk.impl.challenge
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.challenge.ChallengeList
 import com.stormpath.sdk.challenge.ChallengeOptions
 import com.stormpath.sdk.challenge.Challenges
 import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenge
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.factor.FactorOptions
 import com.stormpath.sdk.factor.FactorType
 import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor
@@ -37,7 +40,12 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
 
     @Test
     void testSuccessfulGoogleAuthenticatorChallenge() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
+
         def randomAccountName = uniquify("Random Account Name")
         def randomIssuer = uniquify("Random Issuer")
         def factor = createGoogleAuthenticatorFactor(account, randomIssuer, randomAccountName)
@@ -51,7 +59,12 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
 
     @Test
     void testGoogleAuthenticatorChallengeWithGarbageCode() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
+
         def randomAccountName = uniquify("Random Account Name")
         def factor = createGoogleAuthenticatorFactor(account, null, randomAccountName)
         assertGoogleAuthenticatorFactorFields(factor, null, randomAccountName)
@@ -70,7 +83,12 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
 
     @Test
     void testGoogleAuthenticatorChallengeAgainstDisabledFactor() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
+
         def randomAccountName = uniquify("Random Account Name")
         def factor = createGoogleAuthenticatorFactor(account, null, randomAccountName,false)
         assertGoogleAuthenticatorFactorFields(factor, null, randomAccountName, false)
@@ -89,7 +107,12 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
 
     @Test
     void testGoogleAuthenticatorChallengeWithInvalidCode() {
-        Account account = createNewAccount("${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
+        deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
+
         def randomAccountName = uniquify("Random Account Name")
         def factor = createGoogleAuthenticatorFactor(account, null, randomAccountName)
         assertGoogleAuthenticatorFactorFields(factor, null, randomAccountName)
@@ -105,7 +128,7 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         GoogleAuthenticatorChallenge challenge = createChallenge(factor, code)
         assertInitialChallengeFields(challenge, status, false)
 
-        DefaultFactorOptions options = Factors.options().withChallenges().withMostRecentChallenge()
+        FactorOptions options = Factors.options().withChallenges().withMostRecentChallenge()
         def retrievedFactor = client.getResource(factorHref, GoogleAuthenticatorFactor.class, options)
         assertNotNull(retrievedFactor.mostRecentChallenge)
         assertNotNull(retrievedFactor.mostRecentChallenge.href)
@@ -125,6 +148,10 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
 
         retrievedFactor = client.getResource(factorHref, GoogleAuthenticatorFactor.class)
         assertEquals(retrievedFactor.factorVerificationStatus.name(), verificationStatus)
+
+        ChallengeList challengeList = retrievedFactor.getChallenges(Challenges.criteria().orderByStatus().limitTo(10).descending())
+        assertEquals(challengeList.toList().size(), 1)
+        assertNotNull(challengeList.toList().get(0).account.href)
     }
 
     private void sleepToAvoidCrossingThirtySecondMark() {

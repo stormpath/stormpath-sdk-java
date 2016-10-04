@@ -29,6 +29,6 @@ import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor;
  *
  * @since 1.1.0
  */
-public interface GoogleAuthenticatorChallenge<T extends Factor, R extends Enum>  extends Challenge<T,R>{
+public interface GoogleAuthenticatorChallenge extends Challenge<GoogleAuthenticatorFactor,GoogleAuthenticatorChallengeStatus>{
 
 }
