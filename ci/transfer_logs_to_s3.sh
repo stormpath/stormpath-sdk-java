@@ -1,6 +1,8 @@
-#!/bin/bash
+#! /bin/bash
 
 source ./ci/common.sh
+
+source ./env.sh
 
 export PATH=$PATH:~/usr/local/bin
 
