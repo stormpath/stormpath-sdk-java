@@ -222,6 +222,28 @@ public final class Directories {
         return newEqualsExpressionFactory("status");
     }
 
+    /**
+     * This operation will ask the backend to do a case-insensitive matching query on all viewable attributes in all the resources in the Collection.
+     *
+     * So the following query:
+     *
+     * tenant.getDirectories(Directories.where(Directories.filter("FilterDirectories"));
+     *
+     * Returns all Directories where:
+     *
+     * Each Directory exists inside an DirectoryStore belonging to the Tenant `tenant`
+     * The Directories’s name equals or contains “FilterDirectories” (case insensitive) OR
+     * The Directories’s description equals or contains “FilterDirectories” (case insensitive) OR
+     * And so on
+     *
+     * @param value The value to search for
+     * @return A Criterion representing the filter query
+     * @since 1.1.0
+     */
+    public static Criterion filter(String value){
+        return newStringExpressionFactory("q").eqIgnoreCase(value);
+    }
+
     public static CreateDirectoryRequestBuilder newCreateRequestFor(Directory directory) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Directory.class);
         return (CreateDirectoryRequestBuilder) Classes.instantiate(ctor, directory);
