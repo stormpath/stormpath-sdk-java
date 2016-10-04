@@ -2,6 +2,8 @@
 
 source ./ci/common.sh
 
+export PATH=$PATH:~/usr/local/bin
+
 S3_BASE_BUCKET=s3://jsdk-travis-ci-build-logs
 TSTAMP=`date "+%Y-%m-%d_%H-%M-%S"`
 S3_BUCKET="$S3_BUCKET/$TSTAMP-$TRAVIS_JOB_ID"
