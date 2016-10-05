@@ -26,8 +26,8 @@ import com.stormpath.sdk.impl.factor.DefaultFactorCriteria;
  */
 public class DefaultGoogleAuthenticatorFactorCriteria extends DefaultFactorCriteria<FactorCriteria, GoogleAuthenticatorFactorOptions> implements GoogleAuthenticatorFactorCriteria {
 
-    public DefaultGoogleAuthenticatorFactorCriteria() {
-        super(new DefaultGoogleAuthenticatorFactorOptions());
+    public DefaultGoogleAuthenticatorFactorCriteria(GoogleAuthenticatorFactorOptions options) {
+        super(options);
         getCustomAttributes().put("type", FactorType.GOOGLE_AUTHENTICATOR.getName());
     }
 

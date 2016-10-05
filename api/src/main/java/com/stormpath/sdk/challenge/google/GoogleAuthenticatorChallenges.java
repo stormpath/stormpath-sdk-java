@@ -66,6 +66,15 @@ public final class GoogleAuthenticatorChallenges extends Challenges {
         super();
     }
 
+    /**
+     * Returns a new {@link GoogleAuthenticatorChallengeOptions} instance, used to customize how one or more {@link GoogleAuthenticatorChallenge}s are retrieved.
+     *
+     * @return a new {@link GoogleAuthenticatorChallengeOptions} instance, used to customize how one or more {@link GoogleAuthenticatorChallenge}s are retrieved.
+     */
+    public static GoogleAuthenticatorChallengeOptions<GoogleAuthenticatorChallengeOptions> options() {
+        return (GoogleAuthenticatorChallengeOptions) Classes.newInstance("com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorChallengeOptions");
+    }
+
     public static final GoogleAuthenticatorChallenges getInstance(){
         return INSTANCE;
     }
@@ -91,7 +100,14 @@ public final class GoogleAuthenticatorChallenges extends Challenges {
      * @return a new {@link ChallengeCriteria} instance to use to formulate a Challenge query.
      */
     public static GoogleAuthenticatorChallengeCriteria criteria() {
-        return (GoogleAuthenticatorChallengeCriteria) Classes.newInstance("com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorChallengeCriteria");
+        //return (GoogleAuthenticatorChallengeCriteria) Classes.newInstance("com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorChallengeCriteria");
+        try {
+            Class defaultGoogleAuthenticatorChallengeCriteriaClazz = Class.forName("com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorChallengeCriteria");
+            Constructor c = defaultGoogleAuthenticatorChallengeCriteriaClazz.getDeclaredConstructor(GoogleAuthenticatorChallengeOptions.class);
+            return (GoogleAuthenticatorChallengeCriteria) c.newInstance(options());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**

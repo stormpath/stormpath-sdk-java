@@ -28,8 +28,8 @@ public class DefaultSmsFactorCriteria extends DefaultFactorCriteria<FactorCriter
 
     String type = FactorType.SMS.getName();
 
-    public DefaultSmsFactorCriteria() {
-        super(new DefaultSmsFactorOptions());
+    public DefaultSmsFactorCriteria(SmsFactorOptions options) {
+        super(options);
         getCustomAttributes().put("type", FactorType.SMS.getName());
     }
 

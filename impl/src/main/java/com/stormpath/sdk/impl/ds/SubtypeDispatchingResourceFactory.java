@@ -44,6 +44,7 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
     private static final String TYPE = "type";
     private static final String MESSAGE = "message";
     private static final String NO_MESSAGE = "noMessage";
+    private static final String HREF = "href";
 
     // There is no "DefaultFactor" or "DefaultChallenge" and at this point supported
     // Factor(s) are "DefaultSmsFactor" and "DefaultGoogleAuthenticatorFactor" and
@@ -63,6 +64,9 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
     @Override
     public <T extends Resource> T instantiate(Class<T> clazz, Object... constructorArgs) {
         if(clazz.equals(Factor.class) && constructorArgs.length > 0){
+            if(((Map)constructorArgs[0]).get(TYPE) == null && ((Map)constructorArgs[0]).get(HREF) != null){
+                throw new IllegalStateException("Unable to determine concrete Factor type since Factor is unmaterialized!");
+            }
             return (T) defaultResourceFactory.instantiate(specifiedFactorAttributeToResolvedTypeMap.get(((Map)constructorArgs[0]).get(TYPE).toString().toUpperCase()), constructorArgs);
         }
         else if(clazz.equals(Challenge.class) && constructorArgs.length > 0){
@@ -93,6 +97,14 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
             }
             else{
                 clazz = (Class<T>) GoogleAuthenticatorFactor.class;
+            }
+        }
+        if(clazz.equals(Challenge.class)){
+            if("message".equals(propertyName)) {
+                clazz = (Class<T>) SmsChallenge.class;
+            }
+            else{
+                clazz = (Class<T>) GoogleAuthenticatorChallenge.class;
             }
         }
         if (clazz.isInterface()) {

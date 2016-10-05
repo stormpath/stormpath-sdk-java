@@ -66,6 +66,15 @@ public final class GoogleAuthenticatorFactors {
     private GoogleAuthenticatorFactors() {
     }
 
+    /**
+     * Returns a new {@link GoogleAuthenticatorFactorOptions} instance, used to customize how one or more {@link GoogleAuthenticatorFactor}s are retrieved.
+     *
+     * @return a new {@link GoogleAuthenticatorFactorOptions} instance, used to customize how one or more {@link GoogleAuthenticatorFactor}s are retrieved.
+     */
+    public static GoogleAuthenticatorFactorOptions<GoogleAuthenticatorFactorOptions> options() {
+        return (GoogleAuthenticatorFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.google.DefaultGoogleAuthenticatorFactorOptions");
+    }
+
     public static final GoogleAuthenticatorFactors getInstance(){
         return INSTANCE;
     }
@@ -91,7 +100,13 @@ public final class GoogleAuthenticatorFactors {
      * @return a new {@link GoogleAuthenticatorFactorCriteria} instance to use to formulate a Factor query.
      */
     public static GoogleAuthenticatorFactorCriteria criteria() {
-        return (GoogleAuthenticatorFactorCriteria) Classes.newInstance("com.stormpath.sdk.impl.factor.google.DefaultGoogleAuthenticatorFactorCriteria");
+        try {
+            Class defaultGoogleAuthenticatorFactorCriteriaClazz = Class.forName("com.stormpath.sdk.impl.factor.google.DefaultGoogleAuthenticatorFactorCriteria");
+            Constructor c = defaultGoogleAuthenticatorFactorCriteriaClazz.getDeclaredConstructor(GoogleAuthenticatorFactorOptions.class);
+            return (GoogleAuthenticatorFactorCriteria) c.newInstance(options());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**

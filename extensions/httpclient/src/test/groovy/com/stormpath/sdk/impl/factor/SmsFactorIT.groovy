@@ -30,9 +30,7 @@ import com.stormpath.sdk.phone.Phone
 import com.stormpath.sdk.phone.PhoneStatus
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
-
 import java.lang.reflect.Field
-
 import static org.testng.AssertJUnit.*
 
 /**
@@ -543,10 +541,19 @@ class SmsFactorIT extends AbstractMultiFactorIT {
         assertEquals(factors.getLimit(), 25);
         assertEquals(factors.getProperty("items").size, 3);
         assertEquals(factors.iterator().next().account.materialized, false)
+        assertEquals(factors.iterator().next().phone.materialized, false)
         List<Factor> factorList = factors.toList()
         assertEquals(factorList.get(0).status, FactorStatus.DISABLED)
         assertEquals(factorList.get(1).status, FactorStatus.DISABLED)
         assertEquals(factorList.get(2).status, FactorStatus.ENABLED)
+
+        factors = account.getFactors(Factors.SMS.criteria().withAccount().withPhone().orderByStatus().ascending());
+        assertEquals(factors.iterator().next().account.materialized, true)
+        assertEquals(factors.iterator().next().phone.materialized, true)
+
+        factors = account.getFactors(Factors.SMS.criteria().withAccount().orderByStatus().ascending());
+        assertEquals(factors.iterator().next().account.materialized, true)
+        assertEquals(factors.iterator().next().phone.materialized, false)
     }
 
     private Object getValue(Class clazz, Object object, String fieldName) {

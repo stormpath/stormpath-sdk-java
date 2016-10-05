@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.challenge;
+package com.stormpath.sdk.challenge.google;
 
 import com.stormpath.sdk.challenge.ChallengeOptions;
-import com.stormpath.sdk.impl.query.DefaultOptions;
 
 /**
+ * GoogleAuthenticatorChallenge-specific options that may be specified when retrieving {@link GoogleAuthenticatorChallenge} resources.
+ *
  * @since 1.1.0
  */
-public class DefaultChallengeOptions<T extends ChallengeOptions> extends DefaultOptions<T> implements ChallengeOptions<T> {
+public interface GoogleAuthenticatorChallengeOptions<T> extends ChallengeOptions<T> {
 
-    @Override
-    public T withAccount() {
-        return expand(AbstractChallenge.ACCOUNT);
-    }
-
-    @Override
-    public T withFactor() {
-        return expand(AbstractChallenge.FACTOR);
-    }
 }

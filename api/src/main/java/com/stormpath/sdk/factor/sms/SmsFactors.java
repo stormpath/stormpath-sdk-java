@@ -52,7 +52,7 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class SmsFactors {
+public final class SmsFactors extends Factors{
 
     private static final SmsFactors INSTANCE;
 
@@ -103,7 +103,13 @@ public final class SmsFactors {
      * @return a new {@link FactorCriteria} instance to use to formulate a Factor query.
      */
     public static SmsFactorCriteria criteria() {
-        return (SmsFactorCriteria) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorCriteria");
+        try {
+            Class defaultSmsFactorCriteriaClazz = Class.forName("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorCriteria");
+            Constructor c = defaultSmsFactorCriteriaClazz.getDeclaredConstructor(SmsFactorOptions.class);
+            return (SmsFactorCriteria) c.newInstance(options());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**

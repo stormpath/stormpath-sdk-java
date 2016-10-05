@@ -51,7 +51,7 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class Factors {
+public class Factors {
 
     public static final SmsFactors SMS = SmsFactors.getInstance();
     public static final GoogleAuthenticatorFactors GOOGLE_AUTHENTICATOR = GoogleAuthenticatorFactors.getInstance();

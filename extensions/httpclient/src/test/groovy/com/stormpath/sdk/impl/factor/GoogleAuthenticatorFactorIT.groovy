@@ -49,7 +49,12 @@ class GoogleAuthenticatorFactorIT extends AbstractMultiFactorIT{
 
         createSmsFactor(account, VALID_PHONE_NUMBER)
 
-        def factors = account.getFactors(Factors.SMS.criteria().withPhone().limitTo(50).offsetBy(0).orderByCreatedAt());
+        def factors = account.getFactors(Factors.criteria().limitTo(50).offsetBy(0).orderByCreatedAt());
+        assertEquals(factors.iterator().next().account.materialized, false)
+
+        factors = account.getFactors(Factors.SMS.criteria().withPhone().withAccount().limitTo(50).offsetBy(0).orderByCreatedAt());
+        assertEquals(factors.iterator().next().account.materialized, true)
+        assertEquals(factors.iterator().next().phone.materialized, true)
         assertEquals(factors.getProperty("items").size, 1);
 
         List<Factor> factorsAsList = factors.asList()

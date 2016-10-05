@@ -66,6 +66,15 @@ public final class SmsChallenges extends Challenges {
         super();
     }
 
+    /**
+     * Returns a new {@link SmsChallengeOptions} instance, used to customize how one or more {@link SmsChallenge}s are retrieved.
+     *
+     * @return a new {@link SmsChallengeOptions} instance, used to customize how one or more {@link SmsChallenge}s are retrieved.
+     */
+    public static SmsChallengeOptions<SmsChallengeOptions> options() {
+        return (SmsChallengeOptions) Classes.newInstance("com.stormpath.sdk.impl.challenge.sms.DefaultSmsChallengeOptions");
+    }
+
     public static final SmsChallenges getInstance(){
         return INSTANCE;
     }
@@ -91,7 +100,13 @@ public final class SmsChallenges extends Challenges {
      * @return a new {@link ChallengeCriteria} instance to use to formulate a Challenge query.
      */
     public static SmsChallengeCriteria criteria() {
-        return (SmsChallengeCriteria) Classes.newInstance("com.stormpath.sdk.impl.challenge.sms.DefaultSmsChallengeCriteria");
+        try {
+            Class defaultSmsChallengeCriteriaClazz = Class.forName("com.stormpath.sdk.impl.challenge.sms.DefaultSmsChallengeCriteria");
+            Constructor c = defaultSmsChallengeCriteriaClazz.getDeclaredConstructor(SmsChallengeOptions.class);
+            return (SmsChallengeCriteria) c.newInstance(options());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**

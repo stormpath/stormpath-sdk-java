@@ -152,6 +152,20 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         assertEquals(retrievedFactor.factorVerificationStatus.name(), verificationStatus)
 
         ChallengeList challengeList = retrievedFactor.getChallenges(Challenges.criteria().orderByStatus().limitTo(10).descending())
+        assertEquals(challengeList.iterator().next().account.materialized, false)
+        challengeList = retrievedFactor.getChallenges(Challenges.criteria().withAccount().orderByStatus().limitTo(10).descending())
+        assertEquals(challengeList.iterator().next().account.materialized, true)
+        Throwable t = null;
+        try{
+            challengeList.iterator().next().factor
+        }
+        catch(IllegalStateException e){
+            t = e;
+        }
+        assertTrue(t instanceof IllegalStateException)
+        challengeList = retrievedFactor.getChallenges(Challenges.criteria().withAccount().withFactor().orderByStatus().limitTo(10).descending())
+        assertEquals(challengeList.iterator().next().account.materialized, true)
+        assertEquals(challengeList.iterator().next().factor.materialized, true)
         assertEquals(challengeList.toList().size(), 1)
         assertNotNull(challengeList.toList().get(0).account.href)
     }

@@ -54,7 +54,7 @@ public abstract class Challenges {
     protected Challenges() {
     }
 
-    public static ChallengeOptions<ChallengeOptions> options() {
+    public static ChallengeOptions<? extends ChallengeOptions> options() {
         return (ChallengeOptions) Classes.newInstance("com.stormpath.sdk.impl.challenge.DefaultChallengeOptions");
     }
 
