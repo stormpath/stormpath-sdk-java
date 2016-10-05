@@ -22,19 +22,18 @@ import com.stormpath.sdk.lang.Assert;
 
 /**
  * @param <T> The specific {@link Factor} class
- * @param <R> The specific {@link FactorOptions} class
+ * @param <O> The specific {@link FactorOptions} class
  * @since 1.1.0
  */
-public class DefaultCreateFactorRequest<T extends Factor, R extends FactorOptions> implements CreateFactorRequest {
-    private final T factor;
-    private final R options;
-    private final boolean createChallenge;
+public abstract class AbstractCreateFactorRequest<T extends Factor, O extends FactorOptions> implements CreateFactorRequest<T,O> {
 
-    public DefaultCreateFactorRequest(T factor, R options, boolean createChallenge) {
+    protected final T factor;
+    protected final O options;
+
+    public AbstractCreateFactorRequest(T factor, O options) {
         Assert.notNull(factor, "factor cannot be null.");
         this.factor = factor;
         this.options = options;
-        this.createChallenge = createChallenge;
     }
 
     @Override
@@ -48,14 +47,9 @@ public class DefaultCreateFactorRequest<T extends Factor, R extends FactorOption
     }
 
     @Override
-    public boolean isCreateChallenge() {
-        return createChallenge;
-    }
-
-    @Override
-    public R getFactorOptions() throws IllegalStateException {
+    public O getFactorOptions() throws IllegalStateException {
         if(this.options == null){
-            throw new IllegalStateException("SmsFactorOptions has not been configured. Use the hasPhoneOptions method to check first before invoking this method.");
+            throw new IllegalStateException("FactorOptions has not been configured.");
         }
         return this.options;
     }

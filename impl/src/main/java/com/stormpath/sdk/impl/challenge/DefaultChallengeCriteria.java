@@ -22,29 +22,26 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 /**
  * @since 1.1.0
  */
-public class DefaultChallengeCriteria extends DefaultCriteria<ChallengeCriteria, ChallengeOptions> implements ChallengeCriteria {
+public class DefaultChallengeCriteria<T extends ChallengeCriteria, R extends ChallengeOptions>  extends DefaultCriteria<ChallengeCriteria, R> implements ChallengeCriteria {
 
-    public DefaultChallengeCriteria() {
-        super(new DefaultChallengeOptions());
-    }
-
-    @Override
-    public ChallengeCriteria orderByMessage() {
-        return orderBy(DefaultChallenge.MESSAGE);
+    public DefaultChallengeCriteria(R options) {
+        super(options);
     }
 
     @Override
     public ChallengeCriteria orderByStatus() {
-        return orderBy(DefaultChallenge.STATUS);
+        return orderBy(AbstractChallenge.STATUS);
     }
 
     @Override
     public ChallengeCriteria withAccount() {
-        return orderBy(DefaultChallenge.ACCOUNT);
+        getOptions().withAccount();
+        return this;
     }
 
     @Override
     public ChallengeCriteria withFactor() {
-        return orderBy(DefaultChallenge.FACTOR);
+        getOptions().withFactor();
+        return this;
     }
 }

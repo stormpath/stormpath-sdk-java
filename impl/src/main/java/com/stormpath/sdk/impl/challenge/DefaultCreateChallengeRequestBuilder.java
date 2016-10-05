@@ -24,12 +24,12 @@ import com.stormpath.sdk.lang.Assert;
 /**
  * @since 1.1.0
  */
-public class DefaultCreateChallengeRequestBuilder implements CreateChallengeRequestBuilder {
+public class DefaultCreateChallengeRequestBuilder<T extends Challenge> implements CreateChallengeRequestBuilder {
 
-    private final Challenge challenge;
+    private final T challenge;
     private ChallengeOptions options;
 
-    public DefaultCreateChallengeRequestBuilder(Challenge challenge) {
+    public DefaultCreateChallengeRequestBuilder(T challenge) {
         Assert.notNull(challenge, "Challenge can't be null.");
         this.challenge = challenge;
     }

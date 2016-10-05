@@ -32,22 +32,4 @@ public interface SmsFactorOptions<T> extends FactorOptions<T> {
      * @return this instance for method chaining.
      */
     T withPhone();
-
-    /**
-     * Ensures that when retrieving an SmsFactor, the SmsFactor's  {@link SmsFactor#getChallenges()} is also
-     * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
-     * related resources you know you will use.
-     *
-     * @return this instance for method chaining.
-     */
-    T withChallenges();
-
-    /**
-     * Ensures that when retrieving an SmsFactor, the SmsFactor's  {@link SmsFactor#getMostRecentChallenge()} is also
-     * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
-     * related resources you know you will use.
-     *
-     * @return this instance for method chaining.
-     */
-    T withMostRecentChallenge();
 }

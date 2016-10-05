@@ -15,10 +15,7 @@
  */
 package com.stormpath.sdk.factor.sms;
 
-import com.stormpath.sdk.factor.CreateFactorRequest;
-import com.stormpath.sdk.factor.Factor;
-import com.stormpath.sdk.factor.FactorCriteria;
-import com.stormpath.sdk.factor.FactorOptions;
+import com.stormpath.sdk.factor.*;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.DateExpressionFactory;
@@ -55,7 +52,7 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class SmsFactors {
+public final class SmsFactors extends Factors {
 
     private static final SmsFactors INSTANCE;
 
@@ -63,27 +60,26 @@ public final class SmsFactors {
         INSTANCE = new SmsFactors();
     }
 
-    private static final Class<CreateSmsFactorRequestBuilder> BUILDER_CLASS =
+    private static final Class<CreateFactorRequestBuilder> BUILDER_CLASS =
             Classes.forName("com.stormpath.sdk.impl.factor.sms.DefaultCreateSmsFactorRequestBuilder");
 
     //prevent instantiation outside of outer class.
-    // Use getInstance() to retrieve the singeton instance.
+    // Use getInstance() to retrieve the singleton instance.
     private SmsFactors() {
+        super();
+    }
+
+    /**
+     * Returns a new {@link SmsFactorOptions} instance, used to customize how one or more {@link SmsFactor}s are retrieved.
+     *
+     * @return a new {@link SmsFactorOptions} instance, used to customize how one or more {@link SmsFactor}s are retrieved.
+     */
+    public static SmsFactorOptions<SmsFactorOptions> options() {
+        return (SmsFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorOptions");
     }
 
     public static final SmsFactors getInstance(){
         return INSTANCE;
-    }
-
-
-
-    /**
-     * Returns a new {@link FactorOptions} instance, used to customize how one or more {@link Factor}s are retrieved.
-     *
-     * @return a new {@link FactorOptions} instance, used to customize how one or more {@link Factor}s are retrieved.
-     */
-    public static SmsFactorOptions<SmsFactorOptions> options() {
-        return (SmsFactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorOptions");
     }
 
     /**
@@ -107,7 +103,13 @@ public final class SmsFactors {
      * @return a new {@link FactorCriteria} instance to use to formulate a Factor query.
      */
     public static SmsFactorCriteria criteria() {
-        return (SmsFactorCriteria) Classes.newInstance("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorCriteria");
+        try {
+            Class defaultSmsFactorCriteriaClazz = Class.forName("com.stormpath.sdk.impl.factor.sms.DefaultSmsFactorCriteria");
+            Constructor c = defaultSmsFactorCriteriaClazz.getDeclaredConstructor(SmsFactorOptions.class);
+            return (SmsFactorCriteria) c.newInstance(options());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
@@ -168,12 +170,12 @@ public final class SmsFactors {
     }
 
     /**
-     * Creates a new {@link com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder CreateSmsFactorRequestBuilder}
+     * Creates a new {@link com.stormpath.sdk.factor.CreateFactorRequestBuilder CreateSmsFactorRequestBuilder}
      * instance reflecting the specified {@link com.stormpath.sdk.factor.sms.SmsFactor} instance. The builder can be used to customize any
      * creation request options as necessary.
      *
      * @param smsFactor the smsFactor to create a new record for within Stormpath
-     * @return a new {@link com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder CreateSmsFactorRequestBuilder}
+     * @return a new {@link com.stormpath.sdk.factor.CreateFactorRequestBuilder CreateSmsFactorRequestBuilder}
      * instance reflecting the specified {@link com.stormpath.sdk.factor.sms.SmsFactor} instance.
      * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
      * @since 1.1.0
