@@ -82,7 +82,10 @@ class SmsChallengeManualIT extends ClientIT{
 
 
         Challenge challenge = client.getResource(href, SmsChallenge)
-        assertTrue(challenge.validate(code))
+        boolean challengeValidated = challenge.validate(code)
+        challenge = client.getResource(href, SmsChallenge)
+        println("\n-----> The status of your challenge is: ${challenge.status}")
+        assertTrue(challengeValidated)
 
         //Test Challenges with ChallengeOptions
         ChallengeOptions challengeOptions = Challenges.SMS.options().withFactor()
