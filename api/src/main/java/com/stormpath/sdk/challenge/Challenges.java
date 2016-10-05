@@ -50,10 +50,6 @@ public abstract class Challenges {
     public static final SmsChallenges SMS = SmsChallenges.getInstance();
     public static final GoogleAuthenticatorChallenges GOOGLE_AUTHENTICATOR = GoogleAuthenticatorChallenges.getInstance();
 
-    //prevent instantiation
-    protected Challenges() {
-    }
-
     public static ChallengeOptions<? extends ChallengeOptions> options() {
         return (ChallengeOptions) Classes.newInstance("com.stormpath.sdk.impl.challenge.DefaultChallengeOptions");
     }

@@ -52,7 +52,7 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class SmsFactors extends Factors{
+public final class SmsFactors extends Factors {
 
     private static final SmsFactors INSTANCE;
 

@@ -100,7 +100,6 @@ public final class GoogleAuthenticatorChallenges extends Challenges {
      * @return a new {@link ChallengeCriteria} instance to use to formulate a Challenge query.
      */
     public static GoogleAuthenticatorChallengeCriteria criteria() {
-        //return (GoogleAuthenticatorChallengeCriteria) Classes.newInstance("com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorChallengeCriteria");
         try {
             Class defaultGoogleAuthenticatorChallengeCriteriaClazz = Class.forName("com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorChallengeCriteria");
             Constructor c = defaultGoogleAuthenticatorChallengeCriteriaClazz.getDeclaredConstructor(GoogleAuthenticatorChallengeOptions.class);

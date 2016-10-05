@@ -74,8 +74,7 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         Throwable e = null
         try {
             createChallenge(factor, "bogus")
-        }
-        catch(ResourceException re){
+        } catch (ResourceException re) {
             e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 2002)
@@ -98,8 +97,7 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         Throwable e = null
         try {
             createChallenge(factor, "123456")
-        }
-        catch(ResourceException re){
+        } catch (ResourceException re) {
             e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13109)
@@ -156,10 +154,9 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         challengeList = retrievedFactor.getChallenges(Challenges.criteria().withAccount().orderByStatus().limitTo(10).descending())
         assertEquals(challengeList.iterator().next().account.materialized, true)
         Throwable t = null;
-        try{
+        try {
             challengeList.iterator().next().factor
-        }
-        catch(IllegalStateException e){
+        } catch (IllegalStateException e) {
             t = e;
         }
         assertTrue(t instanceof IllegalStateException)
@@ -176,8 +173,7 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         int secondsToWait
         if ((seconds <= 30) && (seconds > 25)) {
             secondsToWait = 31 - seconds
-        }
-        else if ((seconds <= 60) && (seconds > 55)) {
+        } else if ((seconds <= 60) && (seconds > 55)) {
             secondsToWait = 61 - seconds
         }
 
