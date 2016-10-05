@@ -27,10 +27,12 @@ import com.stormpath.sdk.idsite.IDSiteException
 import com.stormpath.sdk.idsite.IDSiteRuntimeException
 import com.stormpath.sdk.idsite.IDSiteSessionTimeoutException
 import com.stormpath.sdk.idsite.IdSiteResultListener
+import com.stormpath.sdk.idsite.IdSiteResultStatus
 import com.stormpath.sdk.idsite.InvalidIDSiteTokenException
 import com.stormpath.sdk.idsite.LogoutResult
 import com.stormpath.sdk.idsite.NonceStore
 import com.stormpath.sdk.idsite.RegistrationResult
+import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -230,8 +232,9 @@ class DefaultIdSiteCallbackHandlerTest {
             .setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8')
             .build()
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
+        def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
         def requestExecutor = createStrictMock(RequestExecutor)
-        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials)
+        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials, apiKeyResolver)
         def application = createStrictMock(Application)
         def request = createStrictMock(HttpRequest)
         def cacheResolver = createStrictMock(CacheResolver)
@@ -272,8 +275,9 @@ class DefaultIdSiteCallbackHandlerTest {
 
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
+        def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
         def requestExecutor = createStrictMock(RequestExecutor)
-        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials)
+        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials, apiKeyResolver)
         def application = createStrictMock(Application)
         def request = createStrictMock(HttpRequest)
         def account = createStrictMock(Account)
@@ -307,8 +311,9 @@ class DefaultIdSiteCallbackHandlerTest {
     ) {
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
+        def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
         def requestExecutor = createStrictMock(RequestExecutor)
-        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials)
+        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials, apiKeyResolver)
         def application = createStrictMock(Application)
         def request = createStrictMock(HttpRequest)
 
@@ -403,9 +408,10 @@ class DefaultIdSiteCallbackHandlerTest {
     private static void testError(String jwtResponse, int expectedCode, int expectedStatus, String expectedMessage, String expectedDeveloperMessage) {
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
+        def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
 
         def requestExecutor = createStrictMock(RequestExecutor)
-        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials)
+        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials, apiKeyResolver)
         def application = createStrictMock(Application)
         def request = createStrictMock(HttpRequest)
 
@@ -433,8 +439,9 @@ class DefaultIdSiteCallbackHandlerTest {
     private static void testExpired(String jwtResponse) {
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
+        def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
         def requestExecutor = createStrictMock(RequestExecutor)
-        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials)
+        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials, apiKeyResolver)
         def application = createStrictMock(Application)
         def request = createStrictMock(HttpRequest)
 
@@ -459,8 +466,9 @@ class DefaultIdSiteCallbackHandlerTest {
     private static void testRethrow(String jwtResponse, Class<IDSiteException> expectedExceptionClass, int expectedCode, int expectedStatus, String expectedMessage, String expectedDeveloperMessage) {
         def apiKey = ApiKeys.builder().setId('2EV70AHRTYF0JOA7OEFO3SM29').setSecret('goPUHQMkS4dlKwl5wtbNd91I+UrRehCsEDJrIrMruK8').build()
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
+        def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
         def requestExecutor = createStrictMock(RequestExecutor)
-        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials)
+        def dataStore = new DefaultDataStore(requestExecutor, apiKeyCredentials, apiKeyResolver)
         def application = createStrictMock(Application)
         def request = createStrictMock(HttpRequest)
 

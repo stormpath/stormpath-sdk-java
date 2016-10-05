@@ -23,6 +23,7 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.factor.*;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
@@ -30,12 +31,12 @@ import com.stormpath.sdk.group.GroupMembership;
 import com.stormpath.sdk.group.GroupMembershipList;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshTokenList;
+import com.stormpath.sdk.phone.CreatePhoneRequest;
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneCriteria;
+import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
-import com.stormpath.sdk.resource.Auditable;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Extendable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.*;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -379,6 +380,35 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     boolean isMemberOfGroup(String hrefOrName);
 
     /**
+     * Returns true if the account belongs to a group, false otherwise.
+     *
+     * @param group the group being sought.
+     * @return true if the account belongs to a group, false otherwise.
+     * @since 1.1.0
+     */
+    boolean isMemberOfGroup(Group group);
+
+    /**
+     * Returns true if the account is linked to the account whose href is (case insensitive) equal to the specified
+     * href value, false otherwise.
+     *
+     * @param href the href of the other account.
+     * @return true if the account is linked to the account whose href is (case insensitive) equal to the specified
+     * href value, false otherwise.
+     * @since 1.1.0
+     */
+    boolean isLinkedToAccount(String href);
+
+    /**
+     * Returns true if this account is linked to the other account, false otherwise.
+     *
+     * @param otherAccount the other account.
+     * @return true if this account is linked to the the other account, false otherwise.
+     * @since 1.1.0
+     */
+    boolean isLinkedToAccount(Account otherAccount);
+
+    /**
      * Returns the ProviderData Resource belonging to the account.
      *
      * @return the ProviderData Resource belonging to the account.
@@ -560,4 +590,359 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.0.RC7
      */
     RefreshTokenList getRefreshTokens();
+
+    /**
+     * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Phone for Multi Factor Authentication purposes.
+     *
+     * @param request {@link CreatePhoneRequest} used to create a phone with.
+     * @return the newly created {@link Phone}.
+     *
+     * @since 1.1.0
+     */
+    Phone createPhone(CreatePhoneRequest request);
+
+    /**
+     * Creates a new {@link Phone} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Phone for Multi Factor Authentication purposes.
+     *
+     * @param phone {@link Phone} pojo to hold necessary data to send to the back- end to create a {@link Phone}.
+     * @return the newly created {@link Phone}.
+     *
+     * @since 1.1.0
+     */
+    Phone createPhone(Phone phone) throws ResourceException;
+
+    /**
+     * Returns a paginated list of all the phones that belong to the account.
+     *
+     * @return a paginated list of all the Account's phones.
+     *
+     * @since 1.1.0
+     */
+    PhoneList getPhones();
+
+    /**
+     * Returns a paginated list of all the phones that belong to the account matching the query params.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of all the Account's phones.
+     *
+     * @since 1.1.0
+     */
+    PhoneList getPhones(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's assigned phones that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.phone.Phones Phones} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getPhones(Phones.where(
+     *     Phones.description().containsIgnoreCase("foo"))
+     *     .and(Phones.name().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.phone.Phones.*;
+     *
+     * ...
+     *
+     * account.getPhones(where(
+     *      description().containsIgnoreCase("foo"))
+     *     .and(name().startsWithIgnoreCase("bar"))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's phones that match the specified query criteria.
+     * @since 1.1.0
+     */
+    PhoneList getPhones(PhoneCriteria criteria);
+
+    /**
+     * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource.
+     * The account can then use the Factor for Multi Factor Authentication purposes.
+     *
+     * @param factor {@link Factor} pojo to hold necessary data to send to the back- end to create a {@link Factor}.
+     * @return the newly created {@link Factor}.
+     *
+     * @since 1.1.0
+     */
+    <T extends Factor> T createFactor(T factor) throws ResourceException;
+
+    /**
+     * Creates a new {@link Factor} assigned to this account in the Stormpath server and returns the created resource
+     * based on provided {@link CreateFactorRequest}
+     * The account can then use the Factor for Multi Factor Authentication purposes.
+     *
+     * @param request {@link CreateFactorRequest} used to create a factor with.
+     * @return the newly created {@link Factor}.
+     *
+     * @since 1.1.0
+     */
+    <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException;
+
+    /**
+     * Returns a paginated list of all the factors that belong to the account.
+     *
+     * @return a paginated list of all the Account's factos.
+     *
+     * @since 1.1.0
+     */
+    FactorList getFactors();
+
+    /**
+     * Returns a paginated list of all the factors that belong to the account matching the query params.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of all the Account's factos.
+     *
+     * @since 1.1.0
+     */
+    FactorList getFactors(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's assigned factors that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.factor.Factors factors} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getFactors(Factors.SMS.where(
+     *     Factors.SMS.status().eq(FactorStatus.ENABLED)
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.factor.Factors.SMS.*;
+     *
+     * ...
+     *
+     * account.getFactors(where(
+     *      status().eq(FactorStatus.ENABLED))
+     *     .orderByName()
+     *     .orderByStatus().descending()
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's factors that match the specified query criteria.
+     * @since 1.1.0
+     */
+    FactorList getFactors(FactorCriteria criteria);
+
+    /**
+     * Returns a paginated list of the account's linked accounts.
+     *
+     * <p>If you don't want to return all linked accounts, you can instead search for a subset of them via
+     the {@link #getLinkedAccounts(AccountCriteria)} or {@link #getLinkedAccounts(Map)} methods.</p>
+     *
+     * @return a paginated list of all linked accounts to the Account.
+     * @see #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)
+     * @see #getLinkedAccounts(java.util.Map)
+     * @since 1.1.0
+     */
+    AccountList getLinkedAccounts();
+
+    /**
+     * Returns a paginated list of the account's linked accounts that match the specified query criteria.
+     *
+     * <p>This method is mostly provided as a non-type-safe alternative to the
+     * {@link #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)} method which might be useful in dynamic languages on
+     * the
+     * JVM (for example, with Groovy):
+     * <pre>
+     * def linkedAccounts = account.getLinkedAccounts([givenName: '*foo*', orderBy: 'surname desc', limit: 50])
+     * </pre>
+     * The query parameter names and values must be equal to those documented in the Stormpath REST API product guide.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../accounts/accountId/linkedAccounts?param1=value1&param2=value2&...
+     * </pre>
+     * </p>
+     * If in doubt, use {@link #getLinkedAccounts(com.stormpath.sdk.account.AccountCriteria)} as all possible query options are
+     * available
+     * via type-safe guarantees that can be auto-completed by most IDEs.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the account's linked accounts that match the specified query criteria.
+     * @since 1.1.0
+     */
+    AccountList getLinkedAccounts(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's linked accounts that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.account.Accounts Accounts} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getLinkedAccounts(Accounts.where(
+     *     Accounts.givenName().containsIgnoreCase("foo"))
+     *     .and(Accounts.givenName().startsWithIgnoreCase("bar"))
+     *     .orderBySurname()
+     *     .orderByStatus().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.account.Accounts.*;
+     *
+     * ...
+     *
+     * account.getLinkedAccounts(where(
+     *      givenName().containsIgnoreCase("foo"))
+     *     .and(givenName().startsWithIgnoreCase("bar"))
+     *     .orderBySurname()
+     *     .orderByStatus().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's linked accounts that match the specified query criteria.
+     * @since 1.1.0
+     */
+    AccountList getLinkedAccounts(AccountCriteria criteria);
+
+    /**
+     * Links this account to the otherAccount.
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will interact with the server immediately.</p>
+     *
+     * @param otherAccount the other Account that this account will be linked to
+     * @return the new AccountLink resource created reflecting the link between two accounts.
+     * @since 1.1.0
+     */
+    AccountLink link(Account otherAccount);
+
+    /**
+     * Links this account to the otherAccount represented by its {@code href}
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param otherAccountHref the href of the other account that this account will be linked to
+     * @return the new AccountLink resource created reflecting the link between two accounts.
+     *
+     * @since 1.1.0
+     */
+    AccountLink link(String otherAccountHref);
+
+    /**
+     * Removes the link between this account and the otherAccount
+     *
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param otherAccount the {@code Account} object from which the account must be unlinked.
+     * @return the AccountLink object that was deleted or {@code null} if the two accounts were not linked.
+     *
+     * @since 1.1.0
+     */
+    AccountLink unlink(Account otherAccount);
+
+    /**
+     * Removes the link between this account and the otherAccount represented by its {@code href}
+     *                   .
+     * <p><b>Immediate Execution:</b> Unlike other Account methods, you do <em>not</em> need to call {@link #save()}
+     * afterwards. This method will persist the changes in the backend immediately.</p>
+     *
+     * @param otherAccountHref the href of the other account from which the account must be unlinked.
+     * @return the AccountLink object that was deleted or {@code null} if the two accounts were not linked.
+     * @throws com.stormpath.sdk.resource.ResourceException if the AccountLink could not be deleted.
+     *
+     * @since 1.1.0
+     */
+    AccountLink unlink(String otherAccountHref);
+
+    /**
+     * Returns a paginated list of the AccountLinks for the account.
+     *
+     * <p>If you don't want to return all accountLinks, you can instead search for a subset of them via
+     *  the {@link #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)} or {@link #getAccountLinks(Map)} methods.</p>
+     *
+     * @return a paginated list of all accountLinks for the Account
+     * @see #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)
+     * @see #getAccountLinks(java.util.Map)
+     * @since 1.1.0
+     */
+    AccountLinkList getAccountLinks();
+
+    /**
+     * Returns a paginated list of the account's AccountLinks that match the specified query criteria.
+     *
+     * <p>This method is mostly provided as a non-type-safe alternative to the
+     * {@link #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)} method which might be useful in dynamic languages on
+     * the
+     * JVM (for example, with Groovy):
+     * <pre>
+     * def accountLinks = account.getAccountLinks([createdAt: '2016-01-01', orderBy: 'createdAt desc', limit: 5])
+     * </pre>
+     * The query parameter names and values must be equal to those documented in the Stormpath REST API product guide.
+     * <p/>
+     * Each {@code queryParams} key/value pair will be converted to String name to String value pairs and appended to
+     * the resource URL as query parameters, for example:
+     * <pre>
+     * .../accounts/accountId/accountLinks?param1=value1&...
+     * </pre>
+     * </p>
+     * If in doubt, use {@link #getAccountLinks(com.stormpath.sdk.account.AccountLinkCriteria)} as all possible query options are
+     * available
+     * via type-safe guarantees that can be auto-completed by most IDEs.
+     *
+     * @param queryParams the query parameters to use when performing a request to the collection.
+     * @return a paginated list of the account's accountLinks that match the specified query criteria.
+     * @since 1.1.0
+     */
+    AccountLinkList getAccountLinks(Map<String, Object> queryParams);
+
+    /**
+     * Returns a paginated list of the account's accountLinks that match the specified query criteria.  The
+     * {@link com.stormpath.sdk.account.AccountLinks AccountLinks} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * account.getAccountLinks(AccountLinks.where(
+     *     AccountLinks.createdAt().equals("2016-01-01")
+     *     .orderByCreatedAt().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     * import static com.stormpath.sdk.account.AccountLinks.*;
+     *
+     * ...
+     *
+     * account.getAccountLinks(where(
+     *      createdAt().equals("2016-01-01")
+     *     .orderByCreatedAt().descending()
+     *     .withAccounts(10, 10)
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's accountLinks that match the specified query criteria.
+     * @since 1.1.0
+     */
+    AccountLinkList getAccountLinks(AccountLinkCriteria criteria);
 }

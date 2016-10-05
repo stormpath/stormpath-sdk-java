@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.client
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Proxy
+import com.stormpath.sdk.impl.api.ApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
 import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
@@ -40,12 +41,12 @@ public class RequestCountingClient extends DefaultClient {
 
     private AtomicInteger count = new AtomicInteger();
 
-    public RequestCountingClient(ApiKeyCredentials apiKeyCredentials, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
-        super(apiKeyCredentials, baseUrl, proxy, cacheManager, authenticationScheme, null, connectionTimeout)
+    public RequestCountingClient(ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
+        super(apiKeyCredentials, apiKeyResolver, baseUrl, proxy, cacheManager, authenticationScheme, null, connectionTimeout)
     }
 
     @Override
-    protected DataStore createDataStore(final RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
+    protected DataStore createDataStore(final RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
 
         RequestExecutor countingExecutor = new RequestExecutor() {
             @Override
@@ -55,7 +56,7 @@ public class RequestCountingClient extends DefaultClient {
             }
         };
 
-        return super.createDataStore(countingExecutor, baseUrl, clientCredentials, cacheManager)
+        return super.createDataStore(countingExecutor, baseUrl, clientCredentials, apiKeyResolver, cacheManager)
     }
 
     /**

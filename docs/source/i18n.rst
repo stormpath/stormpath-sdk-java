@@ -3,51 +3,111 @@
 Internationalization (i18n)
 ===========================
 
-All of the plugin's default views are fully internationalized using a standard `Java Resource Bundle`_ named ``com.stormpath.sdk.servlet.i18n``
+.. only:: servlet
+
+  All of the default views are fully internationalized using a standard `Java Resource Bundle`_ named ``com.stormpath.sdk.servlet.i18n``
+
+.. only:: springboot
+
+  All of the |project| default views are fully internationalized using standard Spring ``MessageSource`` internationalization support.  Spring Boot makes this even easier by supporting a default ``MessageSource`` as a ``messages`` resource bundle at the root of the classpath.  For example, assuming a Maven/Gradle project layout::
+
+      src/
+      |-- main/
+          |-- resources/
+              |-- messages.properties
+              |-- messages_es.properties
+              |-- messages_de.properties
+              |-- ... etc ...
 
 Languages
 ---------
 
-The plugin .jar comes with one default :ref:`English bundle file <i18n-properties-file>`: ``/com/stormpath/sdk/servlet/i18n.properties``.
+.. only:: servlet
+
+  The |project| JAR comes with one default :ref:`English bundle file <i18n-properties-file>`: ``/com/stormpath/sdk/servlet/i18n.properties``.
+
+.. only:: springboot
+
+  Even if you don't define any message keys yourself, the |project| comes with one default :ref:`English bundle file <i18n-properties-file>`.
 
 You can add other languages as follows:
 
-1.  Create a ``com.stormpath.sdk.servlet`` package in your project.  It must have this exact structure and name.
-2.  In this ``com/stormpath/sdk/servlet`` package directory, add one or more ``i18n_LOCALE.properties`` files to this package, for example, ``i18n_es.properties`` for Spanish (or even ``i18n_es_ES.properties`` for Spain's dialect of Spanish and ``i18n_es_MX.properties`` for Mexican dialect of Spanish, etc).
-3.  In each locale-specific file, re-define each :ref:`i18n property <i18n-properties-file>` value in that language.
+.. only:: servlet
+
+  1.  Create a ``com.stormpath.sdk.servlet`` package in your project.  It must have this exact structure and name.
+  2.  In this ``com/stormpath/sdk/servlet`` package directory, add one or more ``i18n_LOCALE.properties`` files to this package, for example, ``i18n_es.properties`` for Spanish (or even ``i18n_es_ES.properties`` for Spain's dialect of Spanish and ``i18n_es_MX.properties`` for Mexican dialect of Spanish, etc).
+  3.  In each locale-specific file, re-define each :ref:`i18n property <i18n-properties-file>` value in that language.
+
+.. only:: springboot
+
+  1.  Create one or more ``messages_LOCALE.properties`` files to the root package (as shown above), for example ``messages_es.properties`` for Spanish (or even ``messages_es_ES.properties`` for Spain's dialect of Spanish and ``messages_es_MX.properties`` for Mexican dialect of Spanish, etc).
+  2.  In each locale-specific file, re-define each Stormpath :ref:`i18n property <i18n-properties-file>` value in that language.
 
 .. Note::
     If you create new translations, we'd love it if you would contribute them to the project as a `pull request`_. The Stormpath community would be grateful!
 
-
 Request Locale
 --------------
 
-The locale used to render messages during a request is determined by a ``Resolver<Locale>`` instance, specified via the ``stormpath.web.locale.resolver`` configuration property.  For example, the default implementation returns `ServletRequest.getLocale()`_:
+.. only:: servlet
 
-.. code-block:: properties
+  The locale used to render messages during a request is determined by a ``Resolver<Locale>`` instance, specified via the ``stormpath.web.locale.resolver`` configuration property.  For example, the default implementation returns `ServletRequest.getLocale()`_:
 
-    stormpath.web.locale.resolver = com.stormpath.sdk.servlet.i18n.DefaultLocaleResolver
+  .. code-block:: properties
 
-You can override this value by specifying the fully qualified class name of a class that implements the ``com.stormpath.sdk.servlet.http.Resolver<Locale>`` interface.  That implementation will be instantiated and used instead.
+      stormpath.web.locale.resolver = com.stormpath.sdk.servlet.i18n.DefaultLocaleResolver
 
+  You can override this value by specifying the fully qualified class name of a class that implements the ``com.stormpath.sdk.servlet.http.Resolver<Locale>`` interface.  That implementation will be instantiated and used instead.
 
-JSP Tag Library
----------------
+.. only:: springboot
 
-You can reference any of the stormpath i18n properties below in a JSP page by importing the Stormpath tag library:
+  The locale used to render messages during a request is determined by a Spring ``LocaleResolver`` instance.  If you do not configure one yourself, the |project| defaults to using a Spring ``CookieLocaleResolver``, but you could specify your own as a bean override:
 
-.. code-block:: jsp
+  .. code-block:: java
 
-    <%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
+      @Bean
+      public LocaleResolver localeResolver() {
+          return new CookieLocaleResolver();
+      }
 
-Then you can reference the message key as necessary in the page content, for example:
+  Also locale switching is determined by a Spring ``LocaleChangeInterceptor`` instance. The |project| defaults to a standard ``LocaleChangeInterceptor`` instance that looks for request parameter named ``lang`` (e.g. ``http://localhost:8080/foo?lang=es``).  You could specify your own as a bean override:
 
-.. code-block:: jsp
+  .. code-block:: java
 
-    <span><sp:message key="stormpath.web.register.title"/></span>
+      @Bean
+      public LocaleChangeInterceptor localeChangeInterceptor() {
+          LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+          lci.setParamName("lang");
+          return lci;
+      }
 
-The ``<sp:message>`` tag works just like the standard template library's ``<fmt:message>`` tag, but ``<sp:message>`` will automatically use the ``com.stormpath.sdk.servlet.i18n`` message bundle in addition to allowing for a flexible locale resolution strategy per the ``stormpath.web.locale.resolver`` mentioned above.
+.. only:: servlet
+
+  JSP Tag Library
+  ---------------
+
+  You can reference any of the stormpath i18n properties below in a JSP page by importing the Stormpath tag library:
+
+  .. code-block:: jsp
+
+      <%@ taglib prefix="sp" uri="http://stormpath.com/jsp/tags" %>
+
+  Then you can reference the message key as necessary in the page content, for example:
+
+  .. code-block:: jsp
+
+      <span><sp:message key="stormpath.web.register.title"/></span>
+
+  The ``<sp:message>`` tag works just like the standard template library's ``<fmt:message>`` tag, but ``<sp:message>`` will automatically use the ``com.stormpath.sdk.servlet.i18n`` message bundle in addition to allowing for a flexible locale resolution strategy per the ``stormpath.web.locale.resolver`` mentioned above.
+
+.. only:: springboot
+
+  View Templates
+  --------------
+
+  You can reference any of the stormpath i18n properties below in a view template using standard template message support.
+
+  For example, Thymeleaf templates use a ``#{ }`` notation, such as ``#{stormpath.web.login.title}``.  JSPs can just use Spring's standard tag library, e.g. ``<spring:message code='stormpath.web.login.title'/>``
 
 .. _i18n-properties-file:
 
