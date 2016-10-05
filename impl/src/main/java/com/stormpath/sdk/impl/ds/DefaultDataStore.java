@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
@@ -98,7 +99,6 @@ public class DefaultDataStore implements InternalDataStore {
     private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
 
     private final String baseUrl;
-    private final ClientCredentials clientCredentials;
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
@@ -107,37 +107,50 @@ public class DefaultDataStore implements InternalDataStore {
     private final ResourceConverter resourceConverter;
     private final QueryStringFactory queryStringFactory;
     private final List<Filter> filters;
+    private final ApiKeyResolver apiKeyResolver;
 
     /**
      * @since 1.0.RC3
      */
     public static final String USER_AGENT_STRING = UserAgent.getUserAgentString();
 
-    public DefaultDataStore(RequestExecutor requestExecutor, ApiKeyCredentials apiKeyCredentials) {
-        this(requestExecutor, DEFAULT_API_VERSION, apiKeyCredentials);
+    /**
+     * @since 1.1.0
+     */
+    public DefaultDataStore(RequestExecutor requestExecutor, ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver) {
+        this(requestExecutor, DEFAULT_API_VERSION, apiKeyCredentials, apiKeyResolver);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKeyCredentials apiKeyCredentials) {
-        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKeyCredentials);
+    /**
+     * @since 1.1.0
+     */
+    public DefaultDataStore(RequestExecutor requestExecutor, int apiVersion, ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver) {
+        this(requestExecutor, "https://" + DEFAULT_SERVER_HOST + "/v" + apiVersion, apiKeyCredentials, apiKeyResolver);
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKeyCredentials apiKeyCredentials) {
-        this(requestExecutor, baseUrl, apiKeyCredentials, new DisabledCacheManager());
+    /**
+     * @since 1.1.0
+     */
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver) {
+        this(requestExecutor, baseUrl, apiKeyCredentials, apiKeyResolver, new DisabledCacheManager());
     }
 
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
+    /**
+     * @since 1.1.0
+     */
+    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
         Assert.notNull(baseUrl, "baseUrl cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
-        Assert.notNull(clientCredentials, "clientCredentials cannot be null.");
+        Assert.notNull(clientCredentials, "apiKeyResolver cannot be null.");
         Assert.notNull(cacheManager, "CacheManager cannot be null.  Use the DisabledCacheManager if you wish to turn off caching.");
         this.requestExecutor = requestExecutor;
         this.baseUrl = baseUrl;
-        this.clientCredentials = clientCredentials;
         this.cacheManager = cacheManager;
         this.resourceFactory = new SubtypeDispatchingResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
         this.queryStringFactory = new QueryStringFactory();
         this.cacheResolver = new DefaultCacheResolver(this.cacheManager, new DefaultCacheRegionNameResolver());
+        this.apiKeyResolver = apiKeyResolver;
 
         ReferenceFactory referenceFactory = new ReferenceFactory();
         this.resourceConverter = new DefaultResourceConverter(referenceFactory);
@@ -169,8 +182,7 @@ public class DefaultDataStore implements InternalDataStore {
 
     @Override
     public ApiKey getApiKey() {
-        Assert.isInstanceOf(ApiKeyCredentials.class, this.clientCredentials);
-        return ((ApiKeyCredentials) this.clientCredentials).getApiKey();
+        return this.apiKeyResolver.getApiKey();
     }
 
     @Override
