@@ -24,7 +24,6 @@ import com.google.zxing.qrcode.QRCodeReader
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.factor.Factor
 import com.stormpath.sdk.factor.FactorStatus
 import com.stormpath.sdk.factor.FactorType
 import com.stormpath.sdk.factor.FactorVerificationStatus
@@ -36,6 +35,7 @@ import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
 import static org.testng.AssertJUnit.*
+
 /**
  * @since 1.1.0
  */
@@ -166,11 +166,4 @@ abstract class AbstractMultiFactorIT extends ClientIT{
         account
     }
 
-    protected Factor createChallenge(Factor factor, String code = null){
-        Map map = [:]
-        if (code != null) {
-            map.put("code", code)
-        }
-        factor.createChallenge()
-    }
 }

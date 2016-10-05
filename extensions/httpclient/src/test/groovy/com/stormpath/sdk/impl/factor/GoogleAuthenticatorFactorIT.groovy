@@ -30,6 +30,9 @@ import org.testng.annotations.Test
 
 import static org.testng.AssertJUnit.*
 
+/**
+ * @since 1.1.0
+ */
 class GoogleAuthenticatorFactorIT extends AbstractMultiFactorIT{
 
     @Test

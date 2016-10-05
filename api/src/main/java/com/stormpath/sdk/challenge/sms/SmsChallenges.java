@@ -49,7 +49,8 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class SmsChallenges extends Challenges{
+public final class SmsChallenges extends Challenges {
+
     private static final SmsChallenges INSTANCE;
 
     static{

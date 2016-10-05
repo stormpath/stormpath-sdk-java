@@ -25,7 +25,6 @@ import com.stormpath.sdk.factor.FactorOptions
 import com.stormpath.sdk.factor.FactorType
 import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor
-import com.stormpath.sdk.impl.factor.DefaultFactorOptions
 import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
 import com.stormpath.sdk.resource.ResourceException
 import org.apache.commons.codec.binary.Base32
@@ -36,6 +35,9 @@ import org.testng.annotations.Test
 import static com.stormpath.sdk.impl.challenge.TOTPService.getTotpPassword
 import static org.testng.AssertJUnit.*
 
+/**
+ * @since 1.1.0
+ */
 class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
 
     @Test
@@ -133,7 +135,7 @@ class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
         assertNotNull(retrievedFactor.mostRecentChallenge)
         assertNotNull(retrievedFactor.mostRecentChallenge.href)
 
-        DefaultFactorOptions factorOptions = Factors.options().withChallenges().withMostRecentChallenge()
+        FactorOptions factorOptions = Factors.options().withChallenges().withMostRecentChallenge()
         retrievedFactor = client.getResource(factorHref, GoogleAuthenticatorFactor.class, factorOptions)
 
         assertNotNull(retrievedFactor)

@@ -28,6 +28,7 @@ import org.testng.annotations.Test
 
 import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.assertTrue
+
 /**
  * @since 1.1.0
  */
@@ -67,7 +68,6 @@ class SmsChallengeIT extends AbstractMultiFactorIT{
         e = null
 
         // A 13103 is returned since message does not contain a ${code}. This time with CreateChallengeRequest
-
         SmsChallenges sms = Challenges.SMS
         def builder = Challenges.SMS.newCreateRequestFor(challenge).withResponseOptions(Challenges.SMS.options().withAccount())
         try{

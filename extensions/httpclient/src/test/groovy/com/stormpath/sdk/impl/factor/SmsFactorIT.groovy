@@ -24,7 +24,6 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.*
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.factor.sms.SmsFactorOptions
-import com.stormpath.sdk.impl.factor.sms.DefaultSmsFactor
 import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.phone.Phone
@@ -36,6 +35,9 @@ import java.lang.reflect.Field
 
 import static org.testng.AssertJUnit.*
 
+/**
+ * @since 1.1.0
+ */
 class SmsFactorIT extends AbstractMultiFactorIT {
 
     private static final String VALID_PHONE_NUMBER = "+18883915282"
@@ -94,7 +96,7 @@ class SmsFactorIT extends AbstractMultiFactorIT {
 
         //test GET works
         FactorOptions FactorOptions = Factors.options().withChallenges()
-        factor = client.getResource(factor.href, DefaultSmsFactor.class, FactorOptions)
+        factor = client.getResource(factor.href, SmsFactor.class, FactorOptions)
 
         assertEquals(factor.getFactorVerificationStatus(), FactorVerificationStatus.UNVERIFIED)
         assertEquals(factor.getStatus(), FactorStatus.ENABLED)

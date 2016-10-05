@@ -68,7 +68,7 @@ import java.util.concurrent.TimeUnit;
  * @see <a href="http://thegreyblog.blogspot.com/2011/12/google-authenticator-using-it-in-your.html" />
  * @see <a href="http://code.google.com/p/google-authenticator" />
  * @see <a href="http://tools.ietf.org/id/draft-mraihi-totp-timebased-06.txt" />
- * @since 0.3.0
+ * @since 1.1.0
  */
 public class TOTPService {
 

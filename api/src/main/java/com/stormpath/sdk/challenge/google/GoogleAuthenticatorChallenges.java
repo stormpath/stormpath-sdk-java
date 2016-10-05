@@ -49,7 +49,8 @@ import java.lang.reflect.Constructor;
  *
  * @since 1.1.0
  */
-public final class GoogleAuthenticatorChallenges extends Challenges{
+public final class GoogleAuthenticatorChallenges extends Challenges {
+
     private static final GoogleAuthenticatorChallenges INSTANCE;
 
     static{
@@ -59,8 +60,8 @@ public final class GoogleAuthenticatorChallenges extends Challenges{
     private static final Class<CreateChallengeRequestBuilder> BUILDER_CLASS =
             Classes.forName("com.stormpath.sdk.impl.challenge.DefaultCreateChallengeRequestBuilder");
 
-    //prevent instantiation outside of outer class.
-    // Use getInstance() to retrieve the singleton instance.
+    //Prevent instantiation outside of outer class.
+    //Use getInstance() to retrieve the singleton instance.
     private GoogleAuthenticatorChallenges() {
         super();
     }
