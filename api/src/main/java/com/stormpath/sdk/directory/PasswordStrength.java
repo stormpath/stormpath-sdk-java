@@ -141,4 +141,28 @@ public interface PasswordStrength extends Resource, Saveable {
      */
     PasswordStrength setMinNumeric(int minNumeric);
 
+    /**
+     * Returns the size of the history of passwords that cannot be reused by Accounts belonging to the associated {@link com.stormpath.sdk.directory.Directory Directory}.
+     *
+     * @return the size of the history of passwords that cannot be reused by Accounts belonging to the associated {@link com.stormpath.sdk.directory.Directory Directory}.
+     *
+     * @since 1.1.0
+     */
+    int getPreventReuse();
+
+    /**
+     * Specifies the quantity of the previously used passwords (i.e history) that will not be allowed to be reused when
+     * modifying the password for an Account belonging to the associated {@link com.stormpath.sdk.directory.Directory Directory}.
+     * <p> For example, let's assume the following passwords have been previously used in an `Account`: `{'P@ssword123', 'Bar456$', 'Joe789&'}`
+     * (where `P@ssword123` is oldest and `Joe789&` is current}. If the `preventReuse` is set to `2` then the user
+     * will not be able to change his password to either `Bar456$` or `Joe789&`. He will be allowed to re-use
+     * `P@ssword123` though. </p>
+     *
+     * @param preventReuse any number between 1 and 25 will set the size of the old passwords that cannot be
+     *                re-used. 0 disables this configuration, meaning that reusing the current password is allowed.
+     * @return this instance for method chaining.
+     *
+     * @since 1.1.0
+     */
+    PasswordStrength setPreventReuse(int preventReuse);
 }

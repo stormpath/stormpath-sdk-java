@@ -125,23 +125,15 @@ class DefaultPasswordPolicyTest {
             passwordPolicy.setResetTokenTtlHours(-1) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
+            assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer.")
         }
 
         try {
             passwordPolicy.setResetTokenTtlHours(0) //must throw
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
+            assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer.")
         }
-
-        try {
-            passwordPolicy.setResetTokenTtlHours(169) //must throw
-            fail("Should have thrown")
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "resetTokenTtl must be a positive integer, less than 169.")
-        }
-
     }
 
     @Test

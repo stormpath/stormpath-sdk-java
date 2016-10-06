@@ -14,15 +14,15 @@ git checkout source
 
 info "Copying over servlet plugin docs"
 rm -rf source/java/servlet-plugin/
-cp -r ../docs/build/html source/java/servlet-plugin
-cp -r ../docs/build/html source/java/servlet-plugin/latest
-cp -r ../docs/build/html source/java/servlet-plugin/$RELEASE_VERSION
+cp -r ../docs/build/html/servlet source/java/servlet-plugin
+cp -r ../docs/build/html/servlet source/java/servlet-plugin/latest
+cp -r ../docs/build/html/servlet source/java/servlet-plugin/$RELEASE_VERSION
 
 info "Copying over spring boot docs"
 rm -rf source/java/spring-boot-web
-cp -r ../extensions/spring/boot/docs/build/html source/java/spring-boot-web
-cp -r ../extensions/spring/boot/docs/build/html source/java/spring-boot-web/latest
-cp -r ../extensions/spring/boot/docs/build/html source/java/spring-boot-web/$RELEASE_VERSION
+cp -r ../docs/build/html/springboot source/java/spring-boot-web
+cp -r ../docs/build/html/springboot source/java/spring-boot-web/latest
+cp -r ../docs/build/html/springboot source/java/spring-boot-web/$RELEASE_VERSION
 
 info "Copying over javadocs"
 rm -rf source/java/apidocs
@@ -36,15 +36,3 @@ git add --all
 git commit -m "stormpath-sdk-java release $RELEASE_VERSION"
 ls -la source/java/servlet-plugin
 git push origin source
-gem install bundler
-bundle install
-rake setup_github_pages[git@github.com:stormpath/stormpath.github.io.git]
-cd _deploy
-git pull --no-edit -s recursive -X theirs https://github.com/stormpath/stormpath.github.io.git
-cd ..
-rake generate > /tmp/docs_generate.log
-cd _deploy
-git pull --no-edit -s recursive -X theirs https://github.com/stormpath/stormpath.github.io.git
-cd ..
-rake deploy
-cd ..

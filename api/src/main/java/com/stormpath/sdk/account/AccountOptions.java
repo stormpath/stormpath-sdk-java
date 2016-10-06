@@ -129,6 +129,98 @@ public interface AccountOptions<T> extends Options {
 
     /**
      * Ensures that when retrieving an Account, the Account's associated
+     * {@link Account#getFactors()} are also retrieved in the same request (paginated).
+     * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
+     * will use.
+     * <p/>
+     * If you wish to control
+     * pagination parameters (offset and limit) for the returned factors, see the
+     * {@link #withFactors(int) withFactors(limit)} or
+     * {@link #withFactors(int, int) withFactors(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     *
+     * @since 1.1.0
+     */
+    T withFactors();
+
+    /**
+     * Ensures that when retrieving an Account, the Account's associated
+     * {@link Account#getFactors()} factors} are also retrieved in the same request (paginated),
+     * limiting the quantity of Factors per page to {@code limit} items.  This enhances performance by
+     * leveraging a single request to retrieve multiple related resources you know you will use.
+     *
+     * @param limit the number of results in the Factor collection.  Min: 1, Max: 100.
+     * @return this instance for method chaining.
+     *
+     * @since 1.1.0
+     */
+    T withFactors(int limit);
+
+    /**
+     * Ensures that when retrieving an Account, the Account's associated
+     * {@link Account#getFactors()} factors} are also retrieved in the same request (paginated), with
+     * Factor results starting at the specified {@code offset} index and limiting the number
+     * of results to {@code limit} items.  This enhances performance by leveraging a single request to retrieve
+     * multiple related resources you know you will use.
+     *
+     * @param limit  the number of results in the Factors collection.  Min: 1, Max: 100.
+     * @param offset the starting index of the first Factor to retrieve in the overall Factors
+     *               collection's result set.
+     * @return this instance for method chaining.
+     *
+     * @since 1.1.0
+     */
+    T withFactors(int limit, int offset);
+
+    /**
+     * Ensures that when retrieving an Account, the Account's associated
+     * {@link Account#getPhones()} are also retrieved in the same request (paginated).
+     * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
+     * will use.
+     * <p/>
+     * If you wish to control
+     * pagination parameters (offset and limit) for the returned factors, see the
+     * {@link #withPhones(int) withPhones(limit)} or
+     * {@link #withPhones(int, int) withPhones(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     *
+     * @since 1.1.0
+     */
+    T withPhones();
+
+    /**
+     * Ensures that when retrieving an Account, the Account's associated
+     * {@link Account#getPhones()}} are also retrieved in the same request (paginated),
+     * limiting the Phone results to {@code limit} items.  This enhances performance by
+     * leveraging a single request to retrieve multiple related resources you know you will use.
+     *
+     * @param limit the number of results in the Phone collection.  Min: 1, Max: 100.
+     * @return this instance for method chaining.
+     *
+     * @since 1.1.0
+     */
+
+    T withPhones(int limit);
+    /**
+     * Ensures that when retrieving an Account, the Account's associated
+     * {@link Account#getPhones()} are also retrieved in the same request (paginated), with
+     * Factor results starting at the specified {@code offset} index and limiting the number
+     * of results to {@code limit} items.  This enhances performance by leveraging a single request to retrieve
+     * multiple related resources you know you will use.
+     *
+     * @param limit  the number of results in the Factors collection.  Min: 1, Max: 100.
+     * @param offset the starting index of the first Phone to retrieve in the overall Phones
+     *               collection's result set.
+     * @return this instance for method chaining.
+     *
+     * @since 1.1.0
+     */
+    T withPhones(int limit, int offset);
+
+    /**
+     * Ensures that when retrieving an Account, the Account's associated
      * {@link Account#getLinkedAccounts() linkedAccounts} are also retrieved in the same request (paginated).
      * This enhances performance by leveraging a single request to retrieve multiple related resources you know you
      * will use.
