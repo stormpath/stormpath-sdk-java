@@ -64,6 +64,8 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final StringProperty SURNAME = new StringProperty("surname");
     static final EnumProperty<AccountStatus> STATUS = new EnumProperty<>(AccountStatus.class);
     static final StringProperty FULL_NAME = new StringProperty("fullName"); //computed property, can't set it or query based on it
+    // @since 1.2.0
+    static final EnumProperty<EmailVerificationStatus> EMAIL_VERIFICATION_STATUS = new EnumProperty<>("emailVerificationStatus", EmailVerificationStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<EmailVerificationToken> EMAIL_VERIFICATION_TOKEN =
@@ -104,7 +106,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
-            EMAIL_VERIFICATION_TOKEN, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS, 
+            EMAIL_VERIFICATION_TOKEN, EMAIL_VERIFICATION_STATUS, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS,
             PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS, ACCOUNT_LINKS,PHONES, FACTORS);
 
     public DefaultAccount(InternalDataStore dataStore) {
@@ -203,6 +205,21 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     @Override
     public Account setStatus(AccountStatus status) {
         setProperty(STATUS, status.name());
+        return this;
+    }
+
+    @Override
+    public EmailVerificationStatus getEmailVerificationStatus() {
+        String value = getStringProperty(EMAIL_VERIFICATION_STATUS.getName());
+        if (value == null) {
+            return null;
+        }
+        return EmailVerificationStatus.valueOf(value.toUpperCase());
+    }
+
+    @Override
+    public Account setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus) {
+        setProperty(EMAIL_VERIFICATION_STATUS, emailVerificationStatus.name());
         return this;
     }
 
