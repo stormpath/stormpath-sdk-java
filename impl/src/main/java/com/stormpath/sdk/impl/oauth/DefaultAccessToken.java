@@ -15,19 +15,24 @@
 */
 package com.stormpath.sdk.impl.oauth;
 
+import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessToken;
 import io.jsonwebtoken.JwsHeader;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
  * @since 1.0.RC7
  */
 public class DefaultAccessToken extends AbstractBaseOAuthToken implements AccessToken {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultAccessToken.class);
 
     public DefaultAccessToken(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
@@ -51,8 +56,11 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
 
                 String tokenType = (String) header.get("stt");
                 Assert.isTrue(tokenType.equals("access"));
-            } catch (Exception e) {
-                throw new JwtException("JWT failed validation; it cannot be trusted.");
+            } catch (RuntimeException e) {
+                throw new InvalidJwtException(InvalidJwtException.JWT_INVALID_VALUE_ERROR, e);
+            } catch (UnsupportedEncodingException e) {
+                log.error("Unsupported encoding for API secret");
+                throw new RuntimeException(e);
             }
         } else {
             String href = getStringProperty(HREF_PROP_NAME);

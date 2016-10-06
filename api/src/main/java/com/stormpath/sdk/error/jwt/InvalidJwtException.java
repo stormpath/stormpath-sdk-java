@@ -44,4 +44,8 @@ public class InvalidJwtException extends RuntimeException {
     public InvalidJwtException(String jwtError) {
         super(jwtError);
     }
+
+    public InvalidJwtException(String s, Throwable throwable) {
+        super(s, throwable);
+    }
 }

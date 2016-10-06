@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.error.jwt.InvalidJwtException
 import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.application.DefaultApplication
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -188,8 +189,7 @@ class DefaultAccessTokenTest {
                 new DefaultAccessToken(internalDataStore, properties)
                 fail("should have thrown")
             } catch (Exception e) {
-                def message = e.getMessage()
-                assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+                assertEquals(e.getMessage(), InvalidJwtException.JWT_INVALID_VALUE_ERROR)
             }
         }
     }

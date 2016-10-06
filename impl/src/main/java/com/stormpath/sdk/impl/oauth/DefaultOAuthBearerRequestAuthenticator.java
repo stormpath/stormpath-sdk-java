@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessToken;
@@ -29,7 +30,10 @@ import com.stormpath.sdk.resource.ResourceException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +41,8 @@ import java.util.Map;
  * @since 1.0.RC7
  */
 public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequestAuthenticator implements OAuthBearerRequestAuthenticator {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultOAuthBearerRequestAuthenticator.class);
 
     protected final static String APPLICATION_PATH = "/applications/";
     protected final static String OAUTH_TOKEN_PATH = "/authTokens/";
@@ -90,8 +96,11 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
                 OAuthBearerRequestAuthenticationResultBuilder builder = new DefaultOAuthBearerRequestAuthenticationResultBuilder(accessToken);
                 return builder.build();
 
-            } catch (Exception e) {
-                throw new JwtException("JWT failed validation; it cannot be trusted.");
+            } catch (JwtException e) {
+                throw new InvalidJwtException(InvalidJwtException.JWT_INVALID_VALUE_ERROR, e);
+            } catch (UnsupportedEncodingException e) {
+                log.error("Unsupported encoding for API secret");
+                throw new RuntimeException(e);
             }
         }
 
@@ -105,7 +114,8 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
         } catch (ResourceException e) {
             throw e;
         } catch (Exception e) {
-            throw new JwtException("JWT failed validation; it cannot be trusted.");
+            log.error("Unexpected exception while fetching access token from Stormpath API");
+            throw new RuntimeException(e);
         }
 
         OAuthBearerRequestAuthenticationResultBuilder builder = new DefaultOAuthBearerRequestAuthenticationResultBuilder(accessToken);
