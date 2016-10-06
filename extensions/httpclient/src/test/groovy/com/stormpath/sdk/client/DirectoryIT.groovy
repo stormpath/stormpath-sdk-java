@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.stormpath.sdk.client
+
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.AccountCreationPolicy
@@ -38,7 +39,15 @@ import org.testng.annotations.Test
 import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertNotEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNotSame
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
+
 /**
  *
  * @since 0.8.1
@@ -59,7 +68,6 @@ class DirectoryIT extends ClientIT {
         assertNotNull dir.href
     }
 
-
     /**
      * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/12">Issue #12</a>
      */
@@ -75,9 +83,9 @@ class DirectoryIT extends ClientIT {
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
-            .setSurname('DELETEME')
-            .setEmail(email)
-            .setPassword('Changeme1!')
+                .setSurname('DELETEME')
+                .setEmail(email)
+                .setPassword('Changeme1!')
 
         dir.createAccount(account)
 
@@ -93,7 +101,6 @@ class DirectoryIT extends ClientIT {
         def list = dir.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(email)))
         assertFalse list.iterator().hasNext() //no results
     }
-
 
     /**
      * Asserts <a href="https://github.com/stormpath/stormpath-sdk-java/issues/58">Issue 58</a>.
@@ -118,11 +125,11 @@ class DirectoryIT extends ClientIT {
 
         def request = Directories.newCreateRequestFor(dir)
                 .forProvider(Providers.GOOGLE.builder()
-                    .setClientId("616598318417021")
-                    .setClientSecret("c0ad961d45fdc0310c1c7d67c8f1d800")
-                    .setRedirectUri("http://localhost")
-                    .build()
-                ).build()
+                .setClientId("616598318417021")
+                .setClientSecret("c0ad961d45fdc0310c1c7d67c8f1d800")
+                .setRedirectUri("http://localhost")
+                .build()
+        ).build()
         dir = client.createDirectory(request);
         deleteOnTeardown(dir)
         assertNotNull dir.href
@@ -159,12 +166,12 @@ class DirectoryIT extends ClientIT {
 
         def request = Directories.newCreateRequestFor(dir)
                 .forProvider(
-                    Providers.SAML.builder()
-                    .setEncodedX509SigningCert(validX509Cert)
-                    .setRequestSignatureAlgorithm("RSA-SHA256")
-                    .setSsoLoginUrl("https://idp.whatever.com/saml2/sso/login")
-                    .setSsoLogoutUrl("https://idp.whatever.com/saml2/sso/logout")
-                    .build())
+                Providers.SAML.builder()
+                        .setEncodedX509SigningCert(validX509Cert)
+                        .setRequestSignatureAlgorithm("RSA-SHA256")
+                        .setSsoLoginUrl("https://idp.whatever.com/saml2/sso/login")
+                        .setSsoLogoutUrl("https://idp.whatever.com/saml2/sso/logout")
+                        .build())
                 .build()
         dir = client.createDirectory(request);
         deleteOnTeardown(dir)
@@ -278,7 +285,8 @@ class DirectoryIT extends ClientIT {
     /**
      * @since 1.0.RC
      */
-    @Test(enabled = false) //ignoring because of sporadic Travis failures
+    @Test(enabled = false)
+    //ignoring because of sporadic Travis failures
     void testGetDirectoriesWithMapViaTenantActions() {
         def map = new HashMap<String, Object>()
         def dirList = client.getDirectories(map)
@@ -394,11 +402,12 @@ class DirectoryIT extends ClientIT {
             assertEquals(acrlist.currentPage.size, 2)
 
             assertNotNull(account.getHref())
-            if(count == 0) {
+            if (count == 0) {
                 firstAccount = account
                 firstPage = acrlist.currentPage
             } else {
-                assertNotEquals(account.getHref(), firstAccount.getHref()) //let's check that the items are actually moving
+                assertNotEquals(account.getHref(), firstAccount.getHref())
+                //let's check that the items are actually moving
                 assertNotSame(acrlist.currentPage, firstPage) //let's check that pages are actually moving
             }
 
@@ -416,7 +425,7 @@ class DirectoryIT extends ClientIT {
      * @since 1.0.RC4.5
      */
     @Test
-    void testAccountCreationPolicy(){
+    void testAccountCreationPolicy() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testAccountCreationPolicy")
         dir = client.createDirectory(dir);
@@ -446,7 +455,7 @@ class DirectoryIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testDirectoryExpansionWithoutCache(){
+    void testDirectoryExpansionWithoutCache() {
 
         Client client = buildClient(false);
 
@@ -487,7 +496,7 @@ class DirectoryIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testDirectoryExpansionWithCache(){
+    void testDirectoryExpansionWithCache() {
 
         Client client = buildCountingClient()
 
@@ -803,7 +812,7 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.4
+     * @since 1.1.0
      */
     @Test
     void testGetAccountSchema() {
@@ -824,7 +833,7 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
-     * @since 1.0.4
+     * @since 1.1.0
      */
     @Test
     void testGetDirectoryWithExpandedAccountSchema() {
@@ -847,5 +856,80 @@ class DirectoryIT extends ClientIT {
         def accountSchema1 = client.getResource(accountSchema.getHref(), Schema)
 
         assertEquals(accountSchema, accountSchema1)  //expanded -> must be equals
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    public void testCreateAccountWithDefaultAccountSchema() {
+        def app = createTempApp()
+        //Directory directory = app.getDefaultAccountStore()
+        def username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        def account = client.instantiate(Account)
+                .setUsername(username)
+                .setPassword("Changeme1!")
+                .setEmail(username + "@nowhere.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account)
+
+        assertNull(account.getGivenName())
+        assertNull(account.getSurname())
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testCreateAccountWithGivenNameSchemaFieldRequired() {
+        def app = createTempApp()
+
+        Directory directory = app.getDefaultAccountStore() as Directory
+        directory.accountSchema.fields.each { field ->
+            if ("givenName" == field.name) {
+                field.required = true
+                field.save()
+            }
+        }
+
+        def username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        def account = client.instantiate(Account)
+                .setUsername(username)
+                .setPassword("Changeme1!")
+                .setEmail(username + "@nowhere.com")
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+            fail("Account requires giveName according to the account schema.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.stormpathError.message, "Account givenName is required; it cannot be null, empty, or blank.")
+        }
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testCreateAccountWithSurnameSchemaFieldRequired() {
+        def app = createTempApp()
+
+        Directory directory = app.getDefaultAccountStore() as Directory
+        directory.accountSchema.fields.each { field ->
+            if ("surname" == field.name) {
+                field.required = true
+                field.save()
+            }
+        }
+
+        def username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        def account = client.instantiate(Account)
+                .setUsername(username)
+                .setPassword("Changeme1!")
+                .setEmail(username + "@nowhere.com")
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+            fail("Account requires surname according to the account schema.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.stormpathError.message, "Account surname is required; it cannot be null, empty, or blank.")
+        }
     }
 }
