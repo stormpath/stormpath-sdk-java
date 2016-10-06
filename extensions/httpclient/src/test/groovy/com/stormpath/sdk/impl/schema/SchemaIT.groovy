@@ -15,40 +15,18 @@
  */
 package com.stormpath.sdk.impl.schema
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat
-import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping
-import com.stormpath.sdk.api.ApiKey
-import com.stormpath.sdk.api.ApiKeyStatus
-import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.group.GroupList
-import com.stormpath.sdk.group.GroupMembership
-import com.stormpath.sdk.group.Groups
-import com.stormpath.sdk.impl.api.ApiKeyParameter
-import com.stormpath.sdk.impl.resource.AbstractResource
-import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
 import com.stormpath.sdk.schema.Field
 import com.stormpath.sdk.schema.FieldList
 import org.testng.annotations.Test
 
-import java.text.DateFormat
-
-import static com.stormpath.sdk.api.ApiKeys.criteria
-import static com.stormpath.sdk.api.ApiKeys.options
-import static org.testng.Assert.*
 
 /**
- * @since 1.0.4
+ * @since 1.2.0
  */
-class AccountSchemaIT extends ClientIT {
-
-    def encryptionServiceBuilder = new ApiKeySecretEncryptionService.Builder()
+class SchemaIT extends ClientIT {
 
     @Test
     void test() {
@@ -57,7 +35,7 @@ class AccountSchemaIT extends ClientIT {
 
         //create a user group:
         def dir = client.instantiate(Directory)
-        dir.name = uniquify('JSDK.AccountSchemaIT.test')
+        dir.name = uniquify('JSDK.SchemaIT.test')
         dir = client.createDirectory(dir)
         deleteOnTeardown(dir)
         AccountStoreMapping accountStoreMapping = app.addAccountStore(dir)
