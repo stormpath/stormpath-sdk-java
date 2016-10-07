@@ -15,9 +15,14 @@
  */
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.challenge.Challenge;
+import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenge;
+import com.stormpath.sdk.challenge.sms.SmsChallenge;
 import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor;
 import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.resource.Resource;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,13 +39,22 @@ import java.util.Map;
 public class SubtypeDispatchingResourceFactory implements ResourceFactory {
 
     private DefaultResourceFactory defaultResourceFactory;
-    private static final Map<String, Class> specifiedTypeToResolvedTypeMap = new HashMap<>(1);
+    private static final Map<String, Class> specifiedFactorAttributeToResolvedTypeMap = new HashMap<>(2);
+    private static final Map<String, Class> specifiedChallengeAttributeToResolvedTypeMap = new HashMap<>(2);
     private static final String TYPE = "type";
+    private static final String MESSAGE = "message";
+    private static final String NO_MESSAGE = "noMessage";
+    private static final String HREF = "href";
 
-    // There is no "DefaultFactor" and at this point the only supported cocrete Factor is SmsFactor
-    // Add more types to the map as new Factors get introduced
+    // There is no "DefaultFactor" or "DefaultChallenge" and at this point supported
+    // Factor(s) are "DefaultSmsFactor" and "DefaultGoogleAuthenticatorFactor" and
+    // supported Challenge(s) are "DefaultSmsChallenge" and "DefaultGoogleAuthenticatorChallenge"
+    // Add more types to the map as new Factors get introduced.
     static{
-        specifiedTypeToResolvedTypeMap.put("SMS",SmsFactor.class);
+        specifiedFactorAttributeToResolvedTypeMap.put("SMS",SmsFactor.class);
+        specifiedFactorAttributeToResolvedTypeMap.put("GOOGLE-AUTHENTICATOR",GoogleAuthenticatorFactor.class);
+        specifiedChallengeAttributeToResolvedTypeMap.put(MESSAGE, SmsChallenge.class);
+        specifiedChallengeAttributeToResolvedTypeMap.put(NO_MESSAGE, GoogleAuthenticatorChallenge.class);
     }
 
     public SubtypeDispatchingResourceFactory(InternalDataStore dataStore){
@@ -50,10 +64,52 @@ public class SubtypeDispatchingResourceFactory implements ResourceFactory {
     @Override
     public <T extends Resource> T instantiate(Class<T> clazz, Object... constructorArgs) {
         if(clazz.equals(Factor.class) && constructorArgs.length > 0){
-            return (T) defaultResourceFactory.instantiate(specifiedTypeToResolvedTypeMap.get(((Map)constructorArgs[0]).get(TYPE)), constructorArgs);
+            if(((Map)constructorArgs[0]).get(TYPE) == null && ((Map)constructorArgs[0]).get(HREF) != null){
+                throw new IllegalStateException("Unable to determine concrete Factor type since Factor is unmaterialized!");
+            }
+            return (T) defaultResourceFactory.instantiate(specifiedFactorAttributeToResolvedTypeMap.get(((Map)constructorArgs[0]).get(TYPE).toString().toUpperCase()), constructorArgs);
+        }
+        else if(clazz.equals(Challenge.class) && constructorArgs.length > 0){
+            if(((Map)constructorArgs[0]).get(MESSAGE) != null){
+                return (T) defaultResourceFactory.instantiate(specifiedChallengeAttributeToResolvedTypeMap.get(MESSAGE), constructorArgs);
+            }else{
+                return (T) defaultResourceFactory.instantiate(specifiedChallengeAttributeToResolvedTypeMap.get(NO_MESSAGE), constructorArgs);
+            }
         }
         else{
             return defaultResourceFactory.instantiate(clazz,constructorArgs);
         }
+    }
+
+    // This method is needed to address the following scenario:
+    // The implementation class of the interface based on the type of ITEMS within "DefaultFactorList" (Factor) is
+    // required in order to retrieve the "PROPERTY_DESCRIPTORS" and gain access to a materialized resource (Phone)
+    // Following code would trigger such scenario:
+    // "account.getFactors(Factors.SMS.criteria().withPhone().orderByStatus().ascending())"
+    // and this code would hit "WriteCacheFilter#getPropertyDescriptor(Class<T> clazz, String propertyName)" with "clazz" as
+    // the interface with no direct default implementation (Factor)
+    // The way this problem is addressed is by inspecting the materialized property name (Phone) in order to find the
+    // concrete class of the nesting resource "DefaultSmsFactor"
+    public static <T extends Resource> Class<T> getImplementationClass(Class<T> clazz, String propertyName) {
+        if(clazz.equals(Factor.class)){
+            if("phone".equals(propertyName)) {
+                clazz = (Class<T>) SmsFactor.class;
+            }
+            else{
+                clazz = (Class<T>) GoogleAuthenticatorFactor.class;
+            }
+        }
+        if(clazz.equals(Challenge.class)){
+            if("message".equals(propertyName)) {
+                clazz = (Class<T>) SmsChallenge.class;
+            }
+            else{
+                clazz = (Class<T>) GoogleAuthenticatorChallenge.class;
+            }
+        }
+        if (clazz.isInterface()) {
+            return DefaultResourceFactory.convertToImplClass(clazz);
+        }
+        return clazz;
     }
 }

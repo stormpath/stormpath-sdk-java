@@ -26,6 +26,7 @@ import com.stormpath.sdk.application.CreateApplicationRequest;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.directory.CreateDirectoryRequest;
@@ -81,15 +82,16 @@ public class DefaultClient implements Client {
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API
      *                             server (can be null)
      */
-    public DefaultClient(ClientCredentials clientCredentials, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
+    public DefaultClient(ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
         Assert.notNull(clientCredentials, "clientCredentials argument cannot be null.");
+        Assert.notNull(apiKeyResolver, "apiKeyResolver argument cannot be null.");
         Assert.isTrue(connectionTimeout >= 0, "connectionTimeout cannot be a negative number.");
         RequestExecutor requestExecutor = createRequestExecutor(clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory,connectionTimeout);
-        this.dataStore = createDataStore(requestExecutor, baseUrl, clientCredentials, cacheManager);
+        this.dataStore = createDataStore(requestExecutor, baseUrl, clientCredentials, apiKeyResolver, cacheManager);
     }
 
-    protected DataStore createDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
-        return new DefaultDataStore(requestExecutor, baseUrl, clientCredentials, cacheManager);
+    protected DataStore createDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
+        return new DefaultDataStore(requestExecutor, baseUrl, clientCredentials, apiKeyResolver, cacheManager);
     }
 
     @Override

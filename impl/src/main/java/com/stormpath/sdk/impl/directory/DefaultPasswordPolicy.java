@@ -75,7 +75,7 @@ public class DefaultPasswordPolicy extends AbstractInstanceResource implements P
 
     @Override
     public PasswordPolicy setResetTokenTtlHours(int resetTokenTtl) {
-        Assert.isTrue(resetTokenTtl > 0 && resetTokenTtl < 169, "resetTokenTtl must be a positive integer, less than 169.");
+        Assert.isTrue(resetTokenTtl > 0, "resetTokenTtl must be a positive integer.");
         setProperty(RESET_TOKEN_TTL, resetTokenTtl);
         return this;
     }

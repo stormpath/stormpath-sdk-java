@@ -16,54 +16,26 @@
 package com.stormpath.sdk.impl.factor.sms;
 
 import com.stormpath.sdk.factor.FactorCriteria;
+import com.stormpath.sdk.factor.FactorType;
 import com.stormpath.sdk.factor.sms.SmsFactorCriteria;
 import com.stormpath.sdk.factor.sms.SmsFactorOptions;
-import com.stormpath.sdk.impl.query.DefaultCriteria;
+import com.stormpath.sdk.impl.factor.DefaultFactorCriteria;
 
 /**
  * @since 1.1.0
  */
-public class DefaultSmsFactorCriteria extends DefaultCriteria<FactorCriteria, SmsFactorOptions> implements SmsFactorCriteria {
+public class DefaultSmsFactorCriteria extends DefaultFactorCriteria<FactorCriteria, SmsFactorOptions> implements SmsFactorCriteria {
 
-    public DefaultSmsFactorCriteria() {
-        super(new DefaultSmsFactorOptions());
-    }
+    String type = FactorType.SMS.getName();
 
-    @Override
-    public FactorCriteria orderByType() {
-        return orderBy(DefaultSmsFactor.TYPE);
-    }
-
-    @Override
-    public SmsFactorCriteria orderByStatus() {
-        return (SmsFactorCriteria) orderBy(DefaultSmsFactor.STATUS);
-    }
-
-    @Override
-    public SmsFactorCriteria orderByVerificationStatus() {
-        return (SmsFactorCriteria) orderBy(DefaultSmsFactor.VERIFICATION_STATUS);
+    public DefaultSmsFactorCriteria(SmsFactorOptions options) {
+        super(options);
+        getCustomAttributes().put("type", FactorType.SMS.getName());
     }
 
     @Override
     public SmsFactorCriteria withPhone() {
         getOptions().withPhone();
         return this;
-    }
-
-    @Override
-    public SmsFactorCriteria withChallenges(){
-        getOptions().withChallenges();
-        return this;
-    }
-
-    @Override
-    public SmsFactorCriteria withMostRecentChallenge() {
-        getOptions().withMostRecentChallenge();
-        return this;
-    }
-
-    @Override
-    public FactorCriteria withAccount() {
-        return null;
     }
 }

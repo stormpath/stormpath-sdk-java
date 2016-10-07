@@ -20,25 +20,14 @@ import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.application.WebConfiguration;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.api.ApiKeyParameter;
-import com.stormpath.sdk.impl.ds.CacheMapInitializer;
-import com.stormpath.sdk.impl.ds.DefaultCacheMapInitializer;
-import com.stormpath.sdk.impl.ds.DefaultResourceFactory;
-import com.stormpath.sdk.impl.ds.FilterChain;
-import com.stormpath.sdk.impl.ds.ResourceAction;
-import com.stormpath.sdk.impl.ds.ResourceDataRequest;
-import com.stormpath.sdk.impl.ds.ResourceDataResult;
+import com.stormpath.sdk.impl.ds.*;
 import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
-import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
-import com.stormpath.sdk.impl.resource.AbstractResource;
-import com.stormpath.sdk.impl.resource.ArrayProperty;
-import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.ReferenceFactory;
-import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
@@ -50,11 +39,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 import static com.stormpath.sdk.impl.resource.AbstractResource.HREF_PROP_NAME;
@@ -64,11 +49,26 @@ public class WriteCacheFilter extends AbstractCacheFilter {
     private final ReferenceFactory referenceFactory;
     private final CacheMapInitializer cacheMapInitializer;
 
+    private final Set<String> webConfigurationMaps;
+
     public WriteCacheFilter(CacheResolver cacheResolver, boolean collectionCachingEnabled, ReferenceFactory referenceFactory) {
         super(cacheResolver, collectionCachingEnabled);
         Assert.notNull(referenceFactory, "referenceFactory cannot be null.");
         this.referenceFactory = referenceFactory;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
+        this.webConfigurationMaps = new HashSet<>();
+        this.webConfigurationMaps.add("oauth2");
+        this.webConfigurationMaps.add("accessTokenCookie");
+        this.webConfigurationMaps.add("refreshTokenCookie");
+        this.webConfigurationMaps.add("register");
+        this.webConfigurationMaps.add("verifyEmail");
+        this.webConfigurationMaps.add("login");
+        this.webConfigurationMaps.add("logout");
+        this.webConfigurationMaps.add("forgotPassword");
+        this.webConfigurationMaps.add("changePassword");
+        this.webConfigurationMaps.add("idSite");
+        this.webConfigurationMaps.add("callback");
+        this.webConfigurationMaps.add("me");
     }
 
     @Override
@@ -220,15 +220,17 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
             boolean isTokenDataMap = (AccessToken.class.isAssignableFrom(clazz) || RefreshToken.class.isAssignableFrom(clazz)) && name.equals("expandedJwt");
 
+            boolean isWebConfigurationMap = WebConfiguration.class.isAssignableFrom(clazz) && webConfigurationMaps.contains(name);
+
             boolean isApiEncryptionMetadata = ApiKey.class.isAssignableFrom(clazz) && name.equals(ApiKeyParameter.ENCRYPTION_METADATA.getName());
 
             // Since defaultModel and Grant Authentication tokens are maps, the DataStore thinks they are Resources. This causes the code to crash later on as Resources
             // do need to have an href property
-            if (isDefaultModelMap || isTokenDataMap) {
+            if (isDefaultModelMap || isTokenDataMap || isWebConfigurationMap) {
                 value = new LinkedHashMap<String, Object>((Map) value);
             }
 
-            if (value instanceof Map && !isDefaultModelMap && !isTokenDataMap && !isApiEncryptionMetadata) {
+            if (value instanceof Map && !isDefaultModelMap && !isTokenDataMap && !isWebConfigurationMap && !isApiEncryptionMetadata) {
                 //the value is a resource reference
                 Map<String, ?> nested = (Map<String, ?>) value;
 
@@ -328,6 +330,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
      * @since 0.8
      */
     private <T extends Resource> Property getPropertyDescriptor(Class<T> clazz, String propertyName) {
+        clazz = SubtypeDispatchingResourceFactory.getImplementationClass(clazz, propertyName);
         Map<String, Property> descriptors = getPropertyDescriptors(clazz);
         return descriptors.get(propertyName);
     }
@@ -338,10 +341,24 @@ public class WriteCacheFilter extends AbstractCacheFilter {
     @SuppressWarnings("unchecked")
     private <T extends Resource> Map<String, Property> getPropertyDescriptors(Class<T> clazz) {
         Class<T> implClass = DefaultResourceFactory.getImplementationClass(clazz);
+        String propertyDescriptors = "PROPERTY_DESCRIPTORS";
+        Map<String, Property> returnValue;
         try {
-            Field field = implClass.getDeclaredField("PROPERTY_DESCRIPTORS");
+            Field field = implClass.getDeclaredField(propertyDescriptors);
             field.setAccessible(true);
-            return (Map<String, Property>) field.get(null);
+            returnValue = (Map<String, Property>) field.get(null);
+            while(implClass.getSuperclass() != null && Resource.class.isAssignableFrom(implClass)){
+                implClass = (Class<T>) implClass.getSuperclass();
+                try{
+                    field = implClass.getDeclaredField(propertyDescriptors);
+                    field.setAccessible(true);
+                    returnValue.putAll((Map<String, Property>) field.get(null));
+                }
+                catch(NoSuchFieldException nsfe){
+                    // It is not guaranteed that PROPERTY_DESCRIPTORS is part of every super class of the type resource.
+                }
+            }
+            return returnValue;
         } catch (Exception e) {
             throw new IllegalStateException(
                 "Unable to access PROPERTY_DESCRIPTORS static field on implementation class " + clazz.getName(), e);

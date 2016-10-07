@@ -16,7 +16,11 @@
 package com.stormpath.sdk.factor;
 
 
+import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactors;
 import com.stormpath.sdk.factor.sms.SmsFactors;
+import com.stormpath.sdk.lang.Classes;
+
+import java.lang.reflect.Constructor;
 
 
 /**
@@ -47,11 +51,22 @@ import com.stormpath.sdk.factor.sms.SmsFactors;
  *
  * @since 1.1.0
  */
-public final class Factors {
+public abstract class Factors {
 
     public static final SmsFactors SMS = SmsFactors.getInstance();
+    public static final GoogleAuthenticatorFactors GOOGLE_AUTHENTICATOR = GoogleAuthenticatorFactors.getInstance();
 
-    //prevent instantiation
-    private Factors() {
+    public static FactorOptions<? extends FactorOptions> options() {
+        return (FactorOptions) Classes.newInstance("com.stormpath.sdk.impl.factor.DefaultFactorOptions");
+    }
+
+    public static FactorCriteria criteria() {
+        try {
+            Class defaultFactorCriteriaClazz = Class.forName("com.stormpath.sdk.impl.factor.DefaultFactorCriteria");
+            Constructor c = defaultFactorCriteriaClazz.getDeclaredConstructor(FactorOptions.class);
+            return (FactorCriteria) c.newInstance(options());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

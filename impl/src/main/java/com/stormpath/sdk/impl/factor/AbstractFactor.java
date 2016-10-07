@@ -16,12 +16,19 @@
 package com.stormpath.sdk.impl.factor;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.challenge.Challenge;
+import com.stormpath.sdk.challenge.ChallengeCriteria;
+import com.stormpath.sdk.challenge.ChallengeList;
+import com.stormpath.sdk.challenge.CreateChallengeRequest;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.FactorStatus;
 import com.stormpath.sdk.factor.FactorType;
 import com.stormpath.sdk.factor.FactorVerificationStatus;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.resource.ResourceException;
 
 import java.util.Date;
 import java.util.Map;
@@ -29,16 +36,25 @@ import java.util.Map;
 /**
  * @since 1.1.0
  */
-public abstract class AbstractFactor extends AbstractInstanceResource implements Factor {
+public abstract class AbstractFactor<T extends Challenge> extends AbstractInstanceResource implements Factor<T> {
 
     public static final EnumProperty<FactorType> TYPE = new EnumProperty<>("type", FactorType.class);
     public static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
+    public static final ResourceReference<? extends Challenge> CHALLENGE = new ResourceReference<>("challenge", Challenge.class);
+    public static final ResourceReference<? extends Challenge> MOST_RECENT_CHALLENGE = new ResourceReference<>("mostRecentChallenge", Challenge.class);
+    public static final CollectionReference<? extends ChallengeList, Challenge> CHALLENGES =
+            new CollectionReference<>("challenges", ChallengeList.class, Challenge.class);
     public static final EnumProperty<FactorStatus> STATUS = new EnumProperty<>("status", FactorStatus.class);
     public static final EnumProperty<FactorVerificationStatus> VERIFICATION_STATUS = new EnumProperty<>("verificationStatus", FactorVerificationStatus.class);
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, ACCOUNT, STATUS, VERIFICATION_STATUS, CREATED_AT, MODIFIED_AT);
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(TYPE, ACCOUNT, CHALLENGE, MOST_RECENT_CHALLENGE, CHALLENGES, STATUS, VERIFICATION_STATUS, CREATED_AT, MODIFIED_AT);
+
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        return PROPERTY_DESCRIPTORS;
+    }
 
     public AbstractFactor(InternalDataStore dataStore) {
         super(dataStore);// Set the factor type only one the factor is instantiated via a the client (i.e. client.instantiate(SmsFactor.class)).
@@ -56,11 +72,6 @@ public abstract class AbstractFactor extends AbstractInstanceResource implements
         if(getType() == null){
             setType(getConcreteFactorType());
         }
-    }
-
-    @Override
-    public Map<String, Property> getPropertyDescriptors() {
-        return PROPERTY_DESCRIPTORS;
     }
 
     @Override
@@ -93,17 +104,16 @@ public abstract class AbstractFactor extends AbstractInstanceResource implements
         return this;
     }
 
-    @Override
     public FactorType getType() {
         String value = getStringProperty(TYPE.getName());
         if (value == null) {
             return null;
         }
-        return FactorType.valueOf(value.toUpperCase());
+        return FactorType.fromName(value);
     }
 
     public Factor setType(FactorType factorType) {
-        setProperty(TYPE, factorType.name());
+        setProperty(TYPE, factorType.getName());
         return this;
     }
 
@@ -116,6 +126,59 @@ public abstract class AbstractFactor extends AbstractInstanceResource implements
     public Factor setAccount(Account account) {
         setResourceProperty(ACCOUNT,account);
         return this;
+    }
+
+    @Override
+    public T getMostRecentChallenge() {
+        return (T) getResourceProperty(MOST_RECENT_CHALLENGE);
+    }
+
+    @Override
+    public ChallengeList getChallenges() {
+        return getResourceProperty(CHALLENGES);
+    }
+
+    @Override
+    public ChallengeList getChallenges(ChallengeCriteria criteria) {
+        ChallengeList list = getChallenges(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), ChallengeList.class, (Criteria<ChallengeCriteria>) criteria);
+    }
+
+    @Override
+    public ChallengeList getChallenges(Map queryParams) {
+        ChallengeList list = getChallenges(); //safe to get the href: does not execute a query until iteration occurs
+        return getDataStore().getResource(list.getHref(), ChallengeList.class, queryParams);
+    }
+
+    @Override
+    public Factor setChallenge(Challenge challenge) {
+        if(challenge.getHref() != null) {
+            setResourceProperty(CHALLENGE, challenge);
+        }
+        else{
+            setMaterializableResourceProperty(CHALLENGE, challenge);
+        }
+        return this;
+    }
+
+    @Override
+    public T createChallenge(Challenge challenge) throws ResourceException {
+        Assert.notNull(challenge, "Challenge cannot be null.");
+        String href = getChallenges().getHref();
+        return (T) getDataStore().create(href, challenge);
+    }
+
+    @Override
+    public T createChallenge(CreateChallengeRequest request) throws ResourceException {
+        Assert.notNull(request, "Request cannot be null.");
+
+        final Challenge challenge = request.getChallenge();
+        String href = getChallenges().getHref();
+
+        if (request.hasChallengeOptions()) {
+            return (T) getDataStore().create(href, challenge, request.getChallengeOptions());
+        }
+        return (T) getDataStore().create(href, challenge);
     }
 
     @Override

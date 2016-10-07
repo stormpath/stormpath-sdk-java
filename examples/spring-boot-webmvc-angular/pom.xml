@@ -21,22 +21,26 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-examples</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-boot-web-angular</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Examples :: Spring Boot + Angular Webapp</name>
     <description>A Spring Boot web application that uses Stormpath.</description>
 
     <properties>
         <jdk.version>1.7</jdk.version>
+        <angular.ui.router.version>0.3.1</angular.ui.router.version>
+        <bootstrap.version>3.3.7</bootstrap.version>
         <logback.version>1.1.7</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot.version>1.4.0.RELEASE</spring.boot.version>
+        <stormpath.angular.version>1.0.0</stormpath.angular.version>
+        <webjars.locator.version>0.30</webjars.locator.version>
     </properties>
 
     <dependencies>
@@ -44,6 +48,27 @@
             <groupId>com.stormpath.spring</groupId>
             <artifactId>stormpath-webmvc-spring-boot-starter</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>stormpath-sdk-angularjs</artifactId>
+            <version>${stormpath.angular.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>angular-ui-router</artifactId>
+            <version>${angular.ui.router.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
+        </dependency>
+        <!-- Allows removing versions from webjar URLs -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator</artifactId>
+            <version>${webjars.locator.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

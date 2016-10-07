@@ -18,7 +18,10 @@ package com.stormpath.sdk.challenge;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.factor.Factor;
 import com.stormpath.sdk.factor.sms.SmsFactor;
-import com.stormpath.sdk.resource.*;
+import com.stormpath.sdk.resource.Auditable;
+import com.stormpath.sdk.resource.Deletable;
+import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
 
 /**
  * This domain object represents a challenge of a {@link Factor} for a Multi Factor Authentication.
@@ -28,45 +31,19 @@ import com.stormpath.sdk.resource.*;
  * For Example: Using an {@link SmsFactor} as an additional {@link Factor} for authentication the user would receive an sms including a multi-digit code within its message.
  * The user would verify the authentication challenge by entering the sms code back to the system.
  *
+ * @param <T> a subclass of {@link Factor} specifying the kind of Factor associated with this {@code Challenge}.
+ * @param <R> a subclass of {@link Enum} specifying the status associated with this {@code Challenge}.
+ *
  * @since 1.1.0
  */
-public interface Challenge extends Resource, Saveable, Deletable, Auditable {
-
-    /**
-     * Returns the message associated with this challenge.
-     * The message contains a code sent to the user to be sent back
-     * for authentication.
-     *
-     * @return message associated with this challenge
-     */
-    String getMessage();
-
-    /**
-     * Sets the message associated with this challenge.
-     * This is ONLY to be used upon creation of a challenge if users want to overwrite the
-     * default message used in Stormpath.
-     *
-     *
-     * @param message the message associated with this challenge. Message hast to contain a the macro
-     *                '${code}'. This would be replaced with the code sent out within the message.
-     * @return this instance for method chaining.
-     */
-    Challenge setMessage(String message);
+public interface Challenge<T extends Factor, R extends Enum> extends Resource, Saveable, Deletable, Auditable {
 
     /**
      * Returns the status of this challenge object
      *
      * @return status associated with this challenge
      */
-    ChallengeStatus getStatus();
-
-    /**
-     * Sets the status associated with this challenge.
-     *
-     * @param status the status associated with this challenge.
-     * @return this instance for method chaining.
-     */
-    Challenge setStatus(ChallengeStatus status);
+    R getStatus();
 
     /**
      * Returns the account associated with this challenge
@@ -88,7 +65,7 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
      *
      * @return factor associated with this challenge
      */
-    Factor getFactor();
+    T getFactor();
 
     /**
      * Sets the factor associated with this challenge.
@@ -96,7 +73,7 @@ public interface Challenge extends Resource, Saveable, Deletable, Auditable {
      * @param factor associated with this challenge.
      * @return this instance for method chaining.
      */
-    Challenge setFactor(Factor factor);
+    Challenge setFactor(T factor);
 
     /**
      * This is a convenience method to POST a code to an existing challenge resource in Stormpath for validation.

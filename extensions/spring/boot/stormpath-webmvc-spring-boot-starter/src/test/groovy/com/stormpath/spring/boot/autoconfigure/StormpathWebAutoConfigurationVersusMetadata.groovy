@@ -14,11 +14,16 @@ import java.lang.annotation.Annotation
 import java.lang.reflect.Field
 
 import static org.testng.Assert.assertEquals
-/**
- * This test is designed to compare {@link StormpathWebMvcAutoConfiguration} with additional-spring-configuration-metadata.json
- * to make sure all properties are documented.
- */
 
+/**
+ * <p>This test has two purposes:</p>
+ * <ul>
+ *   <ol>To compare {@link StormpathWebMvcAutoConfiguration} with additional-spring-configuration-metadata.json to make
+ *       sure all properties are documented.</ol>
+ *   <ol>To generate a documentation page with a list of configurable web properties.</ol>
+ * </ul>
+ * <p>See https://github.com/stormpath/stormpath-sdk-java/issues/949 for more information.</p>
+ */
 class StormpathWebAutoConfigurationVersusMetadata {
 
     @Test
@@ -53,6 +58,9 @@ class StormpathWebAutoConfigurationVersusMetadata {
         assertEquals diff.sort().toString(), "[stormpath.application.href, stormpath.web.idSite.resultUri, stormpath.web.login.form.fieldOrder, stormpath.web.register.form.fieldOrder]"
     }
 
+    /**
+     * This method is a test, but it also generates properties documentation in the top-level docs directory.
+     */
     @Test
     public void generatePropertiesTableForDocumentation() {
         StringBuilder sb = new StringBuilder()
@@ -69,7 +77,7 @@ class StormpathWebAutoConfigurationVersusMetadata {
             sb.append(it.description + "\n\n")
         }
 
-        File file = new File("../docs/source/appendix/spring-boot-web-properties.rst");
+        File file = new File("../../../../docs/source/appendix/spring-boot-web-properties.rst");
         file.write sb.toString()
     }
 

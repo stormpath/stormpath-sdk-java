@@ -35,4 +35,24 @@ public interface WebConfiguration extends Resource, Saveable, Deletable, Auditab
     ApiKey getSigningKey();
 
     Application getApplication();
+
+    OAuth2Configuration getOAuth2Configuration();
+
+    WebConfigurationProperty getRegisterConfiguration();
+
+    WebConfigurationProperty getVerifyEmailConfiguration();
+
+    WebConfigurationProperty getLoginConfiguration();
+
+    WebConfigurationProperty getLogoutConfiguration();
+
+    WebConfigurationProperty getForgotPasswordConfiguration();
+
+    WebConfigurationProperty getChangePasswordConfiguration();
+
+    WebConfigurationProperty getIdSiteConfiguration();
+
+    WebConfigurationProperty getCallbackConfiguration();
+
+    MeConfiguration getMeConfiguration();
 }

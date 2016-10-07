@@ -423,6 +423,18 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "stormpathRequestClientAttributeNames")
+    public Set<String> stormpathRequestClientAttributeNames() {
+        return super.stormpathRequestClientAttributeNames();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRequestApplicationAttributeNames")
+    public Set<String> stormpathRequestApplicationAttributeNames() {
+        return super.stormpathRequestApplicationAttributeNames();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "stormpathLocaleResolver")
     public Resolver<Locale> stormpathLocaleResolver() {
         return super.stormpathLocaleResolver();
@@ -576,6 +588,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "stormpathFilter")
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter() {
         StormpathFilter filter = newStormpathFilter();

@@ -16,6 +16,8 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
+import com.stormpath.sdk.impl.api.DefaultApiKeyResolver;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentialsProvider;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
@@ -242,6 +244,15 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
+    /**
+     * @since 1.1.0
+     */
+    public ClientBuilder setApiKeyResolver(ApiKeyResolver apiKeyResolver) {
+        Assert.notNull(apiKeyResolver, "apiKeyResolver must not be null.");
+        this.clientConfig.setApiKeyResolver(apiKeyResolver);
+        return this;
+    }
+
     @Override
     public Client build() {
         if (!this.clientConfig.isCacheManagerEnabled()) {
@@ -282,7 +293,14 @@ public class DefaultClientBuilder implements ClientBuilder {
             clientCredentials = clientCredentialsProvider.getClientCredentials();
         }
 
-        return new DefaultClient(clientCredentials, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
+        ApiKeyResolver apiKeyResolver = this.clientConfig.getApiKeyResolver();
+
+        if (apiKeyResolver == null) {
+            Assert.isInstanceOf(ApiKeyCredentials.class, clientCredentials, "An ApiKeyResolver must be configured for ClientCredentials other than ApiKeyCredentials.");
+            apiKeyResolver = new DefaultApiKeyResolver(((ApiKeyCredentials) clientCredentials).getApiKey());
+        }
+
+        return new DefaultClient(clientCredentials, apiKeyResolver, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
                 this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout());
     }
 
