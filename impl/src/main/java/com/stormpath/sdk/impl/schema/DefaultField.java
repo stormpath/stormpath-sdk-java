@@ -21,8 +21,8 @@ import com.stormpath.sdk.impl.resource.BooleanProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.schema.Schema;
 import com.stormpath.sdk.schema.Field;
+import com.stormpath.sdk.schema.Schema;
 
 import java.util.Map;
 
@@ -54,12 +54,6 @@ public class DefaultField extends AbstractInstanceResource implements Field {
     @Override
     public String getName() {
         return getString(NAME);
-    }
-
-    @Override
-    public Field setName(String name) {
-        setProperty(NAME, name);
-        return this;
     }
 
     @Override
