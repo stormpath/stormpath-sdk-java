@@ -15,11 +15,23 @@
  */
 package com.stormpath.sdk.schema;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
+/**
+ * Schema represent a {@link Directory} account field configuration, where users can mark {@link Account} fields as required or not.
+ *
+ * @since 1.2.0
+ */
 public interface Schema extends Resource, Saveable {
 
+    /**
+     * Returns the {@link com.stormpath.sdk.resource.CollectionResource} of fields for the schema
+     *
+     * @return The list of fields
+     */
     FieldList getFields();
 
 }

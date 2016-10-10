@@ -19,16 +19,43 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
+/**
+ * A Field represents the configuration of an {@link com.stormpath.sdk.account.Account} field, it determines if its required or not.
+ *
+ * @since 1.2.0
+ */
 public interface Field extends Resource, Saveable, Deletable {
 
+    /**
+     * Returns the name of the field
+     *
+     * @return the field's name
+     */
     String getName();
 
-    Field setName(String name);
-
+    /**
+     * Returns true if the given field is required or false otherwise
+     *
+     * @return the field's required value
+     */
     boolean isRequired();
 
+    /**
+     * Sets the field as required or not
+     * <p>
+     * <p>After calling this method, you must call {@link #save()} to propagate the change to the Stormpath
+     * servers.</p>
+     *
+     * @param required true if the field is required, false otherwise
+     * @return the Field itself
+     */
     Field setRequired(boolean required);
 
+    /**
+     * Returns the schema this field belongs to.
+     *
+     * @return the parent {@link Schema}
+     */
     Schema getSchema();
 
 }

@@ -16,9 +16,12 @@
 package com.stormpath.sdk.schema;
 
 import com.stormpath.sdk.resource.CollectionResource;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
 
+/**
+ * A {@link CollectionResource} containing {@link Field} instances.
+ *
+ * @since 1.2.0
+ */
 public interface FieldList extends CollectionResource<Field> {
 
 }
