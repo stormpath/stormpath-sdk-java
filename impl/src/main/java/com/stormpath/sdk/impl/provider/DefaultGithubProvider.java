@@ -25,13 +25,9 @@ import java.util.Map;
 /**
  * @since 1.0.0
  */
-public class DefaultGithubProvider extends AbstractProvider implements GithubProvider {
+public class DefaultGithubProvider extends AbstractOAuthProvider<GithubProvider> implements GithubProvider {
 
-    // SIMPLE PROPERTIES
-    static final StringProperty CLIENT_ID = new StringProperty("clientId");
-    static final StringProperty CLIENT_SECRET = new StringProperty("clientSecret");
-
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE);
 
     public DefaultGithubProvider(InternalDataStore dataStore) {
         super(dataStore);
@@ -44,26 +40,6 @@ public class DefaultGithubProvider extends AbstractProvider implements GithubPro
     @Override
     public Map<String, Property> getPropertyDescriptors() {
         return PROPERTY_DESCRIPTORS;
-    }
-
-    @Override
-    public String getClientId() {
-        return getString(CLIENT_ID);
-    }
-
-    public GithubProvider setClientId(String clientId) {
-        setProperty(CLIENT_ID, clientId);
-        return this;
-    }
-
-    @Override
-    public String getClientSecret() {
-        return getString(CLIENT_SECRET);
-    }
-
-    public GithubProvider setClientSecret(String clientSecret) {
-        setProperty(CLIENT_SECRET, clientSecret);
-        return this;
     }
 
     @Override
