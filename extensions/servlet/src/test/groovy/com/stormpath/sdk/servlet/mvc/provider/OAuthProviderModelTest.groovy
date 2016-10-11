@@ -1,6 +1,5 @@
 package com.stormpath.sdk.servlet.mvc.provider
 
-import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.provider.OAuthProvider
 import org.testng.annotations.Test
 
@@ -24,7 +23,7 @@ class OAuthProviderModelTest {
         assertEquals(model.clientId, "1234")
         assertEquals(model.href, "http://api.stormpath.com/provider/uid")
         assertEquals(model.providerId, "fakey")
-        assertEquals(model.scope, ["foo", "bar", "baz"])
+        assertEquals(model.scope, "foo,bar,baz")
     }
 
 
