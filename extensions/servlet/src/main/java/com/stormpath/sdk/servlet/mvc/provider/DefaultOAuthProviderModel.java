@@ -15,11 +15,9 @@
  */
 package com.stormpath.sdk.servlet.mvc.provider;
 
-import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.OAuthProvider;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,13 +26,13 @@ import java.util.List;
 public class DefaultOAuthProviderModel extends DefaultProviderModel implements OAuthProviderModel {
 
     private final String clientId;
-    private final List<String> scope;
+    private final String scope;
 
     public DefaultOAuthProviderModel(OAuthProvider provider) {
         super(provider);
         this.clientId = provider.getClientId();
         Assert.hasText(this.clientId, "provider clientId cannot be null or empty.");
-        this.scope = Collections.unmodifiableList(provider.getScope());
+        this.scope = toScopeString(provider.getScope());
     }
 
     @Override
@@ -43,9 +41,14 @@ public class DefaultOAuthProviderModel extends DefaultProviderModel implements O
     }
 
     @Override
-    public List<String> getScope() {
+    public String getScope() {
         return scope;
     }
 
+    private static String toScopeString(List<String> scopeList) {
+        String scope = scopeList.toString();
+        scope = scope.replaceAll("[\\s\\[\\]]", "");
+        return scope;
+    }
 
 }
