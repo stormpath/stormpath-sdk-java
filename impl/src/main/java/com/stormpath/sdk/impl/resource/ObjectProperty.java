@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application;
+package com.stormpath.sdk.impl.resource;
 
-public interface OAuth2Configuration extends WebConfigurationProperty {
+public class ObjectProperty<T extends Object> extends Property<T> {
 
-    WebConfigurationProperty getClientCredentials();
-    WebConfigurationProperty getPassword();
-
+    public ObjectProperty(String name, Class<T> type) {
+        super(name, type);
+    }
 }

@@ -15,9 +15,9 @@
  */
 package com.stormpath.sdk.application;
 
-public interface MeConfiguration extends WebConfigurationProperty {
+public interface EnabledProperty {
 
-    String getUri();
-    MeExpansionOptions getExpansionOptions();
+    Boolean isEnabled();
 
+    void setEnabled(Boolean enabled);
 }

@@ -15,18 +15,26 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.application.WebConfigurationProperty;
+import com.stormpath.sdk.application.NameableProperty;
+import com.stormpath.sdk.impl.resource.StringProperty;
 
-public class DefaultWebConfigurationProperty implements WebConfigurationProperty {
+import java.util.Map;
 
-    private Boolean enabled;
+public class DefaultNameableProperty extends ConfigurableProperty implements NameableProperty {
 
-    @Override
-    public Boolean isEnabled() {
-        return null;
+    private static StringProperty NAME = new StringProperty("name");
+
+    public DefaultNameableProperty(Map<String, Object> properties) {
+        super(properties);
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    @Override
+    public String getName() {
+        return getString(NAME);
+    }
+
+    @Override
+    public void setName(String name) {
+        setProperty(NAME, name);
     }
 }

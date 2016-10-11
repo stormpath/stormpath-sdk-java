@@ -15,7 +15,10 @@
  */
 package com.stormpath.sdk.application;
 
-public interface WebConfigurationProperty {
+public interface NameableProperty {
 
-    Boolean isEnabled();
+    String getName();
+
+    void setName(String name);
+
 }

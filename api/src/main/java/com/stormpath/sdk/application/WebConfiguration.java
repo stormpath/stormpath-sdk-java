@@ -17,14 +17,13 @@ package com.stormpath.sdk.application;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.resource.Auditable;
-import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
 /**
  * @since 1.1.0
  */
-public interface WebConfiguration extends Resource, Saveable, Deletable, Auditable {
+public interface WebConfiguration extends Resource, Saveable, Auditable {
 
     String getDomainName();
 
@@ -32,27 +31,27 @@ public interface WebConfiguration extends Resource, Saveable, Deletable, Auditab
 
     WebConfigurationStatus getStatus();
 
-    ApiKey getSigningKey();
+    ApiKey getSigningApiKey();
 
     Application getApplication();
 
-    OAuth2Configuration getOAuth2Configuration();
+    OAuth2Property getOAuth2();
 
-    WebConfigurationProperty getRegisterConfiguration();
+    EnabledProperty getRegister();
 
-    WebConfigurationProperty getVerifyEmailConfiguration();
+    EnabledProperty getVerifyEmail();
 
-    WebConfigurationProperty getLoginConfiguration();
+    EnabledProperty getLogin();
 
-    WebConfigurationProperty getLogoutConfiguration();
+    EnabledProperty getLogout();
 
-    WebConfigurationProperty getForgotPasswordConfiguration();
+    EnabledProperty getForgotPassword();
 
-    WebConfigurationProperty getChangePasswordConfiguration();
+    EnabledProperty getChangePassword();
 
-    WebConfigurationProperty getIdSiteConfiguration();
+    EnabledProperty getIdSite();
 
-    WebConfigurationProperty getCallbackConfiguration();
+    EnabledProperty getCallback();
 
-    MeConfiguration getMeConfiguration();
+    MeProperty getMe();
 }

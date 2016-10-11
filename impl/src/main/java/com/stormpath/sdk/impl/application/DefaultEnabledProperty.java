@@ -15,39 +15,25 @@
  */
 package com.stormpath.sdk.impl.application;
 
-import com.stormpath.sdk.application.MeConfiguration;
-import com.stormpath.sdk.application.MeExpansionOptions;
+import com.stormpath.sdk.application.EnabledProperty;
+import com.stormpath.sdk.impl.resource.BooleanProperty;
 
-public class DefaultMeConfiguration implements MeConfiguration {
+import java.util.Map;
 
-    private String uri;
-    private Boolean enabled;
-    private MeExpansionOptions expansionOptions;
+public class DefaultEnabledProperty extends ConfigurableProperty implements EnabledProperty {
 
-    @Override
-    public String getUri() {
-        return null;
-    }
+    private static BooleanProperty ENABLED = new BooleanProperty("enabled");
 
-    @Override
-    public MeExpansionOptions getExpansionOptions() {
-        return expansionOptions;
+    public DefaultEnabledProperty(Map<String, Object> properties) {
+        super(properties);
     }
 
     @Override
     public Boolean isEnabled() {
-        return null;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
+        return getBoolean(ENABLED);
     }
 
     public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setExpansionOptions(MeExpansionOptions expansionOptions) {
-        this.expansionOptions = expansionOptions;
+        setProperty(ENABLED, enabled);
     }
 }

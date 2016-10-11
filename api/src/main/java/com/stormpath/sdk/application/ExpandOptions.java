@@ -15,14 +15,38 @@
  */
 package com.stormpath.sdk.application;
 
-public interface MeExpansionOptions {
+public interface ExpandOptions {
 
-    boolean getExpandApiKeys();
-    boolean getExpandApplications();
-    boolean getExpandCustomData();
-    boolean getExpandDirectory();
-    boolean getExpandGroupMemberships();
-    boolean getExpandProviderData();
-    boolean getExpandTenant();
+    boolean getApiKeys();
+
+    void setApiKeys(boolean apiKeys);
+
+    boolean getApplications();
+
+    void setApplications(boolean applications);
+
+    boolean getCustomData();
+
+    void setCustomData(boolean customData);
+
+    boolean getDirectory();
+
+    void setDirectory(boolean directory);
+
+    boolean getGroupMemberships();
+
+    void setGroupMemberships(boolean groupMemberships);
+
+    boolean getGroups();
+
+    void setGroups(boolean groups);
+
+    boolean getProviderData();
+
+    void setProviderData(boolean providerData);
+
+    boolean getTenant();
+
+    void setTenant(boolean tenant);
 
 }
