@@ -106,7 +106,7 @@ public class CookieAccountResolver implements Resolver<Account> {
     }
 
     protected void deleteCookie(HttpServletResponse response, Cookie cookie) {
-        if (!response.isCommitted()) {
+        if (!response.isCommitted() && cookie != null) {
             cookie.setValue("");
             cookie.setMaxAge(0);
             response.addCookie(cookie);

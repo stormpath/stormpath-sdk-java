@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * @since 1.0.0
@@ -90,14 +89,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
 
         List<Field> fields = new ArrayList<>();
 
-        List<String> fieldNames = new ArrayList<>(getDefaultFieldNames());
-
-        //keep default order, and append any unordered ones to the end:
-        for (String discoveredFieldName : getFormFieldNames()) {
-            if (!fieldNames.contains(discoveredFieldName)) {
-                fieldNames.add(discoveredFieldName);
-            }
-        }
+        List<String> fieldNames = new ArrayList<>(getFormFieldNames());
 
         for (String fieldName : fieldNames) {
 
@@ -135,8 +127,6 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
         fieldNames = new ArrayList<>(fieldNames);
 
         String fieldConfigPrefix = getFieldConfigPrefix();
-
-        Pattern pattern = Pattern.compile("^stormpath.web." + getControllerKey() + ".form.fields." + "(\\w+)");
 
         //Find any other fields that are not in the fieldOrder prop and add them to the end of the list as define in the spec
         Set<String> keys = propertyResolver.getKeys(getFieldConfigPrefix());
