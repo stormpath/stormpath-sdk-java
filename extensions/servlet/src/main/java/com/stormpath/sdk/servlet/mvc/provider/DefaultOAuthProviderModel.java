@@ -18,8 +18,6 @@ package com.stormpath.sdk.servlet.mvc.provider;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.OAuthProvider;
 
-import java.util.List;
-
 /**
  * @since 1.0.0
  */
