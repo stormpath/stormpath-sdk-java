@@ -21,15 +21,15 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 /**
  * @since 1.1.0
  */
-public class DefaultChallengeOptions extends DefaultOptions<ChallengeOptions> implements ChallengeOptions<ChallengeOptions> {
+public class DefaultChallengeOptions<T extends ChallengeOptions> extends DefaultOptions<T> implements ChallengeOptions<T> {
 
     @Override
-    public ChallengeOptions withAccount() {
-        return expand(DefaultChallenge.ACCOUNT);
+    public T withAccount() {
+        return expand(AbstractChallenge.ACCOUNT);
     }
 
     @Override
-    public ChallengeOptions withFactor() {
-        return expand(DefaultChallenge.FACTOR);
+    public T withFactor() {
+        return expand(AbstractChallenge.FACTOR);
     }
 }

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.challenge;
+package com.stormpath.sdk.challenge.sms;
 
 /**
  * An {@code ChallengeStatus} represents the various states a challenge may be in.
  *
  * @since 1.1.0
  */
-public enum ChallengeStatus {
+public enum SmsChallengeStatus {
     /**
      * The challenge was created.
      */

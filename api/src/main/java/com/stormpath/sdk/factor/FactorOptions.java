@@ -33,4 +33,21 @@ public interface FactorOptions<T> extends Options {
      */
     T withAccount();
 
+    /**
+     * Ensures that when retrieving an SmsFactor, the SmsFactor's  {@link Factor#getChallenges()} is also
+     * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
+     * related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
+    T withChallenges();
+
+    /**
+     * Ensures that when retrieving an SmsFactor, the SmsFactor's  {@link Factor#getMostRecentChallenge()} is also
+     * retrieved in the same request.  This enhances performance by leveraging a single request to retrieve multiple
+     * related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
+    T withMostRecentChallenge();
 }

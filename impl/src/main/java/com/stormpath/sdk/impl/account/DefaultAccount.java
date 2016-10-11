@@ -25,13 +25,8 @@ import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.factor.*;
-import com.stormpath.sdk.factor.CreateFactorRequest;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupMembership;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.group.GroupCriteria;
-import com.stormpath.sdk.group.GroupMembershipList;
-import com.stormpath.sdk.group.Groups;
+import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
+import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -44,7 +39,10 @@ import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.AccessTokenList;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.oauth.RefreshTokenList;
-import com.stormpath.sdk.phone.*;
+import com.stormpath.sdk.phone.CreatePhoneRequest;
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneCriteria;
+import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
@@ -95,7 +93,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final CollectionReference<PhoneList, Phone> PHONES =
             new CollectionReference<>("phones", PhoneList.class, Phone.class);
 
-    static final CollectionReference<FactorList, Factor> FACTORS =
+    static final CollectionReference<? extends FactorList, Factor> FACTORS =
             new CollectionReference<>("factors", FactorList.class, Factor.class);
 
     static final CollectionReference<AccountList, Account> LINKED_ACCOUNTS =
@@ -646,17 +644,21 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     public <T extends Factor, R extends FactorOptions> T createFactor(CreateFactorRequest<T,R> request) throws ResourceException {
         Assert.notNull(request, "Request cannot be null.");
 
-        final Factor smsFactor = request.getFactor();
+        final Factor factor = request.getFactor();
         String href = getFactors().getHref();
 
-        if(request.isCreateChallenge()){
-            href += "?challenge=" + request.isCreateChallenge();
+        if(request instanceof CreateSmsFactorRequest) {
+            CreateSmsFactorRequest smsRequest = (CreateSmsFactorRequest) request;
+            if (smsRequest.isCreateChallenge()) {
+                href += "?challenge=" + smsRequest.isCreateChallenge();
+            }
         }
 
         if (request.hasFactorOptions()) {
-            return (T) getDataStore().create(href, smsFactor, request.getFactorOptions());
+            return (T) getDataStore().create(href, factor, request.getFactorOptions());
         }
-        return (T) getDataStore().create(href, smsFactor);
+        return (T) getDataStore().create(href, factor);
+
     }
 }
 

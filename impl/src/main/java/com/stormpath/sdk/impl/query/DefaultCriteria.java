@@ -22,9 +22,7 @@ import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.query.Criterion;
 import com.stormpath.sdk.query.Options;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @since 0.8
@@ -36,6 +34,7 @@ public class DefaultCriteria<T extends Criteria<T>, O extends Options> implement
     protected final O options;
     protected Integer limit;
     protected Integer offset;
+    private Map<String, String> customAttributes;
 
     protected int currentOrderIndex = -1; //used for order clause building
 
@@ -45,6 +44,7 @@ public class DefaultCriteria<T extends Criteria<T>, O extends Options> implement
         this.options = options;
         this.criterionEntries = new ArrayList<Criterion>();
         this.orderEntries = new ArrayList<Order>();
+        this.customAttributes = new HashMap<>();
     }
 
     public T add(Criterion criterion) {
@@ -134,6 +134,14 @@ public class DefaultCriteria<T extends Criteria<T>, O extends Options> implement
         return options.isEmpty() && criterionEntries.isEmpty() && orderEntries.isEmpty() && (offset == null || offset == 0) && (limit == null || limit == 0);
     }
 
+    public boolean hasCustomAttributes() {
+        return !this.customAttributes.isEmpty();
+    }
+
+    public Map<String, String> getCustomAttributes() {
+        return this.customAttributes;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(128);
@@ -171,6 +179,13 @@ public class DefaultCriteria<T extends Criteria<T>, O extends Options> implement
                 sb.append(" ");
             }
             sb.append("expand ").append(Strings.collectionToDelimitedString(expandable.getExpansions(), ", "));
+        }
+
+        if(hasCustomAttributes()){
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append("custom attributes: ").append(getCustomAttributes().toString());
         }
 
         return sb.toString();

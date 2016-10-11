@@ -19,49 +19,35 @@ import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountOptions
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.challenge.Challenge
-import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.challenge.sms.SmsChallenge
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.factor.Factor
-import com.stormpath.sdk.factor.FactorStatus
-import com.stormpath.sdk.factor.FactorVerificationStatus
-import com.stormpath.sdk.factor.Factors
+import com.stormpath.sdk.factor.*
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.factor.sms.SmsFactorOptions
-import com.stormpath.sdk.impl.factor.sms.DefaultSmsFactor
+import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.phone.Phone
 import com.stormpath.sdk.phone.PhoneStatus
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
-
 import java.lang.reflect.Field
-
 import static org.testng.AssertJUnit.*
 
-class FactorIT extends ClientIT {
+/**
+ * @since 1.1.0
+ */
+class SmsFactorIT extends AbstractMultiFactorIT {
 
     private static final String VALID_PHONE_NUMBER = "+18883915282"
 
     @Test
     void testCreateFactorWithNewPhone() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: FactorIT.testCreateFactorWithNewPhone")
-        dir = client.currentTenant.createDirectory(dir)
-
-        assertNotNull dir.href
-
-        def email = 'johndeleteme@nowhere.com'
-
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail(email)
-                .setPassword('Changeme1!')
-
-        dir.createAccount(account)
-
-        deleteOnTeardown(account)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
         deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
+
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
         phone = account.createPhone(phone);
@@ -82,22 +68,10 @@ class FactorIT extends ClientIT {
     @Test
     void testCreateFactorWithoutChallenge() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        assertNotNull dir.href
-
-        def email = 'johndeleteme@nowhere.com'
-
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail(email)
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         AccountOptions accountOptions = Accounts.options().withFactors()
         Account retrievedAccount = client.getResource(account.href, Account.class, accountOptions)
@@ -119,8 +93,8 @@ class FactorIT extends ClientIT {
         assertNotNull(((SmsFactor) factor).getPhone().href)
 
         //test GET works
-        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withChallenges()
-        factor = client.getResource(factor.href, DefaultSmsFactor.class, smsFactorOptions)
+        FactorOptions FactorOptions = Factors.options().withChallenges()
+        factor = client.getResource(factor.href, SmsFactor.class, FactorOptions)
 
         assertEquals(factor.getFactorVerificationStatus(), FactorVerificationStatus.UNVERIFIED)
         assertEquals(factor.getStatus(), FactorStatus.ENABLED)
@@ -142,18 +116,10 @@ class FactorIT extends ClientIT {
     @Test
     void testDefaultChallengeOnFactorCreation() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone = phone.setNumber(VALID_PHONE_NUMBER)
@@ -163,8 +129,8 @@ class FactorIT extends ClientIT {
         def builder = Factors.SMS.newCreateRequestFor(factor).createChallenge()
         factor = account.createFactor(builder.build())
 
-        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withMostRecentChallenge()
-        factor = client.getResource(factor.href, SmsFactor.class, smsFactorOptions)
+        FactorOptions factorOptions = Factors.options().withMostRecentChallenge()
+        factor = client.getResource(factor.href, SmsFactor.class, factorOptions)
 
         assertEquals(factor.getFactorVerificationStatus(), FactorVerificationStatus.UNVERIFIED)
         assertEquals(factor.getStatus(), FactorStatus.ENABLED)
@@ -180,18 +146,10 @@ class FactorIT extends ClientIT {
     @Test
     void testDefaultChallengeOnFactorCreationFailsForDisabledPhone() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER).setStatus(PhoneStatus.DISABLED)
@@ -220,18 +178,10 @@ class FactorIT extends ClientIT {
     @Test
     void testDefaultChallengeOnFactorCreationFailsForDisabledFactor() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: FactorIT.testDefaultChallengeOnFactorCreationFailsForDisabledFactor")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -261,18 +211,10 @@ class FactorIT extends ClientIT {
     @Test
     void testUpdateFactorStatus() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: FactorIT.testUpdateFactorStatus")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -304,31 +246,23 @@ class FactorIT extends ClientIT {
     @Test
     void testCustomChallengeOnFactorCreation() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: FactorIT.testCustomChallengeOnFactorCreation")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
         SmsFactor factor = client.instantiate(SmsFactor)
         factor = factor.setPhone(phone)
-        def challenge = client.instantiate(Challenge)
+        def challenge = client.instantiate(SmsChallenge)
         //challenge = challenge.setMessage("Your awesome code is \${code}")
         factor = factor.setChallenge(challenge)
 
         factor = account.createFactor(factor)
 
-        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withMostRecentChallenge()
-        factor = client.getResource(factor.href, SmsFactor.class, smsFactorOptions)
+        FactorOptions factorOptions = Factors.options().withMostRecentChallenge()
+        factor = client.getResource(factor.href, SmsFactor.class, factorOptions)
 
         assertEquals(factor.getFactorVerificationStatus(), FactorVerificationStatus.UNVERIFIED)
         assertEquals(factor.getStatus(), FactorStatus.ENABLED)
@@ -347,18 +281,10 @@ class FactorIT extends ClientIT {
     @Test
     void createFactorWithExistingPhone() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -400,18 +326,10 @@ class FactorIT extends ClientIT {
     @Test
     void createFactorWithExistingPhoneByHref() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -455,18 +373,10 @@ class FactorIT extends ClientIT {
     @Test
     void testDeleteFactor() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -507,18 +417,10 @@ class FactorIT extends ClientIT {
     // todo: Enable this test once the issue is fixed
     void testDeletePhoneDeletesFactor() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -560,18 +462,10 @@ class FactorIT extends ClientIT {
     // todo: Enable this test once the issue is fixed
     void deletingFactorDeletesMostRecentChallenge() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
         dir = client.currentTenant.createDirectory(dir);
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
-                .setPassword('Changeme1!')
-
-        deleteOnTeardown(account)
         deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        Account account = createTempAccountInDir(dir)
 
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
@@ -581,8 +475,8 @@ class FactorIT extends ClientIT {
         def builder = Factors.SMS.newCreateRequestFor(factor).createChallenge()
 
         account.createFactor(builder.build())
-        SmsFactorOptions smsFactorOptions = Factors.SMS.options().withMostRecentChallenge()
-        factor = client.getResource(factor.href, SmsFactor.class, smsFactorOptions)
+        FactorOptions factorOptions = Factors.options().withMostRecentChallenge()
+        factor = client.getResource(factor.href, SmsFactor.class, factorOptions)
 
         assertEquals(factor.factorVerificationStatus, FactorVerificationStatus.UNVERIFIED)
         assertEquals(factor.status, FactorStatus.ENABLED)
@@ -614,23 +508,11 @@ class FactorIT extends ClientIT {
     @Test
     void testGetFactorsWithDifferentCriteria() {
         Directory dir = client.instantiate(Directory)
-        dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
-        dir = client.currentTenant.createDirectory(dir)
-
-        assertNotNull dir.href
-
-        def email = 'johndeleteme@nowhere.com'
-
-        Account account = client.instantiate(Account)
-        account = account.setGivenName('John')
-                .setSurname('DELETEME')
-                .setEmail(email)
-                .setPassword('Changeme1!')
-
-        dir.createAccount(account)
-
-        deleteOnTeardown(account)
+        dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
+        dir = client.currentTenant.createDirectory(dir);
         deleteOnTeardown(dir)
+        Account account = createTempAccountInDir(dir)
+
         def phone = client.instantiate(Phone)
         phone.setNumber(VALID_PHONE_NUMBER)
         phone = account.createPhone(phone);
@@ -655,14 +537,23 @@ class FactorIT extends ClientIT {
         smsFactor3 = smsFactor3.setPhone(phone3).setStatus(FactorStatus.DISABLED)
         account.createFactor(smsFactor3);
 
-        def factors = account.getFactors(Factors.SMS.criteria().orderByStatus().ascending());
+        def factors = account.getFactors(Factors.criteria().orderByStatus().ascending());
         assertEquals(factors.getLimit(), 25);
         assertEquals(factors.getProperty("items").size, 3);
         assertEquals(factors.iterator().next().account.materialized, false)
+        assertEquals(factors.iterator().next().phone.materialized, false)
         List<Factor> factorList = factors.toList()
         assertEquals(factorList.get(0).status, FactorStatus.DISABLED)
         assertEquals(factorList.get(1).status, FactorStatus.DISABLED)
         assertEquals(factorList.get(2).status, FactorStatus.ENABLED)
+
+        factors = account.getFactors(Factors.SMS.criteria().withAccount().withPhone().orderByStatus().ascending());
+        assertEquals(factors.iterator().next().account.materialized, true)
+        assertEquals(factors.iterator().next().phone.materialized, true)
+
+        factors = account.getFactors(Factors.SMS.criteria().withAccount().orderByStatus().ascending());
+        assertEquals(factors.iterator().next().account.materialized, true)
+        assertEquals(factors.iterator().next().phone.materialized, false)
     }
 
     private Object getValue(Class clazz, Object object, String fieldName) {

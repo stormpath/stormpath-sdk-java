@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @since 1.1.0
  */
-public class DefaultFactorList extends AbstractCollectionResource<Factor> implements FactorList {
+public class DefaultFactorList<T extends Factor> extends AbstractCollectionResource<T> implements FactorList<T> {
 
     private static final ArrayProperty<Factor> ITEMS = new ArrayProperty<>("items", Factor.class);
 
@@ -46,8 +46,8 @@ public class DefaultFactorList extends AbstractCollectionResource<Factor> implem
     }
 
     @Override
-    protected Class<Factor> getItemType() {
-        return Factor.class;
+    protected Class<T> getItemType() {
+        return (Class<T>) Factor.class;
     }
 
     @Override

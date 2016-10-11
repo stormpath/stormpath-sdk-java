@@ -21,14 +21,14 @@ package com.stormpath.sdk.challenge;
  * @see com.stormpath.sdk.factor.sms.SmsFactor#createChallenge(Challenge)
  * @since 1.1.0
  */
-public interface CreateChallengeRequest {
+public interface CreateChallengeRequest<T extends Challenge> {
 
     /**
      * Returns the Challenge instance for which a new record will be created in Stormpath.
      *
      * @return the Challenge instance for which a new record will be created in Stormpath.
      */
-    Challenge getChallenge();
+    T getChallenge();
 
     /**
      * Returns true in case Challenge has options.
