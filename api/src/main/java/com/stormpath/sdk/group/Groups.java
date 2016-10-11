@@ -206,7 +206,7 @@ public final class Groups {
      *
      * @param value The value to search for
      * @return A Criterion representing the filter query
-     * @since 1.1.0
+     * @since 1.2.0
      */
     public static Criterion filter(String value){
         return newStringExpressionFactory("q").eqIgnoreCase(value);
