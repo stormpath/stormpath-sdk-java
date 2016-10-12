@@ -30,7 +30,8 @@
                     <div class="header"
                          th:with="registerLink='&lt;a href=&quot;' + @{${registerUri}} + '&quot;&gt;' + #{stormpath.web.login.form.registerLink.text} + '&lt;/a&gt;'">
                         <span th:if="${!registerEnabled}" th:utext="#{stormpath.web.login.form.title}">|Register|</span>
-                        <span th:if="${registerEnabled}" th:utext="#{stormpath.web.login.form.titleWithRegister(${registerLink})}">|Register|</span>
+                        <span th:if="${registerEnabled}"
+                              th:utext="#{stormpath.web.login.form.titleWithRegister(${registerLink})}">|Register|</span>
                     </div>
 
                     <div class="alert alert-dismissable alert-success" th:if="${not #strings.isEmpty(status)}">
@@ -75,24 +76,34 @@
                 <div th:if="${not #lists.isEmpty(accountStores)}" class="provider-area col-xs-12 col-sm-4">
                     <div class="header">&nbsp;</div>
                     <label>Easy 1-click login:</label>
-                    <button th:each="accountStore : ${accountStores}" class="btn btn-social"
-                            th:classappend="${'btn-'+accountStore.provider.providerId}"
-                            th:id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}">
-                    <th:block th:if="${accountStore.provider.providerId != 'saml'}">
-                        <i class="fa" th:classappend="${'fa-'+accountStore.provider.providerId}"></i>
-                        <span th:text="${accountStore.provider.providerId}">|Provider|</span>
+                    <th:block th:each="accountStore : ${accountStores}">
+                        <th:block th:switch="${accountStore.provider.providerId}">
+                            <button th:case="saml" class="btn btn-social btn-saml"
+                                    th:id="${accountStore.href}">
+                                <span class="fa fa-lock"></span>
+                                <span th:text="${accountStore.name}" th:remove="tag">|SAML|</span>
+                            </button>
+                            <button th:case="google" class="btn btn-social btn-google"
+                                    th:id="${accountStore.provider.clientId}"
+                                    th:attr="data-scope=${accountStore.provider.scope}, data-hd=${accountStore.provider.hd}, data-display=${accountStore.provider.display}, data-access_type=${accountStore.provider.accessType}"
+                            >
+                                <i class="fa fa-google"></i>
+                                <span th:text="google">|Provider|</span>
+                            </button>
+                            <button th:case="*" class="btn btn-social" th:classappend="${'btn-'+accountStore.provider.providerId}"
+                                    th:id="${accountStore.provider.clientId}" th:attr="data-scope=${accountStore.provider.scope}">
+                                <i class="fa" th:classappend="${'fa-'+accountStore.provider.providerId}"></i>
+                                <span th:text="${accountStore.provider.providerId}">|Provider|</span>
+                            </button>
+                        </th:block>
                     </th:block>
-                    <th:block th:if="${accountStore.provider.providerId == 'saml'}">
-                        <span class="fa fa-lock"></span>
-                        <span th:text="${accountStore.name}" th:remove="tag">|SAML|</span>
-                    </th:block>
-                    </button>
                 </div>
             </div>
 
             <a th:if="${verifyEnabled}" th:href="@{${verifyUri}}" class="verify"
                th:text="#{stormpath.web.login.form.verifyEmail.text}">|Resend Email Verification|</a>
-            <a th:if="${forgotPasswordEnabled}" th:href="@{${forgotPasswordUri}}" class="to-login" th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot
+            <a th:if="${forgotPasswordEnabled}" th:href="@{${forgotPasswordUri}}" class="to-login"
+               th:text="#{stormpath.web.login.form.resetLink.text}">|Forgot
                 Password?|</a>
 
         </div>
