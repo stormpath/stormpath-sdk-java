@@ -69,14 +69,51 @@ class WebConfigurationIT extends ClientIT {
     }
 
     @Test
+    void testUpdateFirstLevelProperties() {
+
+        def webConfig = createTempApp().getWebConfiguration()
+
+        webConfig.setBasePath("/a/path")
+        webConfig.setStatus(WebConfigurationStatus.DISABLED)
+        webConfig.setSigningApiKey(null)
+
+        webConfig.save()
+
+        def readWebConfig = buildClient(false).getResource(webConfig.href, WebConfiguration)
+
+        assertEquals readWebConfig.basePath, "/a/path"
+        assertEquals readWebConfig.status, WebConfigurationStatus.DISABLED
+        assertNull readWebConfig.signingApiKey
+    }
+
+    @Test
     void testUpdateNullableProperties()  {
 
         def webConfig = createTempApp().getWebConfiguration()
 
-        EnabledProperty enabledProperty = webConfig.getVerifyEmail()
+        EnabledProperty verifyEmail = webConfig.getVerifyEmail()
 
-        assertNull enabledProperty.isEnabled()
+        assertNull verifyEmail.isEnabled()
 
+        verifyEmail.setEnabled(true)
+
+        webConfig.save()
+
+        def noCacheClient =  buildClient(false)
+
+        webConfig = noCacheClient.getResource(webConfig.href, WebConfiguration)
+
+        verifyEmail = webConfig.getVerifyEmail()
+
+        assertTrue verifyEmail.isEnabled()
+
+        verifyEmail.setEnabled(null)
+
+        webConfig.save()
+
+        webConfig = noCacheClient.getResource(webConfig.href, WebConfiguration)
+
+        assertNull webConfig.getVerifyEmail().isEnabled()
     }
 
     @Test

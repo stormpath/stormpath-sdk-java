@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,18 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.stormpath.sdk.impl.ds.Enlistment;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.text.DateFormat;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @since 0.1
@@ -41,12 +34,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public abstract class AbstractResource extends AbstractPropertyRetriever implements Resource {
 
     public static final String HREF_PROP_NAME = "href";
-    private static final Logger log = LoggerFactory.getLogger(AbstractResource.class);
-    private static final DateFormat dateFormatter = new ISO8601DateFormat();
     protected final Map<String, Object> dirtyProperties;  //Protected by read/write lock
     protected final Set<String> deletedPropertyNames;     //Protected by read/write lock
-    protected final Lock readLock;
-    protected final Lock writeLock;
     protected final ReferenceFactory referenceFactory;
     private final InternalDataStore dataStore;
     protected Map<String, Object> properties;       //Protected by read/write lock
@@ -59,9 +48,6 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
 
     protected AbstractResource(InternalDataStore dataStore, Map<String, Object> properties) {
         this.referenceFactory = new ReferenceFactory();
-        ReadWriteLock rwl = new ReentrantReadWriteLock();
-        this.readLock = rwl.readLock();
-        this.writeLock = rwl.writeLock();
         this.dataStore = dataStore;
         this.dirtyProperties = new LinkedHashMap<>();
         this.deletedPropertyNames = new HashSet<>();
@@ -260,13 +246,6 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
         } finally {
             readLock.unlock();
         }
-    }
-
-    /**
-     * @since 0.8
-     */
-    protected void setProperty(Property property, Object value) {
-        setProperty(property.getName(), value, true);
     }
 
     /**
@@ -488,6 +467,11 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
         } finally {
             readLock.unlock();
         }
+    }
+
+    @Override
+    protected Map<String, Object> getProperties() {
+        return properties;
     }
 
 }

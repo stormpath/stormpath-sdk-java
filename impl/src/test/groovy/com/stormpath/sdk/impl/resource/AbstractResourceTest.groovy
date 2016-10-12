@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.resource
 
+import com.stormpath.sdk.impl.application.DefaultEnabledProperty
+import com.stormpath.sdk.impl.application.DefaultOAuth2Property
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
@@ -110,6 +114,44 @@ class AbstractResourceTest {
         } catch (IllegalArgumentException e) {
             assertEquals(e.getMessage(), "'name' property value type does not match the specified type. Specified type: Map. Existing type: java.lang.String.  Value: Default Password Reset Email Template")
         }
+    }
+
+    @Test
+    void testParentAwareObjectProperty() {
+
+        def props =  [basePath         : "/path", status: "ENABLED", signingApiKey: [href: "http://api.stormpath.com/apiKeys/id"],
+                      oauth2           : [enabled: false, client_credentials: [enabled: false], password: [enabled: false]],
+                      accessTokenCookie: [name: "testCookie1"], refreshTokenCookie: [name: "testCookie2"]]
+
+
+        InternalDataStore ds = createStrictMock(InternalDataStore)
+
+        def testResource = new TestResource(ds, props)
+
+        assertTrue testResource.getProperty("oauth2") instanceof Map
+
+        def oauth2 = testResource.getParentAwareObjectProperty("oauth2", DefaultOAuth2Property, AbstractPropertyRetriever)
+
+        assertEquals oauth2.isEnabled(), false
+        assertEquals oauth2.getClientCredentials().isEnabled(), false
+
+        def transformed = testResource.getProperty("oauth2")
+
+        assertTrue testResource.getProperty("oauth2") instanceof DefaultOAuth2Property, "transformed class: " +  transformed.getClass().name
+
+        assertEquals oauth2, testResource.getParentAwareObjectProperty("oauth2",  DefaultOAuth2Property, AbstractPropertyRetriever)
+
+        assertNull testResource.getParentAwareObjectProperty("unkownw", DefaultEnabledProperty, AbstractPropertyRetriever)
+
+        try {
+            testResource.getParentAwareObjectProperty("basePath", DefaultEnabledProperty, AbstractPropertyRetriever)
+
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "'basePath' property value type does not match the specified type. " +
+                    "Specified type: com.stormpath.sdk.impl.application.DefaultEnabledProperty. Existing type: java.lang.String.  Value: /path")
+        }
+
     }
 
 }

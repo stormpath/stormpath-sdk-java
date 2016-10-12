@@ -16,9 +16,9 @@
 package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
-import com.stormpath.sdk.impl.resource.Property;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class ConfigurableProperty extends AbstractPropertyRetriever {
@@ -28,33 +28,46 @@ public abstract class ConfigurableProperty extends AbstractPropertyRetriever {
     private final String name;
 
     protected final Map<String, Object> dirtyProperties;
+
     protected Map<String, Object> properties;
 
     protected ConfigurableProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
-        this.properties = properties == null ? new HashMap<String, Object>() : properties;
+        this.properties = properties == null ? new LinkedHashMap<String, Object>() : properties;
         this.dirtyProperties = new HashMap<>();
         this.parent = parent;
         this.name = name;
     }
 
     public Object getProperty(String name) {
-        return properties.get(name);
+        readLock.lock();
+        try {
+            return this.dirtyProperties.containsKey(name) ? this.dirtyProperties.get(name) : this.properties.get(name);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     protected Object setProperty(String name, Object value, boolean dirty) {
-        Object previous = this.properties.put(name, value);
-        if (dirty) {
-            this.dirtyProperties.put(name, value);
+        writeLock.lock();
+        try {
+            boolean alreadySet = this.dirtyProperties.containsKey(name);
+
+            Object previous = this.dirtyProperties.put(name, value);
+            if (alreadySet) {
+                previous = this.properties.get(name);
+            }
+
+            if (dirty) {
+                parent.setProperty(this.name, this);
+            }
+            return previous;
+        } finally {
+            writeLock.unlock();
         }
-        return previous;
     }
 
-    protected void setProperty(Property property, Object value) {
-        setProperty(property.getName(), value);
-    }
-
-    public void setProperty(String name, Object value) {
-        setProperty(name, value, true);
-        parent.setProperty(this.name, this);
+    @Override
+    protected Map<String, Object> getProperties() {
+        return properties;
     }
 }

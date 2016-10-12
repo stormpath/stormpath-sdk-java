@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.resource;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.stormpath.sdk.impl.ds.Enlistment;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import org.slf4j.Logger;
@@ -28,12 +29,26 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AbstractPropertyRetriever {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractPropertyRetriever.class);
 
     private static final DateFormat dateFormatter = new ISO8601DateFormat();
+
+    protected final Lock readLock;
+
+    protected final Lock writeLock;
+
+
+    protected AbstractPropertyRetriever() {
+        ReadWriteLock rwl = new ReentrantReadWriteLock();
+        this.readLock = rwl.readLock();
+        this.writeLock = rwl.writeLock();
+    }
 
     public abstract Object getProperty(String name);
 
@@ -220,16 +235,27 @@ public abstract class AbstractPropertyRetriever {
         }
 
         if (value instanceof Map) {
-            Constructor<T> propertyConstructor = Classes.getConstructor(type, String.class, Map.class, parentType);
+            writeLock.lock();
             try {
-                return propertyConstructor.newInstance(name, value, this);
+                Constructor<T> propertyConstructor = Classes.getConstructor(type, String.class, Map.class, parentType);
+
+                @SuppressWarnings("unchecked")
+                T instance = propertyConstructor.newInstance(name, new Enlistment((Map<String, Object>) value) , this);
+
+                getProperties().put(name, instance);
+
+                return instance;
             } catch (Exception e) {
                 throw new IllegalArgumentException("Unable to create ", e);
+            } finally {
+                writeLock.unlock();
             }
         }
 
-        String msg = "'" + name + "' property value type does not match the specified type. Specified type: ConfigurableProperty. " +
-                "Existing type: " + value.getClass().getName();
+        String msg = "'" + name + "' property value type does not match the specified type. Specified type: " + type.getTypeName() +
+                ". Existing type: " + value.getClass().getName();
+
+        msg += (isPrintableProperty(name) ? ".  Value: " + value : ".");
 
         throw new IllegalArgumentException(msg);
     }
@@ -244,7 +270,6 @@ public abstract class AbstractPropertyRetriever {
     protected boolean isPrintableProperty(String name) {
         return true;
     }
-
 
     /**
      * @since 0.8
@@ -261,5 +286,10 @@ public abstract class AbstractPropertyRetriever {
      * @since 0.6.0
      */
     protected abstract Object setProperty(String name, Object value, final boolean dirty);
+
+    /**
+     * @since 1.2.0
+     */
+    protected abstract Map<String, Object> getProperties();
 
 }

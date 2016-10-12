@@ -122,7 +122,11 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
 
     @Override
     public void setSigningApiKey(ApiKey apiKey) {
-        setResourceProperty(SIGNING_API_KEY, apiKey);
+        if (apiKey == null) {
+            setProperty(SIGNING_API_KEY, null);
+        } else {
+            setResourceProperty(SIGNING_API_KEY, apiKey);
+        }
     }
 
     @Override
