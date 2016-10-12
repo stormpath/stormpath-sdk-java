@@ -46,6 +46,9 @@ public class DefaultOAuthProviderModel extends DefaultProviderModel implements O
     }
 
     private static String toScopeString(List<String> scopeList) {
+        if (scopeList == null) {
+            return null;
+        }
         String scope = scopeList.toString();
         scope = scope.replaceAll("[\\s\\[\\]]", "");
         scope = scope.replaceAll(",", " ");

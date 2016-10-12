@@ -7,6 +7,7 @@ import static org.easymock.EasyMock.createNiceMock
 import static org.easymock.EasyMock.expect
 import static org.easymock.EasyMock.replay
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNull
 
 class DefaultOAuthProviderModelTest {
 
@@ -24,6 +25,19 @@ class DefaultOAuthProviderModelTest {
         assertEquals(model.href, "http://api.stormpath.com/provider/uid")
         assertEquals(model.providerId, "fakey")
         assertEquals(model.scope, "foo bar baz")
+    }
+
+    @Test
+    void testNullScope() {
+
+        OAuthProvider provider = createNiceMock(OAuthProvider)
+        expect(provider.clientId).andStubReturn("1234")
+        expect(provider.href).andStubReturn("http://api.stormpath.com/provider/uid")
+        expect(provider.providerId).andStubReturn("fakey")
+        expect(provider.scope).andStubReturn(null)
+        replay provider
+        def model = new DefaultOAuthProviderModel(provider)
+        assertNull(model.scope)
     }
 
 
