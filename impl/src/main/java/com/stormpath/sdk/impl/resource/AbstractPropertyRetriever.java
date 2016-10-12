@@ -16,7 +16,6 @@
 package com.stormpath.sdk.impl.resource;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.stormpath.sdk.impl.application.ConfigurableProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import org.slf4j.Logger;
@@ -196,11 +195,11 @@ public abstract class AbstractPropertyRetriever {
         return null;
     }
 
-    protected <T> T getObjectProperty(ObjectProperty<T> objectProperty) {
-        return getObjectProperty(objectProperty.getName(), objectProperty.getType());
+    protected <T, P> T getParentAwareObjectProperty(ParentAwareObjectProperty<T, P> objectProperty) {
+        return getParentAwareObjectProperty(objectProperty.getName(), objectProperty.getType(), objectProperty.getParentType());
     }
 
-    protected <T> T getObjectProperty(String name, Class<T> type) {
+    protected <T, P> T getParentAwareObjectProperty(String name, Class<T> type, Class<P> parentType) {
 
         Object value = getProperty(name);
 
@@ -213,11 +212,9 @@ public abstract class AbstractPropertyRetriever {
         }
 
         if (value instanceof Map) {
-            Constructor<T> propertyConstructor = Classes.getConstructor(type, Map.class);
+            Constructor<T> propertyConstructor = Classes.getConstructor(type, String.class, Map.class, parentType);
             try {
-                T configurableProperty = propertyConstructor.newInstance(value);
-                setProperty(name, configurableProperty, false);
-                return configurableProperty;
+                return propertyConstructor.newInstance(name, value, this);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Unable to create ", e);
             }
@@ -248,7 +245,7 @@ public abstract class AbstractPropertyRetriever {
         setProperty(property.getName(), value, true);
     }
 
-    protected void setProperty(String name, Object value) {
+    public void setProperty(String name, Object value) {
         setProperty(name, value, true);
     }
 

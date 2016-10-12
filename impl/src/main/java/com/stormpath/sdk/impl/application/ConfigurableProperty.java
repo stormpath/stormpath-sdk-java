@@ -23,12 +23,18 @@ import java.util.Map;
 
 public abstract class ConfigurableProperty extends AbstractPropertyRetriever {
 
+    private final AbstractPropertyRetriever parent;
+
+    private final String name;
+
     protected final Map<String, Object> dirtyProperties;
     protected Map<String, Object> properties;
 
-    protected ConfigurableProperty(Map<String, Object> properties) {
+    protected ConfigurableProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
         this.properties = properties == null ? new HashMap<String, Object>() : properties;
         this.dirtyProperties = new HashMap<>();
+        this.parent = parent;
+        this.name = name;
     }
 
     public Object getProperty(String name) {
@@ -43,14 +49,12 @@ public abstract class ConfigurableProperty extends AbstractPropertyRetriever {
         return previous;
     }
 
-    /**
-     * @since 0.8
-     */
     protected void setProperty(Property property, Object value) {
-        setProperty(property.getName(), value, true);
+        setProperty(property.getName(), value);
     }
 
-    protected void setProperty(String name, Object value) {
+    public void setProperty(String name, Object value) {
         setProperty(name, value, true);
+        parent.setProperty(this.name, this);
     }
 }

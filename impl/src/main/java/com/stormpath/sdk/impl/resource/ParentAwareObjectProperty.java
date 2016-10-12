@@ -15,9 +15,16 @@
  */
 package com.stormpath.sdk.impl.resource;
 
-public class ObjectProperty<T extends Object> extends Property<T> {
+public class ParentAwareObjectProperty<T, P> extends Property<T> {
 
-    public ObjectProperty(String name, Class<T> type) {
+    private final Class<P> parentType;
+
+    public ParentAwareObjectProperty(String name, Class<T> type, Class<P> parentType) {
         super(name, type);
+        this.parentType = parentType;
+    }
+
+    public Class<P> getParentType() {
+        return parentType;
     }
 }

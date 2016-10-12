@@ -17,8 +17,15 @@
 package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.ApplicationAccountStoreMapping
+import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.application.OAuth2Property
+import com.stormpath.sdk.application.WebConfiguration
+import com.stormpath.sdk.application.WebConfigurationStatus
+import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.directory.Directory
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -32,15 +39,11 @@ class WebConfigurationIT extends ClientIT {
 
         def criteria = Applications.where(Applications.name().eqIgnoreCase("My Application")).withWebConfiguration()
 
-        def applications = requestCountingClient.getApplications(criteria);
+        def application = getTenantApplication(requestCountingClient, criteria)
 
         assertEquals requestCountingClient.requestCount, 2 //Get current tenant / Get applications.
 
-        Iterator<Application> iterator = applications.iterator()
-
-        assertTrue iterator.hasNext()
-
-        def webConfiguration = iterator.next().webConfiguration
+        def webConfiguration = application.webConfiguration
 
         assertTrue webConfiguration.getOAuth2().password.enabled
 
@@ -48,16 +51,60 @@ class WebConfigurationIT extends ClientIT {
     }
 
     @Test
-    void testWebConfiguration() {
-        def application = createTempApp()
+    void testWebConfigurationUpdateLeafProperty() {
 
-        def webConfig = application.getWebConfiguration()
+        def webConfig = createTempApp().getWebConfiguration()
 
-        assertNotNull webConfig
+        OAuth2Property oAuth2Property = webConfig.getOAuth2()
 
-        def test = webConfig.getForgotPassword()
+        oAuth2Property.getPassword().setEnabled(false)
+        webConfig.save()
 
-        assertNotNull test
+        def readWebConfig = buildClient(false).getResource(webConfig.href, WebConfiguration)
+
+        OAuth2Property readOAuth2 = readWebConfig.getOAuth2()
+
+        assertFalse readOAuth2.getPassword().isEnabled()
+    }
+
+    @Test
+    void enableWebConfiguration() {
+
+        def criteria = Applications.where(Applications.name().eqIgnoreCase("My Application")).withWebConfiguration()
+        def adminApplication = getTenantApplication(client, criteria)
+
+        def directory = client.instantiate(Directory)
+        directory.setName(uniquify("Admins"))
+
+        deleteOnTeardown(directory)
+        client.currentTenant.createDirectory(directory)
+
+        ApplicationAccountStoreMapping mapping = adminApplication.addAccountStore(directory)
+        mapping.setDefaultAccountStore(true)
+        mapping.save()
+
+        def adminAccount = createTestAccount(adminApplication)
+
+        def apiKey = adminAccount.createApiKey()
+
+        def webConfig = createTempApp().getWebConfiguration()
+
+        webConfig.setSigningApiKey(apiKey)
+        webConfig.setStatus(WebConfigurationStatus.ENABLED)
+        webConfig.save()
+
+        assertNotNull webConfig.domainName
+    }
+
+    static Application getTenantApplication(Client client, ApplicationCriteria criteria) {
+
+        def applications = client.getApplications(criteria)
+
+        Iterator<Application> iterator = applications.iterator()
+
+        assertTrue iterator.hasNext()
+
+        return iterator.next()
     }
 
 }

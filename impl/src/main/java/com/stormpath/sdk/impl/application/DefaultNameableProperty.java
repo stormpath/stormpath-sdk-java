@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.NameableProperty;
+import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.StringProperty;
 
 import java.util.Map;
@@ -24,8 +25,8 @@ public class DefaultNameableProperty extends ConfigurableProperty implements Nam
 
     private static StringProperty NAME = new StringProperty("name");
 
-    public DefaultNameableProperty(Map<String, Object> properties) {
-        super(properties);
+    public DefaultNameableProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+        super(name, properties, parent);
     }
 
     @Override

@@ -29,9 +29,15 @@ public interface WebConfiguration extends Resource, Saveable, Auditable {
 
     String getBasePath();
 
+    void setBasePath(String basePath);
+
     WebConfigurationStatus getStatus();
 
+    void setStatus(WebConfigurationStatus status);
+
     ApiKey getSigningApiKey();
+
+    void setSigningApiKey(ApiKey apiKey);
 
     Application getApplication();
 

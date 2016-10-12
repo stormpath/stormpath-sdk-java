@@ -17,24 +17,32 @@ package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.EnabledProperty;
 import com.stormpath.sdk.application.OAuth2Property;
+import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
-import com.stormpath.sdk.impl.resource.ObjectProperty;
+import com.stormpath.sdk.impl.resource.ParentAwareObjectProperty;
 
 import java.util.Map;
 
 public class DefaultOAuth2Property extends ConfigurableProperty implements OAuth2Property {
 
-    private static final ObjectProperty<DefaultEnabledProperty> PASSWORD = new ObjectProperty<>("password", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultEnabledProperty> CLIENT_CREDENTIALS = new ObjectProperty<>("clientCredentials", DefaultEnabledProperty.class);
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> PASSWORD;
+
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> CLIENT_CREDENTIALS;
+
+    static {
+        PASSWORD = new ParentAwareObjectProperty<>("password", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        CLIENT_CREDENTIALS = new ParentAwareObjectProperty<>("client_credentials", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+    }
+
     private static final BooleanProperty ENABLED = new BooleanProperty("enabled");
 
-    public DefaultOAuth2Property(Map<String, Object> properties) {
-        super(properties);
+    public DefaultOAuth2Property(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+        super(name, properties, parent);
     }
 
     @Override
     public EnabledProperty getClientCredentials() {
-        return getObjectProperty(CLIENT_CREDENTIALS);
+        return getParentAwareObjectProperty(CLIENT_CREDENTIALS);
     }
 
     public void setClientCredentials(EnabledProperty clientCredentials) {
@@ -43,7 +51,7 @@ public class DefaultOAuth2Property extends ConfigurableProperty implements OAuth
 
     @Override
     public EnabledProperty getPassword() {
-        return getObjectProperty(PASSWORD);
+        return getParentAwareObjectProperty(PASSWORD);
     }
 
     public void setPassword(EnabledProperty password) {

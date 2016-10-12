@@ -17,25 +17,28 @@ package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.ExpandOptions;
 import com.stormpath.sdk.application.MeProperty;
+import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
-import com.stormpath.sdk.impl.resource.ObjectProperty;
+import com.stormpath.sdk.impl.resource.ParentAwareObjectProperty;
 
 import java.util.Map;
 
 public class DefaultMeProperty extends ConfigurableProperty implements MeProperty {
 
+    private static final ParentAwareObjectProperty<ExpandOptions, AbstractPropertyRetriever> EXPAND;
+    private static final BooleanProperty ENABLED = new BooleanProperty("enabled");
 
-    private static ObjectProperty<ExpandOptions> EXPAND = new ObjectProperty<>("uri", ExpandOptions.class);
+    static {
+        EXPAND = new ParentAwareObjectProperty<>("expand", ExpandOptions.class, AbstractPropertyRetriever.class);
+    }
 
-    private static BooleanProperty ENABLED = new BooleanProperty("enabled");
-
-    public DefaultMeProperty(Map<String, Object> properties) {
-        super(properties);
+    public DefaultMeProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+        super(name, properties, parent);
     }
 
     @Override
     public ExpandOptions getExpandOptions() {
-        return getObjectProperty(EXPAND);
+        return getParentAwareObjectProperty(EXPAND);
     }
 
     @Override
@@ -47,4 +50,5 @@ public class DefaultMeProperty extends ConfigurableProperty implements MePropert
     public void setEnabled(Boolean enabled) {
         setProperty(ENABLED, enabled);
     }
+
 }

@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.EnabledProperty;
+import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
 
 import java.util.Map;
@@ -24,8 +25,8 @@ public class DefaultEnabledProperty extends ConfigurableProperty implements Enab
 
     private static BooleanProperty ENABLED = new BooleanProperty("enabled");
 
-    public DefaultEnabledProperty(Map<String, Object> properties) {
-        super(properties);
+    public DefaultEnabledProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+        super(name, properties, parent);
     }
 
     @Override

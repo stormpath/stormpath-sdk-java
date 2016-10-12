@@ -269,10 +269,6 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
         setProperty(property.getName(), value, true);
     }
 
-    protected void setProperty(String name, Object value) {
-        setProperty(name, value, true);
-    }
-
     /**
      * @since 0.6.0
      */

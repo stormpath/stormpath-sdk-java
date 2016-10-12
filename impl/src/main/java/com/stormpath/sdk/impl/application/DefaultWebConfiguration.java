@@ -24,9 +24,10 @@ import com.stormpath.sdk.application.WebConfiguration;
 import com.stormpath.sdk.application.WebConfigurationStatus;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.EnumProperty;
-import com.stormpath.sdk.impl.resource.ObjectProperty;
+import com.stormpath.sdk.impl.resource.ParentAwareObjectProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
@@ -47,25 +48,38 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
     private static final StringProperty DOMAIN_NAME = new StringProperty("domainName");
     private static final StringProperty BASE_PATH = new StringProperty("basePath");
     private static final EnumProperty<WebConfigurationStatus> STATUS = new EnumProperty<>(WebConfigurationStatus.class);
-    private static final ObjectProperty<DefaultOAuth2Property> OAUTH2 = new ObjectProperty<>("oauth2", DefaultOAuth2Property.class);
-    private static final ObjectProperty<DefaultEnabledProperty> REGISTER = new ObjectProperty<>("register", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultEnabledProperty> VERIFY_EMAIL = new ObjectProperty<>("verifyEmail", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultEnabledProperty> LOGIN = new ObjectProperty<>("login", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultEnabledProperty> LOGOUT = new ObjectProperty<>("logout", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultEnabledProperty> FORGOT_PASSWORD = new ObjectProperty<>("forgotPassword", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultEnabledProperty> CHANGE_PASSWORD = new ObjectProperty<>("changePassword", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultEnabledProperty> CALLBACK = new ObjectProperty<>("callback", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultEnabledProperty> ID_SITE = new ObjectProperty<>("idSite", DefaultEnabledProperty.class);
-    private static final ObjectProperty<DefaultMeProperty> ME = new ObjectProperty<>("me", DefaultMeProperty.class);
+    private static final ParentAwareObjectProperty<DefaultOAuth2Property, AbstractPropertyRetriever> OAUTH2;
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> REGISTER;
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> VERIFY_EMAIL;
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> LOGIN;
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> LOGOUT;
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> FORGOT_PASSWORD;
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> CHANGE_PASSWORD;
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> CALLBACK;
+    private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> ID_SITE;
+    private static final ParentAwareObjectProperty<DefaultMeProperty, AbstractPropertyRetriever> ME;
+
+    static {
+        OAUTH2 = new ParentAwareObjectProperty<>("oauth2", DefaultOAuth2Property.class, AbstractPropertyRetriever.class);
+        REGISTER = new ParentAwareObjectProperty<>("register", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        VERIFY_EMAIL = new ParentAwareObjectProperty<>("verifyEmail", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        LOGIN = new ParentAwareObjectProperty<>("login", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        LOGOUT = new ParentAwareObjectProperty<>("logout", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        FORGOT_PASSWORD = new ParentAwareObjectProperty<>("forgotPassword", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        CHANGE_PASSWORD = new ParentAwareObjectProperty<>("changePassword", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        CALLBACK = new ParentAwareObjectProperty<>("callback", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        ID_SITE = new ParentAwareObjectProperty<>("idSite", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
+        ME = new ParentAwareObjectProperty<>("me", DefaultMeProperty.class, AbstractPropertyRetriever.class);
+    }
 
     // INSTANCE RESOURCE REFERENCES:
-    private static final ResourceReference<ApiKey> SIGNING_KEY = new ResourceReference<>("signingKey", ApiKey.class);
+    private static final ResourceReference<ApiKey> SIGNING_API_KEY = new ResourceReference<>("signingApiKey", ApiKey.class);
     private static final ResourceReference<Application> APPLICATION = new ResourceReference<>("application", Application.class);
     private static final ResourceReference<Tenant> TENANT = new ResourceReference<>("tenant", Tenant.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(CREATED_AT, MODIFIED_AT, DOMAIN_NAME,
             BASE_PATH, STATUS, OAUTH2, REGISTER, VERIFY_EMAIL, LOGIN, LOGOUT, FORGOT_PASSWORD, CHANGE_PASSWORD, CALLBACK, ID_SITE,
-            SIGNING_KEY, APPLICATION, TENANT);
+            SIGNING_API_KEY, APPLICATION, TENANT);
 
     public DefaultWebConfiguration(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
@@ -86,6 +100,7 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
         return getString(BASE_PATH);
     }
 
+    @Override
     public void setBasePath(String basePath) {
         setProperty(BASE_PATH, basePath);
     }
@@ -95,17 +110,19 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
         return getEnumProperty(STATUS);
     }
 
+    @Override
     public void setStatus(WebConfigurationStatus status) {
         setProperty(STATUS, status);
     }
 
     @Override
     public ApiKey getSigningApiKey() {
-        return getResourceProperty(SIGNING_KEY);
+        return getResourceProperty(SIGNING_API_KEY);
     }
 
+    @Override
     public void setSigningApiKey(ApiKey apiKey) {
-        setProperty(SIGNING_KEY, apiKey);
+        setResourceProperty(SIGNING_API_KEY, apiKey);
     }
 
     @Override
@@ -115,53 +132,53 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
 
     @Override
     public OAuth2Property getOAuth2() {
-        return getObjectProperty(OAUTH2);
+        return getParentAwareObjectProperty(OAUTH2);
     }
 
     @Override
     public EnabledProperty getRegister() {
-        return getObjectProperty(REGISTER);
+        return getParentAwareObjectProperty(REGISTER);
     }
 
     @Override
     public EnabledProperty getVerifyEmail() {
-        return getObjectProperty(VERIFY_EMAIL);
+        return getParentAwareObjectProperty(VERIFY_EMAIL);
     }
 
     @Override
     public EnabledProperty getLogin() {
-        return getObjectProperty(LOGIN);
+        return getParentAwareObjectProperty(LOGIN);
     }
 
 
     @Override
     public EnabledProperty getLogout() {
-        return getObjectProperty(LOGOUT);
+        return getParentAwareObjectProperty(LOGOUT);
     }
 
     @Override
     public EnabledProperty getForgotPassword() {
-        return getObjectProperty(FORGOT_PASSWORD);
+        return getParentAwareObjectProperty(FORGOT_PASSWORD);
     }
 
     @Override
     public EnabledProperty getChangePassword() {
-        return getObjectProperty(CHANGE_PASSWORD);
+        return getParentAwareObjectProperty(CHANGE_PASSWORD);
     }
 
     @Override
     public EnabledProperty getIdSite() {
-        return getObjectProperty(ID_SITE);
+        return getParentAwareObjectProperty(ID_SITE);
     }
 
     @Override
     public EnabledProperty getCallback() {
-        return getObjectProperty(CALLBACK);
+        return getParentAwareObjectProperty(CALLBACK);
     }
 
     @Override
     public MeProperty getMe() {
-        return getObjectProperty(ME);
+        return getParentAwareObjectProperty(ME);
     }
 
     @Override
