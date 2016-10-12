@@ -101,7 +101,8 @@
                                 <label>Easy 1-click login:</label>
                                 <c:forEach items="${accountStores}" var="accountStore">
                                     <button class="btn btn-social btn-${accountStore.provider.providerId}"
-                                            id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}">
+                                            id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}"
+                                            data-scope="${accountStore.provider.scope}">
                                         <c:if test="${accountStore.provider.providerId != 'saml'}">
                                             <span class="fa fa-${accountStore.provider.providerId}"></span>
                                         </c:if>
