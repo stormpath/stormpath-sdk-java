@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 1.1.1 ##
+
+See [1.1.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.1+is%3Aclosed) for a complete list of changes.
+
 ### 1.1.0 ##
 
 This release includes support for multi-factor authentication, Spring Cloud Zuul, a `stormpath_social` grant type for OAuth, improved
