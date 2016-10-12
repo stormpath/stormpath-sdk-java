@@ -812,7 +812,7 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     @Test
     void testGetAccountSchema() {
@@ -833,7 +833,7 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     @Test
     void testGetDirectoryWithExpandedAccountSchema() {
@@ -864,7 +864,6 @@ class DirectoryIT extends ClientIT {
     @Test
     public void testCreateAccountWithDefaultAccountSchema() {
         def app = createTempApp()
-        //Directory directory = app.getDefaultAccountStore()
         def username = uniquify('Stormpath-SDK-Test-App-Acct1')
         def account = client.instantiate(Account)
                 .setUsername(username)
@@ -901,7 +900,7 @@ class DirectoryIT extends ClientIT {
             app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
             fail("Account requires giveName according to the account schema.")
         } catch (com.stormpath.sdk.resource.ResourceException e) {
-            assertEquals(e.stormpathError.message, "Account givenName is required; it cannot be null, empty, or blank.")
+            assertEquals(e.stormpathError.code, 2000)
         }
     }
 
@@ -929,7 +928,7 @@ class DirectoryIT extends ClientIT {
             app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
             fail("Account requires surname according to the account schema.")
         } catch (com.stormpath.sdk.resource.ResourceException e) {
-            assertEquals(e.stormpathError.message, "Account surname is required; it cannot be null, empty, or blank.")
+            assertEquals(e.stormpathError.code, 2000)
         }
     }
 }

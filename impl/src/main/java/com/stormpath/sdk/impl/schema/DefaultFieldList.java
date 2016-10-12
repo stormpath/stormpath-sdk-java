@@ -15,8 +15,6 @@
  */
 package com.stormpath.sdk.impl.schema;
 
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
@@ -26,6 +24,9 @@ import com.stormpath.sdk.schema.FieldList;
 
 import java.util.Map;
 
+/**
+ * @since 1.2.0
+ */
 public class DefaultFieldList extends AbstractCollectionResource<Field> implements FieldList {
 
     private static final ArrayProperty<Field> ITEMS = new ArrayProperty<>("items", Field.class);

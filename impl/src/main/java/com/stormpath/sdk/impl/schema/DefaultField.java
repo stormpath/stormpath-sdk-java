@@ -26,6 +26,9 @@ import com.stormpath.sdk.schema.Schema;
 
 import java.util.Map;
 
+/**
+ * @since 1.2.0
+ */
 public class DefaultField extends AbstractInstanceResource implements Field {
 
     // SIMPLE PROPERTIES

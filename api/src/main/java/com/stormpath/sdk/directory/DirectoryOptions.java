@@ -32,5 +32,12 @@ public interface DirectoryOptions<T extends DirectoryOptions> extends AccountSto
      */
     T withCustomData();
 
+    /**
+     * Ensures that when retrieving a Directory, the Directory's {@link Directory#getAccountSchema()} is also retrieved in the same request.
+     * This enhances performance by leveraging a single request to retrieve multiple related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     * @since 1.2.0
+     */
     T withAccountSchema();
 }

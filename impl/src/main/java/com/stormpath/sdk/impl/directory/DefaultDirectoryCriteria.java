@@ -88,7 +88,7 @@ public class DefaultDirectoryCriteria extends DefaultCriteria<DirectoryCriteria,
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.2.0
      */
     @Override
     public DirectoryCriteria withAccountSchema() {

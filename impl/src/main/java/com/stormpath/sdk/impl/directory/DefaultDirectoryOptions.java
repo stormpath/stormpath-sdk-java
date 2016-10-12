@@ -60,7 +60,7 @@ public class DefaultDirectoryOptions extends DefaultOptions<DirectoryOptions> im
     }
 
     /**
-     * @since 1.0.4
+     * @since 1.2.0
      */
     @Override
     public DirectoryOptions withAccountSchema() {

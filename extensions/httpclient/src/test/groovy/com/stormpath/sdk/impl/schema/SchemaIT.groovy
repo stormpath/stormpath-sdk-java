@@ -25,6 +25,7 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
 import static org.testng.Assert.assertTrue
 
 /**
@@ -64,7 +65,7 @@ class SchemaIT extends ClientIT {
     }
 
     @Test
-    void testUpdateGivenNameFieldToRequired() {
+    void testUpdateGivenNameFieldToRequiredAndBack() {
         def accountSchema = directory.getAccountSchema();
 
         String fieldHref = ""
@@ -79,6 +80,11 @@ class SchemaIT extends ClientIT {
 
         Field givenNameField = client.getResource(fieldHref, Field)
         assertTrue(givenNameField.required)
+
+        givenNameField.required = false
+        givenNameField.save()
+
+        assertFalse(client.getResource(fieldHref, Field).required)
     }
 
     @Test
@@ -95,7 +101,12 @@ class SchemaIT extends ClientIT {
             }
         }
 
-        Field givenNameField = client.getResource(fieldHref, Field)
-        assertTrue(givenNameField.required)
+        Field surenameField = client.getResource(fieldHref, Field)
+        assertTrue(surenameField.required)
+
+        surenameField.required = false
+        surenameField.save()
+
+        assertFalse(client.getResource(fieldHref, Field).required)
     }
 }

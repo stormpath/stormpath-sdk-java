@@ -558,5 +558,11 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
      */
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
 
+    /**
+     * Returns the directory {@link Schema}
+     *
+     * @return the account schema
+     * @since 1.2.0
+     */
     Schema getAccountSchema();
 }

@@ -21,16 +21,19 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
 /**
- * Schema represent a {@link Directory} account field configuration, where users can mark {@link Account} fields as required or not.
+ * Schema represent the {@link Account} schema configuration used to determine which fields in the account resource are required.
+ * <p>
+ * The account schema belongs to a {@link Directory} and thus it applies to all the accounts on it.
  *
  * @since 1.2.0
  */
 public interface Schema extends Resource, Saveable {
 
     /**
-     * Returns the {@link com.stormpath.sdk.resource.CollectionResource} of fields for the schema
+     * Returns a paginated list of all the {@link Field fields} defined by this schema.
      *
      * @return The list of fields
+     * @since 1.2.0
      */
     FieldList getFields();
 

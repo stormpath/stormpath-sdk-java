@@ -19,12 +19,15 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.schema.Schema;
 import com.stormpath.sdk.schema.Field;
 import com.stormpath.sdk.schema.FieldList;
+import com.stormpath.sdk.schema.Schema;
 
 import java.util.Map;
 
+/**
+ * @since 1.2.0
+ */
 public class DefaultSchema extends AbstractInstanceResource implements Schema {
 
     //COLLECTION RESOURCE REFERENCES:

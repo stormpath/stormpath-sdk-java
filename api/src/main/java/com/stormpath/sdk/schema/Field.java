@@ -42,7 +42,6 @@ public interface Field extends Resource, Saveable, Deletable {
 
     /**
      * Sets the field as required or not
-     * <p>
      * <p>After calling this method, you must call {@link #save()} to propagate the change to the Stormpath
      * servers.</p>
      *
