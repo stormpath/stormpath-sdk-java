@@ -25,6 +25,7 @@ import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.organization.Organization;
+import com.stormpath.sdk.provider.GoogleProvider;
 import com.stormpath.sdk.provider.OAuthProvider;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.saml.SamlProvider;
@@ -85,7 +86,10 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
             Provider provider = directory.getProvider();
             ProviderModel providerModel = null;
 
-            if (provider instanceof OAuthProvider) {
+            if (provider instanceof GoogleProvider) {
+                providerModel = new GoogleOAuthProviderModel((GoogleProvider) provider);
+            }
+            else if (provider instanceof OAuthProvider) {
                 providerModel = new DefaultOAuthProviderModel((OAuthProvider) provider);
             } else if (provider instanceof SamlProvider) {
                 //We currently don't need to retain any SAML-specific values for the login model, so we

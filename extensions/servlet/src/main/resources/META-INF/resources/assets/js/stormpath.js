@@ -16,7 +16,7 @@
 $('.btn-google').click(function (event) {
     event.preventDefault();
     var $btn = $('.btn-google');
-    googleLogin($btn.attr('id'), $btn.data('scope'));
+    googleLogin($btn.attr('id'), $btn.data('scope'), $btn.data('hd'), $btn.data('display'), $btn.data('access_type'));
 });
 
 $('.btn-facebook').click(function (event) {
@@ -61,17 +61,27 @@ function linkedinLogin(clientId, scope) {
     );
 }
 
-function googleLogin(clientId, scope) {
+function googleLogin(clientId, scope, hd, display, accessType) {
     scope = scope || 'email';
+    var params = {
+        response_type: 'code',
+        client_id: clientId,
+        scope: scope,
+        redirect_uri: baseUrl() + '/callbacks/google'
+    };
+    if (hd) {
+        params.hd = hd;
+    }
+    if (display) {
+        params.display = display;
+    }
+    if (accessType) {
+        params.access_type = accessType;
+    }
     window.location.replace(
         buildUrl(
             'https://accounts.google.com/o/oauth2/auth',
-            {
-                response_type: 'code',
-                client_id: clientId,
-                scope: scope,
-                redirect_uri: baseUrl() + '/callbacks/google'
-            }
+            params
         )
     );
 }
