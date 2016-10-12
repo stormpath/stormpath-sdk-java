@@ -40,7 +40,8 @@
                                         </c:when>
                                         <c:otherwise>
                                             <sp:message key="stormpath.web.login.form.titleWithRegister">
-                                                <sp:param><a href="${pageContext.request.contextPath}${registerUri}"><sp:message
+                                                <sp:param><a
+                                                        href="${pageContext.request.contextPath}${registerUri}"><sp:message
                                                         key="stormpath.web.login.form.registerLink.text"/></a></sp:param>
                                             </sp:message>
                                         </c:otherwise>
@@ -75,7 +76,7 @@
                                         <c:otherwise>
                                             <div form-group="true" class="form-group group-${field.name}">
                                                 <label class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-4'}"/>">
-                                                    ${field.label}</label>
+                                                        ${field.label}</label>
                                                 <div class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-8'}"/>">
                                                     <input name="${field.name}" value="${field.value}"
                                                            type="${field.type}"
@@ -100,17 +101,35 @@
                                 <div class="header">&nbsp;</div>
                                 <label>Easy 1-click login:</label>
                                 <c:forEach items="${accountStores}" var="accountStore">
-                                    <button class="btn btn-social btn-${accountStore.provider.providerId}"
-                                            id="${accountStore.provider.providerId == 'saml' ? accountStore.href : accountStore.provider.clientId}"
-                                            data-scope="${accountStore.provider.scope}">
-                                        <c:if test="${accountStore.provider.providerId != 'saml'}">
-                                            <span class="fa fa-${accountStore.provider.providerId}"></span>
-                                        </c:if>
-                                        <c:if test="${accountStore.provider.providerId == 'saml'}">
-                                            <span class="fa fa-lock"></span>
-                                        </c:if>
-                                        <c:out value="${accountStore.provider.providerId == 'saml' ? accountStore.name : accountStore.provider.providerId}"/>
-                                    </button>
+                                    <c:choose>
+                                        <c:when test="${accountStore.provider.providerId == 'saml'}">
+                                            <button class="btn btn-social btn-saml"
+                                                    id="${accountStore.href}">
+                                                <span class="fa fa-lock"></span>
+                                                <c:out value="${accountStore.name}"/>
+                                            </button>
+                                        </c:when>
+                                        <c:when test="${accountStore.provider.providerId == 'google'}">
+                                            <button class="btn btn-social btn-google"
+                                                    id="${accountStore.provider.clientId}"
+                                                    data-scope="${accountStore.provider.scope}"
+                                                    data-hd="${accountStore.provider.hd}"
+                                                    data-display="${accountStore.provider.display}"
+                                                    data-access_type="${accountStore.provider.accessType}"
+                                            >
+                                                <span class="fa fa-google"></span>
+                                                <c:out value="google"/>
+                                            </button>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <button class="btn btn-social btn-${accountStore.provider.providerId}"
+                                                    id="${accountStore.provider.clientId}"
+                                                    data-scope="${accountStore.provider.scope}">
+                                                <span class="fa fa-${accountStore.provider.providerId}"></span>
+                                                <c:out value="${accountStore.provider.providerId}"/>
+                                            </button>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:forEach>
                             </div>
                         </c:if>
