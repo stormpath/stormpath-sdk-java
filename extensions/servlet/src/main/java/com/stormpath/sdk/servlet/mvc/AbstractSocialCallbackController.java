@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class AbstractSocialCallbackController extends AbstractController {
 
+    private static final String FAKE_LINKEDIN_STATE = "oauthState";
+
     protected Saver<AuthenticationResult> authenticationResultSaver;
 
     public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
@@ -78,7 +80,7 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
         //Fixes #849 we send in the state the original path the user requested based on the next query param, so we can redirect back
         String redirectUri = nextUri;
         String next = ServletUtils.getCleanParam(request, "state");
-        if (Strings.hasText(next)) {
+        if (Strings.hasText(next) && !next.equals(FAKE_LINKEDIN_STATE)) {
             redirectUri = next;
         }
 

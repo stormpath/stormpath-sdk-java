@@ -15,22 +15,26 @@
  */
 $('.btn-google').click(function (event) {
     event.preventDefault();
-    googleLogin($('.btn-google').attr('id'));
+    var $btn = $('.btn-google');
+    googleLogin($btn.attr('id'), $btn.data('scope'));
 });
 
 $('.btn-facebook').click(function (event) {
     event.preventDefault();
-    facebookLogin($('.btn-facebook').attr('id'));
+    var $btn = $('.btn-facebook');
+    facebookLogin($btn.attr('id'), $btn.data('scope'));
 });
 
 $('.btn-github').click(function (event) {
     event.preventDefault();
-    githubLogin($('.btn-github').attr('id'));
+    var $btn = $('.btn-github');
+    githubLogin($btn.attr('id'), $btn.data('scope'));
 });
 
 $('.btn-linkedin').click(function (event) {
     event.preventDefault();
-    linkedinLogin($('.btn-linkedin').attr('id'));
+    var $btn = $('.btn-linkedin');
+    linkedinLogin($btn.attr('id'), $btn.data('scope'));
 });
 
 $('.btn-saml').click(function (event) {
@@ -42,13 +46,14 @@ function baseUrl() {
     return $('#baseUrl').val();
 }
 
-function linkedinLogin(clientId) {
+function linkedinLogin(clientId, scope) {
+    scope = scope || 'r_emailaddress r_basicprofile';
     window.location.replace(
         buildUrl('https://www.linkedin.com/uas/oauth2/authorization',
             {
                 client_id: clientId,
                 response_type: 'code',
-                scope: 'r_emailaddress r_basicprofile',
+                scope: scope,
                 redirect_uri: baseUrl() + '/callbacks/linkedin',
                 state: 'oauthState' //linkedin requires state to be pass all the time.
             }
@@ -56,30 +61,33 @@ function linkedinLogin(clientId) {
     );
 }
 
-function googleLogin(clientId) {
+function googleLogin(clientId, scope) {
+    scope = scope || 'email';
     window.location.replace(
         buildUrl(
             'https://accounts.google.com/o/oauth2/auth',
             {
                 response_type: 'code',
                 client_id: clientId,
-                scope: 'email',
+                scope: scope,
                 redirect_uri: baseUrl() + '/callbacks/google'
             }
         )
     );
 }
 
-function githubLogin(clientId) {
-    window.location.replace(buildUrl('https://github.com/login/oauth/authorize', {'client_id': clientId}));
+function githubLogin(clientId, scope) {
+    window.location.replace(buildUrl('https://github.com/login/oauth/authorize', {client_id: clientId, scope: scope}));
 }
 
 function samlLogin(href) {
     window.location.replace(buildUrl(baseUrl() + '/saml', {'href': href}));
 }
 
-function facebookLogin(appId) {
+function facebookLogin(appId, scope) {
     var FB = window.FB;
+    scope = scope || 'email';
+    scope = scope.replace(' ', ',');
     FB.init({
         appId: appId,
         cookie: true,
@@ -95,7 +103,7 @@ function facebookLogin(appId) {
                 window.location.replace(buildUrl(baseUrl() + '/callbacks/facebook', {accessToken: FB.getAuthResponse()['accessToken']}));
             }
         }
-    }, {scope: 'email'});
+    }, {scope: scope});
 }
 
 (function (d, s, id) {
@@ -110,14 +118,14 @@ function facebookLogin(appId) {
 }(document, 'script', 'facebook-jssdk'));
 
 function getParameterByName(name) {
-    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    var match = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 
 function buildUrl(url, params) {
     var next = getParameterByName('next');
 
-    if (next !== undefined && next !== '') {
+    if (next) {
         params.state = next;
     }
 
