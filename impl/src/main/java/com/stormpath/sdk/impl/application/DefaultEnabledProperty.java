@@ -31,7 +31,7 @@ public class DefaultEnabledProperty extends ConfigurableProperty implements Enab
 
     @Override
     public Boolean isEnabled() {
-        return getBoolean(ENABLED);
+        return getNullableBoolean(ENABLED);
     }
 
     public void setEnabled(Boolean enabled) {

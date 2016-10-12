@@ -20,6 +20,7 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.application.EnabledProperty
 import com.stormpath.sdk.application.OAuth2Property
 import com.stormpath.sdk.application.WebConfiguration
 import com.stormpath.sdk.application.WebConfigurationStatus
@@ -65,6 +66,17 @@ class WebConfigurationIT extends ClientIT {
         OAuth2Property readOAuth2 = readWebConfig.getOAuth2()
 
         assertFalse readOAuth2.getPassword().isEnabled()
+    }
+
+    @Test
+    void testUpdateNullableProperties()  {
+
+        def webConfig = createTempApp().getWebConfiguration()
+
+        EnabledProperty enabledProperty = webConfig.getVerifyEmail()
+
+        assertNull enabledProperty.isEnabled()
+
     }
 
     @Test

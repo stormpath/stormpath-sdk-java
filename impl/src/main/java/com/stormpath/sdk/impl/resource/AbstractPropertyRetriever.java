@@ -86,6 +86,14 @@ public abstract class AbstractPropertyRetriever {
      * @since 0.9
      */
     protected boolean getBooleanProperty(String key) {
+        return getNullableBooleanProperty(key) == Boolean.TRUE;
+    }
+
+    protected Boolean getNullableBoolean(BooleanProperty property) {
+        return getNullableBooleanProperty(property.getName());
+    }
+
+    protected Boolean getNullableBooleanProperty(String key) {
         Object value = getProperty(key);
         if (value != null) {
             if (value instanceof Boolean) {
@@ -94,7 +102,7 @@ public abstract class AbstractPropertyRetriever {
                 return Boolean.valueOf((String) value);
             }
         }
-        return Boolean.FALSE;
+        return null;
     }
 
     private int parseInt(String value) {

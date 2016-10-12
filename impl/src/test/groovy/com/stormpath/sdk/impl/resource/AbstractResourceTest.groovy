@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,8 @@ package com.stormpath.sdk.impl.resource
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
-import java.lang.reflect.Method
-
 import static org.easymock.EasyMock.*
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertNull
-import static org.testng.Assert.fail
+import static org.testng.Assert.*
 
 /**
  * @since 0.4.1
@@ -102,24 +98,17 @@ class AbstractResourceTest {
 
         def testResource = new TestResource(ds, props)
 
+        def linkBaseUrl = testResource.getMapProperty("defaultModel").get('linkBaseUrl')
 
-        Method method = AbstractResource.getDeclaredMethod("getMapProperty", String)
-        method.setAccessible(true)
+        assertEquals(linkBaseUrl, "https://api.stormpath.com/passwordReset")
 
-        Object[] parameters = new Object[1]
-        parameters[0] = "defaultModel"
+        assertNull testResource.getMapProperty("nonExistentMapProperty")
 
-        assertEquals(((Map) method.invoke(testResource, parameters)).get('linkBaseUrl'), "https://api.stormpath.com/passwordReset")
-
-        parameters[0] = "nonExistentMapProperty"
-        assertNull(method.invoke(testResource, parameters))
-
-        parameters[0] = "name"
         try {
-            method.invoke(testResource, parameters)
+            testResource.getMapProperty("name")
             fail("Should have thrown")
-        } catch (Exception e) {
-            assertEquals(e.getCause().toString(), "java.lang.IllegalArgumentException: 'name' property value type does not match the specified type. Specified type: Map. Existing type: java.lang.String.  Value: Default Password Reset Email Template")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "'name' property value type does not match the specified type. Specified type: Map. Existing type: java.lang.String.  Value: Default Password Reset Email Template")
         }
     }
 
