@@ -252,8 +252,8 @@ public abstract class AbstractPropertyRetriever {
             }
         }
 
-        String msg = "'" + name + "' property value type does not match the specified type. Specified type: " + type.getTypeName() +
-                ". Existing type: " + value.getClass().getName();
+        String msg = "'" + name + "' property value type does not match the specified property type. " +
+                "Existing type: " + value.getClass().getName();
 
         msg += (isPrintableProperty(name) ? ".  Value: " + value : ".");
 

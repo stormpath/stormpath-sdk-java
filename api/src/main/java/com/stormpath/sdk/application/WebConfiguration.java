@@ -21,7 +21,10 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
 /**
- * @since 1.1.0
+ * A WebConfiguration resource is used to configure how the {@link Application} owner of {@link WebConfiguration this}
+ * resource, to act as server less client.
+ *
+ * @since 1.2.0
  */
 public interface WebConfiguration extends Resource, Saveable, Auditable {
 

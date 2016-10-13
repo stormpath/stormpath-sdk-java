@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,13 @@
 package com.stormpath.sdk.application;
 
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountLinker;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.authc.AuthenticationRequest;
@@ -1134,7 +1140,7 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * Returns the {@link WebConfiguration} associated with this application.
      *
      * @return the {@link WebConfiguration} associated with this application.
-     * @since 1.1.0
+     * @since 1.2.0
      */
     WebConfiguration getWebConfiguration();
 

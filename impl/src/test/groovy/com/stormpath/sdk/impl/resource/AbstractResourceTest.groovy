@@ -148,8 +148,8 @@ class AbstractResourceTest {
 
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "'basePath' property value type does not match the specified type. " +
-                    "Specified type: com.stormpath.sdk.impl.application.DefaultEnabledProperty. Existing type: java.lang.String.  Value: /path")
+            assertEquals(e.getMessage(), "'basePath' property value type does not match the specified property type. " +
+                    "Existing type: java.lang.String.  Value: /path")
         }
 
     }
