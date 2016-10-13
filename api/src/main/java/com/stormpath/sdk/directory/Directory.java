@@ -559,9 +559,9 @@ public interface Directory extends Resource, Saveable, Deletable, AccountStore, 
     OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(OrganizationAccountStoreMappingCriteria criteria);
 
     /**
-     * Returns the directory {@link Schema}
+     * Returns this directory's {@link Schema} which is used to configure the fields that new accounts are required to have.
      *
-     * @return the account schema
+     * @return the schema associated to to this directory
      * @since 1.2.0
      */
     Schema getAccountSchema();

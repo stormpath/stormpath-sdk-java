@@ -21,9 +21,10 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
 /**
- * Schema represent the {@link Account} schema configuration used to determine which fields in the account resource are required.
- * <p>
- * The account schema belongs to a {@link Directory} and thus it applies to all the accounts on it.
+ * Schema represents the {@link Account} schema configuration used to determine which fields in the account resource are required.
+ * <p>The account schema belongs to a {@link Directory} and thus it applies to the accounts it contains.</p>.
+ * <p>Please note that the schema is enforced during Account creation time. A change in the schema is not applied to already
+ * existent accounts.</p>
  *
  * @since 1.2.0
  */

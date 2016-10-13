@@ -852,6 +852,10 @@ class DirectoryIT extends ClientIT {
         def accountSchema = directory.getAccountSchema()
         assertNotNull accountSchema
         assertNotNull accountSchema.getHref()
+        //Let's check the schema is really materialized (ie. was properly expanded)
+        assertTrue accountSchema.toString().contains("modifiedAt")
+        assertTrue accountSchema.toString().contains("createdAt")
+        assertTrue accountSchema.toString().contains("/fields")
 
         def accountSchema1 = client.getResource(accountSchema.getHref(), Schema)
 
@@ -863,10 +867,29 @@ class DirectoryIT extends ClientIT {
      */
     @Test
     public void testCreateAccountWithDefaultAccountSchema() {
+
         def app = createTempApp()
         def username = uniquify('Stormpath-SDK-Test-App-Acct1')
         def account = client.instantiate(Account)
-                .setUsername(username)
+                .setPassword("Changeme1!")
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+            fail("Account requires email according to the account schema.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.stormpathError.code, 2000)
+        }
+
+        account = client.instantiate(Account)
+                .setEmail(username + "@nowhere.com")
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+            fail("Account requires username according to the account schema.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.stormpathError.code, 2000)
+        }
+
+        //By default the email and password are the solely required fields
+        account = client.instantiate(Account)
                 .setPassword("Changeme1!")
                 .setEmail(username + "@nowhere.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
@@ -898,7 +921,7 @@ class DirectoryIT extends ClientIT {
                 .setEmail(username + "@nowhere.com")
         try {
             app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
-            fail("Account requires giveName according to the account schema.")
+            fail("Account requires givenName according to the account schema.")
         } catch (com.stormpath.sdk.resource.ResourceException e) {
             assertEquals(e.stormpathError.code, 2000)
         }
@@ -908,7 +931,7 @@ class DirectoryIT extends ClientIT {
      * @since 1.2.0
      */
     @Test
-    void testCreateAccountWithSurnameSchemaFieldRequired() {
+    void testRequiredFieldTrueAndFalseResultsInDifferentResults() {
         def app = createTempApp()
 
         Directory directory = app.getDefaultAccountStore() as Directory
@@ -930,5 +953,21 @@ class DirectoryIT extends ClientIT {
         } catch (com.stormpath.sdk.resource.ResourceException e) {
             assertEquals(e.stormpathError.code, 2000)
         }
+
+        //Let's now set surname to false and try if we can add the account without the surname one more tiem
+        directory.accountSchema.fields.each { field ->
+            if ("surname" == field.name) {
+                field.required = false
+                field.save()
+            }
+        }
+
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+
+        deleteOnTeardown(account)
+
+        assertNull(account.getGivenName())
+        assertNull(account.getSurname())
     }
+
 }
