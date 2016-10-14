@@ -297,4 +297,26 @@ public final class Applications {
         return (OAuthApiRequestAuthenticator) Classes.newInstance("com.stormpath.sdk.impl.oauth.authc.DefaultOAuthApiRequestAuthenticator", application);
     }
 
+    /**
+     * This operation will ask the backend to do a case-insensitive matching query on all viewable attributes in all the resources in the Collection.
+     *
+     * So the following query:
+     *
+     * tenant.getApplications(Applications.where(Applications.filter("Java SDK IT App"));
+     *
+     * Returns all Applications where:
+     *
+     * Each Application exists inside an ApplicationStore belonging to the Tenant `tenant`
+     * The Application’s name equals or contains “Java SDK IT App” (case insensitive) OR
+     * The Applications’s description equals or contains “Java SDK IT App” (case insensitive) OR
+     * And so on
+     *
+     * @param value The value to search for
+     * @return A Criterion representing the filter query
+     * @since 1.2.0
+     */
+    public static Criterion filter(String value){
+        return newStringExpressionFactory("q").eqIgnoreCase(value);
+    }
+
 }

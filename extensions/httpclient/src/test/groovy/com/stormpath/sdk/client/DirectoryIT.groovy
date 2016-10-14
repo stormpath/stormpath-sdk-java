@@ -116,6 +116,55 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
+     * @since 1.2.0
+     */
+    @Test
+    void testFilterDirectories() {
+        def tenant = client.currentTenant
+
+        Directory dir1 = client.instantiate(Directory)
+        dir1.name = uniquify("Java SDK: DirectoryIT.testFilterDirectories01")
+        dir1.description = 'testFilterDirectories01'
+        dir1 = client.createDirectory(dir1);
+        deleteOnTeardown(dir1)
+        assertNotNull dir1.href
+
+        Directory dir2 = client.instantiate(Directory)
+        dir2.name = uniquify("Java SDK: DirectoryIT.testFilterDirectories02")
+        dir2.description = 'testFilterDirectories02'
+        dir2 = client.createDirectory(dir2);
+        deleteOnTeardown(dir2)
+        assertNotNull dir2.href
+
+        //verify that the filter search works with a combination of criteria
+        def foundDirs2 = tenant.getDirectories(Directories.where(Directories.filter('testFilterDirectories02')).and(Directories.description().endsWithIgnoreCase('02')))
+        def foundDir2 = foundDirs2.iterator().next()
+        assertEquals(foundDir2.href, dir2.href)
+
+        //verify that the filter search works
+        def allDirs = tenant.getDirectories(Directories.where(Directories.filter('testFilterDirectories')))
+        assertEquals(allDirs.size(), 2)
+
+        //verify that the filter search returns an empty collection if there is no match
+        def emptyCollection = tenant.getDirectories(Directories.where(Directories.filter('not_found')))
+        assertTrue(emptyCollection.size() == 0)
+
+        //verify that a non matching criteria added to a matching criteria is working as a final non matching criteria
+        //ie. there are no properties matching 'not_found' but there are 1 account matching 'description=02'
+        def emptyCollection2 = tenant.getDirectories(Directories.where(Directories.filter('not_found')).and(Directories.description().endsWithIgnoreCase('02')))
+        assertTrue(emptyCollection2.size() == 0)
+
+        //verify that the filter search match with substrings
+        def allOrgs2 = tenant.getDirectories(Directories.where(Directories.filter("FilterDirectories")))
+        assertEquals(allOrgs2.size(), 2)
+
+        //test delete:
+        for (def dir : allDirs){
+            dir.delete()
+        }
+    }
+
+    /**
      * @since 1.0.RC
      */
     @Test
