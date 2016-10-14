@@ -46,7 +46,7 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
 
     // SIMPLE PROPERTIES:
     private static final StringProperty DOMAIN_NAME = new StringProperty("domainName");
-    private static final StringProperty BASE_PATH = new StringProperty("basePath");
+    private static final StringProperty DNS_LABEL = new StringProperty("dnsLabel");
     private static final EnumProperty<WebConfigurationStatus> STATUS = new EnumProperty<>(WebConfigurationStatus.class);
     private static final ParentAwareObjectProperty<DefaultOAuth2Property, AbstractPropertyRetriever> OAUTH2;
     private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> REGISTER;
@@ -78,7 +78,7 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
     private static final ResourceReference<Tenant> TENANT = new ResourceReference<>("tenant", Tenant.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(CREATED_AT, MODIFIED_AT, DOMAIN_NAME,
-            BASE_PATH, STATUS, OAUTH2, REGISTER, VERIFY_EMAIL, LOGIN, LOGOUT, FORGOT_PASSWORD, CHANGE_PASSWORD, CALLBACK, ID_SITE,
+            DNS_LABEL, STATUS, OAUTH2, REGISTER, VERIFY_EMAIL, LOGIN, LOGOUT, FORGOT_PASSWORD, CHANGE_PASSWORD, CALLBACK, ID_SITE,
             SIGNING_API_KEY, APPLICATION, TENANT);
 
     public DefaultWebConfiguration(InternalDataStore dataStore, Map<String, Object> properties) {
@@ -96,13 +96,13 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
     }
 
     @Override
-    public String getBasePath() {
-        return getString(BASE_PATH);
+    public String getDnsLabel() {
+        return getString(DNS_LABEL);
     }
 
     @Override
-    public void setBasePath(String basePath) {
-        setProperty(BASE_PATH, basePath);
+    public void setDnsLabel(String basePath) {
+        setProperty(DNS_LABEL, basePath);
     }
 
     @Override

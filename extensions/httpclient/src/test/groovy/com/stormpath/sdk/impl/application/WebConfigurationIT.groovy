@@ -16,6 +16,7 @@
 
 package com.stormpath.sdk.impl.application
 
+import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationCriteria
@@ -73,7 +74,6 @@ class WebConfigurationIT extends ClientIT {
 
         def webConfig = createTempApp().getWebConfiguration()
 
-        webConfig.setBasePath("/a/path")
         webConfig.setStatus(WebConfigurationStatus.DISABLED)
         webConfig.setSigningApiKey(null)
 
@@ -81,7 +81,6 @@ class WebConfigurationIT extends ClientIT {
 
         def readWebConfig = buildClient(false).getResource(webConfig.href, WebConfiguration)
 
-        assertEquals readWebConfig.basePath, "/a/path"
         assertEquals readWebConfig.status, WebConfigurationStatus.DISABLED
         assertNull readWebConfig.signingApiKey
     }
@@ -117,24 +116,12 @@ class WebConfigurationIT extends ClientIT {
     }
 
     @Test
-    void enableWebConfiguration() {
+    void testWebConfiguration_updateApiKey() {
 
-        def criteria = Applications.where(Applications.name().eqIgnoreCase("My Application")).withWebConfiguration()
-        def adminApplication = getTenantApplication(client, criteria)
+        def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfiguration()
+        def adminApp = getTenantApplication(client, criteria)
 
-        def directory = client.instantiate(Directory)
-        directory.setName(uniquify("Admins"))
-
-        deleteOnTeardown(directory)
-        client.currentTenant.createDirectory(directory)
-
-        ApplicationAccountStoreMapping mapping = adminApplication.addAccountStore(directory)
-        mapping.setDefaultAccountStore(true)
-        mapping.save()
-
-        def adminAccount = createTestAccount(adminApplication)
-
-        def apiKey = adminAccount.createApiKey()
+        def apiKey = createTmpApiKey(adminApp)
 
         def webConfig = createTempApp().getWebConfiguration()
 
@@ -143,6 +130,47 @@ class WebConfigurationIT extends ClientIT {
         webConfig.save()
 
         assertNotNull webConfig.domainName
+    }
+
+    @Test
+    void testEnableStormpathAdminApp_ErrorResponse() {
+
+        def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfiguration()
+        def adminApp = getTenantApplication(client, criteria)
+
+        def apiKey = createTmpApiKey(adminApp)
+
+        def webConfig =  adminApp.getWebConfiguration()
+
+        assertEquals webConfig.getStatus(), WebConfigurationStatus.DISABLED
+        assertNull webConfig.getDomainName()
+        assertNull webConfig.getDnsLabel()
+
+        try {
+            webConfig.setStatus(WebConfigurationStatus.ENABLED)
+            webConfig.setSigningApiKey(apiKey)
+            webConfig.save()
+            fail("should have failed")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals e.getStatus(), 400
+        }
+    }
+
+    ApiKey createTmpApiKey(Application application) {
+        def directory = client.instantiate(Directory)
+        directory.setName(uniquify("Admins"))
+
+        deleteOnTeardown(directory)
+        client.currentTenant.createDirectory(directory)
+
+        ApplicationAccountStoreMapping mapping = application.addAccountStore(directory)
+        mapping.setDefaultAccountStore(true)
+        mapping.save()
+
+        def adminAccount = createTestAccount(application)
+
+        return adminAccount.createApiKey()
+
     }
 
     static Application getTenantApplication(Client client, ApplicationCriteria criteria) {

@@ -30,9 +30,9 @@ public interface WebConfiguration extends Resource, Saveable, Auditable {
 
     String getDomainName();
 
-    String getBasePath();
+    String getDnsLabel();
 
-    void setBasePath(String basePath);
+    void setDnsLabel(String dnsLabel);
 
     WebConfigurationStatus getStatus();
 
