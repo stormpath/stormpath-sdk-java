@@ -85,6 +85,12 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Pulls in HttpClientRequestExecutor implementation for testing in DefaultClientLoaderListenerTest -->
         <dependency>
             <groupId>com.stormpath.sdk</groupId>
