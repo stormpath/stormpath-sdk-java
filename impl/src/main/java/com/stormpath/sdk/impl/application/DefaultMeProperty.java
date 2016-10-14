@@ -25,11 +25,11 @@ import java.util.Map;
 
 public class DefaultMeProperty extends ConfigurableProperty implements MeProperty {
 
-    private static final ParentAwareObjectProperty<ExpandOptions, AbstractPropertyRetriever> EXPAND;
+    private static final ParentAwareObjectProperty<DefaultExpandOptions, AbstractPropertyRetriever> EXPAND;
     private static final BooleanProperty ENABLED = new BooleanProperty("enabled");
 
     static {
-        EXPAND = new ParentAwareObjectProperty<>("expand", ExpandOptions.class, AbstractPropertyRetriever.class);
+        EXPAND = new ParentAwareObjectProperty<>("expand", DefaultExpandOptions.class, AbstractPropertyRetriever.class);
     }
 
     public DefaultMeProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
@@ -37,7 +37,7 @@ public class DefaultMeProperty extends ConfigurableProperty implements MePropert
     }
 
     @Override
-    public ExpandOptions getExpandOptions() {
+    public ExpandOptions getExpand() {
         return getParentAwareObjectProperty(EXPAND);
     }
 

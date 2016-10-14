@@ -22,6 +22,8 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.application.EnabledProperty
+import com.stormpath.sdk.application.ExpandOptions
+import com.stormpath.sdk.application.MeProperty
 import com.stormpath.sdk.application.OAuth2Property
 import com.stormpath.sdk.application.WebConfiguration
 import com.stormpath.sdk.application.WebConfigurationStatus
@@ -60,6 +62,19 @@ class WebConfigurationIT extends ClientIT {
         OAuth2Property oAuth2Property = webConfig.getOAuth2()
 
         oAuth2Property.getPassword().setEnabled(false)
+
+        MeProperty meProperty = webConfig.getMe()
+
+        ExpandOptions expandOptions = meProperty.getExpand()
+        expandOptions.setApiKeys(true)
+        expandOptions.setApplications(true)
+        expandOptions.setCustomData(true)
+        expandOptions.setDirectory(true)
+        expandOptions.setGroupMemberships(true)
+        expandOptions.setProviderData(true)
+        expandOptions.setTenant(true)
+        expandOptions.setGroups(true)
+
         webConfig.save()
 
         def readWebConfig = buildClient(false).getResource(webConfig.href, WebConfiguration)
@@ -67,6 +82,19 @@ class WebConfigurationIT extends ClientIT {
         OAuth2Property readOAuth2 = readWebConfig.getOAuth2()
 
         assertFalse readOAuth2.getPassword().isEnabled()
+
+        meProperty = readWebConfig.getMe()
+        expandOptions = meProperty.getExpand()
+
+        assertTrue expandOptions.getApiKeys()
+        assertTrue expandOptions.getApplications()
+        assertTrue expandOptions.getCustomData()
+        assertTrue expandOptions.getDirectory()
+        assertTrue expandOptions.getGroups()
+        assertTrue expandOptions.getGroupMemberships()
+        assertTrue expandOptions.getTenant()
+        assertTrue expandOptions.getProviderData()
+
     }
 
     @Test

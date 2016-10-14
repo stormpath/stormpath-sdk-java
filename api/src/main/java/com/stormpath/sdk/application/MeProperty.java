@@ -17,6 +17,6 @@ package com.stormpath.sdk.application;
 
 public interface MeProperty extends EnabledProperty {
 
-    ExpandOptions getExpandOptions();
+    ExpandOptions getExpand();
 
 }

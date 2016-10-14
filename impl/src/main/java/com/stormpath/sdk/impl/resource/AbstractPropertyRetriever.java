@@ -246,7 +246,7 @@ public abstract class AbstractPropertyRetriever {
 
                 return instance;
             } catch (Exception e) {
-                throw new IllegalArgumentException("Unable to create ", e);
+                throw new IllegalArgumentException("Unable to create instace", e);
             } finally {
                 writeLock.unlock();
             }

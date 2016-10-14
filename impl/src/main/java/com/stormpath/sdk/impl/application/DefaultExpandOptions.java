@@ -16,86 +16,103 @@
 package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.application.ExpandOptions;
+import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
+import com.stormpath.sdk.impl.resource.BooleanProperty;
 
-public class DefaultExpandOptions implements ExpandOptions {
+import java.util.Map;
+
+public class DefaultExpandOptions extends ConfigurableProperty implements ExpandOptions {
+
+    private static BooleanProperty API_KEYS = new BooleanProperty("apiKeys");
+    private static BooleanProperty APPLICATIONS = new BooleanProperty("applications");
+    private static BooleanProperty CUSTOM_DATA = new BooleanProperty("customData");
+    private static BooleanProperty DIRECTORY = new BooleanProperty("directory");
+    private static BooleanProperty GROUP_MEMBERSHIPS = new BooleanProperty("groupMemberships");
+    private static BooleanProperty GROUPS = new BooleanProperty("groups");
+    private static BooleanProperty PROVIDER_DATA = new BooleanProperty("providerData");
+    private static BooleanProperty TENANT = new BooleanProperty("tenant");
+
+    public DefaultExpandOptions(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+        super(name, properties, parent);
+    }
 
     @Override
     public boolean getApiKeys() {
-        throw new UnsupportedOperationException("getApiKeys() method hasn't been implemented.");
+        return getBoolean(API_KEYS);
     }
 
     @Override
     public void setApiKeys(boolean apiKeys) {
-        throw new UnsupportedOperationException("setApiKeys() method hasn't been implemented.");
+        setProperty(API_KEYS, apiKeys);
     }
 
     @Override
     public boolean getApplications() {
-        throw new UnsupportedOperationException("getApplications() method hasn't been implemented.");
+        return getBoolean(APPLICATIONS);
     }
 
     @Override
     public void setApplications(boolean applications) {
-        throw new UnsupportedOperationException("setApplications() method hasn't been implemented.");
+        setProperty(APPLICATIONS, applications);
     }
 
     @Override
     public boolean getCustomData() {
-        throw new UnsupportedOperationException("getCustomData() method hasn't been implemented.");
+        return getBoolean(CUSTOM_DATA);
     }
 
     @Override
     public void setCustomData(boolean customData) {
-        throw new UnsupportedOperationException("setCustomData() method hasn't been implemented.");
+        setProperty(CUSTOM_DATA, customData);
     }
 
     @Override
     public boolean getDirectory() {
-        throw new UnsupportedOperationException("getDirectory() method hasn't been implemented.");
+        return getBoolean(DIRECTORY);
     }
 
     @Override
     public void setDirectory(boolean directory) {
-        throw new UnsupportedOperationException("setDirectory() method hasn't been implemented.");
+        setProperty(DIRECTORY, directory);
     }
 
     @Override
     public boolean getGroupMemberships() {
-        throw new UnsupportedOperationException("getGroupMemberships() method hasn't been implemented.");
+        return getBoolean(GROUP_MEMBERSHIPS);
     }
 
     @Override
     public void setGroupMemberships(boolean groupMemberships) {
-        throw new UnsupportedOperationException("setGroupMemberships() method hasn't been implemented.");
+        setProperty(GROUP_MEMBERSHIPS, groupMemberships);
     }
 
     @Override
     public boolean getGroups() {
-        throw new UnsupportedOperationException("getGroups() method hasn't been implemented.");
+        return getBoolean(GROUPS);
     }
 
     @Override
     public void setGroups(boolean groups) {
-        throw new UnsupportedOperationException("setGroups() method hasn't been implemented.");
+        setProperty(GROUPS, groups);
     }
 
     @Override
     public boolean getProviderData() {
-        throw new UnsupportedOperationException("getProviderData() method hasn't been implemented.");
+        return getBoolean(PROVIDER_DATA);
     }
 
     @Override
     public void setProviderData(boolean providerData) {
-        throw new UnsupportedOperationException("setProviderData() method hasn't been implemented.");
+        setProperty(PROVIDER_DATA, providerData);
     }
 
     @Override
     public boolean getTenant() {
-        throw new UnsupportedOperationException("getTenant() method hasn't been implemented.");
+        return getBoolean(TENANT);
     }
 
     @Override
     public void setTenant(boolean tenant) {
-        throw new UnsupportedOperationException("setTenant() method hasn't been implemented.");
+        setProperty(TENANT, tenant);
     }
 }
