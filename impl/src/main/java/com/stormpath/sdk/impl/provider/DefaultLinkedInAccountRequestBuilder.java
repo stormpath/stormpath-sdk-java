@@ -15,19 +15,15 @@
  */
 package com.stormpath.sdk.impl.provider;
 
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.LinkedInAccountRequestBuilder;
-import com.stormpath.sdk.provider.ProviderAccountRequest;
+import com.stormpath.sdk.provider.ProviderData;
 
 import java.util.Map;
 
 /**
  * @since 1.0.0
  */
-public class DefaultLinkedInAccountRequestBuilder extends AbstractProviderAccountRequestBuilder<LinkedInAccountRequestBuilder> implements LinkedInAccountRequestBuilder {
-
-    private String code;
+public class DefaultLinkedInAccountRequestBuilder extends AbstractSocialProviderAccountRequestBuilder<LinkedInAccountRequestBuilder> implements LinkedInAccountRequestBuilder {
 
     @Override
     protected String getConcreteProviderId() {
@@ -35,23 +31,9 @@ public class DefaultLinkedInAccountRequestBuilder extends AbstractProviderAccoun
     }
 
     @Override
-    protected ProviderAccountRequest doBuild(Map<String, Object> map) {
-        Assert.state(Strings.hasText(this.code) ^ Strings.hasText(super.accessToken), "Either 'code' or 'accessToken' properties must exist in a LinkedIn account request.");
-
-        DefaultLinkedInProviderData providerData = new DefaultLinkedInProviderData(null, map);
-
-        if (this.accessToken != null) {
-            providerData.setAccessToken(super.accessToken);
-        } else {
-            providerData.setCode(this.code);
-        }
-
-        return new DefaultProviderAccountRequest(providerData);
+    protected ProviderData newProviderData(Map<String, Object> properties) {
+        return new DefaultLinkedInProviderData(null, properties);
     }
 
-    @Override
-    public LinkedInAccountRequestBuilder setCode(String code) {
-        this.code = code;
-        return this;
-    }
+
 }

@@ -39,8 +39,19 @@ public class DefaultSamlAccountRequestBuilder extends AbstractProviderAccountReq
         return new DefaultProviderAccountRequest(providerData);
     }
 
+    /**
+     * Throws {@link UnsupportedOperationException}
+     */
     @Override
     public SamlAccountRequestBuilder setAccessToken(String accessToken) {
+        throw new UnsupportedOperationException("This method is not supported in SamlAccountRequestBuilder class.");
+    }
+
+    /**
+     * Throws {@link UnsupportedOperationException}
+     */
+    @Override
+    public SamlAccountRequestBuilder setCode(String code) {
         throw new UnsupportedOperationException("This method is not supported in SamlAccountRequestBuilder class.");
     }
 }

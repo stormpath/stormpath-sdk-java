@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.provider
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.lang.Objects
-import com.stormpath.sdk.provider.FacebookProviderData
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.ProviderAccountResult
 import com.stormpath.sdk.provider.ProviderData
@@ -25,7 +24,13 @@ import com.stormpath.sdk.resource.Resource
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
-import static org.easymock.EasyMock.*
+import static org.easymock.EasyMock.createNiceMock
+import static org.easymock.EasyMock.createStrictMock
+import static org.easymock.EasyMock.eq
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.easymock.EasyMock.reportMatcher
+import static org.easymock.EasyMock.verify
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
 
@@ -37,6 +42,7 @@ class ProviderAccountResolverTest {
     @Test
     void testNullDataStore() {
         try {
+            //noinspection GroovyResultOfObjectAllocationIgnored
             new ProviderAccountResolver(null)
             fail("should have thrown")
         } catch (IllegalArgumentException e) {
@@ -77,17 +83,43 @@ class ProviderAccountResolverTest {
     @Test
     void testRequestAccess() {
         def internalDataStore = createStrictMock(InternalDataStore)
-        def request = createStrictMock(ProviderAccountRequest)
+        def request = createNiceMock(ProviderAccountRequest)
         def providerData = createStrictMock(ProviderData)
         def providerAccountResult = createStrictMock(ProviderAccountResult)
 
         def href = "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj"
 
-        def providerAccountAccess = new DefaultProviderAccountAccess<FacebookProviderData>(internalDataStore);
+        def providerAccountAccess = new DefaultProviderAccountAccess<ProviderData>(internalDataStore);
         providerAccountAccess.setProviderData(providerData)
 
-        expect(request.getProviderData()).andReturn(providerData) times 2
+        expect(request.getProviderData()).andStubReturn(providerData)
         expect(internalDataStore.create(eq(href + "/accounts"), (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)), (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
+
+        replay(internalDataStore, request, providerData, providerAccountResult)
+
+        new ProviderAccountResolver(internalDataStore).resolveProviderAccount(href, request)
+
+        verify(internalDataStore, request, providerData, providerAccountResult)
+    }
+
+    @Test
+    void testRequestAccessWithRedirectUri() {
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def request = createNiceMock(ProviderAccountRequest)
+        def providerData = createStrictMock(ProviderData)
+        def providerAccountResult = createStrictMock(ProviderAccountResult)
+
+        def href = "https://api.stormpath.com/v1/applications/jefoifj93riu23ioj"
+
+        def providerAccountAccess = new DefaultProviderAccountAccess<ProviderData>(internalDataStore);
+        providerAccountAccess.setProviderData(providerData)
+
+        expect(request.getProviderData()).andStubReturn(providerData)
+        expect(request.getRedirectUri()).andStubReturn("https://awesome.com/authorize/callback")
+
+        expect(internalDataStore.create(eq(href + "/accounts?redirectUri=" + URLEncoder.encode("https://awesome.com/authorize/callback", 'utf-8')),
+                (Resource) reportMatcher(new ProviderAccountAccessEquals(providerAccountAccess)),
+                (Class)eq(ProviderAccountResult))).andReturn(providerAccountResult)
 
         replay(internalDataStore, request, providerData, providerAccountResult)
 

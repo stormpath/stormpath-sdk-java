@@ -21,12 +21,15 @@ import com.stormpath.sdk.provider.ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
 
 /**
  * @since 1.0.beta
  */
-class GoogleAccountRequestBuilderTest {
+class DefaultGoogleAccountRequestBuilderTest {
 
     @Test
     void testWithAccessToken() {
@@ -68,7 +71,7 @@ class GoogleAccountRequestBuilderTest {
             requestBuilder.build();
             fail("Should have failed")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "Either 'code' or 'accessToken' properties must exist in a Google account request.")
+            assertEquals(e.getMessage(), "Either accessToken or code must be provided before building.")
         }
 
         try {
@@ -77,7 +80,7 @@ class GoogleAccountRequestBuilderTest {
                     .build();
             fail("Should have failed")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "Either 'code' or 'accessToken' properties must exist in a Google account request.")
+            assertEquals(e.getMessage(), "Either accessToken or code must be provided before building.")
         }
     }
 }
