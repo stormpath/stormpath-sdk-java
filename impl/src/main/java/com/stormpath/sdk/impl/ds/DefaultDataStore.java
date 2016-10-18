@@ -45,6 +45,8 @@ import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
+import com.stormpath.sdk.impl.util.BaseUrlResolver;
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver;
 import com.stormpath.sdk.impl.util.StringInputStream;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
@@ -98,7 +100,6 @@ public class DefaultDataStore implements InternalDataStore {
 
     private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
 
-    private final String baseUrl;
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
@@ -108,6 +109,7 @@ public class DefaultDataStore implements InternalDataStore {
     private final QueryStringFactory queryStringFactory;
     private final List<Filter> filters;
     private final ApiKeyResolver apiKeyResolver;
+    private final BaseUrlResolver baseUrlResolver;
 
     /**
      * @since 1.0.RC3
@@ -132,19 +134,20 @@ public class DefaultDataStore implements InternalDataStore {
      * @since 1.1.0
      */
     public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver) {
-        this(requestExecutor, baseUrl, apiKeyCredentials, apiKeyResolver, new DisabledCacheManager());
+        this(requestExecutor, new DefaultBaseUrlResolver(baseUrl), apiKeyCredentials, apiKeyResolver, new DisabledCacheManager());
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
-    public DefaultDataStore(RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
-        Assert.notNull(baseUrl, "baseUrl cannot be null");
+    public DefaultDataStore(RequestExecutor requestExecutor, BaseUrlResolver baseUrlResolver, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
+        Assert.notNull(baseUrlResolver, "baseUrlResolver cannot be null");
         Assert.notNull(requestExecutor, "RequestExecutor cannot be null.");
-        Assert.notNull(clientCredentials, "apiKeyResolver cannot be null.");
+        Assert.notNull(clientCredentials, "clientCredentials cannot be null.");
+        Assert.notNull(apiKeyResolver, "apiKeyResolver cannot be null.");
         Assert.notNull(cacheManager, "CacheManager cannot be null.  Use the DisabledCacheManager if you wish to turn off caching.");
         this.requestExecutor = requestExecutor;
-        this.baseUrl = baseUrl;
+        this.baseUrlResolver = baseUrlResolver;
         this.cacheManager = cacheManager;
         this.resourceFactory = new SubtypeDispatchingResourceFactory(this);
         this.mapMarshaller = new JacksonMapMarshaller();
@@ -164,7 +167,7 @@ public class DefaultDataStore implements InternalDataStore {
         }
 
         if (isCachingEnabled()) {
-            this.filters.add(new ReadCacheFilter(this.baseUrl, this.cacheResolver, COLLECTION_CACHING_ENABLED));
+            this.filters.add(new ReadCacheFilter(this.baseUrlResolver, this.cacheResolver, COLLECTION_CACHING_ENABLED));
             this.filters.add(new WriteCacheFilter(this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
         }
 
@@ -557,7 +560,7 @@ public class DefaultDataStore implements InternalDataStore {
      */
     @Override
     public String getBaseUrl() {
-        return this.baseUrl;
+        return this.baseUrlResolver.getBaseUrl();
     }
 
     /**
@@ -663,7 +666,7 @@ public class DefaultDataStore implements InternalDataStore {
     }
 
     protected String qualify(String href) {
-        StringBuilder sb = new StringBuilder(this.baseUrl);
+        StringBuilder sb = new StringBuilder(this.baseUrlResolver.getBaseUrl());
         if (!href.startsWith("/")) {
             sb.append("/");
         }
