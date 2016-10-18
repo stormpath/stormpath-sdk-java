@@ -101,34 +101,7 @@ import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
-import com.stormpath.sdk.servlet.mvc.AbstractController;
-import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
-import com.stormpath.sdk.servlet.mvc.AccessTokenController;
-import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
-import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
-import com.stormpath.sdk.servlet.mvc.Controller;
-import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
-import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
-import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
-import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
-import com.stormpath.sdk.servlet.mvc.FormController;
-import com.stormpath.sdk.servlet.mvc.IdSiteController;
-import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
-import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
-import com.stormpath.sdk.servlet.mvc.JacksonView;
-import com.stormpath.sdk.servlet.mvc.LoginController;
-import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
-import com.stormpath.sdk.servlet.mvc.LogoutController;
-import com.stormpath.sdk.servlet.mvc.MeController;
-import com.stormpath.sdk.servlet.mvc.RegisterController;
-import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
-import com.stormpath.sdk.servlet.mvc.SamlController;
-import com.stormpath.sdk.servlet.mvc.SamlResultController;
-import com.stormpath.sdk.servlet.mvc.VerifyController;
-import com.stormpath.sdk.servlet.mvc.View;
-import com.stormpath.sdk.servlet.mvc.ViewModel;
-import com.stormpath.sdk.servlet.mvc.ViewResolver;
-import com.stormpath.sdk.servlet.mvc.WebHandler;
+import com.stormpath.sdk.servlet.mvc.*;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
@@ -1186,6 +1159,24 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathMeController() {
+        MeController controller = new MeController();
+
+        controller.setExpandsResolver(stormpathMeExpandsResolver());
+        controller.setObjectMapper(objectMapper);
+        controller.setProduces(stormpathProducedMediaTypes());
+        controller.setUri(meUri);
+        controller.setLoginPageRedirector(new DefaultLoginPageRedirector(stormpathLoginConfig().getUri()));
+        controller.setApplicationResolver(stormpathApplicationResolver());
+
+        init(controller);
+
+        return controller;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public ExpandsResolver stormpathMeExpandsResolver(){
         List<String> expandedAccountAttributes = new ArrayList<>();
 
         getPropertiesStartingWith((ConfigurableEnvironment) environment, "stormpath.web.me.expand");
@@ -1201,18 +1192,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             }
         }
 
-        MeController controller = new MeController();
-
-        controller.setExpands(expandedAccountAttributes);
-        controller.setObjectMapper(objectMapper);
-        controller.setProduces(stormpathProducedMediaTypes());
-        controller.setUri(meUri);
-        controller.setLoginPageRedirector(new DefaultLoginPageRedirector(stormpathLoginConfig().getUri()));
-        controller.setApplicationResolver(stormpathApplicationResolver());
-
-        init(controller);
-
-        return controller;
+        return new DefaultExpandsResolver(expandedAccountAttributes);
     }
 
     public Controller stormpathSamlResultController() {
