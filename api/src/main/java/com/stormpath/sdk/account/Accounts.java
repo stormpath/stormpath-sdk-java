@@ -296,6 +296,29 @@ public final class Accounts {
     }
 
     /**
+     * This operation will ask the backend to do a case-insensitive matching query on all viewable attributes in all the resources in the Collection.
+     *
+     * So the following query:
+     *
+     * application.getAccounts(Accounts.where(Accounts.filter("Joe"));
+     *
+     * Returns all Accounts where:
+     *
+     * Each Account exists inside an AccountStore belonging to the Application `application`
+     * The Account’s givenName equals or contains “joe” (case insensitive) OR
+     * The Account’s middlename equals or contains “joe” (case insensitive) OR
+     * The Account’s email equals or contains “joe” (case insensitive) OR
+     * And so on
+     *
+     * @param value The value to search for
+     * @return A Criterion representing the filter query
+     * @since 1.2.0
+     */
+    public static Criterion filter(String value){
+        return newStringExpressionFactory("q").eqIgnoreCase(value);
+    }
+
+    /**
      * Creates a new {@link com.stormpath.sdk.account.CreateAccountRequestBuilder CreateAccountRequestBuilder}
      * instance reflecting the specified {@link Account} instance.  The builder can be used to customize any
      * creation request options as necessary.
