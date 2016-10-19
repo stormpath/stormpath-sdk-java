@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.config.filter;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.DefaultLoginPageRedirector;
 import com.stormpath.sdk.servlet.filter.MeFilter;
+import com.stormpath.sdk.servlet.mvc.DefaultExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.MeController;
 
 import javax.servlet.ServletContext;
@@ -33,7 +34,7 @@ public class MeFilterFactory extends FilterFactory<MeFilter> {
         MeController c = new MeController();
         c.setUri(config.getMeUrl());
         c.setProduces(config.getProducedMediaTypes());
-        c.setExpands(config.getMeExpandedProperties());
+        c.setExpandsResolver(new DefaultExpandsResolver(config.getMeExpandedProperties()));
         c.setObjectMapper(config.getObjectMapper());
         c.setLoginPageRedirector(new DefaultLoginPageRedirector(config.getLoginConfig().getUri()));
         c.setApplicationResolver(config.getApplicationResolver());

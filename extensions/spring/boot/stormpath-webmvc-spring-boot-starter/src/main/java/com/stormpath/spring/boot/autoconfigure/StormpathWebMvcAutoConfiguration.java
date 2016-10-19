@@ -53,6 +53,7 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.View;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
@@ -532,6 +533,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name = "stormpathMeController")
     public Controller stormpathMeController() {
         return super.stormpathMeController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ExpandsResolver stormpathMeExpandsResolver(){
+        return super.stormpathMeExpandsResolver();
     }
 
     @Bean
