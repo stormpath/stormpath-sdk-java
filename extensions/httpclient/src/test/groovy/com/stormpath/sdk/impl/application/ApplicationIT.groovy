@@ -2040,19 +2040,15 @@ class ApplicationIT extends ClientIT {
     @Test
     void testDefaultSAMLPolicyAndProvider() {
 
-        Date testStart = new Date();
         def app = createTempApp()
 
         SamlPolicy samlPolicy = app.getSamlPolicy();
         assertTrue samlPolicy.getHref().contains("/samlPolicies/")
         assertTrue samlPolicy.getSamlServiceProvider().getHref().contains("/samlServiceProviders/")
-        assertTrue samlPolicy.getCreatedAt().after(testStart)
-        assertTrue samlPolicy.getModifiedAt().after(testStart)
         SamlServiceProvider samlServiceProvider = samlPolicy.getSamlServiceProvider()
         assertTrue samlServiceProvider.getHref().contains("/samlServiceProviders/")
         assertTrue samlServiceProvider.getSsoInitiationEndpoint().getHref().contains("/saml/sso/idpRedirect")
-        assertTrue samlServiceProvider.getCreatedAt().after(testStart)
-        assertTrue samlServiceProvider.getModifiedAt().after(testStart)
+
     }
 
     /** since 1.0.RC9 */
