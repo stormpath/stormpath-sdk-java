@@ -581,7 +581,7 @@ public class DefaultConfig implements Config {
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     @Override
     public List<String> getAllowedCorsOrigins() {
@@ -595,7 +595,7 @@ public class DefaultConfig implements Config {
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     @Override
     public List<String> getAllowedCorsHaders() {
@@ -609,7 +609,7 @@ public class DefaultConfig implements Config {
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     @Override
     public List<String> getAllowedCorsMethods() {
@@ -623,7 +623,7 @@ public class DefaultConfig implements Config {
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     @Override
     public boolean isCorsEnabled() {

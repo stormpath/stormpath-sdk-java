@@ -182,22 +182,22 @@ public interface Config extends Map<String, String> {
     Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver();
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     List<String> getAllowedCorsOrigins();
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     boolean isCorsEnabled();
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     List<String> getAllowedCorsHaders();
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     List<String> getAllowedCorsMethods();
 }

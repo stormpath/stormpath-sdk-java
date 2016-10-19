@@ -21,7 +21,7 @@ import com.stormpath.sdk.servlet.filter.cors.CorsFilter;
 import javax.servlet.ServletContext;
 
 /**
- * @since 1.1.0
+ * @since 1.2.0
  */
 public class CorsFilterFactory extends FilterFactory<CorsFilter> {
 

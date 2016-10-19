@@ -42,12 +42,12 @@ import java.util.Set;
  * Each {@link HttpServletRequest} request is inspected as per specification, and appropriate response headers
  * are added to {@link HttpServletResponse}.
  * </p>
- * This class was borrowed from Apache Tomcat's {@link org.apache.catalina.filters.CorsFilter} with additional modifications.
+ * This class was borrowed from Apache Tomcat's org.apache.catalina.filters.CorsFilter with additional modifications.
  * <p>
  * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
  *
  * @see <a href="http://www.w3.org/TR/cors/">CORS specification</a>
- * @since 1.1.0
+ * @since 1.2.0
  **/
 public class CorsFilter extends HttpFilter {
 

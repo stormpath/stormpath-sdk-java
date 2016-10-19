@@ -49,7 +49,7 @@ public class FilterChainResolverFactory extends ConfigSingletonFactory<FilterCha
         //The CORS filter is added to the priority filters just after the AccountResolverFilter to ensure that if
         //CORS is enabled the filter runs at the top of the chain and nobody could add and endpoint filter before the CORS filter
         //Fixes https://github.com/stormpath/stormpath-sdk-java/issues/699
-        //@since 1.1.0
+        //@since 1.2.0
         if (getConfig().isCorsEnabled()) {
             CorsFilterFactory corsFilterFactory = new CorsFilterFactory();
             corsFilterFactory.init(servletContext);

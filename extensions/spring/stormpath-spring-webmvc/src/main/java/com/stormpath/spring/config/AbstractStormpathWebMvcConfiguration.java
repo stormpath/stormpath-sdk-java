@@ -221,8 +221,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     private static final Logger log = LoggerFactory.getLogger(AbstractStormpathWebMvcConfiguration.class);
 
     private static final String PRODUCES_SUPPORTED_TYPES_MSG = "stormpath.web.produces property value must " +
-            "specify either " + MediaType.APPLICATION_JSON_VALUE + " or " + MediaType.TEXT_HTML_VALUE + " or both.  " +
-            "Other media types for this property are not currently supported.";
+        "specify either " + MediaType.APPLICATION_JSON_VALUE + " or " + MediaType.TEXT_HTML_VALUE + " or both.  " +
+        "Other media types for this property are not currently supported.";
 
     // =================== Authentication Components ==========================
 
@@ -504,19 +504,19 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         AccessibleResourceHandlerRegistry registry =
-                new AccessibleResourceHandlerRegistry(applicationContext, servletContext);
+            new AccessibleResourceHandlerRegistry(applicationContext, servletContext);
         registry.setOrder(staticResourceHandlerMappingOrder);
 
         if (cssEnabled) {
             registry.addResourceHandler("/assets/css/*stormpath.css")
-                    //reference the actual files in the stormpath-sdk-servlet .jar:
-                    .addResourceLocations("classpath:/META-INF/resources/assets/css/");
+                //reference the actual files in the stormpath-sdk-servlet .jar:
+                .addResourceLocations("classpath:/META-INF/resources/assets/css/");
         }
 
         if (jsEnabled) {
             registry.addResourceHandler("/assets/js/*stormpath.js")
-                    //reference the actual files in the stormpath-sdk-servlet .jar:
-                    .addResourceLocations("classpath:/META-INF/resources/assets/js/");
+                //reference the actual files in the stormpath-sdk-servlet .jar:
+                .addResourceLocations("classpath:/META-INF/resources/assets/js/");
         }
 
         return registry.toHandlerMapping();
@@ -601,9 +601,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Resolver<Boolean> stormpathRegisterEnabledResolver() {
         return new RegisterEnabledResolver(
-                stormpathRegisterConfig().isEnabled(),
-                stormpathApplicationResolver(),
-                stormpathRegisterEnabledPredicate()
+            stormpathRegisterConfig().isEnabled(),
+            stormpathApplicationResolver(),
+            stormpathRegisterEnabledPredicate()
         );
     }
 
@@ -738,9 +738,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (cookieAuthenticationResultSaverEnabled) {
             return new CookieAuthenticationResultSaver(
-                    stormpathAccessTokenCookieConfig(),
-                    stormpathRefreshTokenCookieConfig(),
-                    stormpathSecureResolver()
+                stormpathAccessTokenCookieConfig(),
+                stormpathRefreshTokenCookieConfig(),
+                stormpathSecureResolver()
             );
         }
 
@@ -782,7 +782,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (Collections.isEmpty(savers)) {
             String msg = "No Saver<AuthenticationResult> instances have been enabled or configured.  This is " +
-                    "required to save authentication result state.";
+                "required to save authentication result state.";
             throw new IllegalStateException(msg);
         }
 
@@ -845,8 +845,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
         return new DefaultWrappedServletRequestFactory(
-                stormpathUsernamePasswordRequestFactory(), stormpathAuthenticationResultSaver(),
-                stormpathRequestEventPublisher(), requestUserPrincipalStrategy, requestRemoteUserStrategy
+            stormpathUsernamePasswordRequestFactory(), stormpathAuthenticationResultSaver(),
+            stormpathRequestEventPublisher(), requestUserPrincipalStrategy, requestRemoteUserStrategy
         );
     }
 
@@ -868,7 +868,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public HeaderAuthenticator stormpathAuthorizationHeaderAuthenticator() {
         return new AuthorizationHeaderAuthenticator(
-                stormpathHttpAuthenticationSchemes(), httpAuthenticationChallenge, stormpathRequestEventPublisher()
+            stormpathHttpAuthenticationSchemes(), httpAuthenticationChallenge, stormpathRequestEventPublisher()
         );
     }
 
@@ -878,11 +878,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Resolver<Account> stormpathCookieAccountResolver() {
         return new CookieAccountResolver(
-                stormpathAccessTokenCookieConfig(),
-                stormpathRefreshTokenCookieConfig(),
-                stormpathJwtAccountResolver(),
-                stormpathCookieAuthenticationResultSaver(),
-                stormpathAccessTokenResultFactory());
+            stormpathAccessTokenCookieConfig(),
+            stormpathRefreshTokenCookieConfig(),
+            stormpathJwtAccountResolver(),
+            stormpathCookieAuthenticationResultSaver(),
+            stormpathAccessTokenResultFactory());
     }
 
     public Resolver<Account> stormpathSessionAccountResolver() {
@@ -1258,7 +1258,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public RequestAuthorizer stormpathAccessTokenRequestAuthorizer() {
         return new DefaultAccessTokenRequestAuthorizer(
-                stormpathSecureResolver(), stormpathOriginAccessTokenRequestAuthorizer()
+            stormpathSecureResolver(), stormpathOriginAccessTokenRequestAuthorizer()
         );
     }
 
@@ -1268,8 +1268,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer() {
         return new OriginAccessTokenRequestAuthorizer(
-                stormpathServerUriResolver(), stormpathLocalhostResolver(), stormpathAccessTokenAuthorizedOriginUris(),
-                stormpathProducedMediaTypes()
+            stormpathServerUriResolver(), stormpathLocalhostResolver(), stormpathAccessTokenAuthorizedOriginUris(),
+            stormpathProducedMediaTypes()
         );
     }
 
@@ -1407,7 +1407,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         accountResolverFilter.setEnabled(stormpathFilterEnabled);
         accountResolverFilter.setResolvers(stormpathAccountResolvers());
         accountResolverFilter.setOauthEndpointUri(accessTokenUri);
-
         List<Filter> priorityFilters = Collections.<Filter>toList(accountResolverFilter);
 
         if (corsEnabled) {
@@ -1511,7 +1510,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
      *
-     * @since 1.1.0
+     * @since 1.2.0
      */
     public Filter newCorsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -1527,7 +1526,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
      *
-     * @since 1.1.0
+     * @since 1.2.0
      */
     public List<String> stormpathCorsAllowedOrigins() {
         if (Strings.hasText(corsAllowedOrigins)) {
@@ -1540,7 +1539,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
      *
-     * @since 1.1.0
+     * @since 1.2.0
      */
     public List<String> stormpathCorsAllowedMethods() {
         if (Strings.hasText(corsAllowedOrigins)) {
@@ -1553,7 +1552,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     /**
      * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
      *
-     * @since 1.1.0
+     * @since 1.2.0
      */
     public List<String> stormpathCorsAllowedHeaders() {
         if (Strings.hasText(corsAllowedOrigins)) {
