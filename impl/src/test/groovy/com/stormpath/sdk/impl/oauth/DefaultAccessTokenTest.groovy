@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.error.jwt.InvalidJwtException
 import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.application.DefaultApplication
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -164,10 +163,6 @@ class DefaultAccessTokenTest {
                         .setHeaderParam("stt", "xxxx")
                         .setSubject(href)
                         .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
-                        .compact(),
-                Jwts.builder()
-                        .setSubject(href)
-                        .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
                         .compact()
         ]
 
@@ -189,8 +184,42 @@ class DefaultAccessTokenTest {
                 new DefaultAccessToken(internalDataStore, properties)
                 fail("should have thrown")
             } catch (Exception e) {
-                assertEquals(e.getMessage(), InvalidJwtException.JWT_INVALID_VALUE_ERROR)
+                assertEquals(e.getMessage(), "The JWT is null, empty or only contains whitespaces.")
             }
+        }
+    }
+
+    /* @since 1.2.0 */
+    @Test
+    void testMissingSTTPropertyHeader() {
+        def secret = "a_very_secret_key"
+        def href = "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP"
+
+        // An sst claim of 'refresh' means it's not a valid access token
+        def invalidJwt = Jwts.builder()
+                        .setHeaderParam("alg", "HS256")
+                        .setSubject(href)
+                        .signWith(SignatureAlgorithm.HS256, secret.getBytes("UTF-8"))
+                        .compact()
+
+        def properties = [
+                href: href,
+                jwt : invalidJwt
+        ]
+
+        def internalDataStore = createStrictMock(InternalDataStore)
+        def apiKey = createStrictMock(ApiKey)
+
+        expect(apiKey.getSecret()).andReturn(secret)
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+
+        replay internalDataStore, apiKey
+
+        try {
+            new DefaultAccessToken(internalDataStore, properties)
+            fail("should have thrown")
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Missing 'stt' property in header. This jwt is not a valid access_token.")
         }
     }
 

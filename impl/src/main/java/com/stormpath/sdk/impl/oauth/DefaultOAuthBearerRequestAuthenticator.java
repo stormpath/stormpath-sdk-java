@@ -28,8 +28,12 @@ import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
 import com.stormpath.sdk.resource.ResourceException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,11 +100,33 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
                 OAuthBearerRequestAuthenticationResultBuilder builder = new DefaultOAuthBearerRequestAuthenticationResultBuilder(accessToken);
                 return builder.build();
 
-            } catch (JwtException e) {
-                throw new InvalidJwtException(InvalidJwtException.JWT_INVALID_VALUE_ERROR, e);
-            } catch (UnsupportedEncodingException e) {
-                log.error("Unsupported encoding for API secret");
-                throw new RuntimeException(e);
+            } catch (UnsupportedJwtException uje) {
+                String message = InvalidJwtException.JWT_INVALID_VALUE_ERROR;
+                log.debug(message);
+                throw new InvalidJwtException(message, uje);
+            } catch (MalformedJwtException mje) {
+                String message = "The JWT was not correctly constructed and therefore was rejected (it is not a valid JWS).";
+                log.debug(message);
+                throw new InvalidJwtException(message, mje);
+            } catch (SignatureException se) {
+                String message = InvalidJwtException.INVALID_JWT_SIGNATURE_ERROR;
+                log.debug(message);
+                throw new InvalidJwtException(message, se);
+            } catch (ExpiredJwtException eje) {
+                String message = InvalidJwtException.EXPIRED_JWT_ERROR;
+                log.debug(message);
+                throw new InvalidJwtException(message, eje);
+            } catch (IllegalArgumentException iae) {
+                String message = "The JWT is null, empty or only contains whitespaces.";
+                log.debug(message);
+                throw new InvalidJwtException(message, iae);
+            } catch (UnsupportedEncodingException uee) {
+                String message = "The character encoding for the API secret is not supported.";
+                log.debug(message);
+                throw new InvalidJwtException(message, uee);
+            } catch (Exception e) {
+                //Todo 2.0.0: this JwtException must be replaced by InvalidJwtException. See https://github.com/stormpath/stormpath-sdk-java/issues/1018
+                throw new JwtException("JWT failed validation; it cannot be trusted.", e);
             }
         }
 
