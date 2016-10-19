@@ -42,7 +42,7 @@ abstract class ClientIT {
 
     private static final Logger log = LoggerFactory.getLogger(ClientIT)
 
-    String baseUrl = System.getenv("STORMPATH_CLIENT_BASEURL") ?: 'https://api.stormpath.com/v1'
+    String baseUrl = System.getenv("STORMPATH_CLIENT_BASEURL") ?: 'https://dev.i.stormpath.com/v1'
     Client client
 
     List<Deletable> resourcesToDelete;
