@@ -74,7 +74,7 @@ public class DefaultUsernamePasswordRequestBuilder implements UsernamePasswordRe
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     @Override
     public UsernamePasswordRequestBuilder setOrganizationNameKey(String orgNameKey) {

@@ -88,7 +88,7 @@ public class DefaultUsernamePasswordRequest implements AuthenticationRequest<Str
     }
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     @Override
     public String getOrganizationNameKey() {
@@ -97,7 +97,7 @@ public class DefaultUsernamePasswordRequest implements AuthenticationRequest<Str
 
 
     /**
-     * @since 1.1.0
+     * @since 1.2.0
      */
     public DefaultUsernamePasswordRequest setOrganizationNameKey(String orgNameKey) {
         Assert.hasText(orgNameKey, "orgNameKey cannot be null or empty.");

@@ -83,7 +83,7 @@ public abstract class AbstractLoginAttempt extends AbstractResource implements L
     }
 
     /**
-     * since 1.1.0
+     * since 1.2.0
      */
     @Override
     public void setOrganizationNameKey(String nameKey) {

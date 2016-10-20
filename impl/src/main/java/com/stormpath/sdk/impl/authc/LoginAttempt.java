@@ -44,6 +44,7 @@ public interface LoginAttempt extends Resource {
      * This would return null is an organization nameKey is set using {@link LoginAttempt#setOrganizationNameKey(String)}
      *
      * @return the specific account store this authentication request will be targeted to.
+     * @deprecated since 1.2.0 and will be removed in 2.0.0
      * @since 1.0.alpha
      */
     @Deprecated
@@ -55,7 +56,7 @@ public interface LoginAttempt extends Resource {
      * see: https://github.com/stormpath/stormpath-sdk-java/issues/284
      *
      * @param nameKey an organization name key
-     * @since 1.1.0
+     * @since 1.2.0
      */
     void setOrganizationNameKey(String nameKey);
 }

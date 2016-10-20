@@ -113,7 +113,7 @@ public class ResourceAuthenticationRequest extends OAuthAccessResourceRequest im
         throw new UnsupportedOperationException(getClass().getName() + " .getAccountStore() is not supported.");
     }
 
-    /* @since 1.1.0 */
+    /* @since 1.2.0 */
     @Override
     public String getOrganizationNameKey() {
         throw new UnsupportedOperationException(getClass().getName() + " .getOrganizationNameKey() is not supported.");

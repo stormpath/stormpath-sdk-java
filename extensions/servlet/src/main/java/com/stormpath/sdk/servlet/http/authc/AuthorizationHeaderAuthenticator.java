@@ -200,6 +200,7 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
                 return null;
             }
 
+            /** @since 1.2.0 */
             @Override
             public String getOrganizationNameKey() {
                 return null;
