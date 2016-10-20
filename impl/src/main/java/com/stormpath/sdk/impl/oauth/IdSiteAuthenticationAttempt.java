@@ -41,7 +41,7 @@ public interface IdSiteAuthenticationAttempt extends Resource {
      * Sets the optional organization name key
      *
      * @param organizationNameKey The organization name key
-     * @since 1.1.0
+     * @since 1.2.0
      */
     void setOrganizationNameKey(String organizationNameKey);
 }

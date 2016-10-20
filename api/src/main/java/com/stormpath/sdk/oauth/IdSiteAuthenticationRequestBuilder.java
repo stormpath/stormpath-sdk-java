@@ -35,6 +35,7 @@ public interface IdSiteAuthenticationRequestBuilder extends OAuthRequestAuthenti
      *
      * @param organizationNameKey The organization name key
      * @return this instance for method chaining.
+     * @since 1.2.0
      */
     IdSiteAuthenticationRequestBuilder setOrganizationNameKey(String organizationNameKey);
 

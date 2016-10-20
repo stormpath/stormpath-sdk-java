@@ -16,6 +16,7 @@
 package com.stormpath.sdk.oauth;
 
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.organization.Organization;
 
 /**
  * This class represents a request for Stormpath to authenticate an Account and exchange its credentials for a valid OAuth 2.0 access token.
@@ -46,9 +47,9 @@ public interface OAuthPasswordGrantRequestAuthentication extends OAuthGrantReque
     AccountStore getAccountStore();
 
     /**
-     * https://github.com/stormpath/stormpath-sdk-java/issues/742
+     * Returns the {@link Organization#getNameKey() Organization's nameKey}.
      *
-     * @since 1.1.0
+     * @since 1.2.0
      * @return The organization name key
      */
     String getOrganizationNameKey();

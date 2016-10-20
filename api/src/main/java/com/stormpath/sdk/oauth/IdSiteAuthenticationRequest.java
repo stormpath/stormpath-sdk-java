@@ -30,8 +30,8 @@ public interface IdSiteAuthenticationRequest extends OAuthGrantRequestAuthentica
     /**
      * Returns the given Organization name key
      *
-     * @since 1.1.0
-     * @return The org name key
+     * @since 1.2.0
+     * @return The organization nameKey
      */
     String getOrganizationNameKey();
 

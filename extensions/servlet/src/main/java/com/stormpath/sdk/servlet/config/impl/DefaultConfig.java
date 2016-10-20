@@ -577,6 +577,9 @@ public class DefaultConfig implements Config {
         return this.getRuntimeInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
     }
 
+    /**
+     * @since 1.2.0
+     */
     @Override
     public Resolver<String> getOrganizationNameKeyResolver() {
         SubdomainResolver subdomainResolver = new SubdomainResolver();

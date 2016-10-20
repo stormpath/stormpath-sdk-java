@@ -53,7 +53,7 @@ public interface OAuthPasswordGrantRequestAuthenticationBuilder extends OAuthReq
      *
      * @param organizationNameKey The organization name key
      * @return this instance for method changing
-     * @since 1.1.0
+     * @since 1.2.0
      */
     OAuthPasswordGrantRequestAuthenticationBuilder setOrganizationNameKey(String organizationNameKey);
 }

@@ -386,7 +386,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
                 requestBuilder.setAccountStore(accountStore);
             }
 
-            //@since 1.1.0
+            //@since 1.2.0
             //https://github.com/stormpath/stormpath-sdk-java/issues/742
             String organizationNameKey = organizationNameKeyResolver.get(this, null);
             if(Strings.hasText(organizationNameKey)) {
