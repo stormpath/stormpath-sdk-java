@@ -46,13 +46,12 @@ class HttpClientRequestExecutorIT extends ClientIT {
         OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build()
         def result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
 
-        // verify the access token in Stormpath
-        // fail if it takes longer than 500ms
-        // this proves that we are *not* waiting on redirects
+        // verify the access token in Stormpath - when the token is valid the response is a 302 (redirect) that will be followed by the HttpExecutor.
         def verifyUri = app.getHref() + "/authTokens/" + result.getAccessTokenString()
 
-        def httpClientRequestExecutor = new HttpClientRequestExecutor(new ApiKeyCredentials(client.getApiKey()), null, AuthenticationScheme.SAUTHC1, null, 2000)
+        def httpClientRequestExecutor = new HttpClientRequestExecutor(new ApiKeyCredentials(client.getApiKey()), null, AuthenticationScheme.SAUTHC1, null, 20)
         httpClientRequestExecutor.setNumRetries(0)
+        // By setting the BackoffStrategy to an instance that throws an exception if this test pass we can be sure that the redirect does not pause.
         httpClientRequestExecutor.setBackoffStrategy(new BackoffStrategy() {
             @Override
             long getDelayMillis(int retryCount) {
