@@ -4,16 +4,20 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Clients
 import com.stormpath.sdk.impl.api.ClientApiKey
+import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
 import com.stormpath.sdk.impl.cache.DefaultCache
+import com.stormpath.sdk.impl.util.BaseUrlResolver
 import com.stormpath.sdk.lang.Duration
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
 
-import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
+import static org.testng.AssertJUnit.assertEquals
+import static org.testng.AssertJUnit.fail
 
 class DefaultClientBuilderTest {
 
@@ -62,6 +66,31 @@ class DefaultClientBuilderTest {
         assertEquals clientBuilder.clientConfiguration.proxyUsername, "fooyaml" // from yaml
         assertEquals clientBuilder.clientConfiguration.proxyPassword, "bar" // from properties
     }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testConfigureBaseUrlResolver(){
+        BaseUrlResolver baseUrlResolver = new BaseUrlResolver() {
+            @Override
+            String getBaseUrl() {
+                return "test"
+            }
+        }
+
+        def testClient = new DefaultClientBuilder().setBaseUrlResolver(baseUrlResolver).build()
+
+        assertEquals(testClient.dataStore.baseUrlResolver.getBaseUrl(), "test")
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testDefaultBaseUrlResolver(){
+        assertEquals(client.dataStore.baseUrlResolver.getBaseUrl(), "https://api.stormpath.com/v42")
+    }
 }
 
 class DefaultClientBuilderTestCustomCredentials{
@@ -88,4 +117,69 @@ class DefaultClientBuilderTestCustomCredentials{
         assertEquals client.dataStore.apiKey.secret, secret
     }
 
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testCustomClientCredentialsRequireApiKeyResolver(){
+        def credentialsId = UUID.randomUUID().toString()
+        def credentialsSecret = UUID.randomUUID().toString()
+
+        ClientCredentials customCredentials = new ClientCredentials() {
+            @Override
+            String getId() {
+                return credentialsId
+            }
+
+            @Override
+            String getSecret() {
+                return credentialsSecret
+            }
+        }
+
+
+        builder = new DefaultClientBuilder()
+        builder.setClientCredentials(customCredentials)
+
+        try {
+            client = builder.build()
+            fail("Builder should require ApiKeyResolver if non-ApiKeyCredentials are supplied")
+        }
+        catch(Exception ex){
+            assertTrue(ex.getMessage().contains("An ApiKeyResolver must be configured for ClientCredentials other than ApiKeyCredentials."))
+        }
+
+    }
+
+    @Test
+    void testCustomClientCredentialsAllowedWithApiKeyResolver(){
+        def credentialsId = UUID.randomUUID().toString()
+        def credentialsSecret = UUID.randomUUID().toString()
+
+        ClientCredentials customCredentials = new ClientCredentials() {
+            @Override
+            String getId() {
+                return credentialsId
+            }
+
+            @Override
+            String getSecret() {
+                return credentialsSecret
+            }
+        }
+
+        def keyId = UUID.randomUUID().toString()
+        def keySecret = UUID.randomUUID().toString()
+
+        def apiKey = new ClientApiKey(keyId, keySecret)
+        def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
+
+        builder = new DefaultClientBuilder()
+        builder.setClientCredentials(customCredentials)
+        builder.setApiKeyResolver(apiKeyResolver)
+        def testClient = builder.build()
+
+        assertEquals testClient.dataStore.apiKey.id, keyId
+        assertEquals testClient.dataStore.apiKey.secret, keySecret
+    }
 }

@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.GroupMembership
+import com.stormpath.sdk.group.Groups
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
@@ -178,5 +179,55 @@ class GroupIT extends ClientIT {
             assertTrue e instanceof IllegalStateException
             assertEquals e.getMessage(), "The specified account does not belong to this Group."
         }
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testFilterGroup() {
+
+        def app = createTempApp()
+
+        //create a user group:
+        def group1 = client.instantiate(Group)
+        group1.name = uniquify('JSDK: testFilterGroup_Group01')
+        group1.description = 'testFilterGroup Group01'
+        group1 = app.createGroup(group1)
+        deleteOnTeardown(group1)
+
+        def group2 = client.instantiate(Group)
+        group2.name = uniquify('JSDK: testFilterGroup_Group02')
+        group2.description = 'testFilterGroup Group02'
+        group2 = app.createGroup(group2)
+        deleteOnTeardown(group2)
+
+        //verify that the filter search works with a combination of criteria
+        def groupCollection1 = app.getGroups(Groups.where(Groups.filter("testFilterGroup")).and(Groups.description().eqIgnoreCase('testFilterGroup Group02')))
+        def foundGrp01 = groupCollection1.iterator().next()
+        assertEquals(foundGrp01.href, group2.href)
+
+        //verify that the filter search works
+        def allGroups = app.getGroups(Groups.where(Groups.filter("JSDK")))
+        assertTrue(allGroups.size() == 2)
+
+        //verify that the filter search returns an empty collection if there is no match
+        def emptyCollection = app.getGroups(Groups.where(Groups.filter('not_found')))
+        assertTrue(emptyCollection.size() == 0)
+
+        //verify that a non matching criteria added to a matching criteria is working as a final non matching criteria
+        //ie. there are no properties matching 'not_found' but there are 1 account matching 'description=testFilterGroup Group02'
+        def emptyCollection2 = app.getGroups(Groups.where(Groups.filter('not_found')).and(Groups.description().eqIgnoreCase('testFilterGroup Group02')))
+        assertTrue(emptyCollection2.size() == 0)
+
+        //verify that the filter search match with substrings
+        def allGroups2 = app.getGroups(Groups.where(Groups.filter("testFilterGroup")))
+        assertTrue(allGroups2.size() == 2)
+
+        //test delete:
+        for (def grp : allGroups){
+            grp.delete()
+        }
+
     }
 }

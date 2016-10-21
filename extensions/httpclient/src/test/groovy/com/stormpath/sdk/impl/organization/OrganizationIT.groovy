@@ -105,6 +105,66 @@ class OrganizationIT extends ClientIT {
         deleteOnTeardown(retrievedOrg)
     }
 
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testFilterOrganizations(){
+
+        def tenant = client.currentTenant
+
+        def org1 = client.instantiate(Organization)
+        org1.setName(uniquify("JSDK_OrganizationIT_testFilterOrganizations_01"))
+                .setNameKey(uniquify("test"))
+                .setDescription('testFilterOrganizations_01')
+                .setStatus(OrganizationStatus.ENABLED)
+
+        def retrievedOrg1 = client.createOrganization(Organizations.newCreateRequestFor(org1).createDirectory().build())
+        assertNotNull(retrievedOrg1)
+
+        def org2 = client.instantiate(Organization)
+        org2.setName(uniquify("JSDK_OrganizationIT_FilterOrganizations_02"))
+                .setNameKey(uniquify("test"))
+                .setDescription('testFilterOrganizations_02')
+                .setStatus(OrganizationStatus.ENABLED)
+
+        def retrievedOrg2 = client.createOrganization(Organizations.newCreateRequestFor(org2).createDirectory().build())
+        assertNotNull(retrievedOrg2)
+
+        deleteOnTeardown(retrievedOrg1.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(retrievedOrg1)
+
+        deleteOnTeardown(retrievedOrg2.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(retrievedOrg2)
+
+        //verify that the filter search works with a combination of criteria
+        def foundOrgs2 = tenant.getOrganizations(Organizations.where(Organizations.filter('FilterOrganizations')).and(Organizations.description().endsWithIgnoreCase('02')))
+        def foundOrg2 = foundOrgs2.iterator().next()
+        assertEquals(foundOrg2.href, retrievedOrg2.href)
+
+        //verify that the filter search works
+        def allOrgs = tenant.getOrganizations(Organizations.where(Organizations.filter('FilterOrganizations')))
+        assertEquals(allOrgs.size(), 2)
+
+        //verify that the filter search returns an empty collection if there is no match
+        def emptyCollection = tenant.getOrganizations(Organizations.where(Organizations.filter('not_found')))
+        assertTrue(emptyCollection.size() == 0)
+
+        //verify that a non matching criteria added to a matching criteria is working as a final non matching criteria
+        //ie. there are no properties matching 'not_found' but there are 1 account matching 'description=02'
+        def emptyCollection2 = tenant.getOrganizations(Organizations.where(Organizations.filter('not_found')).and(Organizations.description().endsWithIgnoreCase('02')))
+        assertTrue(emptyCollection2.size() == 0)
+
+        //verify that the filter search match with substrings
+        def allOrgs2 = tenant.getOrganizations(Organizations.where(Organizations.filter("FilterOrganizations")))
+        assertEquals(allOrgs2.size(), 2)
+
+        //test delete:
+        for (def org : allOrgs){
+            org.delete()
+        }
+    }
+
     @Test
     void testGetOrganizationsWithCustomData() {
 

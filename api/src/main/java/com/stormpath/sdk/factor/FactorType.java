@@ -21,5 +21,26 @@ package com.stormpath.sdk.factor;
  * @see com.stormpath.sdk.factor.sms.SmsFactor
  */
 public enum FactorType {
-    SMS
+    SMS("SMS"),
+    GOOGLE_AUTHENTICATOR("google-authenticator");
+
+    private String name;
+
+    FactorType(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static FactorType fromName(String name) {
+        for (FactorType factorType : values()) {
+            if (factorType.getName().equalsIgnoreCase(name) || factorType.name().equals(name)) {
+                return factorType;
+            }
+        }
+
+        throw new IllegalArgumentException("No FactorType named '" + name + "'");
+    }
 }

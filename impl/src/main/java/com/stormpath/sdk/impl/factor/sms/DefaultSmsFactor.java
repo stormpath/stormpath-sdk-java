@@ -15,35 +15,25 @@
  */
 package com.stormpath.sdk.impl.factor.sms;
 
-import com.stormpath.sdk.challenge.Challenge;
-import com.stormpath.sdk.challenge.ChallengeCriteria;
-import com.stormpath.sdk.challenge.ChallengeList;
-import com.stormpath.sdk.challenge.CreateChallengeRequest;
+import com.stormpath.sdk.challenge.sms.SmsChallenge;
 import com.stormpath.sdk.factor.FactorType;
 import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.factor.AbstractFactor;
-import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.phone.Phone;
-import com.stormpath.sdk.query.Criteria;
-import com.stormpath.sdk.resource.ResourceException;
 
 import java.util.Map;
 
 /**
  * @since 1.1.0
  */
-public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
+public class DefaultSmsFactor extends AbstractFactor<SmsChallenge> implements SmsFactor<SmsChallenge> {
     static final ResourceReference<Phone> PHONE = new ResourceReference<>("phone", Phone.class);
-    static final ResourceReference<Challenge> CHALLENGE = new ResourceReference<>("challenge", Challenge.class);
-    static final ResourceReference<Challenge> MOST_RECENT_CHALLENGE = new ResourceReference<>("mostRecentChallenge", Challenge.class);
-    static final CollectionReference<ChallengeList, Challenge> CHALLENGES =
-            new CollectionReference<>("challenges", ChallengeList.class, Challenge.class);
 
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PHONE, CHALLENGE, MOST_RECENT_CHALLENGE, CHALLENGES);
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PHONE);
 
     public DefaultSmsFactor(InternalDataStore dataStore) {
         super(dataStore);
@@ -76,39 +66,6 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
     }
 
     @Override
-    public Challenge getMostRecentChallenge() {
-        return getResourceProperty(MOST_RECENT_CHALLENGE);
-    }
-
-    @Override
-    public SmsFactor setChallenge(Challenge challenge) {
-        if(challenge.getHref() != null) {
-            setResourceProperty(CHALLENGE, challenge);
-        }
-        else{
-            setMaterializableResourceProperty(CHALLENGE, challenge);
-        }
-        return this;
-    }
-
-    @Override
-    public ChallengeList getChallenges() {
-        return getResourceProperty(CHALLENGES);
-    }
-
-    @Override
-    public ChallengeList getChallenges(ChallengeCriteria criteria) {
-        ChallengeList list = getChallenges(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), ChallengeList.class, (Criteria<ChallengeCriteria>) criteria);
-    }
-
-    @Override
-    public ChallengeList getChallenges(Map<String, Object> queryParams) {
-        ChallengeList list = getChallenges(); //safe to get the href: does not execute a query until iteration occurs
-        return getDataStore().getResource(list.getHref(), ChallengeList.class, queryParams);
-    }
-
-    @Override
     public SmsFactor challenge() {
         String href = getHref();
         href += "/challenges";
@@ -117,25 +74,6 @@ public class DefaultSmsFactor extends AbstractFactor implements SmsFactor {
     }
 
     @Override
-    public Challenge createChallenge(Challenge challenge) throws ResourceException {
-        Assert.notNull(challenge, "Challenge cannot be null.");
-        String href = getChallenges().getHref();
-        return getDataStore().create(href, challenge);
-    }
-
-    @Override
-    public Challenge createChallenge(CreateChallengeRequest request) throws ResourceException {
-        Assert.notNull(request, "Request cannot be null.");
-
-        final Challenge challenge = request.getChallenge();
-        String href = getChallenges().getHref();
-
-        if (request.hasChallengeOptions()) {
-            return  getDataStore().create(href, challenge, request.getChallengeOptions());
-        }
-        return getDataStore().create(href, challenge);
-    }
-
     protected FactorType getConcreteFactorType() {
         return FactorType.SMS;
     }

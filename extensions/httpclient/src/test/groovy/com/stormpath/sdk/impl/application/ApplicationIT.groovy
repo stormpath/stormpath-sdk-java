@@ -324,6 +324,60 @@ class ApplicationIT extends ClientIT {
         assertFalse list.iterator().hasNext() //no results
     }
 
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testFilterApp() {
+
+        def tenant = client.currentTenant
+
+        def app1 = client.instantiate(Application)
+        def app2 = client.instantiate(Application)
+
+        app1.name = uniquify("Java SDK Filter IT App")
+        app1.description = 'Java SDK IT App 01'
+
+        app2.name = uniquify("Java SDK Filter IT App II")
+        app2.description = 'Java SDK IT App 02'
+
+        def dirName = uniquify("Java SDK Filter IT Dir")
+        def dirName2 = uniquify("Java SDK IT Dir II")
+
+        app1  = tenant.createApplication(Applications.newCreateRequestFor(app1).createDirectoryNamed(dirName).build())
+        app2 = tenant.createApplication(Applications.newCreateRequestFor(app2).createDirectoryNamed(dirName2).build())
+
+        deleteOnTeardown(app1)
+        deleteOnTeardown(app2)
+
+        //verify that the filter search works with a combination of criteria
+        def foundApps2 = tenant.getApplications(Applications.where(Applications.filter('Java SDK Filter IT App')).and(Applications.description().endsWithIgnoreCase('02')))
+        def foundApp2 = foundApps2.iterator().next()
+        assertEquals(foundApp2.href, app2.href)
+
+        //verify that the filter search works
+        def allApps = tenant.getApplications(Applications.where(Applications.filter('Java SDK Filter IT App')))
+        assertEquals(allApps.size(), 2)
+
+        //verify that the filter search returns an empty collection if there is no match
+        def emptyCollection = tenant.getApplications(Applications.where(Applications.filter('not_found')))
+        assertTrue(emptyCollection.size() == 0)
+
+        //verify that a non matching criteria added to a matching criteria is working as a final non matching criteria
+        //ie. there are no properties matching 'not_found' but there are 1 account matching 'description=02'
+        def emptyCollection2 = tenant.getApplications(Applications.where(Applications.filter('not_found')).and(Applications.description().endsWithIgnoreCase('02')))
+        assertTrue(emptyCollection2.size() == 0)
+
+        //verify that the filter search match with substrings
+        def allApps2 = tenant.getApplications(Applications.where(Applications.filter("Java SDK Filter")))
+        assertEquals(allApps2.size(), 2)
+
+        //test delete:
+        for (def app : allApps){
+            app.delete()
+        }
+    }
+
     @Test
     void testCreateAppGroupWithSauthc1RequestAuthenticator() {
 

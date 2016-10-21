@@ -43,6 +43,8 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.account.DefaultPasswordResetToken
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
+import com.stormpath.sdk.impl.api.ApiKeyResolver
+import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt
 import com.stormpath.sdk.impl.authc.DefaultBasicLoginAttempt
@@ -67,6 +69,7 @@ import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.saml.DefaultSamlPolicy
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.organization.Organization
@@ -500,7 +503,8 @@ class DefaultApplicationTest {
         def customData = new DefaultCustomData(dataStore)
         def requestExecutor = createStrictMock(RequestExecutor)
         def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
-        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, apiKeyResolver)
 
         expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
         expect(dataStore.instantiate(ApplicationAccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
@@ -541,13 +545,13 @@ class DefaultApplicationTest {
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
-        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor, apiKeyResolver
 
         def app = new DefaultApplication(dataStore, properties)
         app.setDefaultAccountStore(group)
         app.setDefaultAccountStore(accountStore)
 
-        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor, apiKeyResolver
     }
 
     //@since 1.0.RC
@@ -578,7 +582,8 @@ class DefaultApplicationTest {
         def customData = new DefaultCustomData(dataStore)
         def requestExecutor = createStrictMock(RequestExecutor)
         def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
-        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+        def internalDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, apiKeyResolver)
 
         expect(dataStore.instantiate(CustomData, properties.customData)).andReturn(customData)
         expect(dataStore.instantiate(ApplicationAccountStoreMappingList, properties.accountStoreMappings)).andReturn(accountStoreMappings)
@@ -619,13 +624,13 @@ class DefaultApplicationTest {
         modifiedApp = new DefaultApplication(internalDataStore, newPropertiesState)
         expect(dataStore.save((Application) reportMatcher(new ApplicationMatcher(modifiedApp))))
 
-        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor
+        replay dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor, apiKeyResolver
 
         def app = new DefaultApplication(dataStore, properties)
         app.setDefaultGroupStore(group)
         app.setDefaultGroupStore(accountStore)
 
-        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor
+        verify dataStore, accountStore, group, accountStoreMappings, iterator, accountStoreMapping, newAccountStoreMapping, apiKeyCredentials, requestExecutor, apiKeyResolver
     }
 
     //@since 1.0.beta
@@ -989,7 +994,9 @@ class DefaultApplicationTest {
 
         def apiKey = ApiKeys.builder().setId('foo').setSecret('bar').build()
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
+        def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
         def cacheManager = new DefaultCacheManager()
+        def baseUrlResolver = new DefaultBaseUrlResolver("https://api.stormpath.com/v1")
         def requestExecutor = createStrictMock(RequestExecutor)
         def response = createStrictMock(Response)
         def mapMarshaller = new JacksonMapMarshaller();
@@ -1003,7 +1010,7 @@ class DefaultApplicationTest {
 
         replay requestExecutor, response
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, cacheManager)
+        def dataStore = new DefaultDataStore(requestExecutor, baseUrlResolver, apiKeyCredentials, apiKeyResolver, cacheManager)
 
         def application = new DefaultApplication(dataStore, properties)
         //Since this issue shows up only when the caching is enabled, let's make sure that it is indeed enabled, otherwise

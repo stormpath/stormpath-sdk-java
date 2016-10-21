@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.client
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Proxy
+import com.stormpath.sdk.impl.api.ApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
 import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
@@ -25,6 +26,7 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.RestException
+import com.stormpath.sdk.impl.util.BaseUrlResolver
 
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -40,12 +42,12 @@ public class RequestCountingClient extends DefaultClient {
 
     private AtomicInteger count = new AtomicInteger();
 
-    public RequestCountingClient(ApiKeyCredentials apiKeyCredentials, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
-        super(apiKeyCredentials, baseUrl, proxy, cacheManager, authenticationScheme, null, connectionTimeout)
+    public RequestCountingClient(ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver, BaseUrlResolver baseUrlResolver, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
+        super(apiKeyCredentials, apiKeyResolver, baseUrlResolver, proxy, cacheManager, authenticationScheme, null, connectionTimeout)
     }
 
     @Override
-    protected DataStore createDataStore(final RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, CacheManager cacheManager) {
+    protected DataStore createDataStore(final RequestExecutor requestExecutor, BaseUrlResolver baseUrlResolver, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
 
         RequestExecutor countingExecutor = new RequestExecutor() {
             @Override
@@ -55,7 +57,7 @@ public class RequestCountingClient extends DefaultClient {
             }
         };
 
-        return super.createDataStore(countingExecutor, baseUrl, clientCredentials, cacheManager)
+        return super.createDataStore(countingExecutor, baseUrlResolver, clientCredentials, apiKeyResolver, cacheManager)
     }
 
     /**
