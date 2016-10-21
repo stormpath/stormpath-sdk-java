@@ -128,6 +128,9 @@ class ApplicationIT extends ClientIT {
         assertEquals cachedAccount.username, acct.username
     }
 
+    /**
+     * @since 1.2.0
+     */
     @Test
     void testLoginWithOrgNameKey() {
         def username = uniquify('thisisme')
