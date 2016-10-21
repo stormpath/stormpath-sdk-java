@@ -64,23 +64,75 @@ public interface WebConfiguration extends Resource, Saveable, Auditable {
 
     Application getApplication();
 
+    /**
+     * Property to configure
+     *
+     * @return {@link OAuth2Property property}
+     */
     OAuth2Property getOAuth2();
 
+    /**
+     * @return {@link EnabledProperty property} value of the register control.
+     */
     EnabledProperty getRegister();
 
+    /**
+     * Property that controls the logic that must exist in order to facilitate self-service verification of newly
+     * registered user accounts.
+     *
+     * @return {@link EnabledProperty property} value of the verifyEmail control.
+     */
     EnabledProperty getVerifyEmail();
 
+    /**
+     * Property that controls the  logic that must exist in order to facilitate self-service login of user accounts.
+     *
+     * @return {@link EnabledProperty property} value of the login control.
+     */
     EnabledProperty getLogin();
 
+    /**
+     * Property that controls the  logic endpoint is used to delete the Authentication Cookies that were set on login.
+     * The access and refresh tokens that were issued (and stored in cookies) must also be deleted from the
+     * Stormpath REST API.
+     *
+     * @return {@link EnabledProperty property} value of the logout control.
+     */
     EnabledProperty getLogout();
 
+    /**
+     * Property that controls the  logic that must exist in order to facilitate self-service login of user accounts.
+     *
+     * @return {@link EnabledProperty property} value of forgotPa control.
+     */
     EnabledProperty getForgotPassword();
 
+    /**
+     * Property that controls the  logic that must exist in order to facilitate self-service login of user accounts.
+     *
+     * @return {@link EnabledProperty property} value of the changePassword control.
+     */
     EnabledProperty getChangePassword();
 
+    /**
+     * Property that controls the  logic that must exist in order to facilitate self-service idSite of user accounts.
+     *
+     * @return {@link EnabledProperty property} value of the idSite control.
+     */
     EnabledProperty getIdSite();
 
+    /**
+     * Property that controls the  logic that must exist in order to facilitate self-service callback of user accounts.
+     *
+     * @return {@link EnabledProperty property} value of the callback control.
+     */
     EnabledProperty getCallback();
 
+    /**
+     * Property that controls  the logic that allows the client application to fetch the account object of the currently
+     * authenticated user.
+     *
+     * @return {@link MeProperty property} value of the me control.
+     */
     MeProperty getMe();
 }
