@@ -75,8 +75,8 @@ class PasswordPolicyIT extends ClientIT {
 
         def emailTemplate = templates.iterator().next()
         assertNotNull emailTemplate.href
-        assertEquals(emailTemplate.getDefaultModel(), [linkBaseUrl : "https://api.stormpath.com/passwordReset"])
-        assertEquals(emailTemplate.getLinkBaseUrl(), "https://api.stormpath.com/passwordReset")
+        assertTrue(emailTemplate.getLinkBaseUrl().endsWith("/passwordReset"))
+        assertEquals(emailTemplate.getDefaultModel(), [linkBaseUrl : emailTemplate.getLinkBaseUrl()])
         assertEquals(emailTemplate.getSubject(), "Reset your Password")
         assertEquals(emailTemplate.getName(), "Default Password Reset Email Template")
 
