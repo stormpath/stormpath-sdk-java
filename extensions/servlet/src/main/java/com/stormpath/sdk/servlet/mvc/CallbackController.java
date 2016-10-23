@@ -106,13 +106,7 @@ public abstract class CallbackController extends AbstractController {
 
         publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
 
-        //Fixes #849 we send in the state the original path the user requested based on the next query param, so we can redirect back
-        String redirectUri = loginNextUri;
-        if (Strings.hasText(result.getState())) {
-            redirectUri = result.getState();
-        }
-
-        return new DefaultViewModel(redirectUri).setRedirect(true);
+        return new DefaultViewModel(loginNextUri).setRedirect(true);
     }
 
     protected ViewModel onLogout(HttpServletRequest request,
