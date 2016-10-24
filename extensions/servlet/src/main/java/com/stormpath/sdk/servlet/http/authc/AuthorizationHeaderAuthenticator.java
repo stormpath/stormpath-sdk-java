@@ -199,6 +199,12 @@ public class AuthorizationHeaderAuthenticator implements HeaderAuthenticator {
             public AuthenticationOptions getResponseOptions() {
                 return null;
             }
+
+            /** @since 1.2.0 */
+            @Override
+            public String getOrganizationNameKey() {
+                return null;
+            }
         };
     }
 

@@ -18,9 +18,10 @@ package com.stormpath.sdk.impl.authc;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
-import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.MapProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,10 +29,23 @@ import java.util.Map;
  */
 public abstract class AbstractLoginAttempt extends AbstractResource implements LoginAttempt {
 
+    private static final String HREF = "href";
+    private static final String NAME_KEY = "nameKey";
+
     protected static final StringProperty TYPE = new StringProperty("type");
 
     // INSTANCE RESOURCE REFERENCES:
-    protected static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
+    protected static final MapProperty ACCOUNT_STORE = new MapProperty("accountStore");
+
+    /**
+     * This is a transient variable use to keep compatibility with the getAccountStore method, since the ACCOUNT_STORE property was change
+     * to a MapProperty to accommodate the Organization nameKey.
+     * <p>
+     * https://github.com/stormpath/stormpath-sdk-java/issues/284
+     *
+     * @since 1.1.0
+     */
+    private AccountStore accountStore;
 
     public AbstractLoginAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -52,13 +66,33 @@ public abstract class AbstractLoginAttempt extends AbstractResource implements L
     }
 
     @Override
-    public AccountStore getAccountStore() {
-        return getResourceProperty(ACCOUNT_STORE);
-    }
-
-    @Override
     public void setAccountStore(AccountStore accountStore) {
-        setProperty(ACCOUNT_STORE, accountStore);
+        Map<String, String> accountStoreRef = new HashMap<>();
+
+        accountStoreRef.put(HREF, accountStore.getHref());
+
+        setProperty(ACCOUNT_STORE, accountStoreRef);
+
+        this.accountStore = accountStore;
     }
 
+    @Deprecated
+    @Override
+    public AccountStore getAccountStore() {
+        return this.accountStore;
+    }
+
+    /**
+     * since 1.2.0
+     */
+    @Override
+    public void setOrganizationNameKey(String nameKey) {
+        Map<String, String> accountStoreRef = new HashMap<>();
+
+        accountStoreRef.put(NAME_KEY, nameKey);
+
+        setProperty(ACCOUNT_STORE, accountStoreRef);
+
+        this.accountStore = null;
+    }
 }
