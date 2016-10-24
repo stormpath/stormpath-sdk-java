@@ -4,8 +4,8 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
-import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.EnumProperty;
+import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -42,7 +42,7 @@ public class DefaultAccountModelFactory implements AccountModelFactory {
                     Object propertyValue = method.invoke(account);
 
                     if (propertyValue instanceof CollectionResource) {
-                        List<Map<String, Object>> resourcesMap = new ArrayList<Map<String, Object>>();
+                        List<Map<String, Object>> resourcesMap = new ArrayList<>();
 
                         CollectionResource collectionResource = (CollectionResource) propertyValue;
                         Iterator iterator = collectionResource.iterator();
@@ -50,7 +50,12 @@ public class DefaultAccountModelFactory implements AccountModelFactory {
                             resourcesMap.add(getResourceProperties((AbstractResource) iterator.next()));
                         }
 
-                        accountMap.put(property, resourcesMap);
+                        // Return "propertyName.items" instead of "propertyName" for expands
+                        // https://github.com/stormpath/stormpath-sdk-java/issues/1044
+                        Map<String, Object> items = new LinkedHashMap<>();
+                        items.put("items", resourcesMap);
+
+                        accountMap.put(property, items);
                     } else if (propertyValue instanceof AbstractResource) {
                         if ("customData".equals(property)) {
                             accountMap.put(property, account.getCustomData());
