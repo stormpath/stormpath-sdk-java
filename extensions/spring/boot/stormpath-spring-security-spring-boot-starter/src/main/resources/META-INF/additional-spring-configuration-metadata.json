@@ -16,6 +16,12 @@
       "type": "java.lang.Boolean",
       "description": "A boolean flag that can enable or disable the default Stormpath Spring Security integration behavior of protecting access to all URIs.  Default value is true (enabled).",
       "defaultValue": true
+    },
+    {
+      "name": "stormpath.spring.security.csrf.token.repository",
+      "type": "java.lang.String",
+      "description": "A String flag that can switch the token repository implementation for Spring Security.  Default value is 'session', but can also be configured as 'cookie' so the repository is stateless.",
+      "defaultValue": "session"
     }
   ]
 }

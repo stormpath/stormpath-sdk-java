@@ -45,7 +45,7 @@ import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.access.PermissionEvaluator
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
 import org.springframework.security.authentication.AuthenticationManager
@@ -53,8 +53,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.web.csrf.CsrfTokenRepository
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
-import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.HandlerMapping
 import org.testng.annotations.AfterClass
@@ -67,12 +68,10 @@ import javax.servlet.http.HttpServletResponse
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
-
 /**
  * @since 1.0.RC5
  */
-@SpringApplicationConfiguration(classes = [StormpathWebSecurityAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
-@WebAppConfiguration
+@SpringBootTest(classes = [StormpathWebSecurityAutoConfigurationTestApplication.class, TwoAppTenantStormpathTestConfiguration.class])
 class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContextTests {
 
     @Autowired
@@ -134,6 +133,9 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     CsrfTokenManager csrfTokenManager
 
     @Autowired
+    CsrfTokenRepository csrfTokenRepository
+
+    @Autowired
     AuthenticationManager authenticationManager
 
     @Autowired
@@ -180,6 +182,7 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     @Test
     void testCsrfTokenManager() {
         assertTrue (csrfTokenManager instanceof SpringSecurityCsrfTokenManager)
+        assertTrue (csrfTokenRepository instanceof HttpSessionCsrfTokenRepository)
         assertEquals csrfTokenManager.tokenName, '_csrf'
     }
 
