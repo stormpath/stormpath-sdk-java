@@ -31,6 +31,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @since 1.0.RC3
@@ -43,6 +45,7 @@ public class StormpathFilter extends HttpFilter {
     private WrappedServletRequestFactory factory;
     private Client client;
     private Application application;
+    private Pattern patternsToIgnore;
 
     public StormpathFilter() {
         this.clientRequestAttributeNames = Collections.emptySet();
@@ -77,6 +80,10 @@ public class StormpathFilter extends HttpFilter {
         this.application = application;
     }
 
+    public void setPathsToIgnore(String pathsToIgnore) {
+        this.patternsToIgnore = Pattern.compile(pathsToIgnore);
+    }
+
     @Override
     protected void onInit() throws ServletException {
         Assert.notNull(filterChainResolver, "FilterChainResolver cannot be null.");
@@ -98,6 +105,17 @@ public class StormpathFilter extends HttpFilter {
         FilterChainResolver resolver = getFilterChainResolver();
         Assert.notNull(resolver, "Filter has not yet been configured. Explicitly call setFilterChainResolver or " +
                 "init(FilterConfig).");
+
+        // Check to see if this filter should be skipped because of ignored paths.
+        // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/1031
+        String url = request.getRequestURL().toString();
+        if (patternsToIgnore != null) {
+            Matcher matcher = patternsToIgnore.matcher(url);
+            if (matcher.matches()) {
+                chain.doFilter(request, response);
+                return;
+            }
+        }
 
         setRequestAttributes(request);
 

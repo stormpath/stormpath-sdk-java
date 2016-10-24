@@ -183,6 +183,12 @@
       "defaultValue": "/*"
     },
     {
+      "name": "stormpath.web.stormpathFilter.ignoreUrlPatterns",
+      "type": "java.lang.String",
+      "description": "A regex that indicates what patterns the StormpathFilter should ignore. For example, to ignore static assets, use: ([^\\s]+(\\.(?i)(js|map|json|css|png|gif|jpg|jpeg|woff2|html))\\$).",
+      "defaultValue": ""
+    },
+    {
       "name": "stormpath.web.stormpathFilter.servletNames",
       "type": "java.lang.String",
       "description": "A comma-delimited list of names that should be given to the StormpathFilter."

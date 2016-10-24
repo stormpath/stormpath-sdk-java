@@ -228,12 +228,8 @@ public abstract class HttpFilter implements Filter {
                     log.debug("Filter '{}' is not enabled. Continuing filter chain immediately.", this.name);
                     chain.doFilter(request, response);
                 }
-            } catch (IOException ioe) {
+            } catch (IOException | ServletException | RuntimeException ioe) {
                 throw ioe;
-            } catch (ServletException se) {
-                throw se;
-            } catch (RuntimeException re) {
-                throw re;
             } catch (Exception e) {
                 String msg = "Filtered request resulted in an exception: " + e.getMessage();
                 throw new ServletException(msg, e);

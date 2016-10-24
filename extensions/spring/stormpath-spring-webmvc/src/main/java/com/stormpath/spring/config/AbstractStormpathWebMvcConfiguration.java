@@ -279,6 +279,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
     protected String stormpathFilterUrlPatterns;
 
+    @Value("#{ @environment['stormpath.web.stormpathFilter.ignoreUrlPatterns'] ?: '' }")
+    protected String stormpathFilterIgnoreUrlPatterns;
+
     @Value("#{ @environment['stormpath.web.stormpathFilter.servletNames'] }")
     protected String stormpathFilterServletNames;
 
@@ -1415,6 +1418,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         filter.setApplicationRequestAttributeNames(stormpathRequestApplicationAttributeNames());
         filter.setFilterChainResolver(stormpathFilterChainResolver());
         filter.setWrappedServletRequestFactory(stormpathWrappedServletRequestFactory());
+        filter.setPathsToIgnore(stormpathFilterIgnoreUrlPatterns);
         return filter;
     }
 

@@ -85,6 +85,11 @@ public class SelfConfiguredStormpathFilter extends StormpathFilter {
 
             WrappedServletRequestFactory factory = config.getInstance("stormpath.web.request.factory");
             setWrappedServletRequestFactory(factory);
+
+            String urlsToIgnore = config.get("stormpath.web.stormpathFilter.ignoreUrlPatterns");
+            if (Strings.hasText(urlsToIgnore)) {
+                setPathsToIgnore(urlsToIgnore);
+            }
         }
     }
 }
