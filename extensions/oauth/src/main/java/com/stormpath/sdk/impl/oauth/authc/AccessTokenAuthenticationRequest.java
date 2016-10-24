@@ -119,6 +119,12 @@ public class AccessTokenAuthenticationRequest extends OAuthTokenRequest implemen
         throw new UnsupportedOperationException("getAccountStore() method hasn't been implemented.");
     }
 
+    /* @since 1.2.0 */
+    @Override
+    public String getOrganizationNameKey() {
+        throw new UnsupportedOperationException("getOrganizationNameKey() method hasn't been implemented.");
+    }
+
     /* @since 1.0.RC5 */
     @Override
     public AuthenticationOptions getResponseOptions() {
