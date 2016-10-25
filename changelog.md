@@ -2,7 +2,7 @@
 
 ### 1.1.2 ##
 
-This release includes bug fixes and a change in the JSON structure of the /me endpoint (now returns `groups.items` instead of `groups`). 
+This release includes a fix for the `next` parameter when deployed at a non-root context and a change in the JSON structure of the /me endpoint (now returns `groups.items` instead of `groups`).
 
 See [1.1.2 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.2+is%3Aclosed) for a complete list of changes.
 
