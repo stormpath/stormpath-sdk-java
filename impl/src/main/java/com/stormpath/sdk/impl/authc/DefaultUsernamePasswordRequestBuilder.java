@@ -31,6 +31,7 @@ public class DefaultUsernamePasswordRequestBuilder implements UsernamePasswordRe
     private String host;
     private AccountStore accountStore;
     private BasicAuthenticationOptions options;
+    private String organizationNameKey;
 
     @Override
     public UsernamePasswordRequestBuilder setUsernameOrEmail(String usernameOrEmail) {
@@ -72,6 +73,16 @@ public class DefaultUsernamePasswordRequestBuilder implements UsernamePasswordRe
         return this;
     }
 
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public UsernamePasswordRequestBuilder setOrganizationNameKey(String orgNameKey) {
+        Assert.hasText(orgNameKey, "orgNameKey cannot be null or empty.");
+        this.organizationNameKey = orgNameKey;
+        return this;
+    }
+
     @Override
     public AuthenticationRequest build() {
         Assert.state(this.usernameOrEmail != null, "usernameOrEmail has not been set. It is a required attribute.");
@@ -79,6 +90,7 @@ public class DefaultUsernamePasswordRequestBuilder implements UsernamePasswordRe
         if (this.host != null) { request.setHost(this.host); }
         if (this.accountStore != null) { request.setAccountStore(this.accountStore); }
         if (this.options != null) { request.setResponseOptions(this.options); }
+        if (this.organizationNameKey != null) { request.setOrganizationNameKey(this.organizationNameKey); }
         return request;
     }
 
