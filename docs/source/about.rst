@@ -3,7 +3,7 @@
 About
 =====
 
-Are you building a web app, but not sure if the Stormpath Java Servlet Plugin is right for you?  This page will help you decide if is a good fit!
+Are you building a web application, but not sure if the |project| is right for you?  This page will help you decide if is a good fit!
 
 
 What is Stormpath?
@@ -26,16 +26,20 @@ What is Stormpath?
 - Allow users to authenticate with your application with OAuth
 - and more!
 
-Stormpath provides a simple REST API for all of the above.  For instance, if you wanted to create a new user account given an email address and password, you could send Stormpath an ``HTTP POST`` request and Stormpath would create a new user account for you, securely hash its password using security best practices and and store it securely on Stormpath's cloud service.
+Stormpath provides a simple REST API for all of the above.  For instance, if you wanted to create a new user account given an email address and password, you could send Stormpath an ``HTTP POST`` request and Stormpath would create a new user account for you, securely hash its password using security best practices and and store it securely in Stormpath's cloud service.
 
 In addition to allowing you to create users and groups, Stormpath also allows you to store custom data with each user account.  Let's say you want to store a user's birthday -- you can send Stormpath an ``HTTP POST`` request to the user's account URL and store *any* variable JSON data (birthdays, images, movies, links, etc.).  This information is encrypted and authenticated end-to-end, ensuring your user data is secure.
 
-What is the Stormpath Java Servlet Plugin?
-------------------------------------------
+What is the |project|?
+----------------------
 
-The Stormpath Java Servlet Plugin is a drop-in plugin for `Servlet`_-based web applications that makes it *incredibly* simple to add user management and authentication to your Java-based web application.
+.. only:: servlet
 
-It aims to completely abstract away all user registration, login, authentication and authorization workloads as well as properly secure the web app.  It is completely flexible - use only the functionality you need or leverage the entire feature set.
+  The |project| is a drop-in plugin for `Servlet`_-based web applications that makes it *incredibly* simple to add user management and authentication to your Java-based web application.
+
+.. only:: springboot
+
+  It aims to completely automate all user registration, login, authentication and authorization workloads as well as properly secure the web app.  It is completely flexible - use only the functionality you need or leverage the entire feature set.
 
 
 Who should use Stormpath?
@@ -45,7 +49,7 @@ Stormpath is a powerful and secure service.  The Stormpath Java Servlet Plugin m
 
 You might want to use Stormpath if:
 
-- You want to make user creation, management, and security as simple as possible (you can get started with the Stormpath Java Servlet Plugin with ZERO lines of code *excluding settings*)
+- You want to make user creation, management, and security as simple as possible (you can get started with ZERO lines of code *excluding settings*).
 - User security is a top priority.  The Stormpath API, our documents and integrations were built by Java security experts.
 - Scaling your userbase is a potential problem (Stormpath handles scaling your users transparently).
 - You need to store custom user data along with your user's basic information (email, password).

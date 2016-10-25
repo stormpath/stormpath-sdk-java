@@ -106,5 +106,10 @@ class AuthenticationRequestDispatcherTest extends PowerMockTestCase {
 
         @Override
         AuthenticationOptions getResponseOptions() { return null }
+
+        @Override
+        String getOrganizationNameKey() {
+            return null
+        }
     }
 }

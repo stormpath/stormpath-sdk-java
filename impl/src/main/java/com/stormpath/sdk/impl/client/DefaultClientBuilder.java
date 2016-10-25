@@ -16,6 +16,8 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
+import com.stormpath.sdk.impl.api.DefaultApiKeyResolver;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentialsProvider;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
@@ -34,6 +36,8 @@ import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
+import com.stormpath.sdk.impl.util.BaseUrlResolver;
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver;
 import com.stormpath.sdk.lang.Assert;
 import io.jsonwebtoken.lang.Classes;
 import org.slf4j.Logger;
@@ -242,6 +246,24 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
+    /**
+     * @since 1.1.0
+     */
+    public ClientBuilder setApiKeyResolver(ApiKeyResolver apiKeyResolver) {
+        Assert.notNull(apiKeyResolver, "apiKeyResolver must not be null.");
+        this.clientConfig.setApiKeyResolver(apiKeyResolver);
+        return this;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public ClientBuilder setBaseUrlResolver(BaseUrlResolver baseUrlResolver) {
+        Assert.notNull(baseUrlResolver, "baseUrlResolver must not be null");
+        this.clientConfig.setBaseUrlResolver(baseUrlResolver);
+        return this;
+    }
+
     @Override
     public Client build() {
         if (!this.clientConfig.isCacheManagerEnabled()) {
@@ -282,7 +304,21 @@ public class DefaultClientBuilder implements ClientBuilder {
             clientCredentials = clientCredentialsProvider.getClientCredentials();
         }
 
-        return new DefaultClient(clientCredentials, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
+        ApiKeyResolver apiKeyResolver = this.clientConfig.getApiKeyResolver();
+
+        if (apiKeyResolver == null) {
+            Assert.isInstanceOf(ApiKeyCredentials.class, clientCredentials, "An ApiKeyResolver must be configured for ClientCredentials other than ApiKeyCredentials.");
+            apiKeyResolver = new DefaultApiKeyResolver(((ApiKeyCredentials) clientCredentials).getApiKey());
+        }
+
+        BaseUrlResolver baseUrlResolver = this.clientConfig.getBaseUrlResolver();
+
+        if (baseUrlResolver == null) {
+            Assert.notNull(this.clientConfig.getBaseUrl(), "Stormpath base url must not be null.");
+            baseUrlResolver = new DefaultBaseUrlResolver(this.clientConfig.getBaseUrl());
+        }
+
+        return new DefaultClient(clientCredentials, apiKeyResolver, baseUrlResolver, this.proxy, this.cacheManager,
                 this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout());
     }
 

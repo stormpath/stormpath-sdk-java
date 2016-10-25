@@ -190,6 +190,27 @@ public final class Groups {
         return (CreateGroupRequestBuilder) Classes.instantiate(ctor, group);
     }
 
+    /**
+     * This operation will ask the backend to do a case-insensitive matching query on all viewable attributes in all the resources in the Collection.
+     *
+     * So the following query:
+     *
+     * application.getGroups(Groups.where(Groups.filter("Group01"));
+     *
+     * Returns all Groups where:
+     *
+     * Each Group exists inside an GroupStore belonging to the Application `application`
+     * The Group’s name equals or contains “Group01” (case insensitive) OR
+     * The Group’s description equals or contains “Group01” (case insensitive) OR
+     * And so on
+     *
+     * @param value The value to search for
+     * @return A Criterion representing the filter query
+     * @since 1.2.0
+     */
+    public static Criterion filter(String value){
+        return newStringExpressionFactory("q").eqIgnoreCase(value);
+    }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
         final String FQCN = "com.stormpath.sdk.impl.query.DefaultStringExpressionFactory";

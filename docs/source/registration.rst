@@ -18,7 +18,7 @@ One of the very first things most web apps need is the ability to create a user 
 
 2. Fill out the form and click submit and you'll be redirected back to your application's root path, for example, ``http://localhost:8080/``.
 
-Pretty nice!  Not a single line of code required :)
+Pretty nice!  Not a single line of code required. :)
 
 And while we think the default look and feel of the pages automatically rendered by the plugin are pretty nice, you have full control over the CSS and HTML for these pages - we'll cover customizing them later.
 
@@ -57,13 +57,26 @@ Again, this property is only referenced if email verification is disabled.  If e
 Next Query Parameter
 ^^^^^^^^^^^^^^^^^^^^
 
-If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URI has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location.  For example:
+If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URI has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location. For example:
 
 ``https://myapp.com/register?next=/registerSuccess``
 
 This will cause the user to be redirected ``/registerSuccess`` instead of the configured ``stormpath.web.register.nextUri`` path.
 
 Again, this functionality is only executed if email verification is disabled.  If email verification is enabled, a page will be rendered asking the user to check their email.
+
+.. only:: springboot
+
+  View
+  ----
+
+  When the URI is visited a default template view named ``stormpath/register`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.register.view`` property:
+
+  .. code-block:: properties
+
+    stormpath.web.register.view = stormpath/register
+
+  Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
 
 Form Fields
 -----------
@@ -150,6 +163,15 @@ While in your tentative ``i18n_es.properties`` file you would add:
 
     stormpath.web.register.form.fields.birthday.label = Fecha de nacimiento
 
+.. _password strength:
+
+Password Strength
+^^^^^^^^^^^^^^^^^
+
+When you first fill out the registration form, you probably noticed that you couldn't register a user account without specifying a sufficiently strong password.  This is because, by default, Stormpath enforces certain password strength rules.
+
+If you'd like to change these password strength rules, you can do so easily by visiting the `Stormpath Admin Console`_, navigating to your your application's user account ``Directory``, and then changing the "Password Strength Policy".
+
 i18n
 ----
 
@@ -187,7 +209,7 @@ If you want to enable email verification for newly registered accounts, you have
 #. On the Directory Workflows screen, the 'Verification Email' workflow is shown first.  Ensure that you
 
    #. Enable the workflow, and
-   #. Change the 'Link Base URL' text field to equal the fully qualified URL of your application's :ref:`verify link base URL <verify link base url>`.  The plugin's default context-relative path for this feature is ``/verify``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/verify``.
+   #. Change the 'Link Base URL' text field to equal the fully qualified URL of your application's :ref:`verify link base URL <verify link base url>`.  The default context-relative path for this feature is ``/verify``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/verify``.
 
    .. image:: /_static/console-directory-workflows-ann.png
 
@@ -224,7 +246,7 @@ Verify Link Base URL
 
 The Verify 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the email.  For example, during development, this is often something like ``http://localhost:8080/verify`` and in production, something like ``https://myapp.com/verify``.
 
-When a user clicks the link in the email, the Stormpath Java Servlet Plugin will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verifyEmail.uri`` configuration property:
+When a user clicks the link in the email, the |project| will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verifyEmail.uri`` configuration property:
 
 .. code-block:: properties
 

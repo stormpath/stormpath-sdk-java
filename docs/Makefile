@@ -6,6 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
+LANGUAGE      = servlet
+LANGUAGES     = servlet springboot
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -19,17 +21,19 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) sou
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
-.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
+.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest coverage gettext
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html       to make standalone HTML files"
+	@echo "  allhtml    to make standalone HTML files for ALL languages"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
 	@echo "  pickle     to make pickle files"
 	@echo "  json       to make JSON files"
 	@echo "  htmlhelp   to make HTML files and a HTML help project"
 	@echo "  qthelp     to make HTML files and a qthelp project"
+	@echo "  applehelp  to make an Apple Help Book"
 	@echo "  devhelp    to make HTML files and a Devhelp project"
 	@echo "  epub       to make an epub"
 	@echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
@@ -45,13 +49,22 @@ help:
 	@echo "  pseudoxml  to make pseudoxml-XML files for display purposes"
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
+	@echo "  coverage   to run coverage check of the documentation (if enabled)"
 
 clean:
 	rm -rf $(BUILDDIR)/*
 
 html:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	@rm -rf $(BUILDDIR)
+	$(SPHINXBUILD) -n -b html -E $(ALLSPHINXOPTS) -t $(LANGUAGE) $(BUILDDIR)/html
 	@echo
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html"
+
+allhtml:
+	@rm -rf $(BUILDDIR)
+	@for target in $(LANGUAGES); do \
+		$(SPHINXBUILD) -nW -b html -E $(ALLSPHINXOPTS) -t $$target $(BUILDDIR)/html/$$target; \
+	done
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
 dirhtml:
@@ -87,7 +100,15 @@ qthelp:
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
 	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/StormpathSDKforJava.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/StormpathSDKforJava.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/StormpathDocumentation.qhc"
+
+applehelp:
+	$(SPHINXBUILD) -b applehelp $(ALLSPHINXOPTS) $(BUILDDIR)/applehelp
+	@echo
+	@echo "Build finished. The help book is in $(BUILDDIR)/applehelp."
+	@echo "N.B. You won't be able to view it unless you put it in" \
+	      "~/Library/Documentation/Help or install it in your application" \
+	      "bundle."
 
 devhelp:
 	$(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) $(BUILDDIR)/devhelp
@@ -121,6 +142,10 @@ latexpdfja:
 	@echo "Running LaTeX files through platex and dvipdfmx..."
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf-ja
 	@echo "pdflatex finished; the PDF files are in $(BUILDDIR)/latex."
+
+livehtml:
+	@rm -rf $(BUILDDIR)
+	sphinx-autobuild -b html -E $(ALLSPHINXOPTS) -t $(LANGUAGE) $(BUILDDIR)/html
 
 text:
 	$(SPHINXBUILD) -b text $(ALLSPHINXOPTS) $(BUILDDIR)/text
@@ -156,7 +181,7 @@ changes:
 	@echo "The overview file is in $(BUILDDIR)/changes."
 
 linkcheck:
-	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(BUILDDIR)/linkcheck
+	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) -t $(LANGUAGE) $(BUILDDIR)/linkcheck
 	@echo
 	@echo "Link check complete; look for any errors in the above output " \
 	      "or in $(BUILDDIR)/linkcheck/output.txt."
@@ -165,6 +190,11 @@ doctest:
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+
+coverage:
+	$(SPHINXBUILD) -b coverage $(ALLSPHINXOPTS) $(BUILDDIR)/coverage
+	@echo "Testing of coverage in the sources finished, look at the " \
+	      "results in $(BUILDDIR)/coverage/python.txt."
 
 xml:
 	$(SPHINXBUILD) -b xml $(ALLSPHINXOPTS) $(BUILDDIR)/xml

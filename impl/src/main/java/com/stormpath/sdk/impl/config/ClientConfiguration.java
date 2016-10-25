@@ -1,8 +1,10 @@
 package com.stormpath.sdk.impl.config;
 
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.impl.util.BaseUrlResolver;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,6 +23,7 @@ public class ClientConfiguration {
     private String apiKeyFile;
     private String apiKeyId;
     private String apiKeySecret;
+    private ApiKeyResolver apiKeyResolver;
     private boolean cacheManagerEnabled;
     private long cacheManagerTtl;
     private long cacheManagerTti;
@@ -33,6 +36,7 @@ public class ClientConfiguration {
     private String proxyHost;
     private String proxyUsername;
     private String proxyPassword;
+    private BaseUrlResolver baseUrlResolver;
 
     public String getApiKeyFile() {
         return apiKeyFile;
@@ -56,6 +60,20 @@ public class ClientConfiguration {
 
     public void setApiKeySecret(String apiKeySecret) {
         this.apiKeySecret = apiKeySecret;
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    public ApiKeyResolver getApiKeyResolver() {
+        return apiKeyResolver;
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    public void setApiKeyResolver(ApiKeyResolver apiKeyResolver) {
+        this.apiKeyResolver = apiKeyResolver;
     }
 
     public AuthenticationScheme getAuthenticationScheme() {
@@ -177,6 +195,20 @@ public class ClientConfiguration {
 
     public void setProxyUsername(String proxyUsername) {
         this.proxyUsername = proxyUsername;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public BaseUrlResolver getBaseUrlResolver() {
+        return baseUrlResolver;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public void setBaseUrlResolver(BaseUrlResolver baseUrlResolver) {
+        this.baseUrlResolver = baseUrlResolver;
     }
 
     @Override

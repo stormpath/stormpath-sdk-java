@@ -52,6 +52,7 @@ import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.View;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
@@ -422,6 +423,18 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "stormpathRequestClientAttributeNames")
+    public Set<String> stormpathRequestClientAttributeNames() {
+        return super.stormpathRequestClientAttributeNames();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRequestApplicationAttributeNames")
+    public Set<String> stormpathRequestApplicationAttributeNames() {
+        return super.stormpathRequestApplicationAttributeNames();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "stormpathLocaleResolver")
     public Resolver<Locale> stormpathLocaleResolver() {
         return super.stormpathLocaleResolver();
@@ -522,6 +535,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean
+    public ExpandsResolver stormpathMeExpandsResolver(){
+        return super.stormpathMeExpandsResolver();
+    }
+
+    @Bean
     public ServletListenerRegistrationBean<ServletContextListener> stormpathServletContextListener() {
 
         ServletContextListener listener = new ServletContextListener() {
@@ -575,6 +594,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "stormpathFilter")
     @DependsOn("stormpathServletContextListener")
     public FilterRegistrationBean stormpathFilter() {
         StormpathFilter filter = newStormpathFilter();

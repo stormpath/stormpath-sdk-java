@@ -13,10 +13,14 @@ import java.lang.reflect.Field
 import static org.testng.Assert.assertEquals
 
 /**
- * This test is designed to compare {@link StormpathAutoConfiguration} with additional-spring-configuration-metadata.json
- * to make sure all properties are documented.
+ * <p>This test has two purposes:</p>
+ * <ul>
+ *   <ol>To compare {@link StormpathAutoConfiguration} with additional-spring-configuration-metadata.json to make sure all
+ *       properties are documented.</ol>
+ *   <ol>To generate a documentation page with a list of configurable core properties.</ol>
+ * </ul>
+ * <p>See https://github.com/stormpath/stormpath-sdk-java/issues/949 for more information.</p>
  */
-
 class StormpathAutoConfigurationVersusMetadata {
 
     @Test
@@ -44,6 +48,9 @@ class StormpathAutoConfigurationVersusMetadata {
         assertEquals diff.sort().toString(), "[stormpath.client.cacheManager.defaultTti, stormpath.client.cacheManager.defaultTtl, stormpath.enabled]"
     }
 
+    /**
+     * This method is a test, but it also generates properties documentation in the top-level docs directory.
+     */
     @Test
     public void generatePropertiesTableForDocumentation() {
         StringBuilder sb = new StringBuilder()
@@ -60,7 +67,7 @@ class StormpathAutoConfigurationVersusMetadata {
             sb.append(it.description + "\n\n")
         }
 
-        File file = new File("../docs/source/appendix/spring-boot-core-properties.rst");
+        File file = new File("../../../../docs/source/appendix/spring-boot-core-properties.rst");
         file.write sb.toString()
     }
 

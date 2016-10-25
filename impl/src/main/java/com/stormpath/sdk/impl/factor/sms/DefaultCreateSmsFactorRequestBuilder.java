@@ -19,21 +19,17 @@ import com.stormpath.sdk.factor.CreateFactorRequest;
 import com.stormpath.sdk.factor.sms.CreateSmsFactorRequestBuilder;
 import com.stormpath.sdk.factor.sms.SmsFactor;
 import com.stormpath.sdk.factor.sms.SmsFactorOptions;
-import com.stormpath.sdk.impl.factor.DefaultCreateFactorRequest;
-import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.impl.factor.AbstractCreateFactorRequestBuilder;
 
 /**
  * @since 1.1.0
  */
-public class DefaultCreateSmsFactorRequestBuilder implements CreateSmsFactorRequestBuilder {
+public class DefaultCreateSmsFactorRequestBuilder extends AbstractCreateFactorRequestBuilder<SmsFactor, SmsFactorOptions> implements CreateSmsFactorRequestBuilder<SmsFactor, SmsFactorOptions> {
 
-    private final com.stormpath.sdk.factor.sms.SmsFactor smsFactor;
-    private SmsFactorOptions options;
     private boolean createChallenge;
 
-    public DefaultCreateSmsFactorRequestBuilder(SmsFactor smsFactor) {
-        Assert.notNull(smsFactor, "Factor can't be null.");
-        this.smsFactor = smsFactor;
+    public DefaultCreateSmsFactorRequestBuilder(SmsFactor factor) {
+        super(factor);
     }
 
     @Override
@@ -42,16 +38,8 @@ public class DefaultCreateSmsFactorRequestBuilder implements CreateSmsFactorRequ
         return this;
     }
 
-
-    @Override
-    public CreateSmsFactorRequestBuilder withResponseOptions(SmsFactorOptions options) throws IllegalArgumentException {
-        Assert.notNull(options, "options can't be null.");
-        this.options = options;
-        return this;
-    }
-
     @Override
     public CreateFactorRequest<SmsFactor, SmsFactorOptions> build() {
-        return new DefaultCreateFactorRequest(smsFactor, options, createChallenge);
+        return new DefaultSmsCreateFactorRequest(factor, options, createChallenge);
     }
 }

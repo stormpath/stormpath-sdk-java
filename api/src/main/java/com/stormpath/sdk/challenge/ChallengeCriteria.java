@@ -43,7 +43,6 @@ import com.stormpath.sdk.query.Criteria;
  * and then further by status (descending), you would chain {@code orderBy} statements:
  * <pre>
  * ...criteria
- *     .orderByMessageId()
  *     .orderByStatus().descending()
  *     ...
  * </pre>
@@ -51,16 +50,6 @@ import com.stormpath.sdk.query.Criteria;
  * @since 1.1.0
  */
 public interface ChallengeCriteria extends Criteria<ChallengeCriteria>, ChallengeOptions<ChallengeCriteria> {
-
-    /**
-     * Ensures that the query results are ordered by group {@link Challenge#getMessage()} message}.
-     * <p/>
-     * Please see the {@link ChallengeCriteria class-level documentation} for controlling sort order (ascending or
-     * descending) and chaining multiple {@code orderBy} clauses.
-     *
-     * @return this instance for method chaining
-     */
-    ChallengeCriteria orderByMessage();
 
     /**
      * Ensures that the query results are ordered by group {@link Challenge#getStatus() status}.
