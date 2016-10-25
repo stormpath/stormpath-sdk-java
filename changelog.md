@@ -1,13 +1,20 @@
 ## Change Log ##
 
+### 1.1.2 ##
+
+This release includes a fix for the `next` parameter when deployed at a non-root context and a change in the JSON structure of the /me endpoint (now returns `groups.items` instead of `groups`).
+
+See [1.1.2 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.2+is%3Aclosed) for a complete list of changes.
+
+
 ### 1.1.1 ##
 
 See [1.1.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.1+is%3Aclosed) for a complete list of changes.
 
 ### 1.1.0 ##
 
-This release includes support for multi-factor authentication, Spring Cloud Zuul, a `stormpath_social` grant type for OAuth, improved
-documentation and a CORS Filter for servlet. 
+This release includes support for multi-factor authentication, Spring Cloud Zuul, a `stormpath_social` grant type for OAuth, and improved
+documentation. 
 
 See [1.1.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.0+is%3Aclosed) for a complete list of changes.
 
