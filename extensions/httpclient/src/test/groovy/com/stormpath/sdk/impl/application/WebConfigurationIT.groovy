@@ -161,6 +161,25 @@ class WebConfigurationIT extends ClientIT {
     }
 
     @Test
+    void testWebConfiguration_updateCookieName() {
+
+        def webConfig = createTempApp().getWebConfiguration()
+
+        webConfig.getAccessTokenCookie().setName("an-access-token-valid-name")
+        webConfig.getRefreshTokenCookie().setName("a-refresh-token-valid-name")
+
+        webConfig.save()
+
+        def noCacheClient = buildClient(false)
+
+        webConfig = noCacheClient.getResource(webConfig.href, WebConfiguration)
+
+        assertEquals "an-access-token-valid-name", webConfig.getAccessTokenCookie().getName()
+        assertEquals "a-refresh-token-valid-name", webConfig.getRefreshTokenCookie().getName()
+
+    }
+
+    @Test
     void testEnableStormpathAdminApp_ErrorResponse() {
 
         def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfiguration()

@@ -37,9 +37,18 @@ public interface WebConfiguration extends Resource, Saveable, Auditable {
      */
     String getDomainName();
 
+    /**
+     * @return the current dnsLabel or {@code null} if none has been set.
+     */
     String getDnsLabel();
 
-
+    /**
+     * Sets the preferred dnsLabel of the client api domain name.
+     * <p/>
+     * Warning: Changing this value will override the {@link #getDomainName() domainName} value.
+     *
+     * @param dnsLabel to
+     */
     void setDnsLabel(String dnsLabel);
 
     /**
@@ -58,8 +67,16 @@ public interface WebConfiguration extends Resource, Saveable, Auditable {
      */
     void setStatus(WebConfigurationStatus status);
 
+    /**
+     * @return the {@link ApiKey ap}
+     */
     ApiKey getSigningApiKey();
 
+    /**
+     * Sets the {@link ApiKey apiKey} to be used by Stormpath when signing tokens issues using the Client API.
+     *
+     * @param apiKey
+     */
     void setSigningApiKey(ApiKey apiKey);
 
     Application getApplication();
@@ -70,6 +87,20 @@ public interface WebConfiguration extends Resource, Saveable, Auditable {
      * @return {@link OAuth2Property property}
      */
     OAuth2Property getOAuth2();
+
+    /**
+     * Returns the configured value for the {@code accessTokenCookie} name.
+     *
+     * @return returns the configured value for the {@code accessTokenCookie} name.
+     */
+    NameableProperty getAccessTokenCookie();
+
+    /**
+     * Returns the configured value for the {@code refreshTokenCookie} name.
+     *
+     * @return returns the configured value for the {@code refreshTokenCookie} name.
+     */
+    NameableProperty getRefreshTokenCookie();
 
     /**
      * @return {@link EnabledProperty property} value of the register control.

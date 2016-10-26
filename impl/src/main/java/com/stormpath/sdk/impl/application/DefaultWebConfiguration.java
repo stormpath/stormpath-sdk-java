@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.EnabledProperty;
 import com.stormpath.sdk.application.MeProperty;
+import com.stormpath.sdk.application.NameableProperty;
 import com.stormpath.sdk.application.OAuth2Property;
 import com.stormpath.sdk.application.WebConfiguration;
 import com.stormpath.sdk.application.WebConfigurationStatus;
@@ -49,6 +50,8 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
     private static final StringProperty DNS_LABEL = new StringProperty("dnsLabel");
     private static final EnumProperty<WebConfigurationStatus> STATUS = new EnumProperty<>(WebConfigurationStatus.class);
     private static final ParentAwareObjectProperty<DefaultOAuth2Property, AbstractPropertyRetriever> OAUTH2;
+    private static final ParentAwareObjectProperty<DefaultNameableProperty, AbstractPropertyRetriever> ACCESS_TOKEN_COOKIE;
+    private static final ParentAwareObjectProperty<DefaultNameableProperty, AbstractPropertyRetriever> REFRESH_TOKEN_COOKIE;
     private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> REGISTER;
     private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> VERIFY_EMAIL;
     private static final ParentAwareObjectProperty<DefaultEnabledProperty, AbstractPropertyRetriever> LOGIN;
@@ -61,6 +64,8 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
 
     static {
         OAUTH2 = new ParentAwareObjectProperty<>("oauth2", DefaultOAuth2Property.class, AbstractPropertyRetriever.class);
+        ACCESS_TOKEN_COOKIE = new ParentAwareObjectProperty<>("accessTokenCookie", DefaultNameableProperty.class, AbstractPropertyRetriever.class);
+        REFRESH_TOKEN_COOKIE = new ParentAwareObjectProperty<>("refreshTokenCookie", DefaultNameableProperty.class, AbstractPropertyRetriever.class);
         REGISTER = new ParentAwareObjectProperty<>("register", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
         VERIFY_EMAIL = new ParentAwareObjectProperty<>("verifyEmail", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
         LOGIN = new ParentAwareObjectProperty<>("login", DefaultEnabledProperty.class, AbstractPropertyRetriever.class);
@@ -137,6 +142,16 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
     @Override
     public OAuth2Property getOAuth2() {
         return getParentAwareObjectProperty(OAUTH2);
+    }
+
+    @Override
+    public NameableProperty getAccessTokenCookie() {
+        return getParentAwareObjectProperty(ACCESS_TOKEN_COOKIE);
+    }
+
+    @Override
+    public NameableProperty getRefreshTokenCookie() {
+        return getParentAwareObjectProperty(REFRESH_TOKEN_COOKIE);
     }
 
     @Override
