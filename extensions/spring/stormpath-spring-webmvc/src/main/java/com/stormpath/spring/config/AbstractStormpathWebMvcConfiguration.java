@@ -389,10 +389,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.cors.allowed.originUris'] }")
     protected String corsAllowedOrigins;
 
-    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] }")
+    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] ?: 'Content-Type,Accept,X-Requested-With,remember-me' }")
     protected String corsAllowedHeaders;
 
-    @Value("#{ @environment['stormpath.web.cors.allowed.methods'] }")
+    @Value("#{ @environment['stormpath.web.cors.allowed.methods'] ?: 'POST,GET,OPTIONS,DELETE' }")
     protected String corsAllowedMethods;
 
     @Autowired(required = false)
