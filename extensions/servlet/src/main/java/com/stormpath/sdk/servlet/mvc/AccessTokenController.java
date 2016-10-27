@@ -342,7 +342,7 @@ public class AccessTokenController extends AbstractController {
                     }
                     break;
                 default:
-                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
+                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE, "'" + grantType + "' is an unsupported grant type.");
             }
 
             saveResult(request, response, result);
@@ -356,7 +356,7 @@ public class AccessTokenController extends AbstractController {
 
         } catch (OAuthException e) {
 
-            log.debug("OAuth Access Token request failed.", e);
+            log.debug("OAuth Access Token request failed. Root cause: " + e.getMessage());
 
             json = e.toJson();
 
