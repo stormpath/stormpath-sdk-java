@@ -356,7 +356,7 @@ public class AccessTokenController extends AbstractController {
 
         } catch (OAuthException e) {
 
-            log.debug("OAuth Access Token request failed.", e);
+            log.debug("OAuth Access Token request failed. Root cause: " + e.getMessage());
 
             json = e.toJson();
 
