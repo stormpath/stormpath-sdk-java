@@ -24,7 +24,6 @@ import com.stormpath.sdk.lang.Strings;
 public class OAuthException extends RuntimeException {
 
     private final OAuthErrorCode errorCode;
-    private final String message;
 
     public OAuthException(OAuthErrorCode code) {
         this(code, null, null);
@@ -34,22 +33,16 @@ public class OAuthException extends RuntimeException {
         super(message != null ? message : (code != null ? code.getValue() : ""));
         Assert.notNull(code, "OAuthErrorCode cannot be null.");
         this.errorCode = code;
-        this.message = message;
     }
 
     public OAuthException(OAuthErrorCode code, String message, Exception cause) {
         super(message != null ? message : (code != null ? code.getValue() : ""), cause);
         Assert.notNull(code, "OAuthErrorCode cannot be null.");
         this.errorCode = code;
-        this.message = message;
     }
 
     public OAuthErrorCode getErrorCode() {
         return errorCode;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     public String toJson() {
