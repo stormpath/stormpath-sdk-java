@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -207,6 +207,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     public static final String AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME = "authorizedCallbackUris";
 
+    public static final String AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME = "authorizedOriginUris";
+
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
         ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY, AUTHORIZED_CALLBACK_URIS, SAML_POLICY,
@@ -358,6 +360,27 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         List<String> authorizedCallbackUris = this.getAuthorizedCallbackUris();
         authorizedCallbackUris.add(authorizedCallbackUri);
         setProperty(AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME, authorizedCallbackUris);
+        save();
+        return this;
+    }
+
+    @Override
+    public List<String> getAuthorizedOriginUris() {
+        return new ArrayList<String>(getListProperty(AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME));
+    }
+
+    @Override
+    public Application setAuthorizedOriginUris(List<String> authorizedOriginUris) {
+        setProperty(AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME, authorizedOriginUris);
+        save();
+        return this;
+    }
+
+    @Override
+    public Application addAuthorizedOriginUris(String authorizedOriginUri) {
+        List<String> authorizedOriginUris = this.getAuthorizedOriginUris();
+        authorizedOriginUris.add(authorizedOriginUri);
+        setProperty(AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME, authorizedOriginUris);
         save();
         return this;
     }

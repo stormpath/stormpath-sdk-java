@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,16 +82,8 @@ import javax.servlet.http.HttpServletRequest
 import java.lang.reflect.Field
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
-import static org.easymock.EasyMock.createMock
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.replay
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertNotEquals
-import static org.testng.Assert.assertNotNull
-import static org.testng.Assert.assertNull
-import static org.testng.Assert.assertTrue
-import static org.testng.Assert.fail
+import static org.easymock.EasyMock.*
+import static org.testng.Assert.*
 
 class ApplicationIT extends ClientIT {
 
@@ -859,6 +851,44 @@ class ApplicationIT extends ClientIT {
         assertTrue(appApiKey.account.propertyNames.size() > 1) // testing expansion
         assertTrue(appApiKey.tenant.propertyNames.size() > 1) // testing expansion
 
+    }
+
+    @Test
+    void testGetDefaultAuthorizedOriginURis() {
+
+        def application = createTempApp()
+
+        List<String> authorizedOriginUris = application.getAuthorizedOriginUris()
+
+        assertNotNull authorizedOriginUris
+
+        assertTrue 1, authorizedOriginUris.size()
+    }
+
+    @Test
+    void testUpdateAuthorizedOriginURis() {
+
+        buildCountingClient()
+
+        def application = createTempApp()
+
+        List<String> authorizedOriginUris = application.getAuthorizedOriginUris()
+
+        String defaultUri = authorizedOriginUris.get(0)
+
+        application.setAuthorizedOriginUris(["http://localhost:8080","https://app.prod.com"])
+
+        authorizedOriginUris = application.getAuthorizedOriginUris()
+
+        assertEquals 3, authorizedOriginUris.size()
+
+        assertTrue authorizedOriginUris.contains(defaultUri)
+
+        application.addAuthorizedOriginUris("http://my.company.com")
+
+        authorizedOriginUris = application.getAuthorizedOriginUris()
+
+        assertEquals 4, authorizedOriginUris.size()
     }
 
     @Test

@@ -1173,4 +1173,34 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * @since 1.0.RC8
      */
     Application addAuthorizedCallbackUri(String authorizedCallbackUri);
+
+    /**
+     * Returns the valid list of Valid Origin URIs for this application.
+     * @return the list of String valid Origin URIs for this application.
+     *
+     * @since 1.2.0
+     */
+    List<String> getAuthorizedOriginUris();
+
+    /**
+     * Sets the list of Authorized Origin URIs for this application.
+     * @return this instance for method chaining.
+     *
+     * @since 1.2.0
+     */
+    Application setAuthorizedOriginUris(List<String> authorizedOriginUris);
+
+    /**
+     * Adds a valid URI as an authorized origin URI for this application.
+     * This is a convenience method and using it is equivalent to:
+     * <pre>
+     *     setAuthorizedOriginUris(getAuthorizedOriginUris().add(authorizedOriginUri));
+     * </pre>
+     *
+     * @return this instance for method chaining.
+     * @see #setAuthorizedCallbackUris(java.util.List)
+     *
+     * @since 1.2.0
+     */
+    Application addAuthorizedOriginUris(String authorizedOriginUri);
 }
