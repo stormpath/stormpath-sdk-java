@@ -39,12 +39,12 @@ public class DefaultGrantTypeStatusValidator implements GrantTypeStatusValidator
         switch (grantType) {
             case PASSWORD_GRANT_TYPE:
                 if (!passwordGrantTypeEnabled) {
-                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
+                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE, "'password' is an unsupported grant type.");
                 }
                 break;
             case CLIENT_CREDENTIALS_GRANT_TYPE:
                 if (!clientCredentialsGrantTypeEnabled) {
-                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
+                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE, "'client_credentials' is an unsupported grant type.");
                 }
                 break;
         }

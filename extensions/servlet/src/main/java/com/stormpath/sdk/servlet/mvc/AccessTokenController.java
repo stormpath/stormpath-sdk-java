@@ -342,7 +342,7 @@ public class AccessTokenController extends AbstractController {
                     }
                     break;
                 default:
-                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
+                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE, "'" + grantType + "' is an unsupported grant type.");
             }
 
             saveResult(request, response, result);
