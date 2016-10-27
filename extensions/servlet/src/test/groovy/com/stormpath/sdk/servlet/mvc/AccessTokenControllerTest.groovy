@@ -70,7 +70,8 @@ class AccessTokenControllerTest {
         expect(response.getWriter()).andReturn(printWriter).times(2)
 
         expect(response.setStatus(HttpServletResponse.SC_BAD_REQUEST))
-        expect(printWriter.print("{\"error\":\"unsupported_grant_type\"}"))
+        expect(printWriter.print("{\"error\":\"unsupported_grant_type\",\"message\":\"unsupported_grant_type\"}"));
+
 
         replay(refreshTokenAuthenticationRequestFactory, refreshTokenResultFactory, requestAuthorizer, accessTokenAuthenticationRequestFactory, accessTokenResultFactory, eventPublisher, saver, grantTypeStatusValidator, request, response, printWriter)
 
