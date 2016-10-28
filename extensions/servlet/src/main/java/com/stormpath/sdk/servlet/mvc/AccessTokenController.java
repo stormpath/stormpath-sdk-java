@@ -52,6 +52,7 @@ import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderParser;
 import com.stormpath.sdk.servlet.http.authc.DefaultAuthorizationHeaderParser;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationException;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
+import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +81,7 @@ public class AccessTokenController extends AbstractController {
     private Publisher<RequestEvent> eventPublisher;
     private HttpAuthenticationScheme basicAuthenticationScheme;
     private final AuthorizationHeaderParser parser = new DefaultAuthorizationHeaderParser();
+    private GrantTypeStatusValidator grantTypeStatusValidator;
 
     public void setBasicAuthenticationScheme(HttpAuthenticationScheme basicAuthenticationScheme) {
         this.basicAuthenticationScheme = basicAuthenticationScheme;
@@ -153,6 +155,13 @@ public class AccessTokenController extends AbstractController {
         this.refreshTokenAuthenticationRequestFactory = refreshTokenAuthenticationRequestFactory;
     }
 
+    /**
+     * @since 1.2.0
+     */
+    public void setGrantTypeStatusValidator(GrantTypeStatusValidator grantTypeStatusValidator) {
+        this.grantTypeStatusValidator = grantTypeStatusValidator;
+    }
+
     public void init() {
         Assert.notNull(refreshTokenResultFactory, "refreshTokenResultFactory cannot be null.");
         Assert.notNull(refreshTokenAuthenticationRequestFactory, "refreshTokenAuthenticationRequestFactory cannot be null.");
@@ -161,6 +170,7 @@ public class AccessTokenController extends AbstractController {
         Assert.notNull(resultFactory, "accessTokenResultFactory cannot be null.");
         Assert.notNull(accountSaver, "accountSaver cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
+        Assert.notNull(grantTypeStatusValidator, "grantTypeStatusValidator cannot be null.");
     }
 
     @Override
@@ -306,6 +316,8 @@ public class AccessTokenController extends AbstractController {
                 throw new OAuthException(OAuthErrorCode.INVALID_GRANT);
             }
 
+            grantTypeStatusValidator.validate(grantType);
+
             switch (grantType) {
                 case PASSWORD_GRANT_TYPE:
                     result = this.tokenAuthenticationRequest(request, response);
@@ -330,7 +342,7 @@ public class AccessTokenController extends AbstractController {
                     }
                     break;
                 default:
-                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
+                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE, "'" + grantType + "' is an unsupported grant type.");
             }
 
             saveResult(request, response, result);
@@ -344,7 +356,7 @@ public class AccessTokenController extends AbstractController {
 
         } catch (OAuthException e) {
 
-            log.debug("OAuth Access Token request failed.", e);
+            log.debug("OAuth Access Token request failed. Root cause: " + e.getMessage());
 
             json = e.toJson();
 

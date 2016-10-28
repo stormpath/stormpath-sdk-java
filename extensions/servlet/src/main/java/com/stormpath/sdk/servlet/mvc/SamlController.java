@@ -114,7 +114,7 @@ public class SamlController extends AbstractController {
     }
 
     protected String createSamlUrl(HttpServletRequest request) {
-        SamlIdpUrlBuilder builder = createSamlIdpUrlBuilder(request).setState(getNextUri(request));
+        SamlIdpUrlBuilder builder = createSamlIdpUrlBuilder(request);
         return builder.build();
     }
 

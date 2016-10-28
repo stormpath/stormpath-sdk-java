@@ -41,6 +41,7 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
+import com.stormpath.sdk.impl.util.BaseUrlResolver
 import com.stormpath.sdk.tenant.Tenant
 import org.apache.http.client.params.AllClientPNames
 import org.easymock.IArgumentMatcher
@@ -63,7 +64,7 @@ class DefaultClientTest {
 
         def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def apiKeyResolver = createStrictMock(ApiKeyResolver)
-        String baseUrl = "http://localhost:8080/v1"
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
         def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createStrictMock(CacheManager)
         def authcScheme = AuthenticationScheme.SAUTHC1
@@ -75,7 +76,7 @@ class DefaultClientTest {
 
         replay(apiKeyCredentials, proxy, cacheManager)
 
-        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrl, proxy, cacheManager, authcScheme, null, connectionTimeout)
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, proxy, cacheManager, authcScheme, null, connectionTimeout)
 
         assertEquals(client.dataStore.requestExecutor.requestAuthenticator.apiKeyCredentials, apiKeyCredentials)
         assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), connectionTimeout * 1000)
@@ -87,13 +88,13 @@ class DefaultClientTest {
     @Test
     void testConstructorApiKeyNull() {
 
-        String baseUrl = "http://localhost:8080/v1"
         def proxy = createMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createMock(CacheManager)
         def authcScheme = AuthenticationScheme.SAUTHC1
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
 
         try {
-            new DefaultClient(null, null, baseUrl, proxy, cacheManager, authcScheme, null, 10000)
+            new DefaultClient(null, null, baseUrlResolver, proxy, cacheManager, authcScheme, null, 10000)
             fail("Should have thrown due to null clientCredentials")
         } catch (IllegalArgumentException ex) {
             assertEquals(ex.getMessage(), "clientCredentials argument cannot be null.")
@@ -106,14 +107,14 @@ class DefaultClientTest {
     @Test
     void testConstructorApiKeyResolverNull() {
 
-        String baseUrl = "http://localhost:8080/v1"
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
         def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createStrictMock(CacheManager)
         def authcScheme = AuthenticationScheme.SAUTHC1
         def clientCredentials = createStrictMock(ClientCredentials)
 
         try {
-            new DefaultClient(clientCredentials, null, baseUrl, proxy, cacheManager, authcScheme, null, 10000)
+            new DefaultClient(clientCredentials, null, baseUrlResolver, proxy, cacheManager, authcScheme, null, 10000)
             fail("Should have thrown due to null apiKeyResolver")
         } catch (IllegalArgumentException ex) {
             assertEquals(ex.getMessage(), "apiKeyResolver argument cannot be null.")
@@ -125,20 +126,21 @@ class DefaultClientTest {
 
         def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def apiKeyResolver = createStrictMock(ApiKeyResolver)
-        String baseUrl = "http://localhost:8080/v1"
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
         def authcScheme = AuthenticationScheme.SAUTHC1
         def cacheManager = Caches.newDisabledCacheManager();
 
-        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrl, null, cacheManager , authcScheme, null,  20000)
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, cacheManager , authcScheme, null,  20000)
 
         assertNotNull(client.getDataStore())
-        assertEquals(client.getDataStore().baseUrl, baseUrl)
+        assertEquals(client.getDataStore().baseUrlResolver, baseUrlResolver)
     }
 
     //@since 1.0.RC3
     @Test
     void testDirtyPropertiesNotSharedAmongDifferentResourcesWithSameHref() {
         def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
         def apiKeyResolver = createStrictMock(ApiKeyResolver)
         def requestExecutor = createStrictMock(RequestExecutor)
         def resourceFactory = createStrictMock(ResourceFactory)
@@ -198,7 +200,7 @@ class DefaultClientTest {
         replay requestExecutor, response, resourceFactory
 
         //Let's start
-        def client = new DefaultClient(apiKeyCredentials, apiKeyResolver, "https://api.stormpath.com/v1/accounts/", null, Caches.newDisabledCacheManager(), null, null, 20000)
+        def client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newDisabledCacheManager(), null, null, 20000)
         setNewValue(client, "dataStore", dataStore)
         def account01 = client.getResource(properties.href, Account)
         def account02 = client.getResource(properties.href, Account)
@@ -261,7 +263,7 @@ class DefaultClientTest {
         def apiKeyResolver = createStrictMock(ApiKeyResolver)
 
         def dataStore = createStrictMock(DataStore)
-        String baseUrl = "http://localhost:8080/v1"
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
 
         def tenant = createStrictMock(Tenant)
         def application = createStrictMock(Application)
@@ -339,7 +341,7 @@ class DefaultClientTest {
         replay(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
                 map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
 
-        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrl, null, Caches.newDisabledCacheManager(), null, null, 20000)
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newDisabledCacheManager(), null, null, 20000)
         setNewValue(client, "dataStore", dataStore)
         assertSame(client.createApplication(application), returnedApplication)
         assertSame(client.createApplication(createApplicationRequest), returnedApplication)

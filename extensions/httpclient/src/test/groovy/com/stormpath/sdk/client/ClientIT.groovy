@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
@@ -29,6 +27,8 @@ import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.client.RequestCountingClient
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver
+import com.stormpath.sdk.impl.util.BaseUrlResolver
 import com.stormpath.sdk.resource.Deletable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -109,8 +109,9 @@ abstract class ClientIT {
         ApiKey apiKey = ApiKeys.builder().build();
         ApiKeyCredentials apiKeyCredentials = new ApiKeyCredentials(apiKey);
         ApiKeyResolver apiKeyResolver = new DefaultApiKeyResolver(apiKey)
+        BaseUrlResolver baseUrlResolver = new DefaultBaseUrlResolver(baseUrl)
 
-        return new RequestCountingClient(apiKeyCredentials, apiKeyResolver, baseUrl, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
+        return new RequestCountingClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
     }
 
     //Creates a new Application with an auto-created directory

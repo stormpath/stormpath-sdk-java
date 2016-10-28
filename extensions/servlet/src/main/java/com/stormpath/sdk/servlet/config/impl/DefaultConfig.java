@@ -61,6 +61,8 @@ import com.stormpath.sdk.servlet.mvc.provider.GoogleAuthorizationEndpointResolve
 import com.stormpath.sdk.servlet.mvc.provider.LinkedInAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.mvc.provider.ProviderAccountRequestResolver;
 import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResolver;
+import com.stormpath.sdk.servlet.util.DefaultGrantTypeStatusValidator;
+import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -99,6 +101,8 @@ public class DefaultConfig implements Config {
     public static final String ME_URL = "stormpath.web.me.uri";
 
     public static final String OAUTH_ENABLED = "stormpath.web.oauth2.enabled";
+    public static final String CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED = "stormpath.web.oauth2.client_credentials.enabled";
+    public static final String PASSWORD_GRANT_TYPE_ENABLED = "stormpath.web.oauth2.password.enabled";
     public static final String ID_SITE_ENABLED = "stormpath.web.idSite.enabled";
     public static final String CALLBACK_ENABLED = "stormpath.web.callback.enabled";
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
@@ -606,5 +610,16 @@ public class DefaultConfig implements Config {
         return new DelegatingAuthorizationEndpointResolver(facebookAuthorizationEndpointResolver,
                 githubAuthorizationEndpointResolver, googleAuthorizationEndpointResolver,
                 linkedInAuthorizationEndpointResolver);
+    }
+
+    @Override
+    public GrantTypeStatusValidator getGrantTypeStatusValidator() {
+        boolean clientCredentialsEnabled = CFG.getString(CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED) == null || CFG.getBoolean(CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED);
+        boolean passwordEnabled = CFG.getString(PASSWORD_GRANT_TYPE_ENABLED) == null || CFG.getBoolean(PASSWORD_GRANT_TYPE_ENABLED);
+
+        DefaultGrantTypeStatusValidator validator = new DefaultGrantTypeStatusValidator();
+        validator.setClientCredentialsGrantTypeEnabled(clientCredentialsEnabled);
+        validator.setPasswordGrantTypeEnabled(passwordEnabled);
+        return validator;
     }
 }

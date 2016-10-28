@@ -58,4 +58,12 @@ public class DefaultDirectoryOptions extends DefaultOptions<DirectoryOptions> im
     public DirectoryOptions withCustomData() {
         return expand(DefaultDirectory.CUSTOM_DATA);
     }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public DirectoryOptions withAccountSchema() {
+        return expand(DefaultDirectory.ACCOUNT_SCHEMA);
+    }
 }

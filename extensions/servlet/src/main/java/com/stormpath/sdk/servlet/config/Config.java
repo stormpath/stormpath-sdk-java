@@ -42,6 +42,7 @@ import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.ProviderAccountRequestResolver;
 import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResolver;
+import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -192,5 +193,7 @@ public interface Config extends Map<String, String> {
      * @since 1.2.0
      */
     ProviderAuthorizationEndpointResolver getProviderAuthorizationEndpointResolver();
+
+    GrantTypeStatusValidator getGrantTypeStatusValidator();
 
 }

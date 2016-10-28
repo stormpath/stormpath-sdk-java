@@ -46,6 +46,7 @@ import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList
 import com.stormpath.sdk.organization.OrganizationCriteria
 import com.stormpath.sdk.organization.OrganizationList
 import com.stormpath.sdk.provider.Provider
+import com.stormpath.sdk.schema.Schema
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
 import org.testng.annotations.Test
@@ -64,7 +65,7 @@ class DefaultDirectoryTest {
 
         def propertyDescriptors = defaultDirectory.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 12)
+        assertEquals(propertyDescriptors.size(), 13)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -83,6 +84,8 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("organizations") instanceof CollectionReference && propertyDescriptors.get("organizations").getType().equals(OrganizationList))
         //@since 1.0.RC7.7
         assertTrue(propertyDescriptors.get("organizationMappings") instanceof CollectionReference && propertyDescriptors.get("organizationMappings").getType().equals(OrganizationAccountStoreMappingList))
+        //@since 1.0.4
+        assertTrue(propertyDescriptors.get("accountSchema") instanceof ResourceReference && propertyDescriptors.get("accountSchema").getType().equals(Schema))
     }
 
 

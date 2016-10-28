@@ -25,14 +25,13 @@ import com.stormpath.sdk.servlet.http.MediaType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * @since 1.0.0
  */
 public class MeController extends AbstractController {
 
-    private List<String> expands;
+    private ExpandsResolver expandsResolver;
     private AccountModelFactory accountModelFactory;
     private ObjectMapper objectMapper;
     private LoginPageRedirector loginPageRedirector;
@@ -58,12 +57,11 @@ public class MeController extends AbstractController {
         this.loginPageRedirector = loginPageRedirector;
     }
 
-    public List<String> getExpands() {
-        return expands;
-    }
-
-    public void setExpands(List<String> expands) {
-        this.expands = expands;
+    /**
+     * @since 1.2.0
+     */
+    public void setExpandsResolver(ExpandsResolver expandsResolver){
+        this.expandsResolver = expandsResolver;
     }
 
     public ObjectMapper getObjectMapper() {
@@ -118,7 +116,7 @@ public class MeController extends AbstractController {
         //for example if the user goes to the /me in a browser it would try to render a thymeleaf view, so instead of returning a view
         //we write directly to the response since no matter what we always return JSON for this controller.
         //This way we don't introduce any custom view resolver that might have issues with the user application.
-        objectMapper.writeValue(response.getOutputStream(), java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expands)));
+        objectMapper.writeValue(response.getOutputStream(), java.util.Collections.singletonMap("account", accountModelFactory.toMap(account, expandsResolver.getExpands())));
         return null;
     }
 }

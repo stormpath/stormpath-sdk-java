@@ -26,7 +26,6 @@ import com.stormpath.sdk.account.PasswordResetToken
 import com.stormpath.sdk.account.VerificationEmailRequest
 import com.stormpath.sdk.account.VerificationEmailRequestBuilder
 import com.stormpath.sdk.api.ApiKey
-import com.stormpath.sdk.api.ApiKeyOptions
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
@@ -57,10 +56,10 @@ import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult
 import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication
-import com.stormpath.sdk.oauth.OAuthRequests
-import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
@@ -77,7 +76,6 @@ import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base64
-import org.testng.Assert
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
@@ -128,6 +126,81 @@ class ApplicationIT extends ClientIT {
         def cachedAccount = result.getAccount()
 
         assertEquals cachedAccount.username, acct.username
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testLoginWithOrgNameKey() {
+        def username = uniquify('thisisme')
+        def password = 'Changeme1!'
+
+        //we could use the parent class's Client instance, but we re-define it here just in case:
+        //if we ever turn off caching in the parent class config, we can't let that affect this test:
+        def client = buildClient(true)
+
+        def app = createTempApp()
+
+        Organization org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_testLoginWithOrgNameKey"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test"))
+                .setStatus(OrganizationStatus.ENABLED)
+        org = client.createOrganization(org)
+        deleteOnTeardown(org)
+
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: ApplicationIT.testLoginWithOrgNameKey")
+        dir = client.createDirectory(dir);
+        deleteOnTeardown(dir)
+
+        //create account store
+        def orgAccountStoreMapping = org.addAccountStore(dir)
+        deleteOnTeardown(orgAccountStoreMapping)
+
+        def acct = client.instantiate(Account)
+        acct.username = username
+        acct.password = password
+        acct.email = username + '@nowhere.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        dir.createAccount(acct)
+
+        ApplicationAccountStoreMapping accountStoreMapping = client.instantiate(ApplicationAccountStoreMapping)
+        accountStoreMapping.setAccountStore(org)
+        accountStoreMapping.setApplication(app)
+        accountStoreMapping = app.createAccountStoreMapping(accountStoreMapping)
+        deleteOnTeardown(accountStoreMapping)
+
+        //Account belongs to org, therefore login must succeed
+        def request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).setOrganizationNameKey(org.nameKey).build()
+        def result = app.authenticateAccount(request)
+        assertEquals(result.getAccount().getUsername(), acct.username)
+
+        //No account store has been defined, therefore login must succeed
+        request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).build()
+        result = app.authenticateAccount(request)
+        assertEquals(result.getAccount().getUsername(), acct.username)
+
+        Organization org2 = client.instantiate(Organization)
+        org2.setName(uniquify("JSDK_testLoginWithOrgNameKey_org2"))
+                .setDescription("Organization Description 2")
+                .setNameKey(uniquify("test").substring(2, 8))
+                .setStatus(OrganizationStatus.ENABLED)
+        org2 = client.createOrganization(org2)
+        deleteOnTeardown(org2)
+
+        //Account does not belong to org2, therefore login must fail
+        try {
+            request = UsernamePasswordRequests.builder().setUsernameOrEmail(username).setPassword(password).setOrganizationNameKey(org2.nameKey).build()
+            app.authenticateAccount(request)
+            fail("Should have thrown due to invalid username/password");
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.getStatus(), 400)
+            assertEquals(e.getCode(), 5114)
+            assertTrue(e.getDeveloperMessage().contains("The specified Account Store is not one of the Application's assigned Account Stores."))
+        }
     }
 
     @Test
@@ -249,6 +322,60 @@ class ApplicationIT extends ClientIT {
 
         def list = app.getGroups(Groups.where(Groups.name().eqIgnoreCase(group.name)))
         assertFalse list.iterator().hasNext() //no results
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testFilterApp() {
+
+        def tenant = client.currentTenant
+
+        def app1 = client.instantiate(Application)
+        def app2 = client.instantiate(Application)
+
+        app1.name = uniquify("Java SDK Filter IT App")
+        app1.description = 'Java SDK IT App 01'
+
+        app2.name = uniquify("Java SDK Filter IT App II")
+        app2.description = 'Java SDK IT App 02'
+
+        def dirName = uniquify("Java SDK Filter IT Dir")
+        def dirName2 = uniquify("Java SDK IT Dir II")
+
+        app1  = tenant.createApplication(Applications.newCreateRequestFor(app1).createDirectoryNamed(dirName).build())
+        app2 = tenant.createApplication(Applications.newCreateRequestFor(app2).createDirectoryNamed(dirName2).build())
+
+        deleteOnTeardown(app1)
+        deleteOnTeardown(app2)
+
+        //verify that the filter search works with a combination of criteria
+        def foundApps2 = tenant.getApplications(Applications.where(Applications.filter('Java SDK Filter IT App')).and(Applications.description().endsWithIgnoreCase('02')))
+        def foundApp2 = foundApps2.iterator().next()
+        assertEquals(foundApp2.href, app2.href)
+
+        //verify that the filter search works
+        def allApps = tenant.getApplications(Applications.where(Applications.filter('Java SDK Filter IT App')))
+        assertEquals(allApps.size(), 2)
+
+        //verify that the filter search returns an empty collection if there is no match
+        def emptyCollection = tenant.getApplications(Applications.where(Applications.filter('not_found')))
+        assertTrue(emptyCollection.size() == 0)
+
+        //verify that a non matching criteria added to a matching criteria is working as a final non matching criteria
+        //ie. there are no properties matching 'not_found' but there are 1 account matching 'description=02'
+        def emptyCollection2 = tenant.getApplications(Applications.where(Applications.filter('not_found')).and(Applications.description().endsWithIgnoreCase('02')))
+        assertTrue(emptyCollection2.size() == 0)
+
+        //verify that the filter search match with substrings
+        def allApps2 = tenant.getApplications(Applications.where(Applications.filter("Java SDK Filter")))
+        assertEquals(allApps2.size(), 2)
+
+        //test delete:
+        for (def app : allApps){
+            app.delete()
+        }
     }
 
     @Test
@@ -1988,19 +2115,15 @@ class ApplicationIT extends ClientIT {
     @Test
     void testDefaultSAMLPolicyAndProvider() {
 
-        Date testStart = new Date();
         def app = createTempApp()
 
         SamlPolicy samlPolicy = app.getSamlPolicy();
         assertTrue samlPolicy.getHref().contains("/samlPolicies/")
         assertTrue samlPolicy.getSamlServiceProvider().getHref().contains("/samlServiceProviders/")
-        assertTrue samlPolicy.getCreatedAt().after(testStart)
-        assertTrue samlPolicy.getModifiedAt().after(testStart)
         SamlServiceProvider samlServiceProvider = samlPolicy.getSamlServiceProvider()
         assertTrue samlServiceProvider.getHref().contains("/samlServiceProviders/")
         assertTrue samlServiceProvider.getSsoInitiationEndpoint().getHref().contains("/saml/sso/idpRedirect")
-        assertTrue samlServiceProvider.getCreatedAt().after(testStart)
-        assertTrue samlServiceProvider.getModifiedAt().after(testStart)
+
     }
 
     /** since 1.0.RC9 */

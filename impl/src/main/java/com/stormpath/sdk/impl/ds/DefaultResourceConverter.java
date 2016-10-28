@@ -17,6 +17,7 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.directory.CustomData;
+import com.stormpath.sdk.impl.authc.BasicLoginAttempt;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.lang.Assert;
@@ -27,7 +28,11 @@ import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 1.1.0
@@ -103,7 +108,10 @@ public class DefaultResourceConverter implements ResourceConverter {
         if (value instanceof Map) {
             //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
             //do need to have an href property
-            if (resource instanceof ModeledEmailTemplate && propName.equals("defaultModel")) {
+            if ((resource instanceof ModeledEmailTemplate && propName.equals("defaultModel")) ||
+                    //Check for accountStore in BasicLoginAttempt cause we change it to map to accommodate the organization name key use case
+                    //see https://github.com/stormpath/stormpath-sdk-java/issues/284
+                    resource instanceof BasicLoginAttempt && propName.equals("accountStore")) {
                 return value;
             } else {
                 //if the property is a reference, don't write the entire object - just the href will do:

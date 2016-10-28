@@ -49,8 +49,8 @@ class AccountCreationPolicyIT extends ClientIT {
 
         def emailTemplate = templates.iterator().next()
         assertNotNull emailTemplate.href
-        assertEquals(emailTemplate.getDefaultModel(), [linkBaseUrl : "https://api.stormpath.com/emailVerificationTokens"])
-        assertEquals(emailTemplate.getLinkBaseUrl(), "https://api.stormpath.com/emailVerificationTokens")
+        assertTrue(emailTemplate.getLinkBaseUrl().endsWith("/emailVerificationTokens"))
+        assertEquals(emailTemplate.getDefaultModel(), [linkBaseUrl: emailTemplate.getLinkBaseUrl()])
         assertEquals(emailTemplate.getSubject(), "Verify your account")
         assertEquals(emailTemplate.getName(), "Default Verification Email Template")
 

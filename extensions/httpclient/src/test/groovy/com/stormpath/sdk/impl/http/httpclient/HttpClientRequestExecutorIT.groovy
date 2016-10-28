@@ -9,75 +9,60 @@ import com.stormpath.sdk.impl.api.ClientApiKey
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
-import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator
 import com.stormpath.sdk.impl.http.authc.RequestAuthenticator
 import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory
+import com.stormpath.sdk.impl.http.support.BackoffStrategy
 import com.stormpath.sdk.impl.http.support.DefaultRequest
-import com.stormpath.sdk.lang.Strings
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequests
 import org.testng.annotations.Test
-
-import java.util.concurrent.*
 
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 
 class HttpClientRequestExecutorIT extends ClientIT {
 
-    @Test //asserts https://github.com/stormpath/stormpath-sdk-java/issues/539
-    void testNoWaitOnRedirect() throws Exception {
+    @Test//asserts https://github.com/stormpath/stormpath-sdk-java/issues/539
+    void testNoWaitOnRedirect() {
+        // create an temp application
+        def app = createTempApp()
 
-        //We will only run this test in Travis as it is always failing when executed in other environments. It seems that Travis is much faster
-        // than other environments. Instead of restricting this test to only work in travis, we could increase the time window so other environments
-        // have better chances of fulfilling the operation in the specified time but that will cause this test to become less reliable
-        // as we may be failing to detect a redirection loop which is the sole purpose of this test
-        def travisEnvVar = System.getenv().get("TRAVIS");
-        if (travisEnvVar != null && travisEnvVar.equals("true")) {
-            // create an temp application
-            def app = createTempApp()
+        // create an account
+        def email = uniquify('testCreateToken+') + '@nowhere.com'
 
-            // create an account
-            def email = uniquify('testCreateToken+') + '@nowhere.com'
+        Account account = client.instantiate(Account)
+        account.givenName = 'John'
+        account.surname = 'DELETEME'
+        account.email = email
+        account.password = 'Change&45+me1!'
 
-            Account account = client.instantiate(Account)
-            account.givenName = 'John'
-            account.surname = 'DELETEME'
-            account.email = email
-            account.password = 'Change&45+me1!'
+        def created = app.createAccount(account)
+        assertNotNull created.href
+        deleteOnTeardown(created)
 
-            def created = app.createAccount(account)
-            assertNotNull created.href
-            deleteOnTeardown(created)
+        // create an access token
+        OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build()
+        def result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
 
-            // create an access token
-            OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setLogin(email).setPassword("Change&45+me1!").build()
-            def result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(createRequest)
+        // verify the access token in Stormpath - when the token is valid the response is a 302 (redirect) that will be followed by the HttpExecutor.
+        def verifyUri = app.getHref() + "/authTokens/" + result.getAccessTokenString()
 
-            // verify the access token in Stormpath
-            // fail if it takes longer than 500ms
-            // this proves that we are *not* waiting on redirects
-            def verifyUri = app.getHref() + "/authTokens/" + result.getAccessTokenString()
-
-            def httpClientRequestExecutor = new HttpClientRequestExecutor(new ApiKeyCredentials(client.getApiKey()), null, AuthenticationScheme.SAUTHC1, null, 2000)
-            httpClientRequestExecutor.setNumRetries(0)
-
-            Callable<Response> callable = new Callable<Response>() {
-
-                @Override
-                Response call() throws Exception {
-                    return httpClientRequestExecutor.executeRequest(new DefaultRequest(HttpMethod.GET, verifyUri))
-                }
+        def httpClientRequestExecutor = new HttpClientRequestExecutor(new ApiKeyCredentials(client.getApiKey()), null, AuthenticationScheme.SAUTHC1, null, 20)
+        httpClientRequestExecutor.setNumRetries(0)
+        // By setting the BackoffStrategy to an instance that throws an exception if this test pass we can be sure that the redirect does not pause.
+        httpClientRequestExecutor.setBackoffStrategy(new BackoffStrategy() {
+            @Override
+            long getDelayMillis(int retryCount) {
+                throw new IllegalStateException("should not be called.");
             }
+        })
 
-            ExecutorService executorService = Executors.newCachedThreadPool()
-            Future<Response> task = executorService.submit(callable)
+        def response = httpClientRequestExecutor.executeRequest(new DefaultRequest(HttpMethod.GET, verifyUri))
 
-            def response = task.get(500, TimeUnit.MILLISECONDS)
-            assertEquals response.getHttpStatus(), 200
-        }
+        assertEquals response.getHttpStatus(), 200
+
     }
 
     @Test
