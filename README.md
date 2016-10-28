@@ -67,6 +67,10 @@ We also have a [Java WebApp Quickstart](https://docs.stormpath.com/java/servlet-
 
 If you're building a Spring Boot application, the [Spring Boot Webapp Quickstart](https://docs.stormpath.com/java/spring-boot-web/quickstart.html) will get you up and running quickly.
 
+Deploy our Spring Boot Example to Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/stormpath/heroku-spring-boot-runner&env\[GROUP_ID\]=com.stormpath.spring&env\[ARTIFACT_ID\]=stormpath-sdk-examples-spring-boot-default)
+
 ## Build Instructions
 
 This project requires Maven 3.2.1 and JDK 7 to build.  Run the following:
