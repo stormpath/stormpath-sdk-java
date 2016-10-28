@@ -19,6 +19,8 @@ import com.stormpath.sdk.impl.util.RequestUtils;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -96,7 +98,12 @@ public class QueryString extends TreeMap<String,String> {
         if (pair != null) {
             String key = pair[0];
             String value = pair[1] != null ? pair[1] : "";
-            qs.put(key, value);
+            try {
+                qs.put(URLDecoder.decode(key, "UTF-8"), URLDecoder.decode(value, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                // should never happen
+                qs.put(key, value);
+            }
         } else {
             //no equals sign, it's just a key:
             qs.put(kv, null);
