@@ -56,18 +56,15 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
         if(isMaterialized()) {
             try {
                 JwsHeader header = Jwts.parser()
-                        .setSigningKey(getDataStore().getApiKey().getSecret().getBytes("UTF-8"))
-                        .parseClaimsJws(getString(JWT)).getHeader();
+                    .setSigningKey(getDataStore().getApiKey().getSecret().getBytes("UTF-8"))
+                    .parseClaimsJws(getString(JWT)).getHeader();
 
-                String tokenType = header != null ? (String) header.get("stt") : null;
-
-                if (tokenType == null) {
+                if (header == null || !"access".equals(header.get("stt"))) {
+                    // See https://github.com/stormpath/stormpath-sdk-java/issues/1018
                     String message = "Missing 'stt' property in header. This jwt is not a valid access_token.";
                     log.debug(message);
                     throw new InvalidJwtException(message);
                 }
-
-                Assert.isTrue(tokenType.equals("access"));
             } catch (UnsupportedJwtException uje) {
                 String message = InvalidJwtException.JWT_INVALID_VALUE_ERROR;
                 log.debug(message);
@@ -92,8 +89,11 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
                 String message = "The character encoding for the API secret is not supported.";
                 log.debug(message);
                 throw new InvalidJwtException(message, uee);
+            } catch (InvalidJwtException e) {
+                //See https://github.com/stormpath/stormpath-sdk-java/issues/1018
+                log.debug(e.getMessage());
+                throw e;
             } catch (Exception e) {
-                //Todo 2.0.0: this JwtException must be replaced by InvalidJwtException. See https://github.com/stormpath/stormpath-sdk-java/issues/1018
                 throw new JwtException("JWT failed validation; it cannot be trusted.", e);
             }
          } else {

@@ -184,7 +184,7 @@ class DefaultAccessTokenTest {
                 new DefaultAccessToken(internalDataStore, properties)
                 fail("should have thrown")
             } catch (Exception e) {
-                assertEquals(e.getMessage(), "The JWT is null, empty or only contains whitespaces.")
+                assertEquals(e.getMessage(), "Missing 'stt' property in header. This jwt is not a valid access_token.")
             }
         }
     }
