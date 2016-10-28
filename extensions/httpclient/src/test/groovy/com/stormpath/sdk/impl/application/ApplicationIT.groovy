@@ -2039,7 +2039,7 @@ class ApplicationIT extends ClientIT {
             fail("Should have thrown")
         } catch (Exception e) {
             def message = e.getMessage()
-            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+            assertEquals message, "Missing 'stt' property in header. This jwt is not a valid access_token."
         }
     }
 
@@ -2067,7 +2067,7 @@ class ApplicationIT extends ClientIT {
             fail("Should have thrown")
         } catch (Exception e) {
             def message = e.getMessage()
-            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+            assertEquals message, "The JWT was not correctly constructed and therefore was rejected (it is not a valid JWS)."
         }
 
         def app2 = createTempApp()
@@ -2078,7 +2078,7 @@ class ApplicationIT extends ClientIT {
             fail("Should have thrown")
         } catch (Exception e) {
             def message = e.getMessage()
-            assertTrue message.equals("JWT failed validation; it cannot be trusted.")
+            assertEquals message, "The JWT is null, empty or only contains whitespaces."
         }
     }
 

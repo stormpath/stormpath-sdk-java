@@ -124,8 +124,11 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
                 String message = "The character encoding for the API secret is not supported.";
                 log.debug(message);
                 throw new InvalidJwtException(message, uee);
+            } catch (InvalidJwtException e) {
+                //See https://github.com/stormpath/stormpath-sdk-java/issues/1018
+                log.debug(e.getMessage());
+                throw e;
             } catch (Exception e) {
-                //Todo 2.0.0: this JwtException must be replaced by InvalidJwtException. See https://github.com/stormpath/stormpath-sdk-java/issues/1018
                 throw new JwtException("JWT failed validation; it cannot be trusted.", e);
             }
         }
@@ -140,8 +143,8 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
         } catch (ResourceException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected exception while fetching access token from Stormpath API");
-            throw new RuntimeException(e);
+            log.debug("Unexpected exception while fetching access token from Stormpath API");
+            throw new JwtException("JWT failed validation; it cannot be trusted.");
         }
 
         OAuthBearerRequestAuthenticationResultBuilder builder = new DefaultOAuthBearerRequestAuthenticationResultBuilder(accessToken);
