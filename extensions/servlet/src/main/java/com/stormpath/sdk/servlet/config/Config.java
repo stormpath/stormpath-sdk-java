@@ -40,6 +40,8 @@ import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderAccountRequestResolver;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResolver;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -180,5 +182,15 @@ public interface Config extends Map<String, String> {
     ServerUriResolver getServerUriResolver();
 
     Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver();
+
+    /**
+     * @since 1.2.0
+     */
+    ProviderAccountRequestResolver getProviderAccountRequestResolver();
+
+    /**
+     * @since 1.2.0
+     */
+    ProviderAuthorizationEndpointResolver getProviderAuthorizationEndpointResolver();
 
 }

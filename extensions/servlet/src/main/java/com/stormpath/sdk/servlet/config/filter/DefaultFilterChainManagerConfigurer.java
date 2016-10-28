@@ -130,6 +130,14 @@ public class DefaultFilterChainManagerConfigurer {
         String idSiteResultUrl = config.getCallbackUri();
         String idSiteResultUrlPattern = cleanUri(idSiteResultUrl);
 
+        String authorizeCallbackUrl = config.get("stormpath.web.authorize.callback.uri");
+        String authorizeCallbackUrlPattern = cleanUri(authorizeCallbackUrl);
+        boolean authorizeCallbackChainSpecified = false;
+
+        String authorizeUrl = config.get("stormpath.web.authorize.uri");
+        String authorizeUrlPattern = cleanUri(authorizeUrl) + "/*";
+        boolean authorizeChainSpecified = false;
+
         String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
         String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
         boolean googleCallbackChainSpecified = false;
@@ -147,7 +155,7 @@ public class DefaultFilterChainManagerConfigurer {
         boolean linkedinCallbackChainSpecified = false;
 
         //uriPattern-to-chainDefinition:
-        Map<String, String> patternChains = new LinkedHashMap<String, String>();
+        Map<String, String> patternChains = new LinkedHashMap<>();
 
         for (String key : config.keySet()) {
 
@@ -327,6 +335,12 @@ public class DefaultFilterChainManagerConfigurer {
         }
         if (!meChainSpecified && meEnabled) {
             mgr.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
+        }
+        if (!authorizeCallbackChainSpecified) {
+            mgr.createChain(authorizeCallbackUrlPattern, DefaultFilter.authorizeCallback.name());
+        }
+        if (!authorizeChainSpecified) {
+            mgr.createChain(authorizeUrlPattern, DefaultFilter.authorize.name());
         }
         if (!googleCallbackChainSpecified) {
             mgr.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());

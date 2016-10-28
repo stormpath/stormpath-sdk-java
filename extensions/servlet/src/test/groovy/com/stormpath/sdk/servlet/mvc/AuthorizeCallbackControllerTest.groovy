@@ -125,9 +125,8 @@ class AuthorizeCallbackControllerTest {
 
     @Test
     void testSuccessfulCallback() {
-        request.setParameter("code", "a-valid-code")
+        request.setParameter("code", CODE)
         request.setParameter("state", getSignedJws([provider  : PROVIDER_ID,
-                                                    code        : CODE,
                                                     redirect_uri: REDIRECT_URI]))
 
         ProviderAccountResult providerAccountResult = createNiceMock(ProviderAccountResult)

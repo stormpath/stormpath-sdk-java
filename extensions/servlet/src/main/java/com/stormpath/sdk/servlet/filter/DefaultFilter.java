@@ -19,6 +19,8 @@ import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.config.filter.AccessTokenFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.AccountAuthorizationFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.AuthenticationFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.AuthorizeCallbackFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.AuthorizeFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.ChangePasswordFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.FacebookCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.ForgotPasswordFilterFactory;
@@ -27,8 +29,8 @@ import com.stormpath.sdk.servlet.config.filter.GoogleCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.IDSiteForgotFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.IDSiteLoginFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.IDSiteRegisterFilterFactory;
-import com.stormpath.sdk.servlet.config.filter.IdSiteLogoutFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.IDSiteResultFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.IdSiteLogoutFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LinkedInCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LoginFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LogoutFilterFactory;
@@ -55,6 +57,8 @@ public enum DefaultFilter {
     anon(AnonymousFilter.class, null),
     authc(AuthenticationFilter.class, AuthenticationFilterFactory.class),
     change(ControllerFilter.class, ChangePasswordFilterFactory.class),
+    authorizeCallback(ControllerFilter.class, AuthorizeCallbackFilterFactory.class),
+    authorize(ControllerFilter.class, AuthorizeFilterFactory.class),
     facebookCallback(ControllerFilter.class, FacebookCallbackFilterFactory.class),
     forgot(ControllerFilter.class, ForgotPasswordFilterFactory.class),
     githubCallback(ControllerFilter.class, GithubCallbackFilterFactory.class),

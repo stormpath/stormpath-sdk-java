@@ -784,6 +784,18 @@ stormpath.web.changePassword.errorUri
 
 
 
+stormpath.web.authorize.uri
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``/authorize``
+
+
+
+stormpath.web.authorize.callback.uri
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``/authorize/callback``
+
+
+
 stormpath.web.social.facebook.uri
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``/callbacks/facebook``

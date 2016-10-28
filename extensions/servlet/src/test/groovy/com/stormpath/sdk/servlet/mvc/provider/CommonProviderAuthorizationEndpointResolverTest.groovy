@@ -26,9 +26,9 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
 
     static final String CLIENT_ID = "12345678"
     static final String NEXT_URI = "/next"
-    static final String CALLBACK = "https://myapp.com/authorize/callback"
+    static final String CALLBACK = "/authorize/callback"
     static final String SIGNING_KEY = "not-a-very-secret-key"
-
+    static final String REQUEST_BASE_URI = "https://my-app.com"
     List<String> scopes
     T provider
     MockHttpServletRequest request
@@ -87,6 +87,10 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
         request = new MockHttpServletRequest()
 
         initClient(request)
+        request.setRequestURI("/authorize/abc123")
+        request.setScheme("https")
+        request.setServerName("my-app.com")
+        request.setServerPort(443)
 
         resolverUT = newResolverUT()
         resolverUT.nextUri = NEXT_URI
@@ -109,22 +113,31 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
         assertThat(params, hasEntry("client_id", CLIENT_ID))
         assertThat(params, hasEntry("response_type", "code"))
         assertThat(params, hasEntry("scope", URLEncoder.encode("scope1 scope2", 'UTF-8')))
-        assertThat(params, hasEntry("redirect_uri", URLEncoder.encode(CALLBACK, 'UTF-8')))
+        assertThat(params, hasEntry("redirect_uri", URLEncoder.encode("${REQUEST_BASE_URI}${CALLBACK}", 'UTF-8')))
         Map<String, String> body = getState(params)
-        assertThat(body, hasEntry("redirect_uri", NEXT_URI))
+        assertThat(body, hasEntry("redirect_uri", REQUEST_BASE_URI + NEXT_URI))
         assertThat(body, hasEntry("provider", provider.providerId))
     }
 
     @Test
     void testGetEndpointOverrideRedirectUri() {
-        request.setParameter("redirect_uri", "something/else")
+        request.setParameter("redirect_uri", "/something/else")
         def actual = resolverUT.getEndpoint(request, provider)
         Map<String, String> params = extractParams(actual)
-        assertThat(params, hasEntry("redirect_uri", URLEncoder.encode(CALLBACK, 'UTF-8')))
+        assertThat(params, hasEntry("redirect_uri", URLEncoder.encode("${REQUEST_BASE_URI}${CALLBACK}", 'UTF-8')))
         Map<String, String> body = getState(params)
-        assertThat(body, hasEntry("redirect_uri", "something/else"))
+        assertThat(body, hasEntry("redirect_uri", REQUEST_BASE_URI + "/something/else"))
     }
 
+    @Test
+    void testGetEndpointOvverrideRedirectUriFullyQualified() {
+        request.setParameter("redirect_uri", "https://foo.com/something/else")
+        def actual = resolverUT.getEndpoint(request, provider)
+        Map<String, String> params = extractParams(actual)
+        assertThat(params, hasEntry("redirect_uri", URLEncoder.encode("${REQUEST_BASE_URI}${CALLBACK}", 'UTF-8')))
+        Map<String, String> body = getState(params)
+        assertThat(body, hasEntry("redirect_uri", "https://foo.com/something/else"))
+    }
     @Test
     void testGetEndpointOverrideScope() {
         request.setParameter("scope", "foo bar baz")

@@ -51,8 +51,16 @@ import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.DelegatingAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderAccountRequestResolver;
+import com.stormpath.sdk.servlet.mvc.provider.FacebookAuthorizationEndpointResolver;
+import com.stormpath.sdk.servlet.mvc.provider.GithubAuthorizationEndpointResolver;
+import com.stormpath.sdk.servlet.mvc.provider.GoogleAuthorizationEndpointResolver;
+import com.stormpath.sdk.servlet.mvc.provider.LinkedInAuthorizationEndpointResolver;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderAccountRequestResolver;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -81,6 +89,7 @@ public class DefaultConfig implements Config {
 
     protected static final String SERVER_URI_RESOLVER = "stormpath.web.oauth2.origin.authorizer.serverUriResolver";
     protected static final String IDSITE_ORGANIZATION_RESOLVER_FACTORY = "stormpath.web.idSite.OrganizationResolverFactory";
+    private static final String PROVIDER_ACCOUNT_REQUEST_RESOLVER = "";
 
     public static final String WEB_APPLICATION_DOMAIN = "stormpath.web.application.domain";
 
@@ -281,7 +290,7 @@ public class DefaultConfig implements Config {
 
     @Override
     public List<String> getMeExpandedProperties() {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
 
         Pattern pattern = Pattern.compile("^stormpath\\.web\\.me\\.expand\\.(\\w+)$");
 
@@ -397,9 +406,9 @@ public class DefaultConfig implements Config {
     @Override
     public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException {
         Map<String, Class<T>> classes =
-            new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
+                new ImplementationClassResolver<>(this, propertyNamePrefix, expectedType).findImplementationClasses();
 
-        Map<String, T> instances = new LinkedHashMap<String, T>(classes.size());
+        Map<String, T> instances = new LinkedHashMap<>(classes.size());
 
         for (Map.Entry<String, Class<T>> entry : classes.entrySet()) {
 
@@ -573,5 +582,29 @@ public class DefaultConfig implements Config {
     @Override
     public Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver() {
         return this.getRuntimeInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
+    }
+
+    @Override
+    public ProviderAccountRequestResolver getProviderAccountRequestResolver() {
+        return new DefaultProviderAccountRequestResolver();
+    }
+
+    @Override
+    public ProviderAuthorizationEndpointResolver getProviderAuthorizationEndpointResolver() {
+        FacebookAuthorizationEndpointResolver facebookAuthorizationEndpointResolver = new FacebookAuthorizationEndpointResolver();
+        facebookAuthorizationEndpointResolver.setCallback("/authorize/callback");
+        facebookAuthorizationEndpointResolver.setNextUri(getLoginConfig().getUri());
+        GoogleAuthorizationEndpointResolver googleAuthorizationEndpointResolver = new GoogleAuthorizationEndpointResolver();
+        googleAuthorizationEndpointResolver.setCallback("/authorize/callback");
+        googleAuthorizationEndpointResolver.setNextUri(getLoginConfig().getUri());
+        GithubAuthorizationEndpointResolver githubAuthorizationEndpointResolver = new GithubAuthorizationEndpointResolver();
+        githubAuthorizationEndpointResolver.setCallback("/authorize/callback");
+        githubAuthorizationEndpointResolver.setNextUri(getLoginConfig().getUri());
+        LinkedInAuthorizationEndpointResolver linkedInAuthorizationEndpointResolver = new LinkedInAuthorizationEndpointResolver();
+        linkedInAuthorizationEndpointResolver.setCallback("/authorize/callback");
+        linkedInAuthorizationEndpointResolver.setNextUri(getLoginConfig().getUri());
+        return new DelegatingAuthorizationEndpointResolver(facebookAuthorizationEndpointResolver,
+                githubAuthorizationEndpointResolver, googleAuthorizationEndpointResolver,
+                linkedInAuthorizationEndpointResolver);
     }
 }

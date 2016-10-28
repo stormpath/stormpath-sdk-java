@@ -10,6 +10,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,7 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
     }
 
     public void setCallback(String callback) {
-        this.callback = encode(callback);
+        this.callback = callback;
     }
 
     protected abstract String getBaseUri();
@@ -49,9 +51,24 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
                 "client_id=" + oAuthProvider.getClientId() +
                 "&response_type=code" +
                 "&scope=" + getScopeString(request, oAuthProvider) +
-                "&redirect_uri=" + callback +
+                "&redirect_uri=" + encode(getFullyQualifiedUri(request, callback)) +
                 "&state=" + getState(request, provider) +
                 extraParameters(request);
+    }
+
+    private String getFullyQualifiedUri(HttpServletRequest request, String path) {
+        URI uri = URI.create(request.getRequestURL().toString());
+
+        if (!path.startsWith("/")) {
+            return path;
+        } else {
+            try {
+                URI baseUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), path, null, null);
+                return baseUri.toString();
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException(e);
+            }
+        }
     }
 
     private String extraParameters(HttpServletRequest request) {
@@ -85,10 +102,8 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
 
     private String getRedirectUri(HttpServletRequest request) {
         String redirectUriParam = request.getParameter("redirect_uri");
-        if (redirectUriParam == null) {
-            redirectUriParam = nextUri;
-        }
-        return redirectUriParam;
+        String path = redirectUriParam == null ? nextUri : redirectUriParam;
+        return getFullyQualifiedUri(request, path);
     }
 
     private String getScopeString(HttpServletRequest request, OAuthProvider linkedInProvider) {

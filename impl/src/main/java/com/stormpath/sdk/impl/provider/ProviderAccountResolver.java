@@ -19,9 +19,9 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.sun.deploy.net.URLEncoder;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import static com.stormpath.sdk.lang.Strings.hasText;
 

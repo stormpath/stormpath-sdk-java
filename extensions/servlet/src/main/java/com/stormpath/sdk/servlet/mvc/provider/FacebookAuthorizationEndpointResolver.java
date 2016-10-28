@@ -11,6 +11,6 @@ public class FacebookAuthorizationEndpointResolver extends BaseAuthorizationEndp
 
     @Override
     protected String getBaseUri() {
-        return "https://www.facebook.com/v2.8/dialog/oauth";
+        return "https://www.facebook.com/v2.7/dialog/oauth";
     }
 }

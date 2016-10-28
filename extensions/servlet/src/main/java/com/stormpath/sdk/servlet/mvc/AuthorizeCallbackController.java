@@ -50,10 +50,10 @@ public class AuthorizeCallbackController extends AbstractController {
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Claims stateClaims = getState(request);
-        String code = (String) stateClaims.get("code");
+        String code = request.getParameter("code");
         String providerId = (String) stateClaims.get("provider");
         ProviderAccountRequest providerAccountRequest = providerAccountRequestResolver.getProviderAccountRequest(providerId,
-                code, request.getRequestURI());
+                code, getRedirectURI(request));
         ProviderAccountResult providerAccountResult = getApplication(request).getAccount(providerAccountRequest);
         Account account = providerAccountResult.getAccount();
         AuthenticationResult authcResult = new TransientAuthenticationResult(account);
@@ -62,6 +62,10 @@ public class AuthorizeCallbackController extends AbstractController {
         eventPublisher.publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
 
         return new DefaultViewModel((String) stateClaims.get("redirect_uri")).setRedirect(true);
+    }
+
+    private String getRedirectURI(HttpServletRequest request) {
+        return request.getRequestURL().toString();
     }
 
     private Claims getState(HttpServletRequest request) {
