@@ -21,6 +21,7 @@ import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.ProviderData;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -40,7 +41,8 @@ public abstract class AbstractProviderData<T extends ProviderData> extends Abstr
     static final StringProperty CODE = new StringProperty("code");
 
     public AbstractProviderData(InternalDataStore dataStore) {
-        this(dataStore, null);
+        //noinspection unchecked
+        this(dataStore, Collections.EMPTY_MAP);
     }
 
     public AbstractProviderData(InternalDataStore dataStore, Map<String, Object> properties) {

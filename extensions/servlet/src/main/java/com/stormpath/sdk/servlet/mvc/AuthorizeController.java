@@ -10,8 +10,7 @@ import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResol
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  * Controller for redirecting to the appropriate external authorization endpoint.
@@ -19,7 +18,6 @@ import java.util.regex.Pattern;
  * @since 1.2.0
  */
 public class AuthorizeController extends AbstractController {
-    private static final Pattern UID_PATTERN = Pattern.compile(".*/(.*)");
     private ProviderAuthorizationEndpointResolver providerAuthorizationEndpointResolver;
 
     @Override
@@ -36,13 +34,15 @@ public class AuthorizeController extends AbstractController {
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String dirUid = getUid(request.getRequestURI());
+        assertResponseType(request);
         Application application = applicationResolver.getApplication(request);
+        String applicationCallbackUri = getApplicationCallbackUri(application, request);
+        String dirHref = getAccountStoreHref(request);
         ApplicationAccountStoreMappingList accountStoreMappingList = application.getAccountStoreMappings();
         for (ApplicationAccountStoreMapping mapping : accountStoreMappingList) {
             AccountStore accountStore = mapping.getAccountStore();
-            if (accountStore instanceof Directory && dirUid.equals(getUid(accountStore.getHref()))) {
-                String endpoint = providerAuthorizationEndpointResolver.getEndpoint(request, ((Directory) accountStore).getProvider());
+            if (accountStore instanceof Directory && dirHref.equals(accountStore.getHref())) {
+                String endpoint = providerAuthorizationEndpointResolver.getEndpoint(request, applicationCallbackUri, ((Directory) accountStore).getProvider());
                 return new DefaultViewModel(endpoint).setRedirect(true);
             }
         }
@@ -50,10 +50,28 @@ public class AuthorizeController extends AbstractController {
         return null;
     }
 
-    private String getUid(String uri) {
-        Matcher matcher = UID_PATTERN.matcher(uri);
-        Assert.isTrue(matcher.matches(), String.format("uri %s must match pattern %s", uri, UID_PATTERN.pattern()));
-        return matcher.group(1);
+    private String getApplicationCallbackUri(Application application, HttpServletRequest request) {
+        List<String> authorizedCallbacks = application.getAuthorizedCallbackUris();
+        Assert.isTrue(!authorizedCallbacks.isEmpty(),
+                "Application must be configured with at least one authorized callback uri");
+        String redirectUri = request.getParameter("redirect_uri");
+        if (redirectUri != null) {
+            Assert.isTrue(authorizedCallbacks.contains(redirectUri),
+                    "Specified redirect_uri is not in the application's configured authorized callback uri's.");
+        } else {
+            redirectUri = authorizedCallbacks.get(0);
+        }
+        return redirectUri;
+    }
+
+    private void assertResponseType(HttpServletRequest request) {
+        String responseType = request.getParameter("response_type");
+        Assert.hasText(responseType, "Must specify response_type");
+        Assert.isTrue(responseType.equals("stormpath_token"), "Invalid response_type.  Only stormpath_token supported.");
+    }
+
+    private String getAccountStoreHref(HttpServletRequest request) {
+        return request.getParameter("account_store_href");
     }
 
     public void setProviderAuthorizationEndpointResolver(ProviderAuthorizationEndpointResolver providerAuthorizationEndpointResolver) {

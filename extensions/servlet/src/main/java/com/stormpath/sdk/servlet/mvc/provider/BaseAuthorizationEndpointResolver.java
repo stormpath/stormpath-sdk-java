@@ -44,7 +44,7 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
     protected abstract String getBaseUri();
 
     @Override
-    public String getEndpoint(HttpServletRequest request, Provider provider) {
+    public String getEndpoint(HttpServletRequest request, String applicationCallbackUri, Provider provider) {
         Assert.isInstanceOf(OAuthProvider.class, provider);
         OAuthProvider oAuthProvider = (OAuthProvider) provider;
         return getBaseUri() + '?' +
@@ -52,7 +52,7 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
                 "&response_type=code" +
                 "&scope=" + getScopeString(request, oAuthProvider) +
                 "&redirect_uri=" + encode(getFullyQualifiedUri(request, callback)) +
-                "&state=" + getState(request, provider) +
+                "&state=" + getState(request, applicationCallbackUri, provider) +
                 extraParameters(request);
     }
 
@@ -85,12 +85,12 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
         return parameterBuilder.toString();
     }
 
-    private String getState(HttpServletRequest request, Provider provider) {
+    private String getState(HttpServletRequest request, String applicationCallbackUri, Provider provider) {
         Client client = (Client) request.getAttribute(Client.class.getName());
         Assert.notNull(client, "client must be available in request attributes");
         String signingKey = client.getApiKey().getSecret();
         JwtBuilder jwtBuilder = Jwts.builder()
-                .claim("redirect_uri", getRedirectUri(request))
+                .claim("redirect_uri", applicationCallbackUri)
                 .claim("provider", provider.getProviderId());
         String stateParameter = request.getParameter("state");
         if (stateParameter != null) {
@@ -98,12 +98,6 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
         }
         return jwtBuilder
                 .signWith(SignatureAlgorithm.HS256, signingKey).compact();
-    }
-
-    private String getRedirectUri(HttpServletRequest request) {
-        String redirectUriParam = request.getParameter("redirect_uri");
-        String path = redirectUriParam == null ? nextUri : redirectUriParam;
-        return getFullyQualifiedUri(request, path);
     }
 
     private String getScopeString(HttpServletRequest request, OAuthProvider linkedInProvider) {

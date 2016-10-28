@@ -20,8 +20,8 @@ public interface ProviderAuthorizationEndpointResolver {
      * The provider authorization endpoint (including query parameters)
      *
      * @param request  for the flow
-     * @param provider provider of the directory that should be used to authenticate
-     * @return the provider authorization endpoint
+     * @param applicationCallbackUri the application callback redirectUri to put into the state
+     *@param provider provider of the directory that should be used to authenticate  @return the provider authorization endpoint
      */
-    String getEndpoint(HttpServletRequest request, Provider provider);
+    String getEndpoint(HttpServletRequest request, String applicationCallbackUri, Provider provider);
 }

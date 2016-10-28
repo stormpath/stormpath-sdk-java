@@ -41,7 +41,7 @@ import static org.hamcrest.Matchers.notNullValue
 class AuthorizeCallbackControllerTest {
     static final String SIGNING_KEY = "not-a-very-secret-key"
     static final String REDIRECT_URI = 'http://myapp.com/redirected'
-    static final String REQUEST_URI = 'http://myapp.com/authorize/callback'
+    static final String REQUEST_URI = '/authorize/callback'
     static final String CODE = 'some-code'
     public static final String PROVIDER_ID = 'some-provider'
 
@@ -89,7 +89,7 @@ class AuthorizeCallbackControllerTest {
     private ProviderAccountRequestResolver initProviderAccountResolver() {
         providerAccountRequest = createNiceMock(ProviderAccountRequest)
         providerAccountRequestResolver = createNiceMock(ProviderAccountRequestResolver)
-        expect(providerAccountRequestResolver.getProviderAccountRequest(PROVIDER_ID, CODE, REQUEST_URI))
+        expect(providerAccountRequestResolver.getProviderAccountRequest(PROVIDER_ID, CODE, request.getRequestURL().toString()))
                 .andStubReturn(providerAccountRequest)
         replay(providerAccountRequestResolver)
         providerAccountRequestResolver

@@ -783,19 +783,6 @@ stormpath.web.changePassword.errorUri
 **Default Value:** ``/forgot?status=invalid_sptoken``
 
 
-
-stormpath.web.authorize.uri
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-**Default Value:** ``/authorize``
-
-
-
-stormpath.web.authorize.callback.uri
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-**Default Value:** ``/authorize/callback``
-
-
-
 stormpath.web.social.facebook.uri
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``/callbacks/facebook``

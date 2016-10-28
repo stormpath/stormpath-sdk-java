@@ -6,7 +6,6 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
-import com.stormpath.sdk.resource.Resource
 import com.stormpath.sdk.servlet.application.ApplicationResolver
 import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResolver
 import org.easymock.IAnswer
@@ -24,6 +23,8 @@ import static org.hamcrest.Matchers.notNullValue
 import static org.hamcrest.Matchers.nullValue
 
 class AuthorizeControllerTest {
+    public static final String AUTHORIZED_CALLBACK1 = "https://foo.com"
+    public static final String AUTHORIZED_CALLBACK2 = "https://bar.com"
     ApplicationResolver applicationResolver
     ProviderAuthorizationEndpointResolver externalAuthorizationEndpointResolver
     AuthorizeController controllerUT = new AuthorizeController()
@@ -32,12 +33,14 @@ class AuthorizeControllerTest {
     Application application
     ApplicationAccountStoreMappingList applicationAccountStoreMappingList
     List<ApplicationAccountStoreMapping> accountStoreMappings
+    List<String> authorizedCallbacks
 
     @BeforeMethod
     void setUp() {
         servletRequest = new MockHttpServletRequest()
         servletResponse = new MockHttpServletResponse()
 
+        servletRequest.setParameter("response_type", "stormpath_token")
         application = createNiceMock(Application)
         applicationResolver = createNiceMock(ApplicationResolver)
 
@@ -45,6 +48,9 @@ class AuthorizeControllerTest {
 
         expect(applicationResolver.getApplication(servletRequest)).andStubReturn(application)
         expect(application.getAccountStoreMappings()).andStubReturn(applicationAccountStoreMappingList)
+
+        authorizedCallbacks = [AUTHORIZED_CALLBACK1, AUTHORIZED_CALLBACK2]
+        expect(application.getAuthorizedCallbackUris()).andStubReturn(authorizedCallbacks)
 
         replay(applicationResolver, application)
 
@@ -97,10 +103,10 @@ class AuthorizeControllerTest {
     @Test
     void testGetResponseWhenDirectoryFound() {
         Directory expectedDirectory = accountStoreMappings[2].accountStore as Directory
-        def dirUid = getUid(expectedDirectory)
-        servletRequest.setRequestURI("http://blah.com/authorize/${dirUid}")
+        servletRequest.setRequestURI("http://blah.com/authorize")
+        servletRequest.setParameter("account_store_href", expectedDirectory.href)
         servletRequest.setMethod("GET")
-        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, expectedDirectory.getProvider()))
+        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
                 .andStubReturn("https://got-there.com")
         replay(externalAuthorizationEndpointResolver)
 
@@ -112,26 +118,95 @@ class AuthorizeControllerTest {
 
     @Test
     void testGetResponseWhenDirectoryNotFound() {
-        servletRequest.setRequestURI("http://blah.com/authorize/non-existent-uid")
+        servletRequest.setRequestURI("http://blah.com/authorize")
         servletRequest.setMethod("GET")
+        servletRequest.setParameter("account_store_href", "http://no-such-href")
         def viewModel = controllerUT.handleRequest(servletRequest, servletResponse)
         assertThat("ViewModel", viewModel, is(nullValue()))
         assertThat("response status", servletResponse.status, is(404))
     }
 
     @Test
-    void testGetResponseWhenUidIsNotDirectory() {
-        accountStoreMappings.add(getMockMapping(Group, "groupUid"))
-        servletRequest.setRequestURI("http://blah.com/authorize/groupUid")
+    void testGetResponseWhenWithRedirectUriSpecified() {
+        Directory expectedDirectory = accountStoreMappings[2].accountStore as Directory
+        servletRequest.setRequestURI("http://blah.com/authorize")
+        servletRequest.setParameter("account_store_href", expectedDirectory.href)
+        servletRequest.setParameter("redirect_uri", AUTHORIZED_CALLBACK2)
         servletRequest.setMethod("GET")
+        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK2, expectedDirectory.getProvider()))
+                .andStubReturn("https://got-there.com")
+        replay(externalAuthorizationEndpointResolver)
+
+        def viewModel = controllerUT.handleRequest(servletRequest, servletResponse)
+        assertThat("ViewModel", viewModel, is(notNullValue()))
+        assertThat("redirect", viewModel.redirect, is(true))
+        assertThat("viewName", viewModel.viewName, is("https://got-there.com"))
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testGetResponseWhenWithInvalidRedirectUriSpecified() {
+        Directory expectedDirectory = accountStoreMappings[2].accountStore as Directory
+        servletRequest.setRequestURI("http://blah.com/authorize")
+        servletRequest.setParameter("account_store_href", expectedDirectory.href)
+        servletRequest.setParameter("redirect_uri", "http://badone.com")
+        servletRequest.setMethod("GET")
+        replay(externalAuthorizationEndpointResolver)
+
+        controllerUT.handleRequest(servletRequest, servletResponse)
+    }
+
+    @Test
+    void testGetResponseWhenUidIsNotDirectory() {
+        def mapping = getMockMapping(Group, "groupUid")
+        accountStoreMappings.add(mapping)
+        servletRequest.setRequestURI("http://blah.com/authorize")
+        servletRequest.setMethod("GET")
+        servletRequest.setParameter("account_store_href", mapping.accountStore.href)
         def viewModel = controllerUT.handleRequest(servletRequest, servletResponse)
         assertThat("ViewModel", viewModel, is(nullValue()))
         assertThat("response status", servletResponse.status, is(404))
     }
 
-    private static String getUid(Resource resource) {
-        //noinspection GroovyAssignabilityCheck
-        String dirUid = (resource.href =~ /.*\/(.*)/)[0][1]
-        dirUid
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testGetResponseWithEmptyAuthorizedCallbackUris() {
+        authorizedCallbacks.clear()
+        Directory expectedDirectory = accountStoreMappings[2].accountStore as Directory
+        servletRequest.setRequestURI("http://blah.com/authorize")
+        servletRequest.setParameter("account_store_href", expectedDirectory.href)
+        servletRequest.setMethod("GET")
+        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
+                .andStubReturn("https://got-there.com")
+        replay(externalAuthorizationEndpointResolver)
+
+        controllerUT.handleRequest(servletRequest, servletResponse)
     }
+
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testGetResponseWithNoResponseType() {
+        Directory expectedDirectory = accountStoreMappings[2].accountStore as Directory
+        servletRequest.setRequestURI("http://blah.com/authorize")
+        servletRequest.setParameter("account_store_href", expectedDirectory.href)
+        servletRequest.removeParameter("response_type")
+        servletRequest.setMethod("GET")
+        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
+                .andStubReturn("https://got-there.com")
+        replay(externalAuthorizationEndpointResolver)
+
+        controllerUT.handleRequest(servletRequest, servletResponse)
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testGetResponseWithInvalidResponseType() {
+        Directory expectedDirectory = accountStoreMappings[2].accountStore as Directory
+        servletRequest.setRequestURI("http://blah.com/authorize")
+        servletRequest.setParameter("account_store_href", expectedDirectory.href)
+        servletRequest.setParameter("response_type", "invalid")
+        servletRequest.setMethod("GET")
+        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
+                .andStubReturn("https://got-there.com")
+        replay(externalAuthorizationEndpointResolver)
+
+        controllerUT.handleRequest(servletRequest, servletResponse)
+    }
+
 }

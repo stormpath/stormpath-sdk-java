@@ -29,6 +29,8 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
     static final String CALLBACK = "/authorize/callback"
     static final String SIGNING_KEY = "not-a-very-secret-key"
     static final String REQUEST_BASE_URI = "https://my-app.com"
+    static final String DEFAULT_APP_CALLBACK_URI = REQUEST_BASE_URI + NEXT_URI
+
     List<String> scopes
     T provider
     MockHttpServletRequest request
@@ -106,7 +108,7 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
 
     @Test
     void testGetEndpointDefault() {
-        def actual = resolverUT.getEndpoint(request, provider)
+        def actual = resolverUT.getEndpoint(request, REQUEST_BASE_URI + NEXT_URI, provider)
 
         assertThat(actual, startsWith(getBaseUri()))
         Map<String, String> params = extractParams(actual)
@@ -122,7 +124,7 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
     @Test
     void testGetEndpointOverrideRedirectUri() {
         request.setParameter("redirect_uri", "/something/else")
-        def actual = resolverUT.getEndpoint(request, provider)
+        def actual = resolverUT.getEndpoint(request, REQUEST_BASE_URI + "/something/else", provider)
         Map<String, String> params = extractParams(actual)
         assertThat(params, hasEntry("redirect_uri", URLEncoder.encode("${REQUEST_BASE_URI}${CALLBACK}", 'UTF-8')))
         Map<String, String> body = getState(params)
@@ -130,9 +132,9 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
     }
 
     @Test
-    void testGetEndpointOvverrideRedirectUriFullyQualified() {
+    void testGetEndpointOverrideRedirectUriFullyQualified() {
         request.setParameter("redirect_uri", "https://foo.com/something/else")
-        def actual = resolverUT.getEndpoint(request, provider)
+        def actual = resolverUT.getEndpoint(request, "https://foo.com/something/else", provider)
         Map<String, String> params = extractParams(actual)
         assertThat(params, hasEntry("redirect_uri", URLEncoder.encode("${REQUEST_BASE_URI}${CALLBACK}", 'UTF-8')))
         Map<String, String> body = getState(params)
@@ -142,7 +144,7 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
     void testGetEndpointOverrideScope() {
         request.setParameter("scope", "foo bar baz")
 
-        def actual = resolverUT.getEndpoint(request, provider)
+        def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
         Map<String, String> params = extractParams(actual)
         assertThat(params, hasEntry("scope", URLEncoder.encode("foo bar baz", 'UTF-8')))
     }
@@ -150,7 +152,7 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
     @Test
     void testGetEndpointProvidedState() {
         request.setParameter("state", "some-string")
-        def actual = resolverUT.getEndpoint(request, provider)
+        def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
         Map<String, String> params = extractParams(actual)
         assertThat(params, hasEntry(equalTo("state"), not(equalTo("some-string"))))
         Map<String, String> body = getState(params)
@@ -161,7 +163,7 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
     void testGetEndpointWithExtraParameters() {
         request.setParameter("foo", "bar")
         request.setParameter("baz", "qux")
-        def actual = resolverUT.getEndpoint(request, provider)
+        def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
         Map<String, String> params = extractParams(actual)
         assertThat(params, hasEntry("foo", "bar"))
         assertThat(params, hasEntry("baz", "qux"))
@@ -172,7 +174,7 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
         request.setParameter("foo", "bar")
         request.setParameter("response_type", "baz")
         request.setParameter("client_id", "qux")
-        def actual = resolverUT.getEndpoint(request, provider)
+        def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
         Map<String, String> params = extractParams(actual)
         assertThat(params, hasEntry("foo", "bar"))
         assertThat(params, hasEntry("client_id", CLIENT_ID))

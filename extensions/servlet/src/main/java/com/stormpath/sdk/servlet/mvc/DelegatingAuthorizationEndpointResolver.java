@@ -31,9 +31,9 @@ public class DelegatingAuthorizationEndpointResolver implements ProviderAuthoriz
     }
 
     @Override
-    public String getEndpoint(HttpServletRequest request, Provider provider) {
+    public String getEndpoint(HttpServletRequest request, String applicationCallbackUri, Provider provider) {
         ProviderAuthorizationEndpointResolver resolver = resolverMap.get(provider.getProviderId());
         Assert.notNull(resolver, "No ProviderAuthroizationEndpointResolver was found for " + provider.getProviderId());
-        return resolver.getEndpoint(request, provider);
+        return resolver.getEndpoint(request, applicationCallbackUri, provider);
     }
 }

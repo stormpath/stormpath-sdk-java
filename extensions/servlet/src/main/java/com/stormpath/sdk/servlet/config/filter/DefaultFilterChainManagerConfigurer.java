@@ -130,12 +130,12 @@ public class DefaultFilterChainManagerConfigurer {
         String idSiteResultUrl = config.getCallbackUri();
         String idSiteResultUrlPattern = cleanUri(idSiteResultUrl);
 
-        String authorizeCallbackUrl = config.get("stormpath.web.authorize.callback.uri");
+        String authorizeCallbackUrl = "/authorize/callback";
         String authorizeCallbackUrlPattern = cleanUri(authorizeCallbackUrl);
         boolean authorizeCallbackChainSpecified = false;
 
-        String authorizeUrl = config.get("stormpath.web.authorize.uri");
-        String authorizeUrlPattern = cleanUri(authorizeUrl) + "/*";
+        String authorizeUrl = "/authorize";
+        String authorizeUrlPattern = cleanUri(authorizeUrl);
         boolean authorizeChainSpecified = false;
 
         String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
