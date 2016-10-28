@@ -75,6 +75,8 @@ public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBui
      * authentication which would be faster because
      * Stormpath does not need to iteratively try each assigned account store
      * <a href="http://docs.stormpath.com/java/product-guide/#account-store-mappings">as documented</a>.
+     * <p>Note that this property will be invalidated if a property is set in {@link #setOrganizationNameKey(String)}. Setting the latter
+     * will cause this property to be unused.</p>
      *
      * @param accountStore a specific {@code AccountStore} that should process this authentication request, or
      *                     {@code null} if the application's default
@@ -96,5 +98,16 @@ public interface UsernamePasswordRequestBuilder extends AuthenticationRequestBui
      * @return this instance for method chaining.
      */
     UsernamePasswordRequestBuilder withResponseOptions(BasicAuthenticationOptions options);
+
+    /**
+     * Sets the {@link com.stormpath.sdk.organization.Organization#setNameKey(String) Organization Name Key} to be used as the account store.
+     * <p>Note that this property cannot be used in conjunction to the {@link #inAccountStore(AccountStore)} method. When the former is used it
+     * will invalidate any value set via the latter.</p>
+     *
+     * @since 1.2.0
+     * @param orgNameKey An organization name key
+     * @return the instance of the method chaining
+     */
+    UsernamePasswordRequestBuilder setOrganizationNameKey(String orgNameKey);
 
 }

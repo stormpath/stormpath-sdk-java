@@ -149,6 +149,14 @@ public class DefaultBasicApiAuthenticationRequest implements AuthenticationReque
     }
 
     /**
+     * @since 1.1.0
+     */
+    @Override
+    public String getOrganizationNameKey() {
+        throw new UnsupportedOperationException("getOrganizationNameKey() this operation is not supported ApiAuthenticationRequest.");
+    }
+
+    /**
      * @since 1.0.RC5
      */
     @Override

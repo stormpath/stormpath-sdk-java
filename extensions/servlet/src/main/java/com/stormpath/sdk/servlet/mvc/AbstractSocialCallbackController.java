@@ -75,13 +75,6 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
 
         eventPublisher.publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
 
-        //Fixes #849 we send in the state the original path the user requested based on the next query param, so we can redirect back
-        String redirectUri = nextUri;
-        String next = ServletUtils.getCleanParam(request, "state");
-        if (Strings.hasText(next)) {
-            redirectUri = next;
-        }
-
-        return new DefaultViewModel(redirectUri).setRedirect(true);
+        return new DefaultViewModel(nextUri).setRedirect(true);
     }
 }
