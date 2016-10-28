@@ -106,8 +106,8 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
     }
 
     @Override
-    public void setDnsLabel(String basePath) {
-        setProperty(DNS_LABEL, basePath);
+    public void setDnsLabel(String dnsLabel) {
+        setProperty(DNS_LABEL, dnsLabel);
     }
 
     @Override
@@ -137,6 +137,11 @@ public class DefaultWebConfiguration extends AbstractInstanceResource implements
     @Override
     public Application getApplication() {
         return getResourceProperty(APPLICATION);
+    }
+
+    @Override
+    public Tenant getTenant() {
+        return getResourceProperty(TENANT);
     }
 
     @Override

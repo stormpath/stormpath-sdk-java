@@ -105,12 +105,29 @@ class WebConfigurationIT extends ClientIT {
         webConfig.setStatus(WebConfigurationStatus.DISABLED)
         webConfig.setSigningApiKey(null)
 
+        String uniqueDnsLabel = uniquify("label").toLowerCase()
+        webConfig.setDnsLabel(uniqueDnsLabel)
         webConfig.save()
 
         def readWebConfig = buildClient(false).getResource(webConfig.href, WebConfiguration)
 
         assertEquals readWebConfig.status, WebConfigurationStatus.DISABLED
         assertNull readWebConfig.signingApiKey
+        assertEquals readWebConfig.getDnsLabel(), uniqueDnsLabel
+        assertTrue readWebConfig.getDomainName().startsWith(uniqueDnsLabel)
+    }
+
+    @Test
+    void testGetReferences() {
+
+        def application = createTempApp()
+
+        def webConfig = application.getWebConfiguration()
+
+        assertEquals application.getHref(), webConfig.getApplication().getHref()
+
+        assertEquals application.getTenant(), webConfig.getTenant()
+
     }
 
     @Test

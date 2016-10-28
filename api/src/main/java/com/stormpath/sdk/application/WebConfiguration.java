@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.tenant.Tenant;
 
 /**
  * A WebConfiguration resource is used to configure how the {@link Application} owner of {@link WebConfiguration this}
@@ -38,6 +39,8 @@ public interface WebConfiguration extends Resource, Saveable, Auditable {
     String getDomainName();
 
     /**
+     * Returns the current dnsLabel or {@code null} if none has been set.
+     *
      * @return the current dnsLabel or {@code null} if none has been set.
      */
     String getDnsLabel();
@@ -79,7 +82,19 @@ public interface WebConfiguration extends Resource, Saveable, Auditable {
      */
     void setSigningApiKey(ApiKey apiKey);
 
+    /**
+     * Returns the WebConfiguration's parent ${@link Application application}
+     *
+     * @return the WebConfiguration's parent ${@link Application application}
+     */
     Application getApplication();
+
+    /**
+     * Returns the WebConfiguration's parent (owning) Tenant.
+     *
+     * @return the WebConfiguration's parent (owning) Tenant.
+     */
+    Tenant getTenant();
 
     /**
      * Property to configure
