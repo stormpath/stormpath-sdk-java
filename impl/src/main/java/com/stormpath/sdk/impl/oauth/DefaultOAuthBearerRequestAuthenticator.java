@@ -101,7 +101,7 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
                 return builder.build();
 
             } catch (UnsupportedJwtException uje) {
-                String message = InvalidJwtException.JWT_INVALID_VALUE_ERROR;
+                String message = InvalidJwtException.UNSUPPORTED_JWT_ERROR;
                 log.debug(message);
                 throw new InvalidJwtException(message, uje);
             } catch (MalformedJwtException mje) {
