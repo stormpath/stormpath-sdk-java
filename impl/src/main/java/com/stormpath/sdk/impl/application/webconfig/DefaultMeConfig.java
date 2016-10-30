@@ -13,41 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.application;
+package com.stormpath.sdk.impl.application.webconfig;
 
-import com.stormpath.sdk.application.ExpandOptions;
-import com.stormpath.sdk.application.MeProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.stormpath.sdk.application.webconfig.MeExpansionConfig;
+import com.stormpath.sdk.application.webconfig.MeConfig;
+import com.stormpath.sdk.impl.application.ConfigurableProperty;
 import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
 import com.stormpath.sdk.impl.resource.ParentAwareObjectProperty;
 
 import java.util.Map;
 
-public class DefaultMeProperty extends ConfigurableProperty implements MeProperty {
+public class DefaultMeConfig extends ConfigurableProperty implements MeConfig {
 
-    private static final ParentAwareObjectProperty<DefaultExpandOptions, AbstractPropertyRetriever> EXPAND;
+    private static final ParentAwareObjectProperty<DefaultMeExpansionConfig, AbstractPropertyRetriever> EXPAND;
     private static final BooleanProperty ENABLED = new BooleanProperty("enabled");
 
     static {
-        EXPAND = new ParentAwareObjectProperty<>("expand", DefaultExpandOptions.class, AbstractPropertyRetriever.class);
+        EXPAND = new ParentAwareObjectProperty<>("expand", DefaultMeExpansionConfig.class, AbstractPropertyRetriever.class);
     }
 
-    public DefaultMeProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+    public DefaultMeConfig(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
         super(name, properties, parent);
     }
 
     @Override
-    public ExpandOptions getExpand() {
+    @JsonProperty("expand")
+    public MeExpansionConfig getMeExpansionConfig() {
         return getParentAwareObjectProperty(EXPAND);
     }
 
     @Override
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         return getBoolean(ENABLED);
     }
 
     @Override
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         setProperty(ENABLED, enabled);
     }
 

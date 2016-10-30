@@ -33,7 +33,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
-import com.stormpath.sdk.application.WebConfiguration;
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -185,8 +185,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
             new ResourceReference<SamlPolicy>("samlPolicy", SamlPolicy.class);
     static final ResourceReference<AccountLinkingPolicy> ACCOUNT_LINKING_POLICY =
             new ResourceReference<AccountLinkingPolicy>("accountLinkingPolicy", AccountLinkingPolicy.class);
-    static final ResourceReference<WebConfiguration> WEB_CONFIGURATION =
-            new ResourceReference<>("webConfig", WebConfiguration.class);
+    static final ResourceReference<ApplicationWebConfig> WEB_CONFIGURATION =
+            new ResourceReference<>("webConfig", ApplicationWebConfig.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account>                         ACCOUNTS               =
@@ -334,7 +334,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     @Override
-    public WebConfiguration getWebConfiguration() {
+    public ApplicationWebConfig getWebConfig() {
         return getResourceProperty(WEB_CONFIGURATION);
     }
 
@@ -377,7 +377,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     @Override
-    public Application addAuthorizedOriginUris(String authorizedOriginUri) {
+    public Application addAuthorizedOriginUri(String authorizedOriginUri) {
         List<String> authorizedOriginUris = this.getAuthorizedOriginUris();
         authorizedOriginUris.add(authorizedOriginUri);
         setProperty(AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME, authorizedOriginUris);

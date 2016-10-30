@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.stormpath.sdk.impl.application
+package com.stormpath.sdk.impl.application.webconfig
 
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.Applications
-import com.stormpath.sdk.application.EnabledProperty
-import com.stormpath.sdk.application.ExpandOptions
-import com.stormpath.sdk.application.MeProperty
-import com.stormpath.sdk.application.OAuth2Property
-import com.stormpath.sdk.application.WebConfiguration
-import com.stormpath.sdk.application.WebConfigurationStatus
+import com.stormpath.sdk.application.webconfig.MeExpansionConfig
+import com.stormpath.sdk.application.webconfig.MeConfig
+import com.stormpath.sdk.application.webconfig.Oauth2Config
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfig
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus
+import com.stormpath.sdk.application.webconfig.VerifyEmailConfig
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
@@ -41,15 +41,15 @@ class WebConfigurationIT extends ClientIT {
 
         def requestCountingClient = buildCountingClient()
 
-        def criteria = Applications.where(Applications.name().eqIgnoreCase("My Application")).withWebConfiguration()
+        def criteria = Applications.where(Applications.name().eqIgnoreCase("My Application")).withWebConfig()
 
         def application = getTenantApplication(requestCountingClient, criteria)
 
         assertEquals requestCountingClient.requestCount, 2 //Get current tenant / Get applications.
 
-        def webConfiguration = application.webConfiguration
+        def webConfiguration = application.webConfig
 
-        assertTrue webConfiguration.getOAuth2().password.enabled
+        assertTrue webConfiguration.getOAuth2Config().getPasswordConfig().enabled
 
         assertEquals requestCountingClient.requestCount, 2
     }
@@ -57,61 +57,68 @@ class WebConfigurationIT extends ClientIT {
     @Test
     void testWebConfigurationUpdateLeafProperty() {
 
-        def webConfig = createTempApp().getWebConfiguration()
+        def webConfig = createTempApp().getWebConfig()
 
-        OAuth2Property oAuth2Property = webConfig.getOAuth2()
+        Oauth2Config oauth2Config = webConfig.getOAuth2Config()
 
-        oAuth2Property.getPassword().setEnabled(false)
+        oauth2Config.setEnabled(false)
+        oauth2Config.getPasswordConfig().setEnabled(false)
+        oauth2Config.getClientCredentialsConfig().setEnabled(false)
 
-        MeProperty meProperty = webConfig.getMe()
+        MeConfig meConfig = webConfig.getMeConfig()
 
-        ExpandOptions expandOptions = meProperty.getExpand()
-        expandOptions.setApiKeys(true)
-        expandOptions.setApplications(true)
-        expandOptions.setCustomData(true)
-        expandOptions.setDirectory(true)
-        expandOptions.setGroupMemberships(true)
-        expandOptions.setProviderData(true)
-        expandOptions.setTenant(true)
-        expandOptions.setGroups(true)
+        meConfig.setEnabled(false)
+
+        MeExpansionConfig expansionConfig = meConfig.getMeExpansionConfig()
+        expansionConfig.setApiKeys(true)
+        expansionConfig.setApplications(true)
+        expansionConfig.setCustomData(true)
+        expansionConfig.setDirectory(true)
+        expansionConfig.setGroupMemberships(true)
+        expansionConfig.setProviderData(true)
+        expansionConfig.setTenant(true)
+        expansionConfig.setGroups(true)
 
         webConfig.save()
 
-        def readWebConfig = buildClient(false).getResource(webConfig.href, WebConfiguration)
+        def readWebConfig = buildClient(false).getResource(webConfig.href, ApplicationWebConfig)
 
-        OAuth2Property readOAuth2 = readWebConfig.getOAuth2()
+        Oauth2Config readOAuth2 = readWebConfig.getOAuth2Config()
 
-        assertFalse readOAuth2.getPassword().isEnabled()
+        assertFalse readOAuth2.isEnabled()
+        assertFalse readOAuth2.getPasswordConfig().isEnabled()
+        assertFalse readOAuth2.getClientCredentialsConfig().isEnabled()
 
-        meProperty = readWebConfig.getMe()
-        expandOptions = meProperty.getExpand()
+        meConfig = readWebConfig.getMeConfig()
+        expansionConfig = meConfig.getMeExpansionConfig()
 
-        assertTrue expandOptions.getApiKeys()
-        assertTrue expandOptions.getApplications()
-        assertTrue expandOptions.getCustomData()
-        assertTrue expandOptions.getDirectory()
-        assertTrue expandOptions.getGroups()
-        assertTrue expandOptions.getGroupMemberships()
-        assertTrue expandOptions.getTenant()
-        assertTrue expandOptions.getProviderData()
+        assertFalse meConfig.isEnabled()
+        assertTrue expansionConfig.getApiKeys()
+        assertTrue expansionConfig.getApplications()
+        assertTrue expansionConfig.getCustomData()
+        assertTrue expansionConfig.getDirectory()
+        assertTrue expansionConfig.getGroups()
+        assertTrue expansionConfig.getGroupMemberships()
+        assertTrue expansionConfig.getTenant()
+        assertTrue expansionConfig.getProviderData()
 
     }
 
     @Test
     void testUpdateFirstLevelProperties() {
 
-        def webConfig = createTempApp().getWebConfiguration()
+        def webConfig = createTempApp().getWebConfig()
 
-        webConfig.setStatus(WebConfigurationStatus.DISABLED)
+        webConfig.setStatus(ApplicationWebConfigStatus.DISABLED)
         webConfig.setSigningApiKey(null)
 
         String uniqueDnsLabel = uniquify("label").toLowerCase()
         webConfig.setDnsLabel(uniqueDnsLabel)
         webConfig.save()
 
-        def readWebConfig = buildClient(false).getResource(webConfig.href, WebConfiguration)
+        def readWebConfig = buildClient(false).getResource(webConfig.href, ApplicationWebConfig)
 
-        assertEquals readWebConfig.status, WebConfigurationStatus.DISABLED
+        assertEquals readWebConfig.status, ApplicationWebConfigStatus.DISABLED
         assertNull readWebConfig.signingApiKey
         assertEquals readWebConfig.getDnsLabel(), uniqueDnsLabel
         assertTrue readWebConfig.getDomainName().startsWith(uniqueDnsLabel)
@@ -122,7 +129,7 @@ class WebConfigurationIT extends ClientIT {
 
         def application = createTempApp()
 
-        def webConfig = application.getWebConfiguration()
+        def webConfig = application.getWebConfig()
 
         assertEquals application.getHref(), webConfig.getApplication().getHref()
 
@@ -133,9 +140,9 @@ class WebConfigurationIT extends ClientIT {
     @Test
     void testUpdateNullableProperties()  {
 
-        def webConfig = createTempApp().getWebConfiguration()
+        def webConfig = createTempApp().getWebConfig()
 
-        EnabledProperty verifyEmail = webConfig.getVerifyEmail()
+        VerifyEmailConfig verifyEmail = webConfig.getVerifyEmailConfig()
 
         assertNull verifyEmail.isEnabled()
 
@@ -145,9 +152,9 @@ class WebConfigurationIT extends ClientIT {
 
         def noCacheClient =  buildClient(false)
 
-        webConfig = noCacheClient.getResource(webConfig.href, WebConfiguration)
+        webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
 
-        verifyEmail = webConfig.getVerifyEmail()
+        verifyEmail = webConfig.getVerifyEmailConfig()
 
         assertTrue verifyEmail.isEnabled()
 
@@ -155,23 +162,23 @@ class WebConfigurationIT extends ClientIT {
 
         webConfig.save()
 
-        webConfig = noCacheClient.getResource(webConfig.href, WebConfiguration)
+        webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
 
-        assertNull webConfig.getVerifyEmail().isEnabled()
+        assertNull webConfig.getVerifyEmailConfig().isEnabled()
     }
 
     @Test
     void testWebConfiguration_updateApiKey() {
 
-        def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfiguration()
+        def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfig()
         def adminApp = getTenantApplication(client, criteria)
 
         def apiKey = createTmpApiKey(adminApp)
 
-        def webConfig = createTempApp().getWebConfiguration()
+        def webConfig = createTempApp().getWebConfig()
 
         webConfig.setSigningApiKey(apiKey)
-        webConfig.setStatus(WebConfigurationStatus.ENABLED)
+        webConfig.setStatus(ApplicationWebConfigStatus.ENABLED)
         webConfig.save()
 
         assertNotNull webConfig.domainName
@@ -180,38 +187,37 @@ class WebConfigurationIT extends ClientIT {
     @Test
     void testWebConfiguration_updateCookieName() {
 
-        def webConfig = createTempApp().getWebConfiguration()
+        def webConfig = createTempApp().getWebConfig()
 
-        webConfig.getAccessTokenCookie().setName("an-access-token-valid-name")
-        webConfig.getRefreshTokenCookie().setName("a-refresh-token-valid-name")
+        webConfig.getAccessTokenCookieConfig().setName("an-access-token-valid-name")
+        webConfig.getRefreshTokenCookieConfig().setName("a-refresh-token-valid-name")
 
         webConfig.save()
 
         def noCacheClient = buildClient(false)
 
-        webConfig = noCacheClient.getResource(webConfig.href, WebConfiguration)
+        webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
 
-        assertEquals "an-access-token-valid-name", webConfig.getAccessTokenCookie().getName()
-        assertEquals "a-refresh-token-valid-name", webConfig.getRefreshTokenCookie().getName()
-
+        assertEquals "an-access-token-valid-name", webConfig.getAccessTokenCookieConfig().getName()
+        assertEquals "a-refresh-token-valid-name", webConfig.getRefreshTokenCookieConfig().getName()
     }
 
     @Test
     void testEnableStormpathAdminApp_ErrorResponse() {
 
-        def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfiguration()
+        def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfig()
         def adminApp = getTenantApplication(client, criteria)
 
         def apiKey = createTmpApiKey(adminApp)
 
-        def webConfig =  adminApp.getWebConfiguration()
+        def webConfig =  adminApp.getWebConfig()
 
-        assertEquals webConfig.getStatus(), WebConfigurationStatus.DISABLED
+        assertEquals webConfig.getStatus(), ApplicationWebConfigStatus.DISABLED
         assertNull webConfig.getDomainName()
         assertNull webConfig.getDnsLabel()
 
         try {
-            webConfig.setStatus(WebConfigurationStatus.ENABLED)
+            webConfig.setStatus(ApplicationWebConfigStatus.ENABLED)
             webConfig.setSigningApiKey(apiKey)
             webConfig.save()
             fail("should have failed")

@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.application;
+package com.stormpath.sdk.impl.application.webconfig;
 
-import com.stormpath.sdk.application.ExpandOptions;
+import com.stormpath.sdk.application.webconfig.MeExpansionConfig;
+import com.stormpath.sdk.impl.application.ConfigurableProperty;
 import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
 
 import java.util.Map;
 
-public class DefaultExpandOptions extends ConfigurableProperty implements ExpandOptions {
+public class DefaultMeExpansionConfig extends ConfigurableProperty implements MeExpansionConfig {
 
     private static BooleanProperty API_KEYS = new BooleanProperty("apiKeys");
     private static BooleanProperty APPLICATIONS = new BooleanProperty("applications");
@@ -32,7 +33,7 @@ public class DefaultExpandOptions extends ConfigurableProperty implements Expand
     private static BooleanProperty PROVIDER_DATA = new BooleanProperty("providerData");
     private static BooleanProperty TENANT = new BooleanProperty("tenant");
 
-    public DefaultExpandOptions(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+    public DefaultMeExpansionConfig(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
         super(name, properties, parent);
     }
 

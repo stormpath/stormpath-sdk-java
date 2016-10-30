@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application;
+package com.stormpath.sdk.application.webconfig;
 
-public interface MeProperty extends EnabledProperty {
+public interface WebFeatureConfig {
 
-    ExpandOptions getExpand();
+    boolean isEnabled();
 
+    void setEnabled(boolean enabled);
 }

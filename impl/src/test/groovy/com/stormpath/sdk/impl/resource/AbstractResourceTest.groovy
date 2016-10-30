@@ -17,8 +17,8 @@
 
 package com.stormpath.sdk.impl.resource
 
-import com.stormpath.sdk.impl.application.DefaultEnabledProperty
-import com.stormpath.sdk.impl.application.DefaultOAuth2Property
+import com.stormpath.sdk.impl.application.webconfig.DefaultWebFeatureConfig
+import com.stormpath.sdk.impl.application.webconfig.DefaultOauth2Config
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
@@ -130,21 +130,21 @@ class AbstractResourceTest {
 
         assertTrue testResource.getProperty("oauth2") instanceof Map
 
-        def oauth2 = testResource.getParentAwareObjectProperty("oauth2", DefaultOAuth2Property, AbstractPropertyRetriever)
+        def oauth2 = testResource.getParentAwareObjectProperty("oauth2", DefaultOauth2Config, AbstractPropertyRetriever)
 
         assertEquals oauth2.isEnabled(), false
-        assertEquals oauth2.getClientCredentials().isEnabled(), false
+        assertEquals oauth2.getClientCredentialsConfig().isEnabled(), false
 
         def transformed = testResource.getProperty("oauth2")
 
-        assertTrue testResource.getProperty("oauth2") instanceof DefaultOAuth2Property, "transformed class: " +  transformed.getClass().name
+        assertTrue testResource.getProperty("oauth2") instanceof DefaultOauth2Config, "transformed class: " +  transformed.getClass().name
 
-        assertEquals oauth2, testResource.getParentAwareObjectProperty("oauth2",  DefaultOAuth2Property, AbstractPropertyRetriever)
+        assertEquals oauth2, testResource.getParentAwareObjectProperty("oauth2",  DefaultOauth2Config, AbstractPropertyRetriever)
 
-        assertNull testResource.getParentAwareObjectProperty("unkownw", DefaultEnabledProperty, AbstractPropertyRetriever)
+        assertNull testResource.getParentAwareObjectProperty("unkownw", DefaultWebFeatureConfig, AbstractPropertyRetriever)
 
         try {
-            testResource.getParentAwareObjectProperty("basePath", DefaultEnabledProperty, AbstractPropertyRetriever)
+            testResource.getParentAwareObjectProperty("basePath", DefaultWebFeatureConfig, AbstractPropertyRetriever)
 
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {

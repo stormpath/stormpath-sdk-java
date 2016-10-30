@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.application;
+package com.stormpath.sdk.impl.application.webconfig;
 
-import com.stormpath.sdk.application.EnabledProperty;
+import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
+import com.stormpath.sdk.application.webconfig.ForgotPasswordConfig;
+import com.stormpath.sdk.application.webconfig.VerifyEmailConfig;
+import com.stormpath.sdk.impl.application.ConfigurableProperty;
 import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
 
 import java.util.Map;
 
-public class DefaultEnabledProperty extends ConfigurableProperty implements EnabledProperty {
+/**
+ * @since 1.2.0
+ */
+public class DefaultNullableWebFeatureConfig extends ConfigurableProperty implements VerifyEmailConfig, ChangePasswordConfig, ForgotPasswordConfig {
 
     private static BooleanProperty ENABLED = new BooleanProperty("enabled");
 
-    public DefaultEnabledProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+    public DefaultNullableWebFeatureConfig(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
         super(name, properties, parent);
     }
 

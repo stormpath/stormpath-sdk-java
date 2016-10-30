@@ -892,7 +892,7 @@ class ApplicationIT extends ClientIT {
 
         assertTrue authorizedOriginUris.contains(defaultUri)
 
-        application.addAuthorizedOriginUris("http://my.company.com")
+        application.addAuthorizedOriginUri("http://my.company.com")
 
         authorizedOriginUris = application.getAuthorizedOriginUris()
 

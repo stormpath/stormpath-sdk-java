@@ -20,7 +20,7 @@ import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
-import com.stormpath.sdk.application.WebConfiguration;
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
@@ -220,7 +220,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
             boolean isTokenDataMap = (AccessToken.class.isAssignableFrom(clazz) || RefreshToken.class.isAssignableFrom(clazz)) && name.equals("expandedJwt");
 
-            boolean isWebConfigurationMap = WebConfiguration.class.isAssignableFrom(clazz) && webConfigurationMaps.contains(name);
+            boolean isWebConfigurationMap = ApplicationWebConfig.class.isAssignableFrom(clazz) && webConfigurationMaps.contains(name);
 
             boolean isApiEncryptionMetadata = ApiKey.class.isAssignableFrom(clazz) && name.equals(ApiKeyParameter.ENCRYPTION_METADATA.getName());
 

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application;
+package com.stormpath.sdk.application.webconfig;
 
-public interface EnabledProperty {
+/**
+ * @since 1.2.0
+ */
+public interface LogoutConfig extends WebFeatureConfig {
 
-    Boolean isEnabled();
-
-    void setEnabled(Boolean enabled);
 }

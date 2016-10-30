@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.application;
+package com.stormpath.sdk.impl.application.webconfig;
 
-import com.stormpath.sdk.application.NameableProperty;
+import com.stormpath.sdk.application.webconfig.CookieConfig;
+import com.stormpath.sdk.impl.application.ConfigurableProperty;
 import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.StringProperty;
 
 import java.util.Map;
 
-public class DefaultNameableProperty extends ConfigurableProperty implements NameableProperty {
+public class DefaultCookieConfig extends ConfigurableProperty implements CookieConfig {
 
     private static StringProperty NAME = new StringProperty("name");
 
-    public DefaultNameableProperty(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+    public DefaultCookieConfig(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
         super(name, properties, parent);
     }
 

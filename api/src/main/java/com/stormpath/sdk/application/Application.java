@@ -25,6 +25,7 @@ import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequestBuilder;
@@ -1137,12 +1138,12 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
     SamlPolicy getSamlPolicy();
 
     /**
-     * Returns the {@link WebConfiguration} associated with this application.
+     * Returns the {@link ApplicationWebConfig} associated with this application.
      *
-     * @return the {@link WebConfiguration} associated with this application.
+     * @return the {@link ApplicationWebConfig} associated with this application.
      * @since 1.2.0
      */
-    WebConfiguration getWebConfiguration();
+    ApplicationWebConfig getWebConfig();
 
     /**
      * Returns the valid list of Valid Callback URIs for this application.
@@ -1202,5 +1203,5 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      *
      * @since 1.2.0
      */
-    Application addAuthorizedOriginUris(String authorizedOriginUri);
+    Application addAuthorizedOriginUri(String authorizedOriginUri);
 }

@@ -106,8 +106,8 @@ public class DefaultApplicationCriteria extends DefaultCriteria<ApplicationCrite
     }
 
     @Override
-    public ApplicationCriteria withWebConfiguration() {
-        getOptions().withWebConfiguration();
+    public ApplicationCriteria withWebConfig() {
+        getOptions().withWebConfig();
         return this;
     }
 }

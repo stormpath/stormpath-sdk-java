@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application;
+package com.stormpath.sdk.application.webconfig;
 
-public interface NameableProperty {
+/**
+ * @since 1.2.0
+ */
+public enum ApplicationWebConfigStatus {
 
-    String getName();
+    /**
+     * ApplicationWebConfigStatus that are enabled can be used in the Client API.
+     */
+    ENABLED,
 
-    void setName(String name);
+    /**
+     * ApplicationWebConfigStatus that are disabled cannot be used in the Client API..
+     */
+    DISABLED,
 
 }

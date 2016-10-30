@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.application;
+package com.stormpath.sdk.application.webconfig;
 
-/**
- * @since 1.1.0
- */
-public enum WebConfigurationStatus {
+public interface MeConfig extends WebFeatureConfig {
 
-    /**
-     * WebConfiguration that are enabled can connect t
-     */
-    ENABLED,
-
-    /**
-     * WebConfiguration that are disabled cannot be used.
-     */
-    DISABLED,
+    MeExpansionConfig getMeExpansionConfig();
 
 }

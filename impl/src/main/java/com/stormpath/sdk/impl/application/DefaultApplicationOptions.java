@@ -75,7 +75,7 @@ public class DefaultApplicationOptions extends DefaultOptions<ApplicationOptions
     }
 
     @Override
-    public ApplicationOptions withWebConfiguration() {
+    public ApplicationOptions withWebConfig() {
         return expand(DefaultApplication.WEB_CONFIGURATION);
     }
 }
