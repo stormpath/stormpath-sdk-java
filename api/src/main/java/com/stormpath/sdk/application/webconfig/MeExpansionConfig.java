@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.application.webconfig;
 
+/**
+ * @since 1.2.0
+ */
 public interface MeExpansionConfig {
 
     boolean getApiKeys();

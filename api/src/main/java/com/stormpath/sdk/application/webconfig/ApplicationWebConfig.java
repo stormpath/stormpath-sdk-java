@@ -23,8 +23,25 @@ import com.stormpath.sdk.resource.Saveable;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * A WebConfiguration resource is used to configure how the {@link Application} owner of {@link ApplicationWebConfig this}
- * resource, to act as server less client.
+ * As ApplicationWebConfig resource is used to configure how the {@link Application application} associated to
+ * {@link WebFeatureConfig this} object behaves in the Stormpath Client Api.
+ * <p/>
+ * For example, if you don't want to let users to register to associated the {@link Application application} via the
+ * Stormpath Client Api, you need to turn it off.
+ * <p/>
+ * <pre>
+ * ApplicationWebConfig webConfig = application.getWebConfig();
+ * webConfig.getRegisterConfig().setEnabled(false);
+ * webConfig.save();
+ * </pre>
+ * <p/>
+ * Or if you want to expands the groups of the account that is access via the  {@code /me} route.
+ * <p/>
+ * <pre>
+ * ApplicationWebConfig webConfig = application.getWebConfig();
+ * webConfig.getMeConfig().getMeExpansionConfig().setGroups(true);
+ * webConfig.save();
+ * </pre>
  *
  * @since 1.2.0
  */
@@ -56,7 +73,7 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
     void setDnsLabel(String dnsLabel);
 
     /**
-     * Returns the webConfiguration's status. Users won't be able to use the applications' api if the webConfiguration is
+     * Returns the ApplicationWebConfigStatus's status. Users won't be able to use the Stormpath's Client Api if it's
      * disabled.
      *
      * @return the webConfiguration's status.
@@ -64,122 +81,125 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
     ApplicationWebConfigStatus getStatus();
 
     /**
-     * Sets the webConfiguration's status. Users won't be able to use the applications' api if the webConfiguration is
-     * disabled.
+     * Sets the webConfiguration's status. Users won't be able to use the Stormpath's Client Api if it's disabled.
      *
      * @param status the webConfiguration's status.
      */
     void setStatus(ApplicationWebConfigStatus status);
 
     /**
-     * @return the {@link ApiKey ap}
+     * Returns the {@link ApiKey signingApiKey} used to sign and/or validate requests and assertions issued by Stormpath's
+     * Client Api or {@code null} if none is set.
+     *
+     * @return the {@link ApiKey signingApiKey} used to sign and/or validate requests and assertions issued by Stormpath's
+     * Client Api or {@code null} if none is set.
      */
     ApiKey getSigningApiKey();
 
     /**
-     * Sets the {@link ApiKey apiKey} to be used by Stormpath when signing tokens issues using the Client API.
+     * Sets the {@link ApiKey apiKey} to be used by Stormpath's Client Api to sign request and assertions. If set to
+     * {@code null} the Stormpath Client Api won't be available for users.
      *
-     * @param apiKey
+     * @param apiKey to be used by Stormpath's Client Api to sign request and assertions. If set to
+     *               {@code null} the Stormpath Client Api won't be available for users.
      */
     void setSigningApiKey(ApiKey apiKey);
 
     /**
-     * Returns the WebConfiguration's parent ${@link Application application}
+     * Returns the {@link Oauth2Config oauth2Config} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return the WebConfiguration's parent ${@link Application application}
-     */
-    Application getApplication();
-
-    /**
-     * Returns the WebConfiguration's parent (owning) Tenant.
-     *
-     * @return the WebConfiguration's parent (owning) Tenant.
-     */
-    Tenant getTenant();
-
-    /**
-     * Property to configure
-     *
-     * @return {@link Oauth2Config property}
+     * @return the {@link Oauth2Config oauth2Config} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     Oauth2Config getOAuth2Config();
 
     /**
-     * Returns the configured value for the {@code accessTokenCookie} name.
+     * Returns the {@link CookieConfig accessTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return returns the configured value for the {@code accessTokenCookie} name.
+     * @return the {@link CookieConfig accessTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     CookieConfig getAccessTokenCookieConfig();
 
     /**
-     * Returns the configured value for the {@code refreshTokenCookie} name.
+     * Returns the {@link CookieConfig refreshTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return returns the configured value for the {@code refreshTokenCookie} name.
+     * @return the {@link CookieConfig refreshTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     CookieConfig getRefreshTokenCookieConfig();
 
     /**
-     * @return {@link WebFeatureConfig property} value of the register control.
+     * Returns the {@link RegisterConfig registerConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     *
+     * @return the {@link RegisterConfig registerConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     RegisterConfig getRegisterConfig();
 
     /**
-     * Property that controls the logic that must exist in order to facilitate self-service verification of newly
-     * registered user accounts.
+     * Returns the {@link VerifyEmailConfig verifyEmailConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return {@link WebFeatureConfig property} value of the verifyEmail control.
+     * @return the {@link VerifyEmailConfig verifyEmailConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     VerifyEmailConfig getVerifyEmailConfig();
 
     /**
-     * Property that controls the  logic that must exist in order to facilitate self-service login of user accounts.
+     * Returns the {@link LoginConfig loginConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return {@link WebFeatureConfig property} value of the login control.
+     * @return the {@link LoginConfig loginConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     LoginConfig getLoginConfig();
 
     /**
-     * Property that controls the  logic endpoint is used to delete the Authentication Cookies that were set on login.
-     * The access and refresh tokens that were issued (and stored in cookies) must also be deleted from the
-     * Stormpath REST API.
+     * Returns the {@link LogoutConfig logoutConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return {@link LogoutConfig logoutConfig} value of the logout control.
+     * @return the {@link LogoutConfig logoutConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     LogoutConfig getLogoutConfig();
 
     /**
-     * Property that controls the  logic that must exist in order to facilitate self-service login of user accounts.
+     * Returns the {@link ForgotPasswordConfig forgotPasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return {@link WebFeatureConfig property} value of forgotPa control.
+     * @return the {@link ForgotPasswordConfig forgotPasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     ForgotPasswordConfig getForgotPasswordConfig();
 
     /**
-     * Property that controls the  logic that must exist in order to facilitate self-service login of user accounts.
+     * Returns the {@link ChangePasswordConfig changePasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return {@link WebFeatureConfig property} value of the changePassword control.
+     * @return the {@link ChangePasswordConfig changePasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     ChangePasswordConfig getChangePasswordConfig();
 
     /**
-     * Property that controls the  logic that must exist in order to facilitate self-service idSite of user accounts.
+     * Returns the {@link IdSiteConfig idSiteConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return {@link WebFeatureConfig property} value of the idSite control.
+     * @return the {@link IdSiteConfig idSiteConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     IdSiteConfig getIdSiteConfig();
 
     /**
-     * Property that controls the  logic that must exist in order to facilitate self-service callback of user accounts.
+     * Returns the {@link CallbackConfig callbackConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return {@link WebFeatureConfig property} value of the callback control.
+     * @return the {@link CallbackConfig callbackConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     CallbackConfig getCallbackConfig();
 
     /**
-     * Property that controls  the logic that allows the client application to fetch the account object of the currently
-     * authenticated user.
+     * Returns the {@link MeConfig meConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
-     * @return {@link MeConfig property} value of the me control.
+     * @return the {@link MeConfig meConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     MeConfig getMeConfig();
+
+    /**
+     * Returns the {@link Application Application} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     *
+     * @return the {@link Application Application} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     */
+    Application getApplication();
+
+    /**
+     * Returns the {@link Tenant tenant} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     *
+     * @return the {@link Tenant tenant} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     */
+    Tenant getTenant();
 }
