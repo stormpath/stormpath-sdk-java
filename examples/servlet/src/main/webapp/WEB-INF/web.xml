@@ -41,6 +41,13 @@
             <max-age>3600</max-age>
         </cookie-config>
     </session-config>
+
+    <!-- Enable servlets as welcome files, only needed for jetty, Tomcat works out of the box -->
+    <context-param>
+        <param-name>org.eclipse.jetty.servlet.Default.welcomeServlets</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <welcome-file-list>
         <welcome-file>welcome</welcome-file>
     </welcome-file-list>
