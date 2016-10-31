@@ -14,6 +14,11 @@ public class DefaultProviderAccountRequestResolver implements ProviderAccountReq
         return getRequestFactory(providerId).account().setCode(code).setRedirectUri(redirectUri).build();
     }
 
+    @Override
+    public ProviderAccountRequest getProviderAccountRequestWithOrganizationHref(String providerId, String code, String organizationHref, String redirectUri) {
+        return getRequestFactory(providerId).account().setCode(code).setRedirectUri(redirectUri).build();
+    }
+
     private ProviderRequestFactory getRequestFactory(String providerId) {
         Assert.hasText(providerId);
         switch (providerId) {

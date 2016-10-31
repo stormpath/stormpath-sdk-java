@@ -26,7 +26,7 @@ class AuthorizeControllerTest {
     public static final String AUTHORIZED_CALLBACK1 = "https://foo.com"
     public static final String AUTHORIZED_CALLBACK2 = "https://bar.com"
     ApplicationResolver applicationResolver
-    ProviderAuthorizationEndpointResolver externalAuthorizationEndpointResolver
+    ProviderAuthorizationEndpointResolver providerAuthorizationEndpointResolver
     AuthorizeController controllerUT = new AuthorizeController()
     MockHttpServletRequest servletRequest
     MockHttpServletResponse servletResponse
@@ -54,10 +54,10 @@ class AuthorizeControllerTest {
 
         replay(applicationResolver, application)
 
-        externalAuthorizationEndpointResolver = createNiceMock(ProviderAuthorizationEndpointResolver)
+        providerAuthorizationEndpointResolver = createNiceMock(ProviderAuthorizationEndpointResolver)
 
         controllerUT.applicationResolver = applicationResolver
-        controllerUT.providerAuthorizationEndpointResolver = externalAuthorizationEndpointResolver
+        controllerUT.providerAuthorizationEndpointResolver = providerAuthorizationEndpointResolver
         controllerUT.nextUri = "test"
 
     }
@@ -106,9 +106,9 @@ class AuthorizeControllerTest {
         servletRequest.setRequestURI("http://blah.com/authorize")
         servletRequest.setParameter("account_store_href", expectedDirectory.href)
         servletRequest.setMethod("GET")
-        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
+        expect(providerAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
                 .andStubReturn("https://got-there.com")
-        replay(externalAuthorizationEndpointResolver)
+        replay(providerAuthorizationEndpointResolver)
 
         def viewModel = controllerUT.handleRequest(servletRequest, servletResponse)
         assertThat("ViewModel", viewModel, is(notNullValue()))
@@ -133,9 +133,9 @@ class AuthorizeControllerTest {
         servletRequest.setParameter("account_store_href", expectedDirectory.href)
         servletRequest.setParameter("redirect_uri", AUTHORIZED_CALLBACK2)
         servletRequest.setMethod("GET")
-        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK2, expectedDirectory.getProvider()))
+        expect(providerAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK2, expectedDirectory.getProvider()))
                 .andStubReturn("https://got-there.com")
-        replay(externalAuthorizationEndpointResolver)
+        replay(providerAuthorizationEndpointResolver)
 
         def viewModel = controllerUT.handleRequest(servletRequest, servletResponse)
         assertThat("ViewModel", viewModel, is(notNullValue()))
@@ -150,7 +150,7 @@ class AuthorizeControllerTest {
         servletRequest.setParameter("account_store_href", expectedDirectory.href)
         servletRequest.setParameter("redirect_uri", "http://badone.com")
         servletRequest.setMethod("GET")
-        replay(externalAuthorizationEndpointResolver)
+        replay(providerAuthorizationEndpointResolver)
 
         controllerUT.handleRequest(servletRequest, servletResponse)
     }
@@ -174,9 +174,9 @@ class AuthorizeControllerTest {
         servletRequest.setRequestURI("http://blah.com/authorize")
         servletRequest.setParameter("account_store_href", expectedDirectory.href)
         servletRequest.setMethod("GET")
-        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
+        expect(providerAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
                 .andStubReturn("https://got-there.com")
-        replay(externalAuthorizationEndpointResolver)
+        replay(providerAuthorizationEndpointResolver)
 
         controllerUT.handleRequest(servletRequest, servletResponse)
     }
@@ -188,9 +188,9 @@ class AuthorizeControllerTest {
         servletRequest.setParameter("account_store_href", expectedDirectory.href)
         servletRequest.removeParameter("response_type")
         servletRequest.setMethod("GET")
-        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
+        expect(providerAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
                 .andStubReturn("https://got-there.com")
-        replay(externalAuthorizationEndpointResolver)
+        replay(providerAuthorizationEndpointResolver)
 
         controllerUT.handleRequest(servletRequest, servletResponse)
     }
@@ -202,9 +202,9 @@ class AuthorizeControllerTest {
         servletRequest.setParameter("account_store_href", expectedDirectory.href)
         servletRequest.setParameter("response_type", "invalid")
         servletRequest.setMethod("GET")
-        expect(externalAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
+        expect(providerAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
                 .andStubReturn("https://got-there.com")
-        replay(externalAuthorizationEndpointResolver)
+        replay(providerAuthorizationEndpointResolver)
 
         controllerUT.handleRequest(servletRequest, servletResponse)
     }

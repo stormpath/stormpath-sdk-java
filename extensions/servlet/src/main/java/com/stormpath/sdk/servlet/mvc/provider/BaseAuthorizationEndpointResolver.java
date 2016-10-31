@@ -21,7 +21,8 @@ import java.util.Map;
  * @since 1.2.0
  */
 public abstract class BaseAuthorizationEndpointResolver implements ProviderAuthorizationEndpointResolver {
-    private static final String[] RESERVED_PARAMETERS = {"client_id", "response_type", "scope", "redirect_uri", "state"};
+    private static final String[] RESERVED_PARAMETERS = {"client_id", "response_type", "scope", "redirect_uri",
+            "state", "organization_name_key", "organization_href"};
     protected String nextUri;
     protected String callback;
 
@@ -92,12 +93,25 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
         JwtBuilder jwtBuilder = Jwts.builder()
                 .claim("redirect_uri", applicationCallbackUri)
                 .claim("provider", provider.getProviderId());
-        String stateParameter = request.getParameter("state");
-        if (stateParameter != null) {
-            jwtBuilder.claim("state", stateParameter);
-        }
+        addOptionalClaim(jwtBuilder, "state", request);
+        String orgHref = request.getParameter("organization_href");
+        String orgNameKey = request.getParameter("organization_name_key");
+        Assert.isTrue(orgHref == null || orgNameKey == null,
+                "Cannot specify both organization_href and organization_name_key");
+        addOptionalClaim(jwtBuilder, "organization_href", orgHref);
+        addOptionalClaim(jwtBuilder, "organization_name_key", orgNameKey);
         return jwtBuilder
                 .signWith(SignatureAlgorithm.HS256, signingKey).compact();
+    }
+
+    private void addOptionalClaim(JwtBuilder jwtBuilder, String claimKey, HttpServletRequest request) {
+        addOptionalClaim(jwtBuilder, claimKey, request.getParameter(claimKey));
+    }
+
+    private void addOptionalClaim(JwtBuilder jwtBuilder, String claimKey, String claim) {
+        if (claim != null) {
+            jwtBuilder.claim(claimKey, claim);
+        }
     }
 
     private String getScopeString(HttpServletRequest request, OAuthProvider linkedInProvider) {

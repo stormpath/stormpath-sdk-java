@@ -140,6 +140,7 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
         Map<String, String> body = getState(params)
         assertThat(body, hasEntry("redirect_uri", "https://foo.com/something/else"))
     }
+
     @Test
     void testGetEndpointOverrideScope() {
         request.setParameter("scope", "foo bar baz")
@@ -160,6 +161,33 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
     }
 
     @Test
+    void testGetEndpointWithOrganizationHref() {
+        request.setParameter("organization_href", "http://org.href.org")
+        def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
+        Map<String, String> params = extractParams(actual)
+        assertThat(params, hasEntry(equalTo("state"), not(equalTo("http://org.href.org"))))
+        Map<String, String> body = getState(params)
+        assertThat(body, hasEntry("organization_href", "http://org.href.org"))
+    }
+
+    @Test
+    void testGetEndpointWithOrganizationNameKey() {
+        request.setParameter("organization_name_key", "org-name")
+        def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
+        Map<String, String> params = extractParams(actual)
+        assertThat(params, hasEntry(equalTo("state"), not(equalTo("http://org.href.org"))))
+        Map<String, String> body = getState(params)
+        assertThat(body, hasEntry("organization_name_key", "org-name"))
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testGetEndpointWithBothOrganizationHrefAndNameKey() {
+        request.setParameter("organization_href", "http://org.href.org")
+        request.setParameter("organization_name_key", "org-name")
+        resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
+    }
+
+    @Test
     void testGetEndpointWithExtraParameters() {
         request.setParameter("foo", "bar")
         request.setParameter("baz", "qux")
@@ -174,10 +202,12 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
         request.setParameter("foo", "bar")
         request.setParameter("response_type", "baz")
         request.setParameter("client_id", "qux")
+        request.setParameter("organization_name_key", "org-name")
         def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
         Map<String, String> params = extractParams(actual)
         assertThat(params, hasEntry("foo", "bar"))
         assertThat(params, hasEntry("client_id", CLIENT_ID))
         assertThat(params, hasEntry("response_type", "code"))
+        assertThat(params, not(hasKey("organization_name_key")))
     }
 }

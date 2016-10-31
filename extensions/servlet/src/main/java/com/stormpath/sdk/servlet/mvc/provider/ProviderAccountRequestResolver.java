@@ -7,4 +7,5 @@ import com.stormpath.sdk.provider.ProviderAccountRequest;
  */
 public interface ProviderAccountRequestResolver {
     ProviderAccountRequest getProviderAccountRequest(String providerId, String code, String redirectUri);
+    ProviderAccountRequest getProviderAccountRequestWithOrganizationHref(String providerId, String code, String organizationHref, String redirectUri);
 }
