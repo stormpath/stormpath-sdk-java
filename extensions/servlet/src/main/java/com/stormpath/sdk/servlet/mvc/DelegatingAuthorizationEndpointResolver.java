@@ -36,4 +36,5 @@ public class DelegatingAuthorizationEndpointResolver implements ProviderAuthoriz
         Assert.notNull(resolver, "No ProviderAuthroizationEndpointResolver was found for " + provider.getProviderId());
         return resolver.getEndpoint(request, applicationCallbackUri, provider);
     }
+
 }

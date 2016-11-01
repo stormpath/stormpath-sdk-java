@@ -15,7 +15,6 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -395,6 +394,18 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "stormpathAuthorizeController")
+    public Controller stormpathAuthorizeController() {
+        return super.stormpathAuthorizeController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathAuthorizeCallbackController")
+    public Controller stormpathAuthorizeCallbackController() {
+        return super.stormpathAuthorizeCallbackController();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "stormpathLoginController")
     public Controller stormpathLoginController() {
         return super.stormpathLoginController();
@@ -589,7 +600,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         if (Collections.isEmpty(names)) {
             return java.util.Collections.emptySet();
         }
-        Set<DispatcherType> types = new LinkedHashSet<DispatcherType>(names.size());
+        Set<DispatcherType> types = new LinkedHashSet<>(names.size());
         for (String name : names) {
             types.add(DispatcherType.valueOf(name));
         }

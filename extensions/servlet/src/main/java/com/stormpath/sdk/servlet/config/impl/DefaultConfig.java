@@ -597,16 +597,12 @@ public class DefaultConfig implements Config {
     public ProviderAuthorizationEndpointResolver getProviderAuthorizationEndpointResolver() {
         FacebookAuthorizationEndpointResolver facebookAuthorizationEndpointResolver = new FacebookAuthorizationEndpointResolver();
         facebookAuthorizationEndpointResolver.setCallback("/authorize/callback");
-        facebookAuthorizationEndpointResolver.setNextUri(getLoginConfig().getUri());
         GoogleAuthorizationEndpointResolver googleAuthorizationEndpointResolver = new GoogleAuthorizationEndpointResolver();
         googleAuthorizationEndpointResolver.setCallback("/authorize/callback");
-        googleAuthorizationEndpointResolver.setNextUri(getLoginConfig().getUri());
         GithubAuthorizationEndpointResolver githubAuthorizationEndpointResolver = new GithubAuthorizationEndpointResolver();
         githubAuthorizationEndpointResolver.setCallback("/authorize/callback");
-        githubAuthorizationEndpointResolver.setNextUri(getLoginConfig().getUri());
         LinkedInAuthorizationEndpointResolver linkedInAuthorizationEndpointResolver = new LinkedInAuthorizationEndpointResolver();
         linkedInAuthorizationEndpointResolver.setCallback("/authorize/callback");
-        linkedInAuthorizationEndpointResolver.setNextUri(getLoginConfig().getUri());
         return new DelegatingAuthorizationEndpointResolver(facebookAuthorizationEndpointResolver,
                 githubAuthorizationEndpointResolver, googleAuthorizationEndpointResolver,
                 linkedInAuthorizationEndpointResolver);

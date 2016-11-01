@@ -101,20 +101,75 @@ import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
-import com.stormpath.sdk.servlet.mvc.*;
+import com.stormpath.sdk.servlet.mvc.AbstractController;
+import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
+import com.stormpath.sdk.servlet.mvc.AccessTokenController;
+import com.stormpath.sdk.servlet.mvc.AuthorizeCallbackController;
+import com.stormpath.sdk.servlet.mvc.AuthorizeController;
+import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
+import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
+import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.DefaultExpandsResolver;
+import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
+import com.stormpath.sdk.servlet.mvc.DelegatingAuthorizationEndpointResolver;
+import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
+import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
+import com.stormpath.sdk.servlet.mvc.FormController;
+import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
+import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
+import com.stormpath.sdk.servlet.mvc.JacksonView;
+import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.LogoutController;
+import com.stormpath.sdk.servlet.mvc.MeController;
+import com.stormpath.sdk.servlet.mvc.RegisterController;
+import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
+import com.stormpath.sdk.servlet.mvc.SamlController;
+import com.stormpath.sdk.servlet.mvc.SamlResultController;
+import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.View;
+import com.stormpath.sdk.servlet.mvc.ViewModel;
+import com.stormpath.sdk.servlet.mvc.ViewResolver;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderAccountRequestResolver;
 import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.FacebookAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.GithubAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.GoogleAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.mvc.provider.GoogleCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.LinkedInAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.mvc.provider.LinkedinCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
 import com.stormpath.sdk.servlet.saml.SamlOrganizationContext;
-import com.stormpath.sdk.servlet.util.*;
-import com.stormpath.spring.mvc.*;
+import com.stormpath.sdk.servlet.util.DefaultGrantTypeStatusValidator;
+import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
+import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
+import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
+import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
+import com.stormpath.sdk.servlet.util.SubdomainResolver;
+import com.stormpath.spring.mvc.AccessTokenControllerConfig;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
+import com.stormpath.spring.mvc.DisabledHandlerMapping;
+import com.stormpath.spring.mvc.ForgotPasswordControllerConfig;
+import com.stormpath.spring.mvc.LoginControllerConfig;
+import com.stormpath.spring.mvc.LogoutControllerConfig;
+import com.stormpath.spring.mvc.MessageContextRegistrar;
+import com.stormpath.spring.mvc.RegisterControllerConfig;
+import com.stormpath.spring.mvc.SingleNamedViewResolver;
+import com.stormpath.spring.mvc.SpringMessageSource;
+import com.stormpath.spring.mvc.SpringView;
+import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
+import com.stormpath.spring.mvc.VerifyControllerConfig;
 import com.stormpath.spring.util.SpringPatternMatcher;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
@@ -339,6 +394,15 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.social.github.uri'] ?: '/callbacks/github' }")
     protected String githubCallbackUri;
 
+    @Value("#{ @environment['stormpath.web.social.flow.enabled'] ?: true }")
+    protected boolean socialFlowEnabled;
+
+    @Value("#{ @environment['stormpath.web.social.flow.authorize.uri'] ?: '/authorize' }")
+    protected String socialFlowAuthorizeUri;
+
+    @Value("#{ @environment['stormpath.web.social.flow.authorize.callback.uri'] ?: '/authorize/callback' }")
+    protected String socialFlowAuthorizeCallbackUri;
+
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
 
@@ -459,6 +523,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             addFilter(mgr, stormpathGoogleCallbackController(), "google", googleCallbackUri);
             addFilter(mgr, stormpathLinkedinCallbackController(), "linkedin", linkedinCallbackUri);
         }
+        if (socialFlowEnabled) {
+            addFilter(mgr, stormpathAuthorizeController(), "authorize", socialFlowAuthorizeUri);
+            addFilter(mgr, stormpathAuthorizeCallbackController(), "authorizeCallback", socialFlowAuthorizeCallbackUri);
+        }
         if (stormpathLogoutConfig().isEnabled()) {
             addFilter(mgr, stormpathLogoutController(), stormpathLogoutConfig());
         }
@@ -538,6 +606,20 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         );
     }
 
+    public ProviderAuthorizationEndpointResolver stormpathProviderAuthorizationEndpointResolver() {
+        FacebookAuthorizationEndpointResolver facebookAuthorizationEndpointResolver = new FacebookAuthorizationEndpointResolver();
+        facebookAuthorizationEndpointResolver.setCallback(socialFlowAuthorizeCallbackUri);
+        GoogleAuthorizationEndpointResolver googleAuthorizationEndpointResolver = new GoogleAuthorizationEndpointResolver();
+        googleAuthorizationEndpointResolver.setCallback(socialFlowAuthorizeCallbackUri);
+        GithubAuthorizationEndpointResolver githubAuthorizationEndpointResolver = new GithubAuthorizationEndpointResolver();
+        githubAuthorizationEndpointResolver.setCallback(socialFlowAuthorizeCallbackUri);
+        LinkedInAuthorizationEndpointResolver linkedInAuthorizationEndpointResolver = new LinkedInAuthorizationEndpointResolver();
+        linkedInAuthorizationEndpointResolver.setCallback(socialFlowAuthorizeCallbackUri);
+        return new DelegatingAuthorizationEndpointResolver(facebookAuthorizationEndpointResolver,
+                githubAuthorizationEndpointResolver, googleAuthorizationEndpointResolver,
+                linkedInAuthorizationEndpointResolver);
+    }
+
     public BiPredicate<Boolean, Application> stormpathRegisterEnabledPredicate() {
         return new RegisterEnabledPredicate();
     }
@@ -556,6 +638,23 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathLinkedinCallbackController() {
         return configure(new LinkedinCallbackController());
+    }
+
+    public Controller stormpathAuthorizeController() {
+        AuthorizeController c = new AuthorizeController();
+        configure(c);
+        c.setProviderAuthorizationEndpointResolver(stormpathProviderAuthorizationEndpointResolver());
+        c.setApplicationResolver(stormpathApplicationResolver());
+        return c;
+    }
+
+    public Controller stormpathAuthorizeCallbackController() {
+        AuthorizeCallbackController c = new AuthorizeCallbackController();
+        configure(c);
+        c.setApplicationResolver(stormpathApplicationResolver());
+        c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        c.setProviderAccountRequestResolver(new DefaultProviderAccountRequestResolver());
+        return c;
     }
 
     public HandlerInterceptor stormpathLayoutInterceptor() {

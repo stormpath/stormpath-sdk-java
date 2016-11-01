@@ -39,7 +39,6 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
@@ -330,6 +329,16 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Controller stormpathLinkedinCallbackController() {
         return super.stormpathLinkedinCallbackController();
+    }
+
+    @Bean
+    public Controller stormpathAuthorizeController() {
+        return super.stormpathAuthorizeController();
+    }
+
+    @Bean
+    public Controller stormpathAuthorizeCallbackController() {
+        return super.stormpathAuthorizeCallbackController();
     }
 
     @Bean

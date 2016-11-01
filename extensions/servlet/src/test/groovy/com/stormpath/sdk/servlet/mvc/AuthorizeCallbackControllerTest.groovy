@@ -180,7 +180,7 @@ class AuthorizeCallbackControllerTest {
         assertThat("view name query string", queryStringMap, hasKey("state"))
         assertThat("view name query staring", queryStringMap, hasKey("jwtResponse"))
         String jwtResponse = queryStringMap['jwtResponse']
-        Jwt<Header, Claims> jwt = Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(jwtResponse)
+        Jwt<Header, Claims> jwt = Jwts.parser().setSigningKey(SIGNING_KEY.bytes).parseClaimsJws(jwtResponse)
         assertThat("jwtResponse", jwt, hasHeader("kid", KEY_ID))
         assertThat("jwtResponse", jwt, hasHeader("stt", "assertion"))
         assertThat("jwtResponse", jwt, hasClaim("sub", ACCOUNT_HREF))
@@ -193,7 +193,7 @@ class AuthorizeCallbackControllerTest {
                 both(greaterThanOrEqualTo(toNumericDate(expectedMinExp))) &
                         lessThanOrEqualTo(toNumericDate(expectedMaxExp))))
         assertThat("jwtResponse", jwt, hasClaim("iss", application.href))
-        assertThat("jwtResponse", jwt, hasClaim("status", "authenticated"))
+        assertThat("jwtResponse", jwt, hasClaim("status", "AUTHENTICATED"))
         assertThat("jwtResponse", jwt, hasClaim("aud", KEY_ID))
         assertThat("jwtResponse", jwt, hasClaim("isNewSub", false))
         assertThat("jwtResponse", jwt, hasClaim("state", APP_STATE))

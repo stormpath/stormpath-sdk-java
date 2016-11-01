@@ -25,11 +25,10 @@ import static org.hamcrest.Matchers.startsWith
 abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthProvider> {
 
     static final String CLIENT_ID = "12345678"
-    static final String NEXT_URI = "/next"
     static final String CALLBACK = "/authorize/callback"
     static final String SIGNING_KEY = "not-a-very-secret-key"
     static final String REQUEST_BASE_URI = "https://my-app.com"
-    static final String DEFAULT_APP_CALLBACK_URI = REQUEST_BASE_URI + NEXT_URI
+    static final String DEFAULT_APP_CALLBACK_URI = REQUEST_BASE_URI + "/next"
 
     List<String> scopes
     T provider
@@ -95,7 +94,6 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
         request.setServerPort(443)
 
         resolverUT = newResolverUT()
-        resolverUT.nextUri = NEXT_URI
         resolverUT.callback = CALLBACK
     }
 
@@ -108,7 +106,7 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
 
     @Test
     void testGetEndpointDefault() {
-        def actual = resolverUT.getEndpoint(request, REQUEST_BASE_URI + NEXT_URI, provider)
+        def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
 
         assertThat(actual, startsWith(getBaseUri()))
         Map<String, String> params = extractParams(actual)
@@ -117,14 +115,15 @@ abstract class CommonProviderAuthorizationEndpointResolverTest<T extends OAuthPr
         assertThat(params, hasEntry("scope", URLEncoder.encode("scope1 scope2", 'UTF-8')))
         assertThat(params, hasEntry("redirect_uri", URLEncoder.encode("${REQUEST_BASE_URI}${CALLBACK}", 'UTF-8')))
         Map<String, String> body = getState(params)
-        assertThat(body, hasEntry("redirect_uri", REQUEST_BASE_URI + NEXT_URI))
+        assertThat(body, hasKey("jti"))
+        assertThat(body, hasEntry("redirect_uri", DEFAULT_APP_CALLBACK_URI))
         assertThat(body, hasEntry("provider", provider.providerId))
     }
 
     @Test
     void testGetEndpointOverrideRedirectUri() {
         request.setParameter("redirect_uri", "/something/else")
-        def actual = resolverUT.getEndpoint(request, REQUEST_BASE_URI + "/something/else", provider)
+        def actual = resolverUT.getEndpoint(request, DEFAULT_APP_CALLBACK_URI, provider)
         Map<String, String> params = extractParams(actual)
         assertThat(params, hasEntry("redirect_uri", URLEncoder.encode("${REQUEST_BASE_URI}${CALLBACK}", 'UTF-8')))
         Map<String, String> body = getState(params)

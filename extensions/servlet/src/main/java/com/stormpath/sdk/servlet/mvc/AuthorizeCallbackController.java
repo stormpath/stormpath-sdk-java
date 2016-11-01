@@ -19,6 +19,7 @@ import org.apache.http.client.utils.URIBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.UUID;
@@ -70,7 +71,8 @@ public class AuthorizeCallbackController extends AbstractController {
         return new DefaultViewModel(getApplicationCallbackUri(account, stateClaims, request)).setRedirect(true);
     }
 
-    private String getApplicationCallbackUri(Account account, Claims stateClaims, HttpServletRequest request) throws URISyntaxException {
+    private String getApplicationCallbackUri(Account account, Claims stateClaims, HttpServletRequest request)
+            throws URISyntaxException, UnsupportedEncodingException {
         URIBuilder uriBuilder = new URIBuilder((String) stateClaims.get("redirect_uri"));
         uriBuilder.addParameter("jwtResponse", getJwtResponse(account, stateClaims, request));
         if (stateClaims.containsKey("state")) {
@@ -79,7 +81,7 @@ public class AuthorizeCallbackController extends AbstractController {
         return uriBuilder.build().toString();
     }
 
-    private String getJwtResponse(Account account, Claims stateClaims, HttpServletRequest request) {
+    private String getJwtResponse(Account account, Claims stateClaims, HttpServletRequest request) throws UnsupportedEncodingException {
         ApiKey apiKey = getApiKey(request);
         Date issuedAt = new Date();
         Date expiration = new Date(issuedAt.getTime() + 60000);
@@ -89,7 +91,7 @@ public class AuthorizeCallbackController extends AbstractController {
                 .setAudience(apiKey.getId())
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiration);
-        claims.put("status", "authenticated");
+        claims.put("status", "AUTHENTICATED");
         claims.put("isNewSub", false);
         if (stateClaims.getId() != null) {
             claims.put("irt", stateClaims.getId());
@@ -97,7 +99,7 @@ public class AuthorizeCallbackController extends AbstractController {
         if (stateClaims.containsKey("state")) {
             claims.put("state", stateClaims.get("state"));
         }
-        return Jwts.builder().signWith(SignatureAlgorithm.HS256, apiKey.getSecret())
+        return Jwts.builder().signWith(SignatureAlgorithm.HS256, apiKey.getSecret().getBytes("UTF-8"))
                 .setHeaderParam("kid", apiKey.getId())
                 .setHeaderParam("stt", "assertion")
                 .setClaims(claims)

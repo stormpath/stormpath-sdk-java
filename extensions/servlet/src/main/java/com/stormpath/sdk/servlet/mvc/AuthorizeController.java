@@ -27,7 +27,6 @@ public class AuthorizeController extends AbstractController {
 
     @Override
     public void init() throws Exception {
-        Assert.hasText(nextUri, "nextUri cannot be null or empty.");
         Assert.notNull(applicationResolver, "applicationResolver cannot be null.");
         Assert.notNull(providerAuthorizationEndpointResolver, "providerAuthorizationEndpointResolver cannot be null.");
     }
@@ -51,9 +50,7 @@ public class AuthorizeController extends AbstractController {
     }
 
     private String getApplicationCallbackUri(Application application, HttpServletRequest request) {
-        List<String> authorizedCallbacks = application.getAuthorizedCallbackUris();
-        Assert.isTrue(!authorizedCallbacks.isEmpty(),
-                "Application must be configured with at least one authorized callback uri");
+        List<String> authorizedCallbacks = getAuthorizedCallbacks(application);
         String redirectUri = request.getParameter("redirect_uri");
         if (redirectUri != null) {
             Assert.isTrue(authorizedCallbacks.contains(redirectUri),
@@ -62,6 +59,19 @@ public class AuthorizeController extends AbstractController {
             redirectUri = authorizedCallbacks.get(0);
         }
         return redirectUri;
+    }
+
+    private List<String> getAuthorizedCallbacks(Application application) {
+        String noAuthorizedCallbacksMessage =
+                "Application must be configured with at least one authorized callback uri";
+        try {
+            List<String> authorizedCallbacks = application.getAuthorizedCallbackUris();
+            Assert.isTrue(authorizedCallbacks != null && !authorizedCallbacks.isEmpty(),
+                    noAuthorizedCallbacksMessage);
+            return authorizedCallbacks;
+        } catch (NullPointerException npe) {
+            throw new IllegalArgumentException(noAuthorizedCallbacksMessage, npe);
+        }
     }
 
     private void assertResponseType(HttpServletRequest request) {

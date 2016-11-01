@@ -46,7 +46,12 @@ class AuthorizeControllerTest {
 
         applicationAccountStoreMappingList = initAccountStoreMappingList()
 
-        expect(applicationResolver.getApplication(servletRequest)).andStubReturn(application)
+        expect(applicationResolver.getApplication(servletRequest)).andStubAnswer(new IAnswer<Application>() {
+            @Override
+            Application answer() throws Throwable {
+                return application
+            }
+        })
         expect(application.getAccountStoreMappings()).andStubReturn(applicationAccountStoreMappingList)
 
         authorizedCallbacks = [AUTHORIZED_CALLBACK1, AUTHORIZED_CALLBACK2]
@@ -58,7 +63,6 @@ class AuthorizeControllerTest {
 
         controllerUT.applicationResolver = applicationResolver
         controllerUT.providerAuthorizationEndpointResolver = providerAuthorizationEndpointResolver
-        controllerUT.nextUri = "test"
 
     }
 
@@ -179,6 +183,24 @@ class AuthorizeControllerTest {
         replay(providerAuthorizationEndpointResolver)
 
         controllerUT.handleRequest(servletRequest, servletResponse)
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException)
+    void testGetResponseWithNullApplicationCallbacks() {
+        application = createNiceMock(Application)
+        expect(application.getAuthorizedCallbackUris())
+                .andStubThrow(new NullPointerException("What happens when no authorizedCallbackUri's are configured"))
+        replay(application)
+        Directory expectedDirectory = accountStoreMappings[2].accountStore as Directory
+        servletRequest.setRequestURI("http://blah.com/authorize")
+        servletRequest.setParameter("account_store_href", expectedDirectory.href)
+        servletRequest.setMethod("GET")
+        expect(providerAuthorizationEndpointResolver.getEndpoint(servletRequest, AUTHORIZED_CALLBACK1, expectedDirectory.getProvider()))
+                .andStubReturn("https://got-there.com")
+        replay(providerAuthorizationEndpointResolver)
+
+        controllerUT.handleRequest(servletRequest, servletResponse)
+
     }
 
     @Test(expectedExceptions = IllegalArgumentException)

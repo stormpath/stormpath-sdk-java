@@ -16,6 +16,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @since 1.2.0
@@ -23,7 +24,6 @@ import java.util.Map;
 public abstract class BaseAuthorizationEndpointResolver implements ProviderAuthorizationEndpointResolver {
     private static final String[] RESERVED_PARAMETERS = {"client_id", "response_type", "scope", "redirect_uri",
             "state", "organization_name_key", "organization_href"};
-    protected String nextUri;
     protected String callback;
 
     static String encode(String unencoded) {
@@ -32,10 +32,6 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    public void setNextUri(String nextUri) {
-        this.nextUri = nextUri;
     }
 
     public void setCallback(String callback) {
@@ -87,11 +83,16 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
     }
 
     private String getState(HttpServletRequest request, String applicationCallbackUri, Provider provider) {
+        String redirectUriQueryParam = request.getParameter("redirect_uri");
+        String redirectUri = redirectUriQueryParam == null ? applicationCallbackUri :
+                getFullyQualifiedUri(request, redirectUriQueryParam);
+
         Client client = (Client) request.getAttribute(Client.class.getName());
         Assert.notNull(client, "client must be available in request attributes");
         String signingKey = client.getApiKey().getSecret();
         JwtBuilder jwtBuilder = Jwts.builder()
-                .claim("redirect_uri", applicationCallbackUri)
+                .claim("jti", UUID.randomUUID().toString())
+                .claim("redirect_uri", redirectUri)
                 .claim("provider", provider.getProviderId());
         addOptionalClaim(jwtBuilder, "state", request);
         String orgHref = request.getParameter("organization_href");
