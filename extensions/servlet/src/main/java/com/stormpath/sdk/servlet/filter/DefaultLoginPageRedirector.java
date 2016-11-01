@@ -59,7 +59,8 @@ public class DefaultLoginPageRedirector implements LoginPageRedirector {
 
         if (method.equalsIgnoreCase("GET")) {
 
-            String requestURI = request.getRequestURI() + (Strings.hasText(request.getQueryString()) ? "?" + request.getQueryString() : "");
+            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/1061
+            String requestURI = request.getServletPath() + (Strings.hasText(request.getQueryString()) ? "?" + request.getQueryString() : "");
 
             String encodedCurrentUrlString = URLEncoder.encode(requestURI, "UTF-8");
 

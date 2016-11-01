@@ -142,6 +142,17 @@ public class ImmutableAccount implements Account {
     }
 
     @Override
+    public EmailVerificationStatus getEmailVerificationStatus() {
+        return account.getEmailVerificationStatus();
+    }
+
+    @Override
+    public Account setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus) {
+        immutable();
+        return null;
+    }
+
+    @Override
     public GroupList getGroups() {
         return account.getGroups();
     }
