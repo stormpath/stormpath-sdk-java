@@ -15,6 +15,12 @@
  */
 package com.stormpath.spring.config
 
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.Applications
+import com.stormpath.sdk.client.Client
+import com.stormpath.sdk.lang.Strings
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
@@ -42,6 +48,12 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
     WebApplicationContext context;
 
     private MockMvc mvc;
+
+    @Autowired
+    Client client;
+
+    @Autowired
+    Application application;
 
     @BeforeMethod
     public void setup() {
@@ -113,6 +125,40 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
                 .header("Access-Control-Request-Method", "PUT") //this header will be just overlooked since CORS Filter will not care about this request because Origin header is not present
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpServletResponse.SC_OK)); //200
+    }
+
+    @Test
+    void testLoginWorksViaCORS() {
+
+        String email = "randomEmail" + UUID.randomUUID() + "@testmail.stormpath.com"
+        String password = "Changeme1!"
+        Account account;
+
+        try {
+            //Let's create an account so we can try to login with it
+            account = client.instantiate(Account)
+            account = account.setGivenName('John')
+                    .setSurname('DELETEME')
+                    .setEmail(email)
+                    .setPassword(password)
+            account = application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+
+            //Let's login now
+            mvc.perform(post(new URI("/login"))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .content("{ \"login\":\"" + email + "\", \"password\":\"" + password + "\" }")
+            )
+            .andExpect(status().is(HttpServletResponse.SC_OK)) //200
+            .andExpect(cookie().exists("access_token"))
+            .andExpect(cookie().exists("refresh_token"));
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (account != null && Strings.hasText(account.getHref())) {
+                account.delete();
+            }
+        }
+
     }
 
 }
