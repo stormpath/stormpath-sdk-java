@@ -15,8 +15,18 @@
  */
 package com.stormpath.sdk.application.webconfig;
 
+/**
+ * Exposes the configurable properties of the <code>/me</code> route.
+ *
+ * @since 1.2.0
+ */
 public interface MeConfig extends WebFeatureConfig {
 
+    /**
+     * Returns the {@link MeExpansionConfig meExpansionConfig} associated to this {@link MeConfig meConfig}.
+     *
+     * @return the {@link MeExpansionConfig meExpansionConfig} associated to this {@link MeConfig meConfig}.
+     */
     MeExpansionConfig getMeExpansionConfig();
 
 }
