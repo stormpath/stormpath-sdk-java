@@ -415,7 +415,7 @@ class DirectoryIT extends ClientIT {
         Account account01 = client.instantiate(Account)
         account01 = account01.setGivenName(uniquify('John01'))
                 .setSurname('DELETEME')
-                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+                .setEmail(uniquify("john01deleteme") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account01)
@@ -425,7 +425,7 @@ class DirectoryIT extends ClientIT {
         def account02 = client.instantiate(Account)
         account02 = account02.setGivenName(uniquify('John02'))
                 .setSurname('DELETEME')
-                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+                .setEmail(uniquify("john01deleteme") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account02)
@@ -791,7 +791,7 @@ class DirectoryIT extends ClientIT {
         Account account01 = client.instantiate(Account)
         account01 = account01.setGivenName(uniquify('John'))
                 .setSurname('Doe')
-                .setEmail(uniquify("johndoe") + "@stormpath.com")
+                .setEmail(uniquify("johndoe") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account01)
@@ -800,7 +800,7 @@ class DirectoryIT extends ClientIT {
         Account account02 = client.instantiate(Account)
         account02 = account02.setGivenName(uniquify('John'))
                 .setSurname('Doe 2')
-                .setEmail(uniquify("johndoe2") + "@stormpath.com")
+                .setEmail(uniquify("johndoe2") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account02)

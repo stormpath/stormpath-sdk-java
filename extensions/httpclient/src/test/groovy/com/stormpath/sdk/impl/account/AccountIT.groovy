@@ -858,7 +858,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@stormpath.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -949,7 +949,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@stormpath.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -983,7 +983,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@stormpath.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = directory.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 

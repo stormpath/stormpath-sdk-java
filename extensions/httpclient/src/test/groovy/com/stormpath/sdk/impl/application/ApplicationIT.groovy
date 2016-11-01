@@ -1014,7 +1014,7 @@ class ApplicationIT extends ClientIT {
 
     def Account createTestAccount(Client client, Application app) {
 
-        def email = uniquify('deleteme') + '@stormpath.com'
+        def email = uniquify('deleteme') + '@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
@@ -1570,7 +1570,7 @@ class ApplicationIT extends ClientIT {
         def acct = client.instantiate(Account)
         acct.username = username
         acct.password = password
-        acct.email = uniquify(username) + '@stormpath.com'
+        acct.email = uniquify(username) + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
@@ -1641,7 +1641,7 @@ class ApplicationIT extends ClientIT {
 
         def username = uniquify('lonestarr')
         def password = 'Changeme1!'
-        def email = username + '@stormpath.com'
+        def email = username + '@testmail.stormpath.com'
 
         def acct = client.instantiate(Account)
         acct.username = username
