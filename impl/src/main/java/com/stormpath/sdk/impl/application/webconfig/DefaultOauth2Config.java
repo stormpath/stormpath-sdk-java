@@ -29,13 +29,13 @@ import java.util.Map;
 
 public class DefaultOauth2Config extends ConfigurableProperty implements Oauth2Config {
 
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig, AbstractPropertyRetriever> PASSWORD;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.Password, AbstractPropertyRetriever> PASSWORD;
 
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig, AbstractPropertyRetriever> CLIENT_CREDENTIALS;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.ClientCredentials, AbstractPropertyRetriever> CLIENT_CREDENTIALS;
 
     static {
-        PASSWORD = new ParentAwareObjectProperty<>("password", DefaultWebFeatureConfig.class, AbstractPropertyRetriever.class);
-        CLIENT_CREDENTIALS = new ParentAwareObjectProperty<>("client_credentials", DefaultWebFeatureConfig.class, AbstractPropertyRetriever.class);
+        PASSWORD = new ParentAwareObjectProperty<>("password", DefaultWebFeatureConfig.Password.class, AbstractPropertyRetriever.class);
+        CLIENT_CREDENTIALS = new ParentAwareObjectProperty<>("client_credentials", DefaultWebFeatureConfig.ClientCredentials.class, AbstractPropertyRetriever.class);
     }
 
     private static final BooleanProperty ENABLED = new BooleanProperty("enabled");
@@ -46,7 +46,7 @@ public class DefaultOauth2Config extends ConfigurableProperty implements Oauth2C
 
     @Override
     @JsonProperty("client_credentials")
-    public ClientCredentialsConfig getClientCredentialsConfig() {
+    public ClientCredentialsConfig getClientCredentials() {
         return getParentAwareObjectProperty(CLIENT_CREDENTIALS);
     }
 
@@ -56,7 +56,7 @@ public class DefaultOauth2Config extends ConfigurableProperty implements Oauth2C
 
     @Override
     @JsonProperty("password")
-    public PasswordConfig getPasswordConfig() {
+    public PasswordConfig getPassword() {
         return getParentAwareObjectProperty(PASSWORD);
     }
 
@@ -65,11 +65,12 @@ public class DefaultOauth2Config extends ConfigurableProperty implements Oauth2C
     }
 
     @Override
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return getBoolean(ENABLED);
     }
 
-    public void setEnabled(boolean enabled) {
+    public Oauth2Config setEnabled(Boolean enabled) {
         setProperty(ENABLED, enabled);
+        return this;
     }
 }

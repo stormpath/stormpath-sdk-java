@@ -38,82 +38,90 @@ public class DefaultMeExpansionConfig extends ConfigurableProperty implements Me
     }
 
     @Override
-    public boolean getApiKeys() {
+    public boolean isApiKeys() {
         return getBoolean(API_KEYS);
     }
 
     @Override
-    public void setApiKeys(boolean apiKeys) {
+    public MeExpansionConfig setApiKeys(boolean apiKeys) {
         setProperty(API_KEYS, apiKeys);
+        return this;
     }
 
     @Override
-    public boolean getApplications() {
+    public boolean isApplications() {
         return getBoolean(APPLICATIONS);
     }
 
     @Override
-    public void setApplications(boolean applications) {
+    public MeExpansionConfig setApplications(boolean applications) {
         setProperty(APPLICATIONS, applications);
+        return this;
     }
 
     @Override
-    public boolean getCustomData() {
+    public boolean isCustomData() {
         return getBoolean(CUSTOM_DATA);
     }
 
     @Override
-    public void setCustomData(boolean customData) {
+    public MeExpansionConfig setCustomData(boolean customData) {
         setProperty(CUSTOM_DATA, customData);
+        return this;
     }
 
     @Override
-    public boolean getDirectory() {
+    public boolean isDirectory() {
         return getBoolean(DIRECTORY);
     }
 
     @Override
-    public void setDirectory(boolean directory) {
+    public MeExpansionConfig setDirectory(boolean directory) {
         setProperty(DIRECTORY, directory);
+        return this;
     }
 
     @Override
-    public boolean getGroupMemberships() {
+    public boolean isGroupMemberships() {
         return getBoolean(GROUP_MEMBERSHIPS);
     }
 
     @Override
-    public void setGroupMemberships(boolean groupMemberships) {
+    public MeExpansionConfig setGroupMemberships(boolean groupMemberships) {
         setProperty(GROUP_MEMBERSHIPS, groupMemberships);
+        return this;
     }
 
     @Override
-    public boolean getGroups() {
+    public boolean isGroups() {
         return getBoolean(GROUPS);
     }
 
     @Override
-    public void setGroups(boolean groups) {
+    public MeExpansionConfig setGroups(boolean groups) {
         setProperty(GROUPS, groups);
+        return this;
     }
 
     @Override
-    public boolean getProviderData() {
+    public boolean isProviderData() {
         return getBoolean(PROVIDER_DATA);
     }
 
     @Override
-    public void setProviderData(boolean providerData) {
+    public MeExpansionConfig setProviderData(boolean providerData) {
         setProperty(PROVIDER_DATA, providerData);
+        return this;
     }
 
     @Override
-    public boolean getTenant() {
+    public boolean isTenant() {
         return getBoolean(TENANT);
     }
 
     @Override
-    public void setTenant(boolean tenant) {
+    public MeExpansionConfig setTenant(boolean tenant) {
         setProperty(TENANT, tenant);
+        return this;
     }
 }

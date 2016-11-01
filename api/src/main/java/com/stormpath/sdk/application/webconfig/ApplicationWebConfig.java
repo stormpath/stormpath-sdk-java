@@ -31,7 +31,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * <p/>
  * <pre>
  * ApplicationWebConfig webConfig = application.getWebConfig();
- * webConfig.getRegisterConfig().setEnabled(false);
+ * webConfig.getRegister().setEnabled(false);
  * webConfig.save();
  * </pre>
  * <p/>
@@ -39,7 +39,7 @@ import com.stormpath.sdk.tenant.Tenant;
  * <p/>
  * <pre>
  * ApplicationWebConfig webConfig = application.getWebConfig();
- * webConfig.getMeConfig().getMeExpansionConfig().setGroups(true);
+ * webConfig.getMe().getExpansions().setGroups(true);
  * webConfig.save();
  * </pre>
  *
@@ -70,7 +70,7 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
      *
      * @param dnsLabel to
      */
-    void setDnsLabel(String dnsLabel);
+    ApplicationWebConfig setDnsLabel(String dnsLabel);
 
     /**
      * Returns the ApplicationWebConfigStatus's status. Users won't be able to use the Stormpath's Client Api if it's
@@ -85,7 +85,7 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
      *
      * @param status the webConfiguration's status.
      */
-    void setStatus(ApplicationWebConfigStatus status);
+    ApplicationWebConfig setStatus(ApplicationWebConfigStatus status);
 
     /**
      * Returns the {@link ApiKey signingApiKey} used to sign and/or validate requests and assertions issued by Stormpath's
@@ -103,91 +103,91 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
      * @param apiKey to be used by Stormpath's Client Api to sign request and assertions. If set to
      *               {@code null} the Stormpath Client Api won't be available for users.
      */
-    void setSigningApiKey(ApiKey apiKey);
+    ApplicationWebConfig setSigningApiKey(ApiKey apiKey);
 
     /**
      * Returns the {@link Oauth2Config oauth2Config} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link Oauth2Config oauth2Config} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    Oauth2Config getOAuth2Config();
+    Oauth2Config getOAuth2();
 
     /**
      * Returns the {@link CookieConfig accessTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link CookieConfig accessTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    CookieConfig getAccessTokenCookieConfig();
+    CookieConfig getAccessTokenCookie();
 
     /**
      * Returns the {@link CookieConfig refreshTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link CookieConfig refreshTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    CookieConfig getRefreshTokenCookieConfig();
+    CookieConfig getRefreshTokenCookie();
 
     /**
      * Returns the {@link RegisterConfig registerConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link RegisterConfig registerConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    RegisterConfig getRegisterConfig();
+    RegisterConfig getRegister();
 
     /**
      * Returns the {@link VerifyEmailConfig verifyEmailConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link VerifyEmailConfig verifyEmailConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    VerifyEmailConfig getVerifyEmailConfig();
+    VerifyEmailConfig getVerifyEmail();
 
     /**
      * Returns the {@link LoginConfig loginConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link LoginConfig loginConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    LoginConfig getLoginConfig();
+    LoginConfig getLogin();
 
     /**
      * Returns the {@link LogoutConfig logoutConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link LogoutConfig logoutConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    LogoutConfig getLogoutConfig();
+    LogoutConfig getLogout();
 
     /**
      * Returns the {@link ForgotPasswordConfig forgotPasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link ForgotPasswordConfig forgotPasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    ForgotPasswordConfig getForgotPasswordConfig();
+    ForgotPasswordConfig getForgotPassword();
 
     /**
      * Returns the {@link ChangePasswordConfig changePasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link ChangePasswordConfig changePasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    ChangePasswordConfig getChangePasswordConfig();
+    ChangePasswordConfig getChangePassword();
 
     /**
      * Returns the {@link IdSiteConfig idSiteConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link IdSiteConfig idSiteConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    IdSiteConfig getIdSiteConfig();
+    IdSiteConfig getIdSite();
 
     /**
      * Returns the {@link CallbackConfig callbackConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link CallbackConfig callbackConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    CallbackConfig getCallbackConfig();
+    CallbackConfig getCallback();
 
     /**
      * Returns the {@link MeConfig meConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link MeConfig meConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
-    MeConfig getMeConfig();
+    MeConfig getMe();
 
     /**
      * Returns the {@link Application Application} associated to this {@link ApplicationWebConfig applicationWebConfig}.

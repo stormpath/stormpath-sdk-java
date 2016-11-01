@@ -15,10 +15,18 @@
  */
 package com.stormpath.sdk.application.webconfig;
 
-public interface Oauth2Config extends WebFeatureConfig {
+import com.stormpath.sdk.resource.ResourceException;
 
-    ClientCredentialsConfig getClientCredentialsConfig();
+public interface Oauth2Config extends WebFeatureConfig<Oauth2Config> {
 
-    PasswordConfig getPasswordConfig();
+    ClientCredentialsConfig getClientCredentials();
 
+    PasswordConfig getPassword();
+
+    /**
+     * @param enabled {@code boolean} value to enable or disable a web features.
+     * @throws ResourceException when set to {@code null}.
+     */
+    @Override
+    Oauth2Config setEnabled(Boolean enabled);
 }

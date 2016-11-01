@@ -30,7 +30,7 @@ public interface MeExpansionConfig {
      * @return whether the account returned when accessing the <code>/me</code> route, should expand the apiKeys ({@code true})
      * or not ({@code false}).
      */
-    boolean getApiKeys();
+    boolean isApiKeys();
 
     /**
      * Sets the {@code boolean} value to enable {@code true} or disable {@code false} the expansion of the apiKeys of the
@@ -38,7 +38,7 @@ public interface MeExpansionConfig {
      *
      * @param apiKeys value to set whether to expand the account reference or not.
      */
-    void setApiKeys(boolean apiKeys);
+    MeExpansionConfig setApiKeys(boolean apiKeys);
 
     /**
      * Returns whether the account returned when accessing the <code>/me</code> route, should expand the application ({@code true})
@@ -47,7 +47,7 @@ public interface MeExpansionConfig {
      * @return whether the account returned when accessing the <code>/me</code> route, should expand the application ({@code true})
      * or not ({@code false}).
      */
-    boolean getApplications();
+    boolean isApplications();
 
     /**
      * Sets the {@code boolean} value to enable {@code true} or disable {@code false} the expansion of the applications of the
@@ -55,7 +55,7 @@ public interface MeExpansionConfig {
      *
      * @param applications value to set whether to expand the account reference or not.
      */
-    void setApplications(boolean applications);
+    MeExpansionConfig setApplications(boolean applications);
 
     /**
      * Returns whether the account returned when accessing the <code>/me</code> route, should expand the customData ({@code true})
@@ -64,7 +64,7 @@ public interface MeExpansionConfig {
      * @return whether the account returned when accessing the <code>/me</code> route, should expand the customData ({@code true})
      * or not ({@code false}).
      */
-    boolean getCustomData();
+    boolean isCustomData();
 
     /**
      * Sets the {@code boolean} value to enable {@code true} or disable {@code false} the expansion of the customData of the
@@ -72,7 +72,7 @@ public interface MeExpansionConfig {
      *
      * @param customData value to set whether to expand the account reference or not.
      */
-    void setCustomData(boolean customData);
+    MeExpansionConfig setCustomData(boolean customData);
 
     /**
      * Returns whether the account returned when accessing the <code>/me</code> route, should expand the directory ({@code true})
@@ -81,7 +81,7 @@ public interface MeExpansionConfig {
      * @return whether the account returned when accessing the <code>/me</code> route, should expand the directory ({@code true})
      * or not ({@code false}).
      */
-    boolean getDirectory();
+    boolean isDirectory();
 
     /**
      * Sets the {@code boolean} value to enable {@code true} or disable {@code false} the expansion of the directory in an
@@ -89,7 +89,7 @@ public interface MeExpansionConfig {
      *
      * @param directory value to set whether to expand the account reference or not.
      */
-    void setDirectory(boolean directory);
+    MeExpansionConfig setDirectory(boolean directory);
 
     /**
      * Returns whether the account returned when accessing the <code>/me</code> route, should expand the groupMemberships ({@code true})
@@ -98,7 +98,7 @@ public interface MeExpansionConfig {
      * @return whether the account returned when accessing the <code>/me</code> route, should expand the groupMemberships ({@code true})
      * or not ({@code false}).
      */
-    boolean getGroupMemberships();
+    boolean isGroupMemberships();
 
     /**
      * Sets the {@code boolean} value to enable {@code true} or disable {@code false} the expansion of the groupMemberships in an
@@ -106,7 +106,7 @@ public interface MeExpansionConfig {
      *
      * @param groupMemberships value to set whether to expand the account reference or not.
      */
-    void setGroupMemberships(boolean groupMemberships);
+    MeExpansionConfig setGroupMemberships(boolean groupMemberships);
 
     /**
      * Returns whether the account returned when accessing the <code>/me</code> route, should expand the groups ({@code true})
@@ -115,7 +115,7 @@ public interface MeExpansionConfig {
      * @return whether the account returned when accessing the <code>/me</code> route, should expand the groups ({@code true})
      * or not ({@code false}).
      */
-    boolean getGroups();
+    boolean isGroups();
 
     /**
      * Sets the {@code boolean} value to enable {@code true} or disable {@code false} the expansion of the groups in an
@@ -123,7 +123,7 @@ public interface MeExpansionConfig {
      *
      * @param groups value to set whether to expand the account reference or not.
      */
-    void setGroups(boolean groups);
+    MeExpansionConfig setGroups(boolean groups);
 
     /**
      * Returns whether the account returned when accessing the <code>/me</code> route, should expand the providerData ({@code true})
@@ -132,7 +132,7 @@ public interface MeExpansionConfig {
      * @return whether the account returned when accessing the <code>/me</code> route, should expand the providerData ({@code true})
      * or not ({@code false}).
      */
-    boolean getProviderData();
+    boolean isProviderData();
 
     /**
      * Sets the {@code boolean} value to enable {@code true} or disable {@code false} the expansion of the providerData in an
@@ -140,7 +140,7 @@ public interface MeExpansionConfig {
      *
      * @param providerData value to set whether to expand the account reference or not.
      */
-    void setProviderData(boolean providerData);
+    MeExpansionConfig setProviderData(boolean providerData);
 
     /**
      * Returns whether the account returned when accessing the <code>/me</code> route, should expand the tenant ({@code true})
@@ -149,7 +149,7 @@ public interface MeExpansionConfig {
      * @return whether the account returned when accessing the <code>/me</code> route, should expand the tenant ({@code true})
      * or not ({@code false}).
      */
-    boolean getTenant();
+    boolean isTenant();
 
     /**
      * Sets the {@code boolean} value to enable {@code true} or disable {@code false} the expansion of the tenant in an
@@ -157,6 +157,6 @@ public interface MeExpansionConfig {
      *
      * @param tenant value to set whether to expand the account reference or not.
      */
-    void setTenant(boolean tenant);
+    MeExpansionConfig setTenant(boolean tenant);
 
 }

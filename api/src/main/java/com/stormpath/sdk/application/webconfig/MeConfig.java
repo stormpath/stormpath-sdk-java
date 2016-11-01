@@ -15,18 +15,37 @@
  */
 package com.stormpath.sdk.application.webconfig;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.resource.ResourceException;
+
 /**
  * Exposes the configurable properties of the <code>/me</code> route.
+ * <p/>
+ * For example, to expand the {@link Account#getCustomData() customData} and the {@link Account#getGroups() groups} of an
+ * {@link Account accounts} retrieved via the <code>/me</code> route, both expand properties need to be enabled.
+ * <pre>
+ *    ...
+ *    ApplicationWebConfig webConfig = application.getWebConfig();
+ *    webConfig.getMe().getExpansions().setCustomData(true).setApiKeys(true);
+ *    webConfig.save();
+ *    ..
+ * </pre>
  *
  * @since 1.2.0
  */
-public interface MeConfig extends WebFeatureConfig {
+public interface MeConfig extends WebFeatureConfig<MeConfig> {
 
     /**
-     * Returns the {@link MeExpansionConfig meExpansionConfig} associated to this {@link MeConfig meConfig}.
+     * Returns the {@link MeExpansionConfig expand} configurable properties associated to this {@link MeConfig meConfig}.
      *
-     * @return the {@link MeExpansionConfig meExpansionConfig} associated to this {@link MeConfig meConfig}.
+     * @return the {@link MeExpansionConfig expand} configurable properties associated to this {@link MeConfig meConfig}.
      */
-    MeExpansionConfig getMeExpansionConfig();
+    MeExpansionConfig getExpansions();
 
+    /**
+     * @param enabled {@code boolean} value to enable or disable a web features.
+     * @throws ResourceException when set to {@code null}.
+     */
+    @Override
+    MeConfig setEnabled(Boolean enabled);
 }

@@ -20,19 +20,20 @@ package com.stormpath.sdk.application.webconfig;
  *
  * @since 1.2.0
  */
-public interface WebFeatureConfig {
+public interface WebFeatureConfig<T extends WebFeatureConfig<T>> {
 
     /**
-     * Returns whether a web feature is enabled ({@code true}) or disabled ({@code false}).
+     * Returns whether a web feature is enabled ({@link Boolean#TRUE true}), disabled ({@link Boolean#FALSE false}) or
+     * to do the default application behavior ({@code null}).
      *
      * @return {@code boolean} value that indicates if a WebFeature is enabled or disabled.
      */
-    boolean isEnabled();
+    Boolean isEnabled();
 
     /**
      * Sets the boolean value to enable or disable a web feature.
      *
      * @param enabled {@code boolean} value to enable or disable a web features.
      */
-    void setEnabled(boolean enabled);
+    T setEnabled(Boolean enabled);
 }

@@ -59,14 +59,14 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     private static final ParentAwareObjectProperty<DefaultOauth2Config, AbstractPropertyRetriever> OAUTH2;
     private static final ParentAwareObjectProperty<DefaultCookieConfig, AbstractPropertyRetriever> ACCESS_TOKEN_COOKIE;
     private static final ParentAwareObjectProperty<DefaultCookieConfig, AbstractPropertyRetriever> REFRESH_TOKEN_COOKIE;
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig, AbstractPropertyRetriever> REGISTER;
-    private static final ParentAwareObjectProperty<DefaultNullableWebFeatureConfig, AbstractPropertyRetriever> VERIFY_EMAIL;
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig, AbstractPropertyRetriever> LOGIN;
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig, AbstractPropertyRetriever> LOGOUT;
-    private static final ParentAwareObjectProperty<DefaultNullableWebFeatureConfig, AbstractPropertyRetriever> FORGOT_PASSWORD;
-    private static final ParentAwareObjectProperty<DefaultNullableWebFeatureConfig, AbstractPropertyRetriever> CHANGE_PASSWORD;
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig, AbstractPropertyRetriever> CALLBACK;
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig, AbstractPropertyRetriever> ID_SITE;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.Register, AbstractPropertyRetriever> REGISTER;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.VerifyEmail, AbstractPropertyRetriever> VERIFY_EMAIL;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.Login, AbstractPropertyRetriever> LOGIN;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.Logout, AbstractPropertyRetriever> LOGOUT;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.ForgotPassword, AbstractPropertyRetriever> FORGOT_PASSWORD;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.ChangePassword, AbstractPropertyRetriever> CHANGE_PASSWORD;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.Callback, AbstractPropertyRetriever> CALLBACK;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.IdSite, AbstractPropertyRetriever> ID_SITE;
     private static final ParentAwareObjectProperty<DefaultMeConfig, AbstractPropertyRetriever> ME;
     // INSTANCE RESOURCE REFERENCES:
     private static final ResourceReference<ApiKey> SIGNING_API_KEY = new ResourceReference<>("signingApiKey", ApiKey.class);
@@ -77,14 +77,14 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
         OAUTH2 = new ParentAwareObjectProperty<>("oauth2", DefaultOauth2Config.class, AbstractPropertyRetriever.class);
         ACCESS_TOKEN_COOKIE = new ParentAwareObjectProperty<>("accessTokenCookie", DefaultCookieConfig.class, AbstractPropertyRetriever.class);
         REFRESH_TOKEN_COOKIE = new ParentAwareObjectProperty<>("refreshTokenCookie", DefaultCookieConfig.class, AbstractPropertyRetriever.class);
-        REGISTER = new ParentAwareObjectProperty<>("register", DefaultWebFeatureConfig.class, AbstractPropertyRetriever.class);
-        VERIFY_EMAIL = new ParentAwareObjectProperty<>("verifyEmail", DefaultNullableWebFeatureConfig.class, AbstractPropertyRetriever.class);
-        LOGIN = new ParentAwareObjectProperty<>("login", DefaultWebFeatureConfig.class, AbstractPropertyRetriever.class);
-        LOGOUT = new ParentAwareObjectProperty<>("logout", DefaultWebFeatureConfig.class, AbstractPropertyRetriever.class);
-        FORGOT_PASSWORD = new ParentAwareObjectProperty<>("forgotPassword", DefaultNullableWebFeatureConfig.class, AbstractPropertyRetriever.class);
-        CHANGE_PASSWORD = new ParentAwareObjectProperty<>("changePassword", DefaultNullableWebFeatureConfig.class, AbstractPropertyRetriever.class);
-        CALLBACK = new ParentAwareObjectProperty<>("callback", DefaultWebFeatureConfig.class, AbstractPropertyRetriever.class);
-        ID_SITE = new ParentAwareObjectProperty<>("idSite", DefaultWebFeatureConfig.class, AbstractPropertyRetriever.class);
+        REGISTER = new ParentAwareObjectProperty<>("register", DefaultWebFeatureConfig.Register.class, AbstractPropertyRetriever.class);
+        VERIFY_EMAIL = new ParentAwareObjectProperty<>("verifyEmail", DefaultWebFeatureConfig.VerifyEmail.class, AbstractPropertyRetriever.class);
+        LOGIN = new ParentAwareObjectProperty<>("login", DefaultWebFeatureConfig.Login.class, AbstractPropertyRetriever.class);
+        LOGOUT = new ParentAwareObjectProperty<>("logout", DefaultWebFeatureConfig.Logout.class, AbstractPropertyRetriever.class);
+        FORGOT_PASSWORD = new ParentAwareObjectProperty<>("forgotPassword", DefaultWebFeatureConfig.ForgotPassword.class, AbstractPropertyRetriever.class);
+        CHANGE_PASSWORD = new ParentAwareObjectProperty<>("changePassword", DefaultWebFeatureConfig.ChangePassword.class, AbstractPropertyRetriever.class);
+        CALLBACK = new ParentAwareObjectProperty<>("callback", DefaultWebFeatureConfig.Callback.class, AbstractPropertyRetriever.class);
+        ID_SITE = new ParentAwareObjectProperty<>("idSite", DefaultWebFeatureConfig.IdSite.class, AbstractPropertyRetriever.class);
         ME = new ParentAwareObjectProperty<>("me", DefaultMeConfig.class, AbstractPropertyRetriever.class);
     }
 
@@ -113,8 +113,9 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     }
 
     @Override
-    public void setDnsLabel(String dnsLabel) {
+    public ApplicationWebConfig setDnsLabel(String dnsLabel) {
         setProperty(DNS_LABEL, dnsLabel);
+        return this;
     }
 
     @Override
@@ -123,8 +124,9 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     }
 
     @Override
-    public void setStatus(ApplicationWebConfigStatus status) {
+    public ApplicationWebConfig setStatus(ApplicationWebConfigStatus status) {
         setProperty(STATUS, status);
+        return this;
     }
 
     @Override
@@ -133,12 +135,13 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     }
 
     @Override
-    public void setSigningApiKey(ApiKey apiKey) {
+    public ApplicationWebConfig setSigningApiKey(ApiKey apiKey) {
         if (apiKey == null) {
             setProperty(SIGNING_API_KEY, null);
         } else {
             setResourceProperty(SIGNING_API_KEY, apiKey);
         }
+        return this;
     }
 
     @Override
@@ -152,62 +155,62 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     }
 
     @Override
-    public Oauth2Config getOAuth2Config() {
+    public Oauth2Config getOAuth2() {
         return getParentAwareObjectProperty(OAUTH2);
     }
 
     @Override
-    public CookieConfig getAccessTokenCookieConfig() {
+    public CookieConfig getAccessTokenCookie() {
         return getParentAwareObjectProperty(ACCESS_TOKEN_COOKIE);
     }
 
     @Override
-    public CookieConfig getRefreshTokenCookieConfig() {
+    public CookieConfig getRefreshTokenCookie() {
         return getParentAwareObjectProperty(REFRESH_TOKEN_COOKIE);
     }
 
     @Override
-    public RegisterConfig getRegisterConfig() {
+    public RegisterConfig getRegister() {
         return getParentAwareObjectProperty(REGISTER);
     }
 
     @Override
-    public VerifyEmailConfig getVerifyEmailConfig() {
+    public VerifyEmailConfig getVerifyEmail() {
         return getParentAwareObjectProperty(VERIFY_EMAIL);
     }
 
     @Override
-    public LoginConfig getLoginConfig() {
+    public LoginConfig getLogin() {
         return getParentAwareObjectProperty(LOGIN);
     }
 
     @Override
-    public LogoutConfig getLogoutConfig() {
+    public LogoutConfig getLogout() {
         return getParentAwareObjectProperty(LOGOUT);
     }
 
     @Override
-    public ForgotPasswordConfig getForgotPasswordConfig() {
+    public ForgotPasswordConfig getForgotPassword() {
         return getParentAwareObjectProperty(FORGOT_PASSWORD);
     }
 
     @Override
-    public ChangePasswordConfig getChangePasswordConfig() {
+    public ChangePasswordConfig getChangePassword() {
         return getParentAwareObjectProperty(CHANGE_PASSWORD);
     }
 
     @Override
-    public IdSiteConfig getIdSiteConfig() {
+    public IdSiteConfig getIdSite() {
         return getParentAwareObjectProperty(ID_SITE);
     }
 
     @Override
-    public CallbackConfig getCallbackConfig() {
+    public CallbackConfig getCallback() {
         return getParentAwareObjectProperty(CALLBACK);
     }
 
     @Override
-    public MeConfig getMeConfig() {
+    public MeConfig getMe() {
         return getParentAwareObjectProperty(ME);
     }
 

@@ -15,8 +15,17 @@
  */
 package com.stormpath.sdk.application.webconfig;
 
+import com.stormpath.sdk.resource.ResourceException;
+
 /**
  * @since 1.2.0
  */
-public interface CallbackConfig extends WebFeatureConfig {
+public interface CallbackConfig extends WebFeatureConfig<CallbackConfig> {
+
+    /**
+     * @param enabled {@code boolean} value to enable or disable a web features.
+     * @throws ResourceException when set to {@code null}.
+     */
+    @Override
+    CallbackConfig setEnabled(Boolean enabled);
 }

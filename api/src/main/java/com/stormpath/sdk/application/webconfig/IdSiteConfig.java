@@ -15,8 +15,17 @@
  */
 package com.stormpath.sdk.application.webconfig;
 
+import com.stormpath.sdk.resource.ResourceException;
+
 /**
  * @since 1.2.0
  */
-public interface IdSiteConfig extends WebFeatureConfig {
+public interface IdSiteConfig extends WebFeatureConfig<IdSiteConfig> {
+
+    /**
+     * @param enabled {@code boolean} value to enable or disable a web features.
+     * @throws ResourceException when set to {@code null}.
+     */
+    @Override
+    IdSiteConfig setEnabled(Boolean enabled);
 }

@@ -133,7 +133,7 @@ class AbstractResourceTest {
         def oauth2 = testResource.getParentAwareObjectProperty("oauth2", DefaultOauth2Config, AbstractPropertyRetriever)
 
         assertEquals oauth2.isEnabled(), false
-        assertEquals oauth2.getClientCredentialsConfig().isEnabled(), false
+        assertEquals oauth2.getClientCredentials().isEnabled(), false
 
         def transformed = testResource.getProperty("oauth2")
 

@@ -18,9 +18,6 @@ package com.stormpath.sdk.application.webconfig;
 /**
  * @since 1.2.0
  */
-public interface ChangePasswordConfig {
+public interface ChangePasswordConfig extends WebFeatureConfig<ChangePasswordConfig> {
 
-    Boolean isEnabled();
-
-    void setEnabled(Boolean enabled);
 }

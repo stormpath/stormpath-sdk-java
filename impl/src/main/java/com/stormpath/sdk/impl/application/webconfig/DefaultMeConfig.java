@@ -40,18 +40,19 @@ public class DefaultMeConfig extends ConfigurableProperty implements MeConfig {
 
     @Override
     @JsonProperty("expand")
-    public MeExpansionConfig getMeExpansionConfig() {
+    public MeExpansionConfig getExpansions() {
         return getParentAwareObjectProperty(EXPAND);
     }
 
     @Override
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return getBoolean(ENABLED);
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
+    public MeConfig setEnabled(Boolean enabled) {
         setProperty(ENABLED, enabled);
+        return this;
     }
 
 }

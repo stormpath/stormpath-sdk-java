@@ -23,7 +23,7 @@ import com.stormpath.sdk.application.Application;
  *
  * @since 1.2.0
  */
-public interface VerifyEmailConfig {
+public interface VerifyEmailConfig extends WebFeatureConfig<VerifyEmailConfig> {
 
     /**
      * Returns whether the email verification should be enabled or disabled when an account is created through the
@@ -47,6 +47,6 @@ public interface VerifyEmailConfig {
      *
      * @param enabled Boolean value to enable or disable email verifications for accounts.
      */
-    void setEnabled(Boolean enabled);
+    VerifyEmailConfig setEnabled(Boolean enabled);
 
 }

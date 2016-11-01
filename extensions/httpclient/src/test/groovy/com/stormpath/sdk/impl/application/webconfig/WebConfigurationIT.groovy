@@ -21,11 +21,11 @@ import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationCriteria
 import com.stormpath.sdk.application.Applications
-import com.stormpath.sdk.application.webconfig.MeExpansionConfig
-import com.stormpath.sdk.application.webconfig.MeConfig
-import com.stormpath.sdk.application.webconfig.Oauth2Config
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus
+import com.stormpath.sdk.application.webconfig.MeConfig
+import com.stormpath.sdk.application.webconfig.MeExpansionConfig
+import com.stormpath.sdk.application.webconfig.Oauth2Config
 import com.stormpath.sdk.application.webconfig.VerifyEmailConfig
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
@@ -49,7 +49,7 @@ class WebConfigurationIT extends ClientIT {
 
         def webConfiguration = application.webConfig
 
-        assertTrue webConfiguration.getOAuth2Config().getPasswordConfig().enabled
+        assertTrue webConfiguration.getOAuth2().getPassword().enabled
 
         assertEquals requestCountingClient.requestCount, 2
     }
@@ -59,49 +59,41 @@ class WebConfigurationIT extends ClientIT {
 
         def webConfig = createTempApp().getWebConfig()
 
-        Oauth2Config oauth2Config = webConfig.getOAuth2Config()
+        Oauth2Config oauth2Config = webConfig.getOAuth2()
 
         oauth2Config.setEnabled(false)
-        oauth2Config.getPasswordConfig().setEnabled(false)
-        oauth2Config.getClientCredentialsConfig().setEnabled(false)
+        oauth2Config.getPassword().setEnabled(false)
+        oauth2Config.getClientCredentials().setEnabled(false)
 
-        MeConfig meConfig = webConfig.getMeConfig()
+        MeConfig meConfig = webConfig.getMe()
 
         meConfig.setEnabled(false)
 
-        MeExpansionConfig expansionConfig = meConfig.getMeExpansionConfig()
-        expansionConfig.setApiKeys(true)
-        expansionConfig.setApplications(true)
-        expansionConfig.setCustomData(true)
-        expansionConfig.setDirectory(true)
-        expansionConfig.setGroupMemberships(true)
-        expansionConfig.setProviderData(true)
-        expansionConfig.setTenant(true)
-        expansionConfig.setGroups(true)
+        meConfig.getExpansions().setApiKeys(true).setApplications(true).setCustomData(true).setDirectory(true)
+                .setGroupMemberships(true).setProviderData(true).setTenant(true).setGroups(true)
 
         webConfig.save()
 
         def readWebConfig = buildClient(false).getResource(webConfig.href, ApplicationWebConfig)
 
-        Oauth2Config readOAuth2 = readWebConfig.getOAuth2Config()
+        Oauth2Config readOAuth2 = readWebConfig.getOAuth2()
 
         assertFalse readOAuth2.isEnabled()
-        assertFalse readOAuth2.getPasswordConfig().isEnabled()
-        assertFalse readOAuth2.getClientCredentialsConfig().isEnabled()
+        assertFalse readOAuth2.getPassword().isEnabled()
+        assertFalse readOAuth2.getClientCredentials().isEnabled()
 
-        meConfig = readWebConfig.getMeConfig()
-        expansionConfig = meConfig.getMeExpansionConfig()
+        meConfig = readWebConfig.getMe()
+        MeExpansionConfig expansions = meConfig.getExpansions()
 
         assertFalse meConfig.isEnabled()
-        assertTrue expansionConfig.getApiKeys()
-        assertTrue expansionConfig.getApplications()
-        assertTrue expansionConfig.getCustomData()
-        assertTrue expansionConfig.getDirectory()
-        assertTrue expansionConfig.getGroups()
-        assertTrue expansionConfig.getGroupMemberships()
-        assertTrue expansionConfig.getTenant()
-        assertTrue expansionConfig.getProviderData()
-
+        assertTrue expansions.apiKeys
+        assertTrue expansions.applications
+        assertTrue expansions.customData
+        assertTrue expansions.directory
+        assertTrue expansions.groups
+        assertTrue expansions.groupMemberships
+        assertTrue expansions.tenant
+        assertTrue expansions.providerData
     }
 
     @Test
@@ -142,7 +134,7 @@ class WebConfigurationIT extends ClientIT {
 
         def webConfig = createTempApp().getWebConfig()
 
-        VerifyEmailConfig verifyEmail = webConfig.getVerifyEmailConfig()
+        VerifyEmailConfig verifyEmail = webConfig.getVerifyEmail()
 
         assertNull verifyEmail.isEnabled()
 
@@ -154,7 +146,7 @@ class WebConfigurationIT extends ClientIT {
 
         webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
 
-        verifyEmail = webConfig.getVerifyEmailConfig()
+        verifyEmail = webConfig.getVerifyEmail()
 
         assertTrue verifyEmail.isEnabled()
 
@@ -164,7 +156,7 @@ class WebConfigurationIT extends ClientIT {
 
         webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
 
-        assertNull webConfig.getVerifyEmailConfig().isEnabled()
+        assertNull webConfig.getVerifyEmail().isEnabled()
     }
 
     @Test
@@ -189,8 +181,8 @@ class WebConfigurationIT extends ClientIT {
 
         def webConfig = createTempApp().getWebConfig()
 
-        webConfig.getAccessTokenCookieConfig().setName("an-access-token-valid-name")
-        webConfig.getRefreshTokenCookieConfig().setName("a-refresh-token-valid-name")
+        webConfig.getAccessTokenCookie().setName("an-access-token-valid-name")
+        webConfig.getRefreshTokenCookie().setName("a-refresh-token-valid-name")
 
         webConfig.save()
 
@@ -198,8 +190,8 @@ class WebConfigurationIT extends ClientIT {
 
         webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
 
-        assertEquals "an-access-token-valid-name", webConfig.getAccessTokenCookieConfig().getName()
-        assertEquals "a-refresh-token-valid-name", webConfig.getRefreshTokenCookieConfig().getName()
+        assertEquals "an-access-token-valid-name", webConfig.getAccessTokenCookie().getName()
+        assertEquals "a-refresh-token-valid-name", webConfig.getRefreshTokenCookie().getName()
     }
 
     @Test

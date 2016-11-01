@@ -18,9 +18,6 @@ package com.stormpath.sdk.application.webconfig;
 /**
  * @since 1.2.0
  */
-public interface ForgotPasswordConfig {
+public interface ForgotPasswordConfig extends WebFeatureConfig<ForgotPasswordConfig> {
 
-    Boolean isEnabled();
-
-    void setEnabled(Boolean enabled);
 }

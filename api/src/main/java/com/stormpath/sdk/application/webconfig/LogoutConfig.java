@@ -15,9 +15,17 @@
  */
 package com.stormpath.sdk.application.webconfig;
 
+import com.stormpath.sdk.resource.ResourceException;
+
 /**
  * @since 1.2.0
  */
-public interface LogoutConfig extends WebFeatureConfig {
+public interface LogoutConfig extends WebFeatureConfig<LogoutConfig> {
 
+    /**
+     * @param enabled {@code boolean} value to enable or disable a web features.
+     * @throws ResourceException when set to {@code null}.
+     */
+    @Override
+    LogoutConfig setEnabled(Boolean enabled);
 }
