@@ -4,7 +4,7 @@ source ./ci/common.sh
 
 source ./env.sh
 
-export PATH=$PATH:~/usr/local/bin
+export PATH="$HOME/usr/local/bin:$PATH"
 
 S3_BASE_BUCKET=s3://jsdk-travis-ci-build-logs
 TSTAMP=`date "+%Y-%m-%d_%H-%M-%S"`

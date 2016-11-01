@@ -29,7 +29,7 @@ If you want to use ID Site, the first thing you'll need to do is to `enable the 
 
    These instructions will only cover using the built-in hosted login site – if you’d like to customize your ID Site URL or look and feel (theme), please see the official `ID Site documentation`_.
 
-In the box labeled “Authorized Redirect URIs”, enter your redirect URL – this should be set to something like: ``https://www.mysite.com/idSiteResult``. If you’re testing locally, you might want to set this to: ``http://localhost:8080/idSiteResult``
+In the box labeled “Authorized Redirect URIs”, enter your redirect URL – this should be set to something like: ``https://www.mysite.com/stormpathCallback``. If you’re testing locally, you might want to set this to: ``http://localhost:${port}/stormpathCallback``
 
 If you’d like to support both production and local environments, you can add multiple URLs (*just click the “Add another” button and enter as many URLs as you’d like*).
 
