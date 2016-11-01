@@ -145,6 +145,7 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
 
             //Let's login now
             mvc.perform(post(new URI("/login"))
+                    .header("Origin", "http://localhost:3000")
                     .accept(MediaType.APPLICATION_JSON)
                     .content("{ \"login\":\"" + email + "\", \"password\":\"" + password + "\" }")
             )
