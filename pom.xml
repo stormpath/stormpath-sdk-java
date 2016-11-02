@@ -662,10 +662,6 @@
                                     <message>You are running an older version of Maven. The Stormpath Java SDK requires at least Maven 3.3.9</message>
                                     <version>[3.3.9,)</version>
                                 </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <message>The Stormpath Java SDK requires you build with JDK ${jdk.version}.</message>
-                                    <version>[${jdk.version},1.8]</version>
-                                </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>
@@ -739,7 +735,6 @@
                 <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
                      clean up the HTML source in JavaDoc comments: -->
                 <additionalparam>-Xdoclint:none</additionalparam>
-                <jdk.version>1.7</jdk.version>
             </properties>
         </profile>
         <profile>
