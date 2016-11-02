@@ -15,53 +15,19 @@
  */
 package com.stormpath.sdk.impl.application.webconfig;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.stormpath.sdk.application.webconfig.ClientCredentialsConfig;
 import com.stormpath.sdk.application.webconfig.Oauth2Config;
-import com.stormpath.sdk.application.webconfig.PasswordConfig;
-import com.stormpath.sdk.application.webconfig.WebFeatureConfig;
 import com.stormpath.sdk.impl.application.ConfigurableProperty;
 import com.stormpath.sdk.impl.resource.AbstractPropertyRetriever;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
-import com.stormpath.sdk.impl.resource.ParentAwareObjectProperty;
 
 import java.util.Map;
 
 public class DefaultOauth2Config extends ConfigurableProperty implements Oauth2Config {
 
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.Password, AbstractPropertyRetriever> PASSWORD;
-
-    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.ClientCredentials, AbstractPropertyRetriever> CLIENT_CREDENTIALS;
-
-    static {
-        PASSWORD = new ParentAwareObjectProperty<>("password", DefaultWebFeatureConfig.Password.class, AbstractPropertyRetriever.class);
-        CLIENT_CREDENTIALS = new ParentAwareObjectProperty<>("client_credentials", DefaultWebFeatureConfig.ClientCredentials.class, AbstractPropertyRetriever.class);
-    }
-
     private static final BooleanProperty ENABLED = new BooleanProperty("enabled");
 
     public DefaultOauth2Config(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
         super(name, properties, parent);
-    }
-
-    @Override
-    @JsonProperty("client_credentials")
-    public ClientCredentialsConfig getClientCredentials() {
-        return getParentAwareObjectProperty(CLIENT_CREDENTIALS);
-    }
-
-    public void setClientCredentials(WebFeatureConfig clientCredentials) {
-        setProperty(CLIENT_CREDENTIALS, clientCredentials);
-    }
-
-    @Override
-    @JsonProperty("password")
-    public PasswordConfig getPassword() {
-        return getParentAwareObjectProperty(PASSWORD);
-    }
-
-    public void setPassword(WebFeatureConfig password) {
-        setProperty(PASSWORD, password);
     }
 
     @Override

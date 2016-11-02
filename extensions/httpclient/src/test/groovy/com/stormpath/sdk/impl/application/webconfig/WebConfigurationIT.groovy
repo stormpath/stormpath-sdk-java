@@ -49,7 +49,7 @@ class WebConfigurationIT extends ClientIT {
 
         def webConfiguration = application.webConfig
 
-        assertTrue webConfiguration.getOAuth2().getPassword().enabled
+        assertTrue webConfiguration.getOAuth2().enabled
 
         assertEquals requestCountingClient.requestCount, 2
     }
@@ -62,8 +62,6 @@ class WebConfigurationIT extends ClientIT {
         Oauth2Config oauth2Config = webConfig.getOAuth2()
 
         oauth2Config.setEnabled(false)
-        oauth2Config.getPassword().setEnabled(false)
-        oauth2Config.getClientCredentials().setEnabled(false)
 
         MeConfig meConfig = webConfig.getMe()
 
@@ -79,9 +77,6 @@ class WebConfigurationIT extends ClientIT {
         Oauth2Config readOAuth2 = readWebConfig.getOAuth2()
 
         assertFalse readOAuth2.isEnabled()
-        assertFalse readOAuth2.getPassword().isEnabled()
-        assertFalse readOAuth2.getClientCredentials().isEnabled()
-
         meConfig = readWebConfig.getMe()
         MeExpansionConfig expansions = meConfig.getExpansions()
 
@@ -126,7 +121,6 @@ class WebConfigurationIT extends ClientIT {
         assertEquals application.getHref(), webConfig.getApplication().getHref()
 
         assertEquals application.getTenant(), webConfig.getTenant()
-
     }
 
     @Test
@@ -174,24 +168,6 @@ class WebConfigurationIT extends ClientIT {
         webConfig.save()
 
         assertNotNull webConfig.domainName
-    }
-
-    @Test
-    void testWebConfiguration_updateCookieName() {
-
-        def webConfig = createTempApp().getWebConfig()
-
-        webConfig.getAccessTokenCookie().setName("an-access-token-valid-name")
-        webConfig.getRefreshTokenCookie().setName("a-refresh-token-valid-name")
-
-        webConfig.save()
-
-        def noCacheClient = buildClient(false)
-
-        webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
-
-        assertEquals "an-access-token-valid-name", webConfig.getAccessTokenCookie().getName()
-        assertEquals "a-refresh-token-valid-name", webConfig.getRefreshTokenCookie().getName()
     }
 
     @Test

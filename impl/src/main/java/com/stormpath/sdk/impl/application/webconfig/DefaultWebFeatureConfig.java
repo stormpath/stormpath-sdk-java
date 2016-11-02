@@ -15,14 +15,8 @@
  */
 package com.stormpath.sdk.impl.application.webconfig;
 
-import com.stormpath.sdk.application.webconfig.CallbackConfig;
 import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
-import com.stormpath.sdk.application.webconfig.ClientCredentialsConfig;
 import com.stormpath.sdk.application.webconfig.ForgotPasswordConfig;
-import com.stormpath.sdk.application.webconfig.IdSiteConfig;
-import com.stormpath.sdk.application.webconfig.LoginConfig;
-import com.stormpath.sdk.application.webconfig.LogoutConfig;
-import com.stormpath.sdk.application.webconfig.PasswordConfig;
 import com.stormpath.sdk.application.webconfig.RegisterConfig;
 import com.stormpath.sdk.application.webconfig.VerifyEmailConfig;
 import com.stormpath.sdk.application.webconfig.WebFeatureConfig;
@@ -52,42 +46,6 @@ public class DefaultWebFeatureConfig<T extends WebFeatureConfig<T>> extends Conf
 
     public static class Register extends DefaultWebFeatureConfig<RegisterConfig> implements RegisterConfig {
         public Register(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
-            super(name, properties, parent);
-        }
-    }
-
-    public static class Login extends DefaultWebFeatureConfig<LoginConfig> implements LoginConfig {
-        public Login(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
-            super(name, properties, parent);
-        }
-    }
-
-    public static class Logout extends DefaultWebFeatureConfig<LogoutConfig> implements LogoutConfig {
-        public Logout(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
-            super(name, properties, parent);
-        }
-    }
-
-    public static class IdSite extends DefaultWebFeatureConfig<IdSiteConfig> implements IdSiteConfig {
-        public IdSite(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
-            super(name, properties, parent);
-        }
-    }
-
-    public static class Callback extends DefaultWebFeatureConfig<CallbackConfig> implements CallbackConfig {
-        public Callback(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
-            super(name, properties, parent);
-        }
-    }
-
-    public static class ClientCredentials extends DefaultWebFeatureConfig<ClientCredentialsConfig> implements ClientCredentialsConfig {
-        public ClientCredentials(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
-            super(name, properties, parent);
-        }
-    }
-
-    public static class Password extends DefaultWebFeatureConfig<PasswordConfig> implements PasswordConfig{
-        public Password(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
             super(name, properties, parent);
         }
     }

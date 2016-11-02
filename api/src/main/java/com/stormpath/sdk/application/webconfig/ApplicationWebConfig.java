@@ -113,20 +113,6 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
     Oauth2Config getOAuth2();
 
     /**
-     * Returns the {@link CookieConfig accessTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     *
-     * @return the {@link CookieConfig accessTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     */
-    CookieConfig getAccessTokenCookie();
-
-    /**
-     * Returns the {@link CookieConfig refreshTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     *
-     * @return the {@link CookieConfig refreshTokenCookieConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     */
-    CookieConfig getRefreshTokenCookie();
-
-    /**
      * Returns the {@link RegisterConfig registerConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link RegisterConfig registerConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
@@ -141,20 +127,6 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
     VerifyEmailConfig getVerifyEmail();
 
     /**
-     * Returns the {@link LoginConfig loginConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     *
-     * @return the {@link LoginConfig loginConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     */
-    LoginConfig getLogin();
-
-    /**
-     * Returns the {@link LogoutConfig logoutConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     *
-     * @return the {@link LogoutConfig logoutConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     */
-    LogoutConfig getLogout();
-
-    /**
      * Returns the {@link ForgotPasswordConfig forgotPasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link ForgotPasswordConfig forgotPasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
@@ -167,20 +139,6 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
      * @return the {@link ChangePasswordConfig changePasswordConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      */
     ChangePasswordConfig getChangePassword();
-
-    /**
-     * Returns the {@link IdSiteConfig idSiteConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     *
-     * @return the {@link IdSiteConfig idSiteConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     */
-    IdSiteConfig getIdSite();
-
-    /**
-     * Returns the {@link CallbackConfig callbackConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     *
-     * @return the {@link CallbackConfig callbackConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
-     */
-    CallbackConfig getCallback();
 
     /**
      * Returns the {@link MeConfig meConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.

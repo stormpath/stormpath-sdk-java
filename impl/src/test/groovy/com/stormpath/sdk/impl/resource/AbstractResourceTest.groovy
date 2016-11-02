@@ -17,8 +17,9 @@
 
 package com.stormpath.sdk.impl.resource
 
-import com.stormpath.sdk.impl.application.webconfig.DefaultWebFeatureConfig
+import com.stormpath.sdk.impl.application.webconfig.DefaultMeConfig
 import com.stormpath.sdk.impl.application.webconfig.DefaultOauth2Config
+import com.stormpath.sdk.impl.application.webconfig.DefaultWebFeatureConfig
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
@@ -119,9 +120,10 @@ class AbstractResourceTest {
     @Test
     void testParentAwareObjectProperty() {
 
-        def props =  [basePath         : "/path", status: "ENABLED", signingApiKey: [href: "http://api.stormpath.com/apiKeys/id"],
-                      oauth2           : [enabled: false, client_credentials: [enabled: false], password: [enabled: false]],
-                      accessTokenCookie: [name: "testCookie1"], refreshTokenCookie: [name: "testCookie2"]]
+        def props = [dnsLabel         : "d-label", status: "ENABLED", signingApiKey: [href: "http://api.stormpath.com/apiKeys/id"],
+                     oauth2           : [enabled: false],
+                     me               : [enabled: false, expand: [apiKeys: true]],
+                     accessTokenCookie: [name: "testCookie1"], refreshTokenCookie: [name: "testCookie2"]]
 
 
         InternalDataStore ds = createStrictMock(InternalDataStore)
@@ -133,7 +135,11 @@ class AbstractResourceTest {
         def oauth2 = testResource.getParentAwareObjectProperty("oauth2", DefaultOauth2Config, AbstractPropertyRetriever)
 
         assertEquals oauth2.isEnabled(), false
-        assertEquals oauth2.getClientCredentials().isEnabled(), false
+
+        def me = testResource.getParentAwareObjectProperty("me", DefaultMeConfig, AbstractPropertyRetriever)
+
+        assertEquals me.isEnabled(), false
+        assertEquals me.getExpansions().isApiKeys(), true
 
         def transformed = testResource.getProperty("oauth2")
 
@@ -144,12 +150,12 @@ class AbstractResourceTest {
         assertNull testResource.getParentAwareObjectProperty("unkownw", DefaultWebFeatureConfig, AbstractPropertyRetriever)
 
         try {
-            testResource.getParentAwareObjectProperty("basePath", DefaultWebFeatureConfig, AbstractPropertyRetriever)
+            testResource.getParentAwareObjectProperty("dnsLabel", DefaultWebFeatureConfig, AbstractPropertyRetriever)
 
             fail("Should have thrown")
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "'basePath' property value type does not match the specified property type. " +
-                    "Existing type: java.lang.String.  Value: /path")
+            assertEquals(e.getMessage(), "'dnsLabel' property value type does not match the specified property type. " +
+                    "Existing type: java.lang.String.  Value: d-label")
         }
 
     }
