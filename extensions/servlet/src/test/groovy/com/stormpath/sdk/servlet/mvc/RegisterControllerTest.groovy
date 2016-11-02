@@ -343,7 +343,7 @@ public class RegisterControllerTest {
         //in order to allow this test to pass.
 
         final List<String> NON_SIMPLE_PROPERTIES = Collections.unmodifiableList(Arrays.asList(
-                "fullName", "status", "customData", "emailVerificationToken", "directory", "tenant",
+                "fullName", "status", "customData", "emailVerificationToken", "emailVerificationStatus","directory", "tenant",
                 "providerData", "groups", "groupMemberships", "apiKeys", "applications", "accessTokens",
                 "refreshTokens", "accountLinks", "linkedAccounts", "phones", "factors"));
 
