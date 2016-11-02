@@ -44,7 +44,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -130,7 +130,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -175,7 +175,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -286,7 +286,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -325,7 +325,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -430,7 +430,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -489,7 +489,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -547,7 +547,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -627,7 +627,7 @@ class PhoneIT extends ClientIT {
 
         assertNotNull dir.href
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')

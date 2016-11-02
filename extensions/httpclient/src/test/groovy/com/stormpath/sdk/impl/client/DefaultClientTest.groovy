@@ -148,7 +148,7 @@ class DefaultClientTest {
 
         def properties = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
                 fullName: "Mel Ben Smuk",
-                email: 'my@email.com',
+                email: 'my@testmail.stormpath.com',
                 givenName: 'Given Name',
                 emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
                 directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
@@ -161,7 +161,7 @@ class DefaultClientTest {
 
         def propertiesAfterSave = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
                 fullName: "Mel Ben Smuk",
-                email: 'my@email.com',
+                email: 'my@testmail.stormpath.com',
                 givenName: 'My New Given Name',
                 emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
                 directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],

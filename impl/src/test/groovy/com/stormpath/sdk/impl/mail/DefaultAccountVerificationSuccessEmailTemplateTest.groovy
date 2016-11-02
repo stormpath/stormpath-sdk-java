@@ -58,7 +58,7 @@ class DefaultAccountVerificationSuccessEmailTemplateTest {
                 name: "Test Email",
                 description: "Test Description",
                 fromName: "John Doe",
-                fromEmailAddress: "john@email.com",
+                fromEmailAddress: "john@testmail.stormpath.com",
                 subject: "Your account has been confirmed",
                 textBody: "Your account has been successfully verified",
                 htmlBody: "Your account has been <b>successfully</b> verified",
@@ -69,7 +69,7 @@ class DefaultAccountVerificationSuccessEmailTemplateTest {
         assertEquals(emailTemplate.getName(), "Test Email")
         assertEquals(emailTemplate.getDescription(), "Test Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
-        assertEquals(emailTemplate.getFromEmailAddress(), "john@email.com")
+        assertEquals(emailTemplate.getFromEmailAddress(), "john@testmail.stormpath.com")
         assertEquals(emailTemplate.getSubject(), "Your account has been confirmed")
         assertEquals(emailTemplate.getTextBody(), "Your account has been successfully verified")
         assertEquals(emailTemplate.getHtmlBody(), "Your account has been <b>successfully</b> verified")

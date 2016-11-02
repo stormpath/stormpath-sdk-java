@@ -62,7 +62,7 @@ class DefaultModeledEmailTemplateTest {
                           name: "My Email",
                           description: "My Description",
                           fromName: "John Doe",
-                          fromEmailAddress: "joe@email.com",
+                          fromEmailAddress: "joe@testmail.stormpath.com",
                           subject: "Your password has been changed",
                           textBody: "Your password has been successfully changed",
                           htmlBody: "Your password has been <b>successfully</b> changed",
@@ -74,7 +74,7 @@ class DefaultModeledEmailTemplateTest {
         assertEquals(emailTemplate.getName(), "My Email")
         assertEquals(emailTemplate.getDescription(), "My Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
-        assertEquals(emailTemplate.getFromEmailAddress(), "joe@email.com")
+        assertEquals(emailTemplate.getFromEmailAddress(), "joe@testmail.stormpath.com")
         assertEquals(emailTemplate.getSubject(), "Your password has been changed")
         assertEquals(emailTemplate.getTextBody(), "Your password has been successfully changed")
         assertEquals(emailTemplate.getHtmlBody(), "Your password has been <b>successfully</b> changed")
@@ -118,7 +118,7 @@ class DefaultModeledEmailTemplateTest {
                           name: "My Email",
                           description: "My Description",
                           fromName: "John Doe",
-                          fromEmailAddress: "joe@email.com",
+                          fromEmailAddress: "joe@testmail.stormpath.com",
                           subject: "Your password has been changed",
                           textBody: "Your password has been successfully changed",
                           htmlBody: "Your password has been <b>successfully</b> changed",
@@ -153,7 +153,7 @@ class DefaultModeledEmailTemplateTest {
                           name: "My Email",
                           description: "My Description",
                           fromName: "John Doe",
-                          fromEmailAddress: "joe@email.com",
+                          fromEmailAddress: "joe@testmail.stormpath.com",
                           subject: "Your password has been changed",
                           textBody: "Your password has been successfully changed",
                           htmlBody: "Your password has been <b>successfully</b> changed",

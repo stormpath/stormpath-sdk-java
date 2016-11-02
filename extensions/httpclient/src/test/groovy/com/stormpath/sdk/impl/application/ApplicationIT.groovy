@@ -115,7 +115,7 @@ class ApplicationIT extends ClientIT {
         def acct = client.instantiate(Account)
         acct.username = username
         acct.password = password
-        acct.email = username + '@nowhere.com'
+        acct.email = username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
@@ -162,7 +162,7 @@ class ApplicationIT extends ClientIT {
         def acct = client.instantiate(Account)
         acct.username = username
         acct.password = password
-        acct.email = username + '@nowhere.com'
+        acct.email = username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         dir.createAccount(acct)
@@ -208,7 +208,7 @@ class ApplicationIT extends ClientIT {
 
         def app = createTempApp()
 
-        def email = uniquify('deleteme') + '@nowhere.com'
+        def email = uniquify('deleteme') + '@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
@@ -435,7 +435,7 @@ class ApplicationIT extends ClientIT {
         def acct = client.instantiate(Account)
         acct.username = username
         acct.password = password
-        acct.email = username + '@nowhere.com'
+        acct.email = username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
 
@@ -521,7 +521,7 @@ class ApplicationIT extends ClientIT {
         def acct = client.instantiate(Account)
         acct.username = username
         acct.password = password
-        acct.email = username + '@nowhere.com'
+        acct.email = username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         dir.createAccount(acct)
@@ -1615,7 +1615,7 @@ class ApplicationIT extends ClientIT {
         Account account = client.instantiate(Account)
         account.givenName = 'Jonathan'
         account.surname = 'Doe'
-        account.email = uniquify('deleteme') + '@nowhere.com'
+        account.email = uniquify('deleteme') + '@testmail.stormpath.com'
         account.password = 'Changeme1!'
         app.createAccount(account)
         deleteOnTeardown(account)
@@ -1745,7 +1745,7 @@ class ApplicationIT extends ClientIT {
 
         def app = createTempApp()
 
-        def email = uniquify('testCreateToken+') + '@nowhere.com'
+        def email = uniquify('testCreateToken+') + '@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
@@ -2088,7 +2088,7 @@ class ApplicationIT extends ClientIT {
 
         def app = createTempApp()
 
-        def email = uniquify('testCreateToken+') + '@nowhere.com'
+        def email = uniquify('testCreateToken+') + '@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'

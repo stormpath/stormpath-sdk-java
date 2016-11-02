@@ -386,7 +386,7 @@ class TenantIT extends ClientIT {
      */
     @Test
     void testGetAccountsWithCriteria() {
-        def uniqueEmail = uniquify("myUnique") + "@email.com"
+        def uniqueEmail = uniquify("myUnique") + "@testmail.stormpath.com"
 
         def criteria = Accounts.criteria().add(Accounts.email().eqIgnoreCase(uniqueEmail))
 
@@ -420,7 +420,7 @@ class TenantIT extends ClientIT {
     //@since 1.0.RC3
     @Test
     void testGetAccountsWithMap() {
-        def uniqueEmail = uniquify("myUnique") + "@email.com"
+        def uniqueEmail = uniquify("myUnique") + "@testmail.stormpath.com"
 
         def queryParams = ['email': uniqueEmail]
 

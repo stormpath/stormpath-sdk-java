@@ -148,7 +148,7 @@ abstract class AbstractCustomDataIT extends ClientIT {
         account.middleName = "IT Test"
         account.surname = Util.randomLastName().trim()
         account.username = account.givenName.toLowerCase() + '-' + account.surname.toLowerCase() + '-' + UUID.randomUUID()
-        account.email = account.username + '@mailinator.com'
+        account.email = account.username + '@testmail.stormpath.com'
         account.password = "changeMe1!"
 
         return account
