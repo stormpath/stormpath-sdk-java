@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.error.jwt.InvalidJwtException;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessToken;
@@ -27,9 +28,16 @@ import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
 import com.stormpath.sdk.resource.ResourceException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +45,8 @@ import java.util.Map;
  * @since 1.0.RC7
  */
 public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequestAuthenticator implements OAuthBearerRequestAuthenticator {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultOAuthBearerRequestAuthenticator.class);
 
     protected final static String APPLICATION_PATH = "/applications/";
     protected final static String OAUTH_TOKEN_PATH = "/authTokens/";
@@ -90,8 +100,36 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
                 OAuthBearerRequestAuthenticationResultBuilder builder = new DefaultOAuthBearerRequestAuthenticationResultBuilder(accessToken);
                 return builder.build();
 
+            } catch (UnsupportedJwtException uje) {
+                String message = InvalidJwtException.UNSUPPORTED_JWT_ERROR;
+                log.debug(message);
+                throw new InvalidJwtException(message, uje);
+            } catch (MalformedJwtException mje) {
+                String message = "The JWT was not correctly constructed and therefore was rejected (it is not a valid JWS).";
+                log.debug(message);
+                throw new InvalidJwtException(message, mje);
+            } catch (SignatureException se) {
+                String message = InvalidJwtException.INVALID_JWT_SIGNATURE_ERROR;
+                log.debug(message);
+                throw new InvalidJwtException(message, se);
+            } catch (ExpiredJwtException eje) {
+                String message = InvalidJwtException.EXPIRED_JWT_ERROR;
+                log.debug(message);
+                throw new InvalidJwtException(message, eje);
+            } catch (IllegalArgumentException iae) {
+                String message = "The JWT is null, empty or only contains whitespaces.";
+                log.debug(message);
+                throw new InvalidJwtException(message, iae);
+            } catch (UnsupportedEncodingException uee) {
+                String message = "The character encoding for the API secret is not supported.";
+                log.debug(message);
+                throw new InvalidJwtException(message, uee);
+            } catch (InvalidJwtException e) {
+                //See https://github.com/stormpath/stormpath-sdk-java/issues/1018
+                log.debug(e.getMessage());
+                throw e;
             } catch (Exception e) {
-                throw new JwtException("JWT failed validation; it cannot be trusted.");
+                throw new JwtException("JWT failed validation; it cannot be trusted.", e);
             }
         }
 
@@ -105,6 +143,7 @@ public class DefaultOAuthBearerRequestAuthenticator extends AbstractOAuthRequest
         } catch (ResourceException e) {
             throw e;
         } catch (Exception e) {
+            log.debug("Unexpected exception while fetching access token from Stormpath API");
             throw new JwtException("JWT failed validation; it cannot be trusted.");
         }
 

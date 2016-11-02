@@ -52,7 +52,7 @@ public class JwtWrapper {
         StringTokenizer tokenizer = new StringTokenizer(jwt, SEPARATOR);
 
         if (tokenizer.countTokens() != 3) {
-            throw new InvalidJwtException(InvalidJwtException.JWT_INVALID_VALUE_ERROR);
+            throw new InvalidJwtException(InvalidJwtException.UNSUPPORTED_JWT_ERROR);
         }
 
         this.base64JwtHeader = tokenizer.nextToken();
