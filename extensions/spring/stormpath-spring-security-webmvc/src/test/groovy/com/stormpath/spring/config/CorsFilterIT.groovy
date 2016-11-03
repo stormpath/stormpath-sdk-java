@@ -20,6 +20,8 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.Client
+import com.stormpath.sdk.directory.Directories
+import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.lang.Strings
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -133,6 +135,7 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
         String email = "randomEmail" + UUID.randomUUID() + "@testmail.stormpath.com"
         String password = "Changeme1!"
         Account account;
+        Directory directory = null;
 
         try {
             //Let's create an account so we can try to login with it
@@ -141,7 +144,15 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
                     .setSurname('DELETEME')
                     .setEmail(email)
                     .setPassword(password)
-            account = application.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+
+            directory = client.instantiate(Directory)
+            directory.setName("CorsFilterIT#testLoginWorksViaCORS" + UUID.randomUUID())
+            client.createDirectory(directory);
+
+            def mapping = application.addAccountStore(directory)
+            mapping.save()
+
+            account = directory.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
 
             //Let's login now
             mvc.perform(post(new URI("/login"))
@@ -157,6 +168,10 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
         } finally {
             if (account != null && Strings.hasText(account.getHref())) {
                 account.delete();
+            }
+
+            if (directory != null && Strings.hasText(directory.getHref())) {
+                directory.delete();
             }
         }
 
