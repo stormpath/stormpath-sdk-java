@@ -16,7 +16,8 @@ export RUN_ITS="$([ $TRAVIS_JDK_VERSION == 'openjdk7' ] && echo 'true')"
 #Install Maven 3.3.9 since Travis uses 3.2 by default
 wget https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip
 unzip -qq apache-maven-3.3.9-bin.zip
-export PATH=$PWD/apache-maven-3.3.9/bin:$PATH
+export M2_HOME=$PWD/apache-maven-3.3.9
+export PATH=$M2_HOME/bin:$PATH
 
 info "Build configuration:"
 echo "Version:             $RELEASE_VERSION"
