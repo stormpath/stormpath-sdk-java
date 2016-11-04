@@ -1519,7 +1519,7 @@ class ApplicationIT extends ClientIT {
         assertEquals(app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase(account02.getEmail()))).single().toString(), account02.toString())
 
         try {
-            app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("thisEmailDoesNotBelong@ToAnAccount.com"))).single()
+            app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("thisEmailDoesNotBelong@testmail.stormpath.com"))).single()
             fail("should have thrown")
         } catch (IllegalStateException e) {
             assertEquals(e.getMessage(), "This list is empty while it was expected to contain one (and only one) element.")
@@ -1707,10 +1707,10 @@ class ApplicationIT extends ClientIT {
         deleteOnTeardown(created)
 
         //verify it was created:
-        def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@test.com"))).single()
+        def found = app.getAccounts(Accounts.where(Accounts.email().eqIgnoreCase("deletejohn@testmail.stormpath.com"))).single()
         assertEquals(created.href, found.href)
 
-        def upreq = UsernamePasswordRequests.builder().setUsernameOrEmail("deletejohn@test.com").setPassword("rasmuslerdorf").build()
+        def upreq = UsernamePasswordRequests.builder().setUsernameOrEmail("deletejohn@testmail.stormpath.com").setPassword("rasmuslerdorf").build()
         found = app.authenticateAccount(upreq).getAccount()
         assertEquals(created.href, found.href)
     }
@@ -1726,7 +1726,7 @@ class ApplicationIT extends ClientIT {
         Account account = client.instantiate(Account)
         account.givenName = 'John'
         account.surname = 'DeleteMe'
-        account.email = "deletejohn@test.com"
+        account.email = "deletejohn@testmail.stormpath.com"
         account.password = '$INVALID$04$RZPSLGUz3dRdm7aRfxOeYuKeueSPW2YaTpRkszAA31wcPpyg6zkGy'
 
         try {

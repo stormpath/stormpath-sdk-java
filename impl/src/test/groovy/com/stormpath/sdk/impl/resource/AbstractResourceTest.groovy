@@ -89,7 +89,7 @@ class AbstractResourceTest {
                 name: "Default Password Reset Email Template",
                 description: "This is the password reset email template that is associated with the directory",
                 fromName: "Test Name",
-                fromEmailAddress: "test@stormpath.com",
+                fromEmailAddress: "test@testmail.stormpath.com",
                 subject: "Reset your Password",
                 textBody: "Forgot your password?\n\nWe've received a request to reset the password for this email address.",
                 htmlBody: "<p>Forgot your password?</p><br/><br/><p>We've received a request to reset the password for this email address.",

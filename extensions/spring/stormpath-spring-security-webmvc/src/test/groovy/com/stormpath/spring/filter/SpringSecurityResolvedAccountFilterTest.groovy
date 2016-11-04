@@ -50,7 +50,7 @@ class SpringSecurityResolvedAccountFilterTest {
     public void testAuthenticationRefreshedWhenAccountExists() {
         expect(accountResolver.getAccount(request)).andReturn account
         expect(authenticationProvider.authenticate(isA(Authentication.class))).andReturn authentication
-        expect(account.getEmail()).andReturn("foo@bar.com").times(2)
+        expect(account.getEmail()).andReturn("foo@testmail.stormpath.com").times(2)
         expect(filterChain.doFilter(request, response)).times(1)
 
         replay account, accountResolver, authenticationProvider, filterChain, request
