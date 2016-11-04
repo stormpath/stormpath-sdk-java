@@ -1697,7 +1697,7 @@ class ApplicationIT extends ClientIT {
         Account account = client.instantiate(Account)
                 .setGivenName('John')
                 .setSurname('DeleteMe')
-                .setEmail("deletejohn@test.com")
+                .setEmail("deletejohn@testmail.stormpath.com")
                 .setPassword('$2y$12$QjSH496pcT5CEbzjD/vtVeH03tfHKFy36d4J0Ltp3lRtee9HDxY3K')
 
         def created = app.createAccount(Accounts.newCreateRequestFor(account)
