@@ -14,13 +14,7 @@ stormpath.web.authc.savers.cookie.enabled
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``true``
 
-Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie.  To ensure HTTP Sessions (which force server state) are not required, this property is true by default.  The cookie's properties are configurable via the stormpath.web.account.cookie.* properties.
-
-stormpath.web.authc.savers.session.enabled
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-**Default Value:** ``false``
-
-Controls if a successful authentication should be reflected by storing account state in the server-side HTTP session.  This property is false by default, preferring instead the performance benefits of a stateless digitally-signed account cookie via the stormpath.web.authc.savers.cookie.enabled property.
+Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie. This property is true by default.  The cookie's properties are configurable via the stormpath.web.account.cookie.* properties.
 
 stormpath.web.request.remoteUser.strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
