@@ -28,12 +28,12 @@
                 <br/>
                 <br/>
                 Welcome to this <i>gloriously simple</i>
-                <a href="https://github.com/stormpath/stormpath-sdk-java/extensions/servlet">Stormpath Web</a> sample
+                <a href="https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/servlet">Stormpath Web</a> sample
                 application!
             <ul>
                 <li>First, take a look through this very basic site.</li>
                 <li>Then, check out this project's source code <a
-                        href="https://github.com/stormpath/stormpath-sdk-java/examples/servlet">on GitHub</a>.
+                        href="https://github.com/stormpath/stormpath-sdk-java/tree/master/examples/servlet">on GitHub</a>.
                 </li>
                 <li>Lastly, integrate Stormpath into your own sites!</li>
             </ul>

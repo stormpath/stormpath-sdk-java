@@ -323,7 +323,7 @@ public class DefaultFilterChainManagerConfigurer {
                 mgr.createChain(registerUrlPattern, DefaultFilter.idSiteRegister.name());
             }
         }
-        if (!verifyChainSpecified) {
+        if (!verifyChainSpecified && verifyEmailEnabled) {
             mgr.createChain(verifyUrlPattern, DefaultFilter.verify.name());
         }
         if (!accessTokenChainSpecified && oauthEnabled) {

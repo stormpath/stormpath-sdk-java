@@ -176,6 +176,23 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
     Account setStatus(AccountStatus status);
 
     /**
+     * Returns the account's emailVerificationStatus.
+     *
+     * @return the account's emailVerificationStatus.
+     * @since 1.2.0
+     */
+    EmailVerificationStatus getEmailVerificationStatus();
+
+    /**
+     * Sets the account's emailVerificationStatus.
+     *
+     * @param emailVerificationStatus the account's emailVerificationStatus.
+     * @return this instance for method chaining.
+     * @since 1.2.0
+     */
+    Account setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus);
+
+    /**
      * Returns a paginated list of the account's assigned groups.
      *
      * <p>Tip: If this list might be large, instead of iterating over all groups, it might be more convenient (and

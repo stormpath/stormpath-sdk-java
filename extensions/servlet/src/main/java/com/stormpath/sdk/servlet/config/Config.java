@@ -187,6 +187,26 @@ public interface Config extends Map<String, String> {
     /**
      * @since 1.2.0
      */
+    List<String> getAllowedCorsOrigins();
+
+    /**
+     * @since 1.2.0
+     */
+    boolean isCorsEnabled();
+
+    /**
+     * @since 1.2.0
+     */
+    List<String> getAllowedCorsHaders();
+
+    /**
+     * @since 1.2.0
+     */
+    List<String> getAllowedCorsMethods();
+
+    /**
+     * @since 1.2.0
+     */
     ProviderAccountRequestResolver getProviderAccountRequestResolver();
 
     /**
@@ -194,6 +214,8 @@ public interface Config extends Map<String, String> {
      */
     ProviderAuthorizationEndpointResolver getProviderAuthorizationEndpointResolver();
 
+    /**
+     * @since 1.2.0
+     */
     GrantTypeStatusValidator getGrantTypeStatusValidator();
-
 }
