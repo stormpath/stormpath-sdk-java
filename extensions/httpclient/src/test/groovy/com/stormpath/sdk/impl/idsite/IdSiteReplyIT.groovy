@@ -207,7 +207,7 @@ class IdSiteReplyIT extends ClientIT {
 
     def Account createTestAccount(Application app) {
 
-        def email = 'deleteme@nowhere.com'
+        def email = 'deleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'

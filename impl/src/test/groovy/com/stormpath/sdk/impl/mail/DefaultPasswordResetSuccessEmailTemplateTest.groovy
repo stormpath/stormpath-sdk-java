@@ -58,7 +58,7 @@ class DefaultPasswordResetSuccessEmailTemplateTest {
                 name: "My Email",
                 description: "My Description",
                 fromName: "John Doe",
-                fromEmailAddress: "joe@email.com",
+                fromEmailAddress: "joe@testmail.stormpath.com",
                 subject: "Your password has been changed",
                 textBody: "Your password has been successfully changed",
                 htmlBody: "Your password has been <b>successfully</b> changed",
@@ -69,7 +69,7 @@ class DefaultPasswordResetSuccessEmailTemplateTest {
         assertEquals(emailTemplate.getName(), "My Email")
         assertEquals(emailTemplate.getDescription(), "My Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
-        assertEquals(emailTemplate.getFromEmailAddress(), "joe@email.com")
+        assertEquals(emailTemplate.getFromEmailAddress(), "joe@testmail.stormpath.com")
         assertEquals(emailTemplate.getSubject(), "Your password has been changed")
         assertEquals(emailTemplate.getTextBody(), "Your password has been successfully changed")
         assertEquals(emailTemplate.getHtmlBody(), "Your password has been <b>successfully</b> changed")
@@ -78,7 +78,7 @@ class DefaultPasswordResetSuccessEmailTemplateTest {
         emailTemplate = emailTemplate.setName("New Email Name")
                 .setDescription("My New Description")
                 .setFromName("John Doe Jr.")
-                .setFromEmailAddress("joejr@newemail.com")
+                .setFromEmailAddress("joejr@testmail.stormpath.com")
                 .setSubject("Your password has been reset.")
                 .setTextBody("Your password has been successfully reset.")
                 .setHtmlBody("Your password has been <b>successfully</b> reset.")
@@ -87,7 +87,7 @@ class DefaultPasswordResetSuccessEmailTemplateTest {
         assertEquals(emailTemplate.getName(), "New Email Name")
         assertEquals(emailTemplate.getDescription(), "My New Description")
         assertEquals(emailTemplate.getFromName(), "John Doe Jr.")
-        assertEquals(emailTemplate.getFromEmailAddress(), "joejr@newemail.com")
+        assertEquals(emailTemplate.getFromEmailAddress(), "joejr@testmail.stormpath.com")
         assertEquals(emailTemplate.getSubject(), "Your password has been reset.")
         assertEquals(emailTemplate.getTextBody(), "Your password has been successfully reset.")
         assertEquals(emailTemplate.getHtmlBody(), "Your password has been <b>successfully</b> reset.")

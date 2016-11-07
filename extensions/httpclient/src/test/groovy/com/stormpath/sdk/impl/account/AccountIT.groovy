@@ -297,7 +297,7 @@ class AccountIT extends ClientIT {
         def password = 'Changeme1!'
         acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
         acct.password = password
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
@@ -317,7 +317,7 @@ class AccountIT extends ClientIT {
         def password = 'Changeme1!'
         acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
         acct.password = password
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = app.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
@@ -343,7 +343,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@nowhere.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -373,7 +373,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@nowhere.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -404,7 +404,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@nowhere.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -430,7 +430,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account01.setEmail(account01.getUsername() + "@nowhere.com")
+        account01.setEmail(account01.getUsername() + "@testmail.stormpath.com")
         account01 = app.createAccount(Accounts.newCreateRequestFor(account01).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account01)
 
@@ -450,9 +450,9 @@ class AccountIT extends ClientIT {
         assertEquals(dirtyProperties02.size(), 0)
         assertSame(properties01, properties02)
 
-        account01.setEmail("new@email.com")
-        assertEquals(account01.getEmail(), "new@email.com")
-        assertEquals(account02.getEmail(), account01.getUsername() + "@nowhere.com")
+        account01.setEmail("new@testmail.stormpath.com")
+        assertEquals(account01.getEmail(), "new@testmail.stormpath.com")
+        assertEquals(account02.getEmail(), account01.getUsername() + "@testmail.stormpath.com")
         assertEquals(properties01.size(), EXPECTED_PROPERTIES_SIZE)
         assertEquals(dirtyProperties01.size(), 1)
         assertEquals(properties02.size(), EXPECTED_PROPERTIES_SIZE)
@@ -517,7 +517,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@nowhere.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -694,7 +694,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme123")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@mail.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -735,7 +735,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@nowhere.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -794,7 +794,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account01.setEmail(account01.getUsername() + "@nowhere.com")
+        account01.setEmail(account01.getUsername() + "@testmail.stormpath.com")
         account01 = app.createAccount(Accounts.newCreateRequestFor(account01).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account01)
 
@@ -803,7 +803,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account02.setEmail(account02.getUsername() + "@nowhere.com")
+        account02.setEmail(account02.getUsername() + "@testmail.stormpath.com")
         account02 = app.createAccount(Accounts.newCreateRequestFor(account02).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account02)
 
@@ -858,7 +858,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@stormpath.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -949,7 +949,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@stormpath.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -983,7 +983,7 @@ class AccountIT extends ClientIT {
                 .setPassword("Changeme1!")
                 .setGivenName("Joe")
                 .setSurname("Smith")
-        account.setEmail(account.getUsername() + "@stormpath.com")
+        account.setEmail(account.getUsername() + "@testmail.stormpath.com")
         account = directory.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -1279,9 +1279,9 @@ class AccountIT extends ClientIT {
 
         def app = createTempApp()
 
-        def email1 = uniquify('deleteme1') + '@nowhere.com'
-        def email2 = uniquify('deleteme2') + '@nowhere.com'
-        def email3 = uniquify('deleteme3') + '@nowhere.com'
+        def email1 = uniquify('deleteme1') + '@testmail.stormpath.com'
+        def email2 = uniquify('deleteme2') + '@testmail.stormpath.com'
+        def email3 = uniquify('deleteme3') + '@testmail.stormpath.com'
 
         def surname = 'DELETEME'
 

@@ -51,8 +51,8 @@ class DefaultPasswordResetTokenTest {
         assertEquals(pd.accountStore.type, AccountStore)
         assertTrue(pd.password instanceof StringProperty)
 
-        resourceWithDS.setEmail("some@email.com")
-        assertEquals(resourceWithDS.getEmail(), "some@email.com")
+        resourceWithDS.setEmail("some@testmail.stormpath.com")
+        assertEquals(resourceWithDS.getEmail(), "some@testmail.stormpath.com")
 
         def innerProperties = [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]
         def account = new DefaultAccount(internalDataStore, innerProperties)
