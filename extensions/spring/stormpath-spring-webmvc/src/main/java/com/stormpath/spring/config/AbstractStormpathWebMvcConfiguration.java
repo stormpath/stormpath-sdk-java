@@ -72,8 +72,6 @@ import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
-import com.stormpath.sdk.servlet.filter.account.SessionAccountResolver;
-import com.stormpath.sdk.servlet.filter.account.SessionAuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
@@ -679,27 +677,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return DisabledAuthenticationResultSaver.INSTANCE;
     }
 
-    public Saver<AuthenticationResult> stormpathSessionAuthenticationResultSaver() {
-
-        if (sessionAuthenticationResultSaverEnabled) {
-            String[] attributeNames = {Account.class.getName(), "account"};
-            Set<String> set = new HashSet<String>(Arrays.asList(attributeNames));
-            return new SessionAuthenticationResultSaver(set);
-        }
-
-        return DisabledAuthenticationResultSaver.INSTANCE;
-    }
-
     public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
 
         List<Saver<AuthenticationResult>> savers = new ArrayList<Saver<AuthenticationResult>>();
 
         Saver<AuthenticationResult> saver = stormpathCookieAuthenticationResultSaver();
-        if (!(saver instanceof DisabledAuthenticationResultSaver)) {
-            savers.add(saver);
-        }
-
-        saver = stormpathSessionAuthenticationResultSaver();
         if (!(saver instanceof DisabledAuthenticationResultSaver)) {
             savers.add(saver);
         }
@@ -816,10 +798,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             stormpathAccessTokenResultFactory());
     }
 
-    public Resolver<Account> stormpathSessionAccountResolver() {
-        return new SessionAccountResolver();
-    }
-
     public List<Resolver<Account>> stormpathAccountResolvers() {
 
         //the order determines which locations are checked.  One an account is found, the remaining locations are
@@ -827,7 +805,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         List<Resolver<Account>> resolvers = new ArrayList<Resolver<Account>>(3);
         resolvers.add(stormpathAuthorizationHeaderAccountResolver());
         resolvers.add(stormpathCookieAccountResolver());
-        resolvers.add(stormpathSessionAccountResolver());
 
         return resolvers;
     }

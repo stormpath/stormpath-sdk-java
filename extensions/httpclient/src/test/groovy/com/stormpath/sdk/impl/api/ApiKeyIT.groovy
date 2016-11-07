@@ -107,7 +107,7 @@ class ApiKeyIT extends ClientIT {
         def password = 'Changeme1!'
         acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
         acct.password = password
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
@@ -148,7 +148,7 @@ class ApiKeyIT extends ClientIT {
         def password = 'Changeme1!'
         acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
         acct.password = password
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
@@ -184,7 +184,7 @@ class ApiKeyIT extends ClientIT {
         def password = 'Changeme1!'
         acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
         acct.password = password
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
@@ -238,7 +238,7 @@ class ApiKeyIT extends ClientIT {
         def password = 'Changeme1!'
         acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
         acct.password = password
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())

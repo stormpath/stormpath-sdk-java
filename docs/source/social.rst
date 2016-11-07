@@ -48,7 +48,7 @@ menu, then click the "Add Platform" button near the bottom of the page.  When
 prompted, select "Website" as your platform type.
 
 In the "Site URL" box, enter your private and public root URLs.  This should be
-something like ``http://localhost:8080`` or ``http://mysite.com``.
+something like ``http://localhost:${port}`` or ``http://mysite.com``.
 
 .. note::
     If you want to allow Facebook Login from multiple URLs (local development, production, etc.) you can just click the "Add Platform" button again and enter another URL.
@@ -286,9 +286,9 @@ profile properties (first, middle, and last name) and email (*these permissions 
 
 The next thing we need to do is add in all of the allowed Redirect URLs for our application.  Well do this by
 entering all of our absolute redirect URLs under the "OAuth 2.0" section.  For instance, if I was running
-my site locally on port 8080, as well as under the "www.example.com" domain, I'd add two redirect URIs:
+my site locally on port ${port}, as well as under the "www.example.com" domain, I'd add two redirect URIs:
 
-- http://localhost:8080/callbacks/linkedin
+- http://localhost:${port}/callbacks/linkedin
 - https://www.example.com/callbacks/linkedin
 
 .. image:: /_static/linkedin-add-authorized-urls.gif

@@ -253,7 +253,7 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     private Account createTempAccount(String password) {
         Account account = client.instantiate(Account.class)
         String username = "foo-account-deleteme-" + UUID.randomUUID();
-        account.setEmail(username + "@stormpath.com")
+        account.setEmail(username + "@testmail.stormpath.com")
         account.setUsername(username)
         account.setPassword(password)
         account.setGivenName(username)

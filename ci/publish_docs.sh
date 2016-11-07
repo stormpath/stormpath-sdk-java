@@ -14,15 +14,21 @@ git checkout source
 
 info "Copying over servlet plugin docs"
 rm -rf source/java/servlet-plugin/
-cp -r ../docs/build/html/servlet source/java/servlet-plugin
-cp -r ../docs/build/html/servlet source/java/servlet-plugin/latest
-cp -r ../docs/build/html/servlet source/java/servlet-plugin/$RELEASE_VERSION
+cp -r ../docs/build/servlet/build/html source/java/servlet-plugin
+cp -r ../docs/build/servlet/build/html source/java/servlet-plugin/latest
+cp -r ../docs/build/servlet/build/html source/java/servlet-plugin/$RELEASE_VERSION
 
 info "Copying over spring boot docs"
 rm -rf source/java/spring-boot-web
-cp -r ../docs/build/html/springboot source/java/spring-boot-web
-cp -r ../docs/build/html/springboot source/java/spring-boot-web/latest
-cp -r ../docs/build/html/springboot source/java/spring-boot-web/$RELEASE_VERSION
+cp -r ../docs/build/springboot/build/html source/java/spring-boot-web
+cp -r ../docs/build/springboot/build/html source/java/spring-boot-web/latest
+cp -r ../docs/build/springboot/build/html source/java/spring-boot-web/$RELEASE_VERSION
+
+info "Copying over spring cloud zuul docs"
+rm -rf source/java/spring-cloud-zuul
+cp -r ../docs/build/sczuul/build/html source/java/spring-cloud-zuul
+cp -r ../docs/build/sczuul/build/html source/java/spring-cloud-zuul/latest
+cp -r ../docs/build/sczuul/build/html source/java/spring-cloud-zuul/$RELEASE_VERSION
 
 info "Copying over javadocs"
 rm -rf source/java/apidocs

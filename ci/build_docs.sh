@@ -2,10 +2,13 @@
 
 source ./ci/common.sh
 
-info "Generating guide docs..."
+# Update the path if scms is not available
+command -v scms >/dev/null 2>&1 || export PATH="$HOME/usr/local/scms/current/bin:$PATH"
+
+info "Generating guides..."
 git submodule init
 git submodule update
-(cd docs && make allhtml &> $WORKDIR/target/sphinx.log) &
+(cd docs && ./build.sh &> $WORKDIR/target/guides.log) &
 PID=$!
 show_spinner "$PID"
 
@@ -14,7 +17,7 @@ EXIT_CODE=$?
 
 if [ "$EXIT_CODE" -ne 0 ]; then
   error "Error generating guides"
-  cat $WORKDIR/target/sphinx.log
+  cat $WORKDIR/target/guides.log
   exit $EXIT_CODE
 fi
 
@@ -32,4 +35,3 @@ if [ "$EXIT_CODE" -ne 0 ]; then
   cat $WORKDIR/target/javadocs.log
   exit $EXIT_CODE
 fi
-

@@ -238,7 +238,7 @@ class DefaultApplicationTest {
 
         defaultApplication.delete()
 
-        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@testmail.stormpath.com").getAccount(), account)
         assertEquals(defaultApplication.verifyPasswordResetToken("token"), account)
         assertEquals(defaultApplication.authenticateAccount(UsernamePasswordRequests.builder().setUsernameOrEmail("username").setPassword("password").build()), authenticationResult01)
 
@@ -735,7 +735,7 @@ class DefaultApplicationTest {
 
         replay internalDataStore, account
 
-        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@testmail.stormpath.com").getAccount(), account)
         assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
         assertEquals(defaultApplication.authenticateAccount(UsernamePasswordRequests.builder().setUsernameOrEmail("username").setPassword("myNewPassword").build()), authenticationResult, null)
 

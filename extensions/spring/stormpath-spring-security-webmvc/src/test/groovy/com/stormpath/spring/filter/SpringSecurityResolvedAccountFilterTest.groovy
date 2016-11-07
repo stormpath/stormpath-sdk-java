@@ -5,6 +5,7 @@ import com.stormpath.sdk.servlet.account.AccountResolver
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
@@ -50,7 +51,7 @@ class SpringSecurityResolvedAccountFilterTest {
     public void testAuthenticationRefreshedWhenAccountExists() {
         expect(accountResolver.getAccount(request)).andReturn account
         expect(authenticationProvider.authenticate(isA(Authentication.class))).andReturn authentication
-        expect(account.getEmail()).andReturn("foo@bar.com").times(2)
+        expect(account.getEmail()).andReturn("foo@testmail.stormpath.com").times(2)
         expect(filterChain.doFilter(request, response)).times(1)
 
         replay account, accountResolver, authenticationProvider, filterChain, request
@@ -63,18 +64,20 @@ class SpringSecurityResolvedAccountFilterTest {
     @Test
     public void testAuthenticationNotRefreshedWhenHrefInUserDetailsMatchesAccount() {
         def userDetails = createStrictMock(UserDetails)
+        def user = createStrictMock(User);
 
         expect(accountResolver.getAccount(request)).andReturn account
         expect(account.getHref()).andReturn "url"
         expect(filterChain.doFilter(request, response)).times(1)
-        expect(authentication.getPrincipal()).andReturn("url").times(2)
+        expect(authentication.getPrincipal()).andReturn(user).times(2)
+        expect(user.getUsername()).andReturn "url"
 
         SecurityContextHolder.getContext().setAuthentication(authentication)
 
-        replay account, accountResolver, authentication, authenticationProvider, filterChain, request, userDetails
+        replay account, accountResolver, authentication, authenticationProvider, filterChain, request, userDetails, user
 
         filter.filter(request, response, filterChain)
 
-        verify account, accountResolver, authentication, authenticationProvider, filterChain, request, userDetails
+        verify account, accountResolver, authentication, authenticationProvider, filterChain, request, userDetails, user
     }
 }

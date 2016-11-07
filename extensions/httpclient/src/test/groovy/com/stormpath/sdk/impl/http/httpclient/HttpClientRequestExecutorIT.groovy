@@ -30,7 +30,7 @@ class HttpClientRequestExecutorIT extends ClientIT {
         def app = createTempApp()
 
         // create an account
-        def email = uniquify('testCreateToken+') + '@nowhere.com'
+        def email = uniquify('testCreateToken+') + '@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account.givenName = 'John'
