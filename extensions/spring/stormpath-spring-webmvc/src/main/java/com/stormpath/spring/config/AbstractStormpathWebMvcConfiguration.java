@@ -661,6 +661,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         AuthorizeController c = new AuthorizeController();
         configure(c);
         c.setProviderAuthorizationEndpointResolver(stormpathProviderAuthorizationEndpointResolver());
+        c.setClient(client);
         c.setApplicationResolver(stormpathApplicationResolver());
         return c;
     }

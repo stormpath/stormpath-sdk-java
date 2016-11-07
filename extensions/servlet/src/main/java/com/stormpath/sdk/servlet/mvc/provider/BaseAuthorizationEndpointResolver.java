@@ -49,7 +49,7 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
                 "&response_type=code" +
                 "&scope=" + getScopeString(request, oAuthProvider) +
                 "&redirect_uri=" + encode(getFullyQualifiedUri(request, callback)) +
-                "&state=" + getState(request, applicationCallbackUri, provider) +
+                "&state=" + getState(request, applicationCallbackUri, oAuthProvider) +
                 extraParameters(request);
     }
 
@@ -82,7 +82,7 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
         return parameterBuilder.toString();
     }
 
-    private String getState(HttpServletRequest request, String applicationCallbackUri, Provider provider) {
+    private String getState(HttpServletRequest request, String applicationCallbackUri, OAuthProvider provider) {
         String redirectUriQueryParam = request.getParameter("redirect_uri");
         String redirectUri = redirectUriQueryParam == null ? applicationCallbackUri :
                 getFullyQualifiedUri(request, redirectUriQueryParam);
@@ -115,10 +115,10 @@ public abstract class BaseAuthorizationEndpointResolver implements ProviderAutho
         }
     }
 
-    private String getScopeString(HttpServletRequest request, OAuthProvider linkedInProvider) {
+    private String getScopeString(HttpServletRequest request, OAuthProvider provider) {
         String scopeStr = request.getParameter("scope");
         if (scopeStr == null) {
-            List<String> scopeList = linkedInProvider.getScope();
+            List<String> scopeList = provider.getScope();
             StringBuilder scopeBuilder = new StringBuilder();
             for (String scope : scopeList) {
                 scopeBuilder.append(scope).append(" ");

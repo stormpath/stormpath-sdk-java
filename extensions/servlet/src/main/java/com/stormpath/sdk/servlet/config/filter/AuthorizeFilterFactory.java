@@ -16,6 +16,7 @@ public class AuthorizeFilterFactory extends ControllerFilterFactory<AuthorizeCon
     protected void configure(AuthorizeController c, Config config) throws Exception {
         c.setNextUri(config.getLoginConfig().getUri());
         c.setApplicationResolver(config.getApplicationResolver());
+        c.setClient(config.getClient());
         c.setProviderAuthorizationEndpointResolver(config.getProviderAuthorizationEndpointResolver());
     }
 }

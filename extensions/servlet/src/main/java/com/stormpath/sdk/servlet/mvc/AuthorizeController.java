@@ -1,9 +1,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
-import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
-import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResolver;
@@ -19,6 +17,7 @@ import java.util.List;
  */
 public class AuthorizeController extends AbstractController {
     private ProviderAuthorizationEndpointResolver providerAuthorizationEndpointResolver;
+    private Client client;
 
     @Override
     public boolean isNotAllowedIfAuthenticated() {
@@ -29,6 +28,7 @@ public class AuthorizeController extends AbstractController {
     public void init() throws Exception {
         Assert.notNull(applicationResolver, "applicationResolver cannot be null.");
         Assert.notNull(providerAuthorizationEndpointResolver, "providerAuthorizationEndpointResolver cannot be null.");
+        Assert.notNull(client, "client cannot be null");
     }
 
     @Override
@@ -37,13 +37,10 @@ public class AuthorizeController extends AbstractController {
         Application application = applicationResolver.getApplication(request);
         String applicationCallbackUri = getApplicationCallbackUri(application, request);
         String dirHref = getAccountStoreHref(request);
-        ApplicationAccountStoreMappingList accountStoreMappingList = application.getAccountStoreMappings();
-        for (ApplicationAccountStoreMapping mapping : accountStoreMappingList) {
-            AccountStore accountStore = mapping.getAccountStore();
-            if (accountStore instanceof Directory && dirHref.equals(accountStore.getHref())) {
-                String endpoint = providerAuthorizationEndpointResolver.getEndpoint(request, applicationCallbackUri, ((Directory) accountStore).getProvider());
-                return new DefaultViewModel(endpoint).setRedirect(true);
-            }
+        Directory directory = client.getResource(dirHref, Directory.class);
+        if (directory != null) {
+            String endpoint = providerAuthorizationEndpointResolver.getEndpoint(request, applicationCallbackUri, directory.getProvider());
+            return new DefaultViewModel(endpoint).setRedirect(true);
         }
         response.sendError(404);
         return null;
@@ -86,5 +83,9 @@ public class AuthorizeController extends AbstractController {
 
     public void setProviderAuthorizationEndpointResolver(ProviderAuthorizationEndpointResolver providerAuthorizationEndpointResolver) {
         this.providerAuthorizationEndpointResolver = providerAuthorizationEndpointResolver;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 }
