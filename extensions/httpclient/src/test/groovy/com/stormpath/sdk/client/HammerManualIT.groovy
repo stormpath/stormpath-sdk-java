@@ -95,7 +95,7 @@ class HammerManualIT extends ClientIT {
                 account.middleName = "IT Test"
                 account.surname = randomLastName().trim()
                 account.username = account.givenName.toLowerCase() + '-' + account.surname.toLowerCase() + '-' + UUID.randomUUID()
-                account.email = account.username + '@mailinator.com'
+                account.email = account.username + '@testmail.stormpath.com'
                 account.password = "changeMe1!"
 
                 if (j % 2 == 0) {

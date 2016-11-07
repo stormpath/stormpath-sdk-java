@@ -191,11 +191,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public Saver<AuthenticationResult> stormpathSessionAuthenticationResultSaver() {
-        return super.stormpathSessionAuthenticationResultSaver();
-    }
-
-    @Bean
     public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
         return super.stormpathAuthenticationResultSavers();
     }
@@ -284,11 +279,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Resolver<Account> stormpathCookieAccountResolver() {
         return super.stormpathCookieAccountResolver();
-    }
-
-    @Bean
-    public Resolver<Account> stormpathSessionAccountResolver() {
-        return super.stormpathSessionAccountResolver();
     }
 
     @Bean

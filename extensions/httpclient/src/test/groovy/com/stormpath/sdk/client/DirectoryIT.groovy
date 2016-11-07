@@ -79,7 +79,7 @@ class DirectoryIT extends ClientIT {
         dir = client.currentTenant.createDirectory(dir)
         deleteOnTeardown(dir)
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
@@ -415,7 +415,7 @@ class DirectoryIT extends ClientIT {
         Account account01 = client.instantiate(Account)
         account01 = account01.setGivenName(uniquify('John01'))
                 .setSurname('DELETEME')
-                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+                .setEmail(uniquify("john01deleteme") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account01)
@@ -425,7 +425,7 @@ class DirectoryIT extends ClientIT {
         def account02 = client.instantiate(Account)
         account02 = account02.setGivenName(uniquify('John02'))
                 .setSurname('DELETEME')
-                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+                .setEmail(uniquify("john01deleteme") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account02)
@@ -528,7 +528,7 @@ class DirectoryIT extends ClientIT {
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
                 .setSurname('Doe')
-                .setEmail('johndoe@email.com')
+                .setEmail('johndoe@testmail.stormpath.com')
                 .setPassword('Changeme1!')
         dir.createAccount(account)
 
@@ -569,7 +569,7 @@ class DirectoryIT extends ClientIT {
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
                 .setSurname('Doe')
-                .setEmail('johndoe@email.com')
+                .setEmail('johndoe@testmail.stormpath.com')
                 .setPassword('Changeme1!')
         dir.createAccount(account)
 
@@ -692,7 +692,7 @@ class DirectoryIT extends ClientIT {
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
                 .setSurname(uniquify("testGetAccountsWithDateCriteria"))
-                .setEmail('johntestme@nowhere.com')
+                .setEmail('johntestme@testmail.stormpath.com')
                 .setPassword('Changeme1!')
 
         dir.createAccount(account)
@@ -791,7 +791,7 @@ class DirectoryIT extends ClientIT {
         Account account01 = client.instantiate(Account)
         account01 = account01.setGivenName(uniquify('John'))
                 .setSurname('Doe')
-                .setEmail(uniquify("johndoe") + "@stormpath.com")
+                .setEmail(uniquify("johndoe") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account01)
@@ -800,7 +800,7 @@ class DirectoryIT extends ClientIT {
         Account account02 = client.instantiate(Account)
         account02 = account02.setGivenName(uniquify('John'))
                 .setSurname('Doe 2')
-                .setEmail(uniquify("johndoe2") + "@stormpath.com")
+                .setEmail(uniquify("johndoe2") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account02)
@@ -929,7 +929,7 @@ class DirectoryIT extends ClientIT {
         }
 
         account = client.instantiate(Account)
-                .setEmail(username + "@nowhere.com")
+                .setEmail(username + "@testmail.stormpath.com")
         try {
             app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
             fail("Account requires username according to the account schema.")
@@ -940,7 +940,7 @@ class DirectoryIT extends ClientIT {
         //By default the email and password are the solely required fields
         account = client.instantiate(Account)
                 .setPassword("Changeme1!")
-                .setEmail(username + "@nowhere.com")
+                .setEmail(username + "@testmail.stormpath.com")
         account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
         deleteOnTeardown(account)
 
@@ -967,7 +967,7 @@ class DirectoryIT extends ClientIT {
         def account = client.instantiate(Account)
                 .setUsername(username)
                 .setPassword("Changeme1!")
-                .setEmail(username + "@nowhere.com")
+                .setEmail(username + "@testmail.stormpath.com")
         try {
             app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
             fail("Account requires givenName according to the account schema.")
@@ -995,7 +995,7 @@ class DirectoryIT extends ClientIT {
         def account = client.instantiate(Account)
                 .setUsername(username)
                 .setPassword("Changeme1!")
-                .setEmail(username + "@nowhere.com")
+                .setEmail(username + "@testmail.stormpath.com")
         try {
             app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
             fail("Account requires surname according to the account schema.")

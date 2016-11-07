@@ -116,7 +116,7 @@ class DefaultAccountTest {
         assertNull(defaultAccount.getStatus())
 
         defaultAccount = defaultAccount.setUsername("pacoman")
-            .setEmail("some@email.com")
+            .setEmail("some@testmail.stormpath.com")
             .setSurname("Smuk")
             .setMiddleName("Ben")
             .setGivenName("Mel")
@@ -126,7 +126,7 @@ class DefaultAccountTest {
         DateFormat df = new ISO8601DateFormat();
 
         assertEquals(defaultAccount.getUsername(), "pacoman")
-        assertEquals(defaultAccount.getEmail(), "some@email.com")
+        assertEquals(defaultAccount.getEmail(), "some@testmail.stormpath.com")
         assertEquals(defaultAccount.getSurname(), "Smuk")
         assertEquals(defaultAccount.getMiddleName(), "Ben")
         assertEquals(defaultAccount.getGivenName(), "Mel")

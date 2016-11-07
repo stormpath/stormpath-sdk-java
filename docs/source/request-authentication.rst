@@ -24,7 +24,7 @@ For example, using curl:
 
 .. code-block:: bash
 
-   curl -u LOGIN:PASSWORD http://localhost:8080/
+   curl -u LOGIN:PASSWORD http://localhost:${port}/
 
 where:
 
@@ -72,7 +72,7 @@ For example with cURL:
 .. code-block:: bash
 
    curl -X POST --data 'grant_type=password&username=ACCOUNT_USERNAME&password=ACCOUNT_PASSWORD' \
-        -H 'Origin: http://localhost:8080' http://localhost:8080/oauth/token
+        -H 'Origin: http://localhost:${port}' http://localhost:${port}/oauth/token
 
 where:
 
@@ -102,7 +102,7 @@ For example, with cURL (the value is shortened for brevity):
 
 .. code-block:: bash
 
-   curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0NTI0ODhlZ...' http://localhost:8080
+   curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0NTI0ODhlZ...' http://localhost:${port}
 
 that the actual ``Authorization`` header value is the string literal ``Bearer``, followed by a space character, followed by the actual token value string.
 
@@ -177,7 +177,7 @@ If you want to specify additional hosts that are permitted to run JavaScript tha
 
 .. code-block:: properties
 
-   stormpath.web.login.token.authorizedJavaScriptOriginUris = http://localhost https://localhost http://localhost:8080 https://localhost:8080
+   stormpath.web.login.token.authorizedJavaScriptOriginUris = http://localhost https://localhost http://localhost:${port} https://localhost:${port}
 
 The value is a whitespace-delimited list of base URLS.  Each base URL value must be formatted as follows:
 
@@ -202,39 +202,40 @@ It is *not safe* to request a new token over standard HTTP connections and is ex
 
 A convenience allowance for localhost development is enabled however: the HTTPS requirement assertion does not apply if the client and server are both on localhost to allow for convenience while developing and testing.
 
-.. only:: servlet
+#if( $servlet )
 
-   This is enabled via the following configuration property:
+This is enabled via the following configuration property:
 
-   .. code-block:: properties
+.. code-block:: properties
 
-      stormpath.web.oauth2.authorizer.secure.resolver = com.stormpath.sdk.servlet.config.SecureResolverFactory
+   stormpath.web.oauth2.authorizer.secure.resolver = com.stormpath.sdk.servlet.config.SecureResolverFactory
 
-   The ``com.stormpath.sdk.servlet.config.SecureResolverFactory`` returns a ``Resolver<Boolean>`` instance that will return true or false based on the inbound request.
+The ``com.stormpath.sdk.servlet.config.SecureResolverFactory`` returns a ``Resolver<Boolean>`` instance that will return true or false based on the inbound request.
 
-   The default implementation returns a ``com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver`` instance, which, as the name implies, requires HTTPS for all requests except those that are sent from and to localhost.
+The default implementation returns a ``com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver`` instance, which, as the name implies, requires HTTPS for all requests except those that are sent from and to localhost.
 
-   .. caution::
+.. caution::
 
-      If you change this configuration value to specify your own ``com.stormpath.sdk.servlet.http.Resolver<Boolean>`` implementation, please be aware that the OAuth 2 specification *requires* HTTPS.  If your implementation returns ``false`` at any time when you deploy your application to production, your web application *will* be vulnerable to identity hijacking attacks.
+   If you change this configuration value to specify your own ``com.stormpath.sdk.servlet.http.Resolver<Boolean>`` implementation, please be aware that the OAuth 2 specification *requires* HTTPS.  If your implementation returns ``false`` at any time when you deploy your application to production, your web application *will* be vulnerable to identity hijacking attacks.
 
-.. only:: springboot
+#else
 
-   This is enabled via the ``stormpathSecureResolver`` bean, an instance of ``Resolver<Boolean>`` that returns true for all scenarios except for localhost development.
+This is enabled via the ``stormpathSecureResolver`` bean, an instance of ``Resolver<Boolean>`` that returns true for all scenarios except for localhost development.
 
-   If you want to provide your own implementation that reflects other scenarios, you can override the ``stormpathSecureResolver`` bean:
+If you want to provide your own implementation that reflects other scenarios, you can override the ``stormpathSecureResolver`` bean:
 
-   .. code-block:: java
+.. code-block:: java
 
-       @Bean
-       public Resolver<Boolean> stormpathSecureResolver() {
-           return MySecureResolver(); //implement me
-       }
+   @Bean
+   public Resolver<Boolean> stormpathSecureResolver() {
+       return MySecureResolver(); //implement me
+   }
 
-   .. caution::
+.. caution::
 
-      If you change this bean to return your own ``com.stormpath.sdk.servlet.http.Resolver<Boolean>`` implementation, please be aware that the OAuth 2 specification *requires* HTTPS.  If your implementation returns ``false`` at any time when you deploy your application to production, your web application *will* be vulnerable to identity hijacking attacks.
+   If you change this bean to return your own ``com.stormpath.sdk.servlet.http.Resolver<Boolean>`` implementation, please be aware that the OAuth 2 specification *requires* HTTPS.  If your implementation returns ``false`` at any time when you deploy your application to production, your web application *will* be vulnerable to identity hijacking attacks.
 
+#end
 
 API Key Authentication
 ----------------------
@@ -243,7 +244,7 @@ Any account that may login to your application that also has one or more API Key
 
 .. code-block:: bash
 
-   curl -u ACCOUNT_API_KEY_ID:ACCOUNT_API_KEY_SECRET http://localhost:8080/
+   curl -u ACCOUNT_API_KEY_ID:ACCOUNT_API_KEY_SECRET http://localhost:${port}/
 
 .. caution:: HTTPS Required
 

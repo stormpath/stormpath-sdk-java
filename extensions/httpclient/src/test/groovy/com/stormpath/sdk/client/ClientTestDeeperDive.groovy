@@ -33,6 +33,7 @@ import com.stormpath.sdk.tenant.Tenant
 /**
  * @since 0.1
  */
+@Deprecated //todo: remove before 2.0.0
 class ClientTestDeeperDive {
 
     public static void main(String[] args) {

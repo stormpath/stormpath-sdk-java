@@ -145,7 +145,10 @@ public class VerifyController extends FormController {
                 return new DefaultViewModel(STORMPATH_JSON_VIEW_NAME, model);
             }
             List<ErrorModel> errors = new ArrayList<ErrorModel>();
-            ErrorModel error = ErrorModel.builder().setStatus(HttpServletResponse.SC_BAD_REQUEST).setMessage(i18n(request, "stormpath.web.verifyEmail.form.errors.invalidLink")).build();
+            ErrorModel error = ErrorModel.builder()
+                .setStatus(HttpServletResponse.SC_BAD_REQUEST)
+                .setMessage(i18n(request, "stormpath.web.verifyEmail.form.errors.invalidLink"))
+                .build();
             errors.add(error);
             Map<String, ?> model = createModel(request, response, null, errors);
             return new DefaultViewModel(view, model);

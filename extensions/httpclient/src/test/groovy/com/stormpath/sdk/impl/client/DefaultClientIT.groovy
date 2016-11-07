@@ -122,7 +122,7 @@ class DefaultClientIT extends ClientIT {
         def email = ""
 
         2.times {
-            email = uniquify('deleteme') + '@stormpath.com'
+            email = uniquify('deleteme') + '@testmail.stormpath.com'
 
             Account account = client.instantiate(Account)
             account.givenName = 'John'
