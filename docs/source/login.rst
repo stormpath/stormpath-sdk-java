@@ -131,12 +131,12 @@ By default, a Cookie-based ``Saver`` is enabled.  This is a nice default because
 
    The default HTTP Cookie-based ``Saver`` ensures that server side state storage - like a session - is not required at all.  This is beneficial to server-side applications that wish to remain stateless to achieve better performance, scalability, and fault tolerance.
 
-Even though the cookie approach is the default, you can choose server-side session storage if you prefer, or enable both, or implement your own ``Saver`` implementation to do whatever you like.
+Even though the cookie approach is the default, you can implement your own ``Saver`` implementation to do whatever you like.
 
 Saving Authentication State
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The |project| will automatically save authentication state for access during later requests for you.  By default, a Cookie-based saver is enabled and no ``HttpSession`` access is used.  There is also an ``HttpSession``-based implementation that you can enable if you wish.  Finally, you can provide your own implementations entirely if neither of these two options are suitable.
+The |project| will automatically save authentication state for access during later requests for you.  By default, a Cookie-based saver is enabled and no ``HttpSession`` access is used.  You can provide your own implementations entirely if the cookie option is not suitable.
 
 #if( $servlet )
 
@@ -144,7 +144,7 @@ You can enable any number of AuthenticationResult savers as a comma-delimited li
 
 .. code-block:: properties
 
-   # 'cookie' and 'session' are supported out of the box.  Default to 'cookie' for server statelessness:
+   # Default to 'cookie' for server statelessness:
    stormpath.web.authc.savers = cookie
 
 The value can be a comma delimited list of names.
@@ -162,12 +162,11 @@ where:
 * ``SAVER_NAME`` is a simple string name that represents the ``Saver`` implementation.
 * ``SAVER_FULLY_QUALIFIED_CLASS_NAME`` is the fully qualified class name of a class that implements the ``com.stormpath.sdk.servlet.http.Saver`` interface.
 
-For example, two saver implementations are pre-configured by default:
+For example, one saver implementation is pre-configured by default:
 
 .. code-block:: properties
 
    stormpath.web.authc.savers.cookie = com.stormpath.sdk.servlet.filter.account.config.CookieAuthenticationResultSaverFactory
-   stormpath.web.authc.savers.session = com.stormpath.sdk.servlet.filter.account.config.SessionAuthenticationResultSaverFactory
 
 So if we look at the default configuration value again:
 
@@ -175,15 +174,13 @@ So if we look at the default configuration value again:
 
    stormpath.web.authc.savers = cookie
 
-we can see that only the cookie-based ``Saver`` implementation is to be used to ensure server statelessness out of the box.
+we can see that only the Cookie-based ``Saver`` implementation is to be used to ensure server statelessness out of the box.
 
-If you wanted to enable both cookie and session storage, for example:
+If you wanted to enable both cookie and your own name that corresponds to a property that reflects a custom implementation ('session' for example):
 
 .. code-block:: properties
 
    stormpath.web.authc.savers = cookie, session
-
-or if you wish, you may specify your own name that corresponds to a property that reflects a custom implementation.
 
 #end
 
@@ -288,7 +285,7 @@ If you need greater control over how the JWT is constructed, you can create your
 Disabling Cookie Storage
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you are going to use the ``HttpSession`` to store authentication state or use your own ``Saver<AuthenticationResult>`` implementation, you can disable the cookie if desired:
+If you are going to use your own ``Saver<AuthenticationResult>`` implementation, you can disable the cookie if desired:
 
 .. code-block:: properties
 
@@ -296,23 +293,12 @@ If you are going to use the ``HttpSession`` to store authentication state or use
 
 But be careful: if you disable this, you *must* enable at least one other saver - at least one must be available to handle authentication correctly.
 
-HttpSession Storage
-^^^^^^^^^^^^^^^^^^^
-
-The ``SessionAuthenticationResultSaver`` is available but not enabled by default.  This saver will save an efficient compact representation of the authenticated ``Account`` to the associated request's `HttpSession <http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpSession.html>`_.  This implementation assumes you are using sessions managed by the servlet container.
-
-You can enable this saver by setting the ``stormpath.web.authc.savers.session.enabled`` property to ``true``:
-
-.. code-block:: properties
-
-   # default is false:
-   stormpath.web.authc.savers.session.enabled = true
-
-The |project| does not require use of the ``HttpSession`` at all to remain compatible with stateless architectures.  It will not use the ``HttpSession`` unless you explicitly set ``stormpath.web.authc.savers.session.enabled`` to ``true`` as indicated above.
+Custom Savers
+^^^^^^^^^^^^^
 
 #if( $servlet )
 
-Finally, if the default HttpSession-based ``Saver`` implementation is not sufficient, you can specify a different implementation with the ``stormpath.web.authc.savers.session`` configuration property.  The value must be the full qualified class name of an implementation of the ``com.stormpath.sdk.servlet.http.Saver`` interface.  For example:
+Finally, if the default Cookie-based ``Saver`` implementation is not sufficient. For example, you want an HttpSession-based ``Saver``, then you can create the  ``stormpath.web.authc.savers.session`` configuration property.  The value must be the full qualified class name of an implementation of the ``com.stormpath.sdk.servlet.http.Saver`` interface.  For example:
 
 .. code-block:: properties
 
@@ -320,10 +306,7 @@ Finally, if the default HttpSession-based ``Saver`` implementation is not suffic
 
 #else
 
-Custom Savers
-^^^^^^^^^^^^^
-
-Finally, if the default Cookie or HttpSession-based ``Saver`` implementations are not sufficient, you can specify different implementations by overriding the ``stormpathAuthenticationResultSavers`` bean and returning your own ``List`` of ``Saver<AuthenticationResult>`` instances.  For example:
+If the default cookie ``Saver`` implementation is not sufficient, you can specify different implementations by overriding the ``stormpathAuthenticationResultSavers`` bean and returning your own ``List`` of ``Saver<AuthenticationResult>`` instances.  For example:
 
 .. code-block:: java
 

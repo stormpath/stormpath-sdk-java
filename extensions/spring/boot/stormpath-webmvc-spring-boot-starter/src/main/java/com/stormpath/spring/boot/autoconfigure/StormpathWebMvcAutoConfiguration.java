@@ -226,12 +226,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathSessionAuthenticationResultSaver")
-    public Saver<AuthenticationResult> stormpathSessionAuthenticationResultSaver() {
-        return super.stormpathSessionAuthenticationResultSaver();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathAuthenticationResultSavers")
     public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
         return super.stormpathAuthenticationResultSavers();
@@ -338,12 +332,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name = "stormpathCookieAccountResolver")
     public Resolver<Account> stormpathCookieAccountResolver() {
         return super.stormpathCookieAccountResolver();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathSessionAccountResolver")
-    public Resolver<Account> stormpathSessionAccountResolver() {
-        return super.stormpathSessionAccountResolver();
     }
 
     @Bean
