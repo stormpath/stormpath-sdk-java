@@ -51,7 +51,7 @@ class DefaultCreateOAuthPasswordGrantAuthenticationAttemptTest {
     void testMethods() {
 
         def properties = [
-                username: "user@test.com",
+                username: "user@testmail.stormpath.com",
                 password: "Something4!",
                 grant_type: "password"
         ]

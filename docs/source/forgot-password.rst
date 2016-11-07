@@ -35,7 +35,7 @@ Configure the Workflow
 
 #. On the Directory Workflows screen, select the ``Password Reset`` tab at the top and enable the workflow.
 
-   Ensure you change the ``Link Base Url`` text field to equal the fully qualified URL of your application's :ref:`password reset link base URL <forgot uri>`.  The default context-relative path for this feature is ``/change``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/change``.
+   Ensure you change the ``Link Base Url`` text field to equal the fully qualified URL of your application's :ref:`password reset link base URL <forgot uri>`.  The default context-relative path for this feature is ``/change``, implying a base URL (for example, during localhost testing) of ``http://localhost:${port}/change``.
 
    .. image:: /_static/console-directory-workflows-pwreset.png
 
@@ -50,7 +50,7 @@ Configure the Workflow
 Try it!
 -------
 
-#. Visit ``http://localhost:8080/forgot`` and you'll see the form accepting an email address to kick off the workflow:
+#. Visit ``http://localhost:${port}/forgot`` and you'll see the form accepting an email address to kick off the workflow:
 
    .. image:: /_static/forgot.png
 
@@ -101,23 +101,26 @@ As you can see, this URI has a ``status=forgot`` query parameter. The default lo
 
 .. image:: /_static/forgot-result.png
 
-.. only:: springboot
+#if( !$servlet )
 
-  Forgot View
-  -----------
 
-  When the Forgot URI is visited a default template view named ``stormpath/forgot`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.forgotPassword.view`` property:
+Forgot View
+-----------
 
-  .. code-block:: properties
+When the Forgot URI is visited a default template view named ``stormpath/forgot`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.forgotPassword.view`` property:
 
-      stormpath.web.forgotPassword.view = stormpath/forgot
+.. code-block:: properties
 
-  Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+    stormpath.web.forgotPassword.view = stormpath/forgot
+
+Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+
+#end
 
 Change Password URI
 -------------------
 
-The Password Reset 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the password reset email.  For example, during development, this is often something like ``http://localhost:8080/change`` and in production, something like ``https://myapp.com/change``.
+The Password Reset 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the password reset email.  For example, during development, this is often something like ``http://localhost:${port}/change`` and in production, something like ``https://myapp.com/change``.
 
 When a user clicks the link in the email, the |project| will automatically process the resulting request;  By default, the context-relative path that will process these requests is ``/change`` as the above link examples show.  This path is controlled via the ``stormpath.web.changePassword.uri`` configuration property:
 
@@ -152,25 +155,27 @@ If you want to change this path, set the ``stormpath.web.login.uri`` configurati
     # The context-relative path to the login view:
     stormpath.web.login.uri = /login
 
-.. only:: springboot
+#if( !$servlet )
 
-  Change Password View
-  --------------------
+Change Password View
+--------------------
 
-  When the Change Password URI is visited a default template view named ``stormpath/change`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.changePassword.view`` property:
+When the Change Password URI is visited a default template view named ``stormpath/change`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.changePassword.view`` property:
 
-  .. code-block:: properties
+.. code-block:: properties
 
-      stormpath.web.changePassword.view = stormpath/change
+    stormpath.web.changePassword.view = stormpath/change
 
-  Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+
+#end
 
 i18n
 ----
 
 The :ref:`i18n` message keys used in the forgot password view have names prefixed with ``stormpath.web.forgotPassword.``:
 
-.. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
+.. literalinclude:: ../../../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
    :language: properties
    :lines: 88-101
 

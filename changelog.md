@@ -1,11 +1,16 @@
 ## Change Log ##
 
+### 1.1.3 ##
+
+This release has a bug fix for Spring Security that was causing unnecessary API calls.
+
+See [1.1.3 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.3+is%3Aclosed) for a complete list of changes.
+
 ### 1.1.2 ##
 
 This release includes a fix for the `next` parameter when deployed at a non-root context and a change in the JSON structure of the /me endpoint (now returns `groups.items` instead of `groups`).
 
 See [1.1.2 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.2+is%3Aclosed) for a complete list of changes.
-
 
 ### 1.1.1 ##
 

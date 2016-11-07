@@ -85,7 +85,7 @@ class CollectionIterationIT extends ClientIT {
             Account account = client.instantiate(Account)
             account = account.setGivenName(uniquify("Test Account ${i}"))
                     .setSurname('DELETEME')
-                    .setEmail(uniquify("john${i}deleteme") + "@stormpath.com")
+                    .setEmail(uniquify("john${i}deleteme") + "@testmail.stormpath.com")
                     .setPassword('Changeme1!')
             dir.createAccount(account);
         }

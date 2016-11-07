@@ -31,7 +31,7 @@ class DefaultVerificationEmailRequestBuilderTest {
 
     @Test
     void testBuilder() {
-        String login = "myemail@mydomain.com"
+        String login = "myemail@testmail.stormpath.com"
 
         def requestBuilder = Applications.verificationEmailBuilder();
         def request = requestBuilder.setLogin(login).build()
@@ -63,7 +63,7 @@ class DefaultVerificationEmailRequestBuilderTest {
     @Test
     void testAccountStoreNotSpecified() {
         def requestBuilder = Applications.verificationEmailBuilder()
-        def request = requestBuilder.setLogin("myemail@mydomain.com").build()
+        def request = requestBuilder.setLogin("myemail@testmail.stormpath.com").build()
         assertNull request.getAccountStore()
     }
 
@@ -87,7 +87,7 @@ class DefaultVerificationEmailRequestBuilderTest {
 
     @Test(expectedExceptions = IllegalArgumentException)
     void testInvalidAccountStore() {
-        String login = "myemail@mydomain.com"
+        String login = "myemail@testmail.stormpath.com"
 
         def requestBuilder = Applications.verificationEmailBuilder();
         def dir = new DefaultDirectory(createStrictMock(InternalDataStore))

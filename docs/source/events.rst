@@ -13,28 +13,30 @@ When the |project| publishes various events, a ``RequestEventListener`` will be 
 #. Implement the ``com.stormpath.sdk.servlet.event.RequestEventListener`` interface directly and implement all event methods.
 #. Subclass the ``com.stormpath.sdk.servlet.event.RequestEventListenerAdapter`` and override only the event methods you are interested in.
 
-.. only:: servlet
+#if( $servlet )
 
-  You may specify your implementation's fully qualified class name using the ``stormpath.web.event.listener`` configuration property:
+You may specify your implementation's fully qualified class name using the ``stormpath.web.event.listener`` configuration property:
 
-  .. code-block:: properties
+.. code-block:: properties
 
-      stormpath.web.request.event.listener = com.stormpath.sdk.servlet.event.RequestEventListenerAdapter
+    stormpath.web.request.event.listener = com.stormpath.sdk.servlet.event.RequestEventListenerAdapter
 
-  As you can see, the default implementation is an instance of the adapter, which simply just logs each event to the ``debug`` log level.
+As you can see, the default implementation is an instance of the adapter, which simply just logs each event to the ``debug`` log level.
 
-.. only:: springboot
+#else
 
-  After you have an implementation, just declare your implementation as the ``stormpathRequestEventListener`` bean:
+After you have an implementation, just declare your implementation as the ``stormpathRequestEventListener`` bean:
 
-  .. code-block:: java
+.. code-block:: java
 
-      @Bean
-      public RequestEventListener stormpathRequestEventListener() {
-          return new RequestEventListenerAdapter();
-      }
+    @Bean
+    public RequestEventListener stormpathRequestEventListener() {
+        return new RequestEventListenerAdapter();
+    }
 
-  Unless overridden, the default implementation is an instance of the adapter, which simply just logs each event to the ``debug`` log level.
+Unless overridden, the default implementation is an instance of the adapter, which simply just logs each event to the ``debug`` log level.
+
+#end
 
 Events
 ------
@@ -62,15 +64,17 @@ Events are sent and consumed *synchronously* during the HTTP request that trigge
 
 To ensure requests are responded to quickly, ensure your event listener methods return quickly or dispatch work asynchronously to another thread or ``ExecutorService`` (for example).
 
-.. only:: springboot
+#if( !$servlet )
 
-  Spring Security
-  ---------------
+Spring Security
+---------------
 
-  If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ then the standard Spring Security events will be triggered as usual.
+If you are using our `Spring Security integration <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_ then the standard Spring Security events will be triggered as usual.
 
-  .. note::
+.. note::
 
-      Authentication event publishing is delegated to the configured ``AuthenticationEventPublisher`` which defaults to a null implementation which doesn't publish events, so you must inject a publisher bean if you want to receive Spring Security events.
+    Authentication event publishing is delegated to the configured ``AuthenticationEventPublisher`` which defaults to a null implementation which doesn't publish events, so you must inject a publisher bean if you want to receive Spring Security events.
 
-  In the case of a successful authentication an `AuthenticationSuccessEvent <http://docs.spring.io/autorepo/docs/spring-security/4.1.2.RELEASE/apidocs/org/springframework/security/authentication/event/AuthenticationSuccessEvent.html>`_ will be triggered. Otherwise, one of many different events denoting the actual authentication failure cause will be triggered.
+In the case of a successful authentication an `AuthenticationSuccessEvent <http://docs.spring.io/autorepo/docs/spring-security/current/apidocs/org/springframework/security/authentication/event/AuthenticationSuccessEvent.html>`_ will be triggered. Otherwise, one of many different events denoting the actual authentication failure cause will be triggered.
+
+#end
