@@ -13,7 +13,6 @@ class DefaultOAuthProviderModelTest {
 
     @Test
     void testInitialization() {
-
         OAuthProvider provider = createNiceMock(OAuthProvider)
         expect(provider.clientId).andStubReturn("1234")
         expect(provider.href).andStubReturn("http://api.stormpath.com/provider/uid")

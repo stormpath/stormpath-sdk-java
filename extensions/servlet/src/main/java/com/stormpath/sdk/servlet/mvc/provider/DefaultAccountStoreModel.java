@@ -16,6 +16,9 @@
 package com.stormpath.sdk.servlet.mvc.provider;
 
 import com.stormpath.sdk.directory.Directory;
+import org.apache.http.client.utils.URIBuilder;
+
+import java.net.URISyntaxException;
 
 /**
  * @since 1.0.0
@@ -24,10 +27,24 @@ public class DefaultAccountStoreModel implements AccountStoreModel {
 
     private final Directory directory;
     private final ProviderModel providerModel;
+    private final String authorizeUri;
 
-    public DefaultAccountStoreModel(Directory directory, ProviderModel provider) {
+    public DefaultAccountStoreModel(Directory directory, ProviderModel provider, String authorizeBaseUri) {
         this.directory = directory;
         this.providerModel = provider;
+        if (providerModel instanceof OAuthProviderModel) {
+            try {
+                URIBuilder builder = new URIBuilder(authorizeBaseUri);
+                builder.setPath("/authorize");
+                builder.addParameter("response_type", "stormpath_token");
+                builder.addParameter("account_store_href", directory.getHref());
+                authorizeUri = builder.build().toString();
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException("authorizeBaseUri must be value URI", e);
+            }
+        } else {
+            authorizeUri = null;
+        }
     }
 
     @Override
@@ -38,6 +55,11 @@ public class DefaultAccountStoreModel implements AccountStoreModel {
     @Override
     public String getName() {
         return this.directory.getName();
+    }
+
+    @Override
+    public String getAuthorizeUri() {
+        return authorizeUri;
     }
 
     @Override

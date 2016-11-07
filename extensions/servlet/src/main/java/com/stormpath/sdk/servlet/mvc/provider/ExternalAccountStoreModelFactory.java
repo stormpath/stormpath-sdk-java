@@ -24,6 +24,7 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.provider.GoogleProvider;
 import com.stormpath.sdk.provider.OAuthProvider;
@@ -32,6 +33,8 @@ import com.stormpath.sdk.provider.saml.SamlProvider;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,9 +56,9 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         ApplicationAccountStoreMappingCriteria criteria = ApplicationAccountStoreMappings.criteria().limitTo(pageSize);
         ApplicationAccountStoreMappingList mappings = app.getAccountStoreMappings(criteria);
 
-        final List<AccountStoreModel> accountStores = new ArrayList<AccountStoreModel>(mappings.getSize());
+        final List<AccountStoreModel> accountStores = new ArrayList<>(mappings.getSize());
 
-        AccountStoreModelVisitor visitor = new AccountStoreModelVisitor(accountStores);
+        AccountStoreModelVisitor visitor = new AccountStoreModelVisitor(accountStores, getAuthorizeBaseUri(request));
 
         for (ApplicationAccountStoreMapping mapping : mappings) {
 
@@ -67,12 +70,25 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         return visitor.getAccountStores();
     }
 
+    private String getAuthorizeBaseUri(HttpServletRequest request) {
+        String authorizeBaseUri = null;
+        try {
+            authorizeBaseUri = new URI(request.getScheme(), null, request.getServerName(), request.getServerPort(), null, null, null).toString();
+        } catch (URISyntaxException e) {
+            // should never happen
+            Assert.isTrue(false, "Getting the base URI from " + request.toString() + " caused URISyntaxException: " + e.getMessage());
+        }
+        return authorizeBaseUri;
+    }
+
     private class AccountStoreModelVisitor implements AccountStoreVisitor {
 
         private final List<AccountStoreModel> accountStores;
+        private final String authorizeBaseUri;
 
-        public AccountStoreModelVisitor(List<AccountStoreModel> accountStores) {
+        public AccountStoreModelVisitor(List<AccountStoreModel> accountStores, String authorizeBaseUri) {
             this.accountStores = accountStores;
+            this.authorizeBaseUri = authorizeBaseUri;
         }
 
         @Override
@@ -98,7 +114,7 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
             }
 
             if (providerModel != null) {
-                AccountStoreModel accountStoreModel = new DefaultAccountStoreModel(directory, providerModel);
+                AccountStoreModel accountStoreModel = new DefaultAccountStoreModel(directory, providerModel, authorizeBaseUri);
                 accountStores.add(accountStoreModel);
             }
         }
