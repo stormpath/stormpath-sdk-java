@@ -182,6 +182,28 @@ public interface Config extends Map<String, String> {
 
     Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver();
 
-    GrantTypeStatusValidator getGrantTypeStatusValidator();
+    /**
+     * @since 1.2.0
+     */
+    List<String> getAllowedCorsOrigins();
 
+    /**
+     * @since 1.2.0
+     */
+    boolean isCorsEnabled();
+
+    /**
+     * @since 1.2.0
+     */
+    List<String> getAllowedCorsHaders();
+
+    /**
+     * @since 1.2.0
+     */
+    List<String> getAllowedCorsMethods();
+
+    /**
+     * @since 1.2.0
+     */
+    GrantTypeStatusValidator getGrantTypeStatusValidator();
 }

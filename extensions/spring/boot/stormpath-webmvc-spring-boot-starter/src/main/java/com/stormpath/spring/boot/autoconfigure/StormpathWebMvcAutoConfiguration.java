@@ -15,7 +15,6 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -226,12 +225,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathSessionAuthenticationResultSaver")
-    public Saver<AuthenticationResult> stormpathSessionAuthenticationResultSaver() {
-        return super.stormpathSessionAuthenticationResultSaver();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathAuthenticationResultSavers")
     public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
         return super.stormpathAuthenticationResultSavers();
@@ -338,12 +331,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @ConditionalOnMissingBean(name = "stormpathCookieAccountResolver")
     public Resolver<Account> stormpathCookieAccountResolver() {
         return super.stormpathCookieAccountResolver();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathSessionAccountResolver")
-    public Resolver<Account> stormpathSessionAccountResolver() {
-        return super.stormpathSessionAccountResolver();
     }
 
     @Bean

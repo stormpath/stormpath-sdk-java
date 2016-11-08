@@ -7,7 +7,7 @@ SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
 LANGUAGE      = servlet
-LANGUAGES     = servlet springboot
+LANGUAGES     = servlet springboot sczuul
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -66,6 +66,12 @@ allhtml:
 		$(SPHINXBUILD) -nW -b html -E $(ALLSPHINXOPTS) -t $$target $(BUILDDIR)/html/$$target; \
 	done
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+sczuulhtml:
+	@rm -rf $(BUILDDIR)
+	$(SPHINXBUILD) -n -b html -E $(ALLSPHINXOPTS) -t sczuul $(BUILDDIR)/html/sczuul
+	@echo
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html/sczuul"
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml

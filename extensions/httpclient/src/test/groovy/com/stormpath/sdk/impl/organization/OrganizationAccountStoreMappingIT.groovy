@@ -298,7 +298,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         Account acct = client.instantiate(Account)
         acct.username = uniquify('JSDK_testAccountForOrg')
         acct.password = 'Changeme1!'
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
 
@@ -472,7 +472,7 @@ class OrganizationAccountStoreMappingIT extends ClientIT {
         Account acct = client.instantiate(Account)
         acct.username = uniquify('Stormpath-SDK-Test-AccountStore')
         acct.password = 'Changeme1!'
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = org.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())

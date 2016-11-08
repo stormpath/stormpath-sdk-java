@@ -1,28 +1,34 @@
 |project|
 =========
 
-.. only:: springboot
+#if( $sczuul )
 
-  The |project| allows you to use Stormpath almost instantly in any Spring Boot application. It makes it *incredibly* simple to add user management, authentication and authorization to your application.
+.. include:: about_sczuul.rst
 
-.. only:: servlet
+#elseif( $springboot )
 
-  The |project| is a drop-in plugin for web applications deployed to a `Servlet`_ container, like Tomcat or Jetty.  It makes it *incredibly* simple to add user management, authentication and authorization to your application.
+The |project| allows you to use Stormpath almost instantly in any Spring Boot application. It makes it *incredibly* simple to add user management, authentication and authorization to your application.
 
-|project| helps automate all user registration, login, authentication and authorization workflows as well as properly secure the web app.  It is very flexible - use only what you need or leverage the entire feature set.
+#else
+
+The |project| is a drop-in plugin for web applications deployed to a `Servlet`_ container, like Tomcat or Jetty.  It makes it *incredibly* simple to add user management, authentication and authorization to your application.
+
+#end
 
 And the best part? **You don't even need a database!**
 
 User Guide
 ----------
 
-.. only:: servlet
+#if( $servlet )
 
-  This part of the documentation will show you how to get started with the Stormpath Java Servlet Plugin.  If you're new to the plugin, start here!
+This part of the documentation will show you how to get started with the Stormpath Java Servlet Plugin.  If you're new to the plugin, start here!
 
-.. only:: springboot
+#elseif( $springboot )
 
-  This part of the documentation will show you how to get started right away.  If you are building a Spring Boot application and are new to Stormpath, start here!
+This part of the documentation will show you how to get started right away.  If you are building a Spring Boot application and are new to Stormpath, start here!
+
+#end
 
 .. toctree::
   :maxdepth: 2
@@ -39,7 +45,10 @@ User Guide
   logout
   request-authentication
   request
-  access-control
+  #if($sczuul)forwarded-request#end
+
+  #if($servlet)access-control#end
+
   i18n
   events
   caching

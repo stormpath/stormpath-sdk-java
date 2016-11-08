@@ -72,8 +72,6 @@ import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
-import com.stormpath.sdk.servlet.filter.account.SessionAccountResolver;
-import com.stormpath.sdk.servlet.filter.account.SessionAuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
@@ -135,6 +133,9 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
@@ -349,6 +350,20 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.jsp.view.resolver.order'] ?: T(org.springframework.core.Ordered).LOWEST_PRECEDENCE}")
     protected int jspViewResolverOrder;
+
+    // ================  CORS properties ==================
+
+    @Value("#{ @environment['stormpath.web.cors.enabled'] ?: true }")
+    protected boolean corsEnabled;
+
+    @Value("#{ @environment['stormpath.web.cors.allowed.originUris'] }")
+    protected String corsAllowedOrigins;
+
+    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] ?: 'Content-Type,Accept,X-Requested-With,remember-me' }")
+    protected String corsAllowedHeaders;
+
+    @Value("#{ @environment['stormpath.web.cors.allowed.methods'] ?: 'POST,GET,OPTIONS,DELETE' }")
+    protected String corsAllowedMethods;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -679,27 +694,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return DisabledAuthenticationResultSaver.INSTANCE;
     }
 
-    public Saver<AuthenticationResult> stormpathSessionAuthenticationResultSaver() {
-
-        if (sessionAuthenticationResultSaverEnabled) {
-            String[] attributeNames = {Account.class.getName(), "account"};
-            Set<String> set = new HashSet<String>(Arrays.asList(attributeNames));
-            return new SessionAuthenticationResultSaver(set);
-        }
-
-        return DisabledAuthenticationResultSaver.INSTANCE;
-    }
-
     public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
 
         List<Saver<AuthenticationResult>> savers = new ArrayList<Saver<AuthenticationResult>>();
 
         Saver<AuthenticationResult> saver = stormpathCookieAuthenticationResultSaver();
-        if (!(saver instanceof DisabledAuthenticationResultSaver)) {
-            savers.add(saver);
-        }
-
-        saver = stormpathSessionAuthenticationResultSaver();
         if (!(saver instanceof DisabledAuthenticationResultSaver)) {
             savers.add(saver);
         }
@@ -816,10 +815,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             stormpathAccessTokenResultFactory());
     }
 
-    public Resolver<Account> stormpathSessionAccountResolver() {
-        return new SessionAccountResolver();
-    }
-
     public List<Resolver<Account>> stormpathAccountResolvers() {
 
         //the order determines which locations are checked.  One an account is found, the remaining locations are
@@ -827,7 +822,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         List<Resolver<Account>> resolvers = new ArrayList<Resolver<Account>>(3);
         resolvers.add(stormpathAuthorizationHeaderAccountResolver());
         resolvers.add(stormpathCookieAccountResolver());
-        resolvers.add(stormpathSessionAccountResolver());
 
         return resolvers;
     }
@@ -1371,6 +1365,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         accountResolverFilter.setOauthEndpointUri(stormpathAccessTokenConfig().getAccessTokenUri());
         List<Filter> priorityFilters = Collections.<Filter>toList(accountResolverFilter);
 
+        if (corsEnabled) {
+            priorityFilters.add(newCorsFilter());
+        }
+
         return new PrioritizedFilterChainResolver(resolver, priorityFilters);
     }
 
@@ -1463,6 +1461,61 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
             aBase.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
+     *
+     * @since 1.2.0
+     */
+    public Filter newCorsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(stormpathCorsAllowedOrigins());
+        config.setAllowedHeaders(stormpathCorsAllowedHeaders());
+        config.setAllowedMethods(stormpathCorsAllowedMethods());
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+    /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
+     *
+     * @since 1.2.0
+     */
+    public List<String> stormpathCorsAllowedOrigins() {
+        if (Strings.hasText(corsAllowedOrigins)) {
+            return Arrays.asList(Strings.split(corsAllowedOrigins));
+        }
+
+        return java.util.Collections.emptyList();
+    }
+
+    /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
+     *
+     * @since 1.2.0
+     */
+    public List<String> stormpathCorsAllowedMethods() {
+        if (Strings.hasText(corsAllowedOrigins)) {
+            return Arrays.asList(Strings.split(corsAllowedMethods));
+        }
+
+        return java.util.Collections.emptyList();
+    }
+
+    /**
+     * Fix for https://github.com/stormpath/stormpath-sdk-java/issues/699
+     *
+     * @since 1.2.0
+     */
+    public List<String> stormpathCorsAllowedHeaders() {
+        if (Strings.hasText(corsAllowedOrigins)) {
+            return Arrays.asList(Strings.split(corsAllowedHeaders));
+        }
+
+        return java.util.Collections.emptyList();
     }
 }
 
