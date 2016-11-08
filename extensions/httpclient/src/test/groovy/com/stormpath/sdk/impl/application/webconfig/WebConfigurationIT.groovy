@@ -49,6 +49,7 @@ class WebConfigurationIT extends ClientIT {
 
         def webConfiguration = application.webConfig
 
+        assertTrue webConfiguration.getLogin().enabled
         assertTrue webConfiguration.getOAuth2().enabled
 
         assertEquals requestCountingClient.requestCount, 2
@@ -59,8 +60,10 @@ class WebConfigurationIT extends ClientIT {
 
         def webConfig = createTempApp().getWebConfig()
 
-        Oauth2Config oauth2Config = webConfig.getOAuth2()
+        webConfig.getLogin().setEnabled(false)
+        webConfig.getRegister().setEnabled(false)
 
+        Oauth2Config oauth2Config = webConfig.getOAuth2()
         oauth2Config.setEnabled(false)
 
         MeConfig meConfig = webConfig.getMe()
@@ -73,6 +76,9 @@ class WebConfigurationIT extends ClientIT {
         webConfig.save()
 
         def readWebConfig = buildClient(false).getResource(webConfig.href, ApplicationWebConfig)
+
+        assertFalse readWebConfig.getRegister().isEnabled()
+        assertFalse readWebConfig.getLogin().isEnabled()
 
         Oauth2Config readOAuth2 = readWebConfig.getOAuth2()
 

@@ -21,6 +21,7 @@ import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus;
 import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
 import com.stormpath.sdk.application.webconfig.ForgotPasswordConfig;
+import com.stormpath.sdk.application.webconfig.LoginConfig;
 import com.stormpath.sdk.application.webconfig.MeConfig;
 import com.stormpath.sdk.application.webconfig.Oauth2Config;
 import com.stormpath.sdk.application.webconfig.RegisterConfig;
@@ -53,6 +54,7 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     private static final EnumProperty<ApplicationWebConfigStatus> STATUS = new EnumProperty<>(ApplicationWebConfigStatus.class);
     private static final ParentAwareObjectProperty<DefaultOauth2Config, AbstractPropertyRetriever> OAUTH2;
     private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.Register, AbstractPropertyRetriever> REGISTER;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.Login, AbstractPropertyRetriever> LOGIN;
     private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.VerifyEmail, AbstractPropertyRetriever> VERIFY_EMAIL;
     private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.ForgotPassword, AbstractPropertyRetriever> FORGOT_PASSWORD;
     private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.ChangePassword, AbstractPropertyRetriever> CHANGE_PASSWORD;
@@ -65,6 +67,7 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     static {
         OAUTH2 = new ParentAwareObjectProperty<>("oauth2", DefaultOauth2Config.class, AbstractPropertyRetriever.class);
         REGISTER = new ParentAwareObjectProperty<>("register", DefaultWebFeatureConfig.Register.class, AbstractPropertyRetriever.class);
+        LOGIN = new ParentAwareObjectProperty<>("login", DefaultWebFeatureConfig.Login.class, AbstractPropertyRetriever.class);
         VERIFY_EMAIL = new ParentAwareObjectProperty<>("verifyEmail", DefaultWebFeatureConfig.VerifyEmail.class, AbstractPropertyRetriever.class);
         FORGOT_PASSWORD = new ParentAwareObjectProperty<>("forgotPassword", DefaultWebFeatureConfig.ForgotPassword.class, AbstractPropertyRetriever.class);
         CHANGE_PASSWORD = new ParentAwareObjectProperty<>("changePassword", DefaultWebFeatureConfig.ChangePassword.class, AbstractPropertyRetriever.class);
@@ -145,6 +148,11 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     @Override
     public RegisterConfig getRegister() {
         return getParentAwareObjectProperty(REGISTER);
+    }
+
+    @Override
+    public LoginConfig getLogin() {
+        return getParentAwareObjectProperty(LOGIN);
     }
 
     @Override

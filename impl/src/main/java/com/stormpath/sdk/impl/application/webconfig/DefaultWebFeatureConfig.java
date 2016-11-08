@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.application.webconfig;
 
 import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
 import com.stormpath.sdk.application.webconfig.ForgotPasswordConfig;
+import com.stormpath.sdk.application.webconfig.LoginConfig;
 import com.stormpath.sdk.application.webconfig.RegisterConfig;
 import com.stormpath.sdk.application.webconfig.VerifyEmailConfig;
 import com.stormpath.sdk.application.webconfig.WebFeatureConfig;
@@ -46,6 +47,12 @@ public class DefaultWebFeatureConfig<T extends WebFeatureConfig<T>> extends Conf
 
     public static class Register extends DefaultWebFeatureConfig<RegisterConfig> implements RegisterConfig {
         public Register(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+            super(name, properties, parent);
+        }
+    }
+
+    public static class Login extends DefaultWebFeatureConfig<LoginConfig> implements LoginConfig {
+        public Login(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
             super(name, properties, parent);
         }
     }

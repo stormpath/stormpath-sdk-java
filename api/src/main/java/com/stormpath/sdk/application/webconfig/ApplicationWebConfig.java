@@ -120,6 +120,13 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
     RegisterConfig getRegister();
 
     /**
+     * Returns the {@link LoginConfig loginConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     *
+     * @return the {@link LoginConfig loginConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     */
+    LoginConfig getLogin();
+
+    /**
      * Returns the {@link VerifyEmailConfig verifyEmailConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link VerifyEmailConfig verifyEmailConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
