@@ -384,8 +384,10 @@ When the registration form is rendered, this field will be added:
 
 When the form is submitted, the field's name and value will be added automatically to the account's custom data.
 
-**NOTE:** If the ``type`` of a custom form field is ``password``, input on the field will be masked as usual. However,
-the value input into the field will be stored in Custom Data as clear text.
+.. caution:: Clear Text for Custom Fields
+
+    If the ``type`` of a custom form field is ``password``, input on the field will be masked as usual.
+    However, the value input into any custom form field will be stored in Custom Data as clear text.
 
 If you want to provide users with a good internationalization experience, then you should define the label and
 placeholder properties like this:
