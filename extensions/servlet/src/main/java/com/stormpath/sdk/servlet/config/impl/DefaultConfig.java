@@ -415,7 +415,7 @@ public class DefaultConfig implements Config {
     @Override
     public <T> Map<String, T> getInstances(String propertyNamePrefix, Class<T> expectedType) throws ServletException {
         Map<String, Class<T>> classes =
-                new ImplementationClassResolver<>(this, propertyNamePrefix, expectedType).findImplementationClasses();
+            new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
 
         Map<String, T> instances = new LinkedHashMap<>(classes.size());
 
