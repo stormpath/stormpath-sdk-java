@@ -18,6 +18,9 @@ package com.stormpath.sdk.impl.tenant;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 
+/**
+ * @since 1.2.0
+ */
 public interface TenantResolver {
 
     Tenant getCurrentTenant();

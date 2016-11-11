@@ -19,6 +19,9 @@ import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 
+/**
+ * @since 1.2.0
+ */
 public class DefaultTenantResolver implements TenantResolver {
 
     private String currentTenantHref;
