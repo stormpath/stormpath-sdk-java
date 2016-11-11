@@ -1,5 +1,12 @@
 ## Change Log ##
 
+### 1.1.4 ##
+
+This release has a bug fix for custom registration fields.
+
+See [1.1.4 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=is%3Aissue+milestone%3A1.1.4+is%3Aclosed) for a complete list of changes.
+
+
 ### 1.1.3 ##
 
 This release has a bug fix for Spring Security that was causing unnecessary API calls.
