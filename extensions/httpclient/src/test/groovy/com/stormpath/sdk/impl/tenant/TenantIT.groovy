@@ -781,7 +781,7 @@ class TenantIT extends ClientIT {
      * @since 1.2.0
      */
     @Test
-    void testGetAccountsWithPasswordModifiedAtFilter() {
+    void testGetAccountsWithPasswordModifiedAtCriteria() {
         Application application = createTempApp()
 
         //Dealing with Timezone issues here
@@ -801,18 +801,18 @@ class TenantIT extends ClientIT {
         assertNotNull appList.href
         assertFalse appList.iterator().hasNext()
 
-        Account account01 = createTestAccount(application)
-        Date rightAfterCreatingFirstAccount = account01.getCreatedAt();
-        rightAfterCreatingFirstAccount = sdf.parse(formatter.format(rightAfterCreatingFirstAccount))
+        Account account = createTestAccount(application)
+        Date rightAfterCreatingFirstAccount = account.getCreatedAt();
+        Thread.sleep(750) //preventing clock drift issues
 
         // Is there an account whose password was changed (ie. created) 20 secs after starting this test? Yes
-        appList = application.getAccounts(Accounts.where(Accounts.passwordModifiedAt().in(now, new Duration(20, TimeUnit.SECONDS))))
+        appList = application.getAccounts(Accounts.where(Accounts.passwordModifiedAt().in(now, rightAfterCreatingFirstAccount)))
         assertNotNull appList.href
         assertTrue appList.iterator().hasNext()
 
-        account01.setPassword("an3wP@assword!").save()
+        account.setPassword("an3wP@assword!").save()
 
-        // We changed the password for the first account therefore account01 must not meet this criteria
+        // We changed the password for the account therefore account will not meet this criteria and the list must be empty
         appList = application.getAccounts(Accounts.where(Accounts.passwordModifiedAt().in(now, rightAfterCreatingFirstAccount)))
         assertFalse appList.iterator().hasNext()
     }

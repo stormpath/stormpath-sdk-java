@@ -1342,14 +1342,12 @@ class AccountIT extends ClientIT {
      */
     @Test
     public void testPasswordModifiedAt() {
-
-        //create an App
         def app = createTempApp()
-        //Directory directory = app.getDefaultAccountStore() as Directory
 
         Account account = createTestAccount(app)
 
         Date originalPasswordModifiedAt = account.getPasswordModifiedAt()
+        Thread.sleep(750) //preventing clock drift issues
         account.setPassword("mYn3wP@assword").save()
 
         Date newPasswordModifiedAt = account.getPasswordModifiedAt()
