@@ -48,6 +48,7 @@ import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -66,6 +67,8 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final StringProperty FULL_NAME = new StringProperty("fullName"); //computed property, can't set it or query based on it
     // @since 1.2.0
     static final EnumProperty<EmailVerificationStatus> EMAIL_VERIFICATION_STATUS = new EnumProperty<>("emailVerificationStatus", EmailVerificationStatus.class);
+    // @since 1.2.0
+    public static final DateProperty PASSWORD_MODIFIED_AT = new DateProperty("passwordModifiedAt");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<EmailVerificationToken> EMAIL_VERIFICATION_TOKEN =
@@ -107,7 +110,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
             USERNAME, EMAIL, PASSWORD, GIVEN_NAME, MIDDLE_NAME, SURNAME, STATUS, FULL_NAME,
             EMAIL_VERIFICATION_TOKEN, EMAIL_VERIFICATION_STATUS, CUSTOM_DATA, DIRECTORY, TENANT, GROUPS, GROUP_MEMBERSHIPS,
-            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS, ACCOUNT_LINKS,PHONES, FACTORS);
+            PROVIDER_DATA,API_KEYS, APPLICATIONS, ACCESS_TOKENS, REFRESH_TOKENS, LINKED_ACCOUNTS, ACCOUNT_LINKS,PHONES, FACTORS, PASSWORD_MODIFIED_AT);
 
     public DefaultAccount(InternalDataStore dataStore) {
         super(dataStore);
@@ -675,7 +678,11 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
             return (T) getDataStore().create(href, factor, request.getFactorOptions());
         }
         return (T) getDataStore().create(href, factor);
+    }
 
+    @Override
+    public Date getPasswordModifiedAt() {
+        return getDateProperty(PASSWORD_MODIFIED_AT);
     }
 }
 

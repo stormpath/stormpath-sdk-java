@@ -452,4 +452,14 @@ public class ImmutableAccount implements Account {
     public PhoneList getPhones(PhoneCriteria criteria) {
         return account.getPhones(criteria);
     }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public Date getPasswordModifiedAt() {
+        return account.getPasswordModifiedAt();
+    }
+
+
 }

@@ -345,7 +345,7 @@ public class RegisterControllerTest {
         final List<String> NON_SIMPLE_PROPERTIES = Collections.unmodifiableList(Arrays.asList(
                 "fullName", "status", "customData", "emailVerificationToken", "emailVerificationStatus","directory", "tenant",
                 "providerData", "groups", "groupMemberships", "apiKeys", "applications", "accessTokens",
-                "refreshTokens", "accountLinks", "linkedAccounts", "phones", "factors"));
+                "refreshTokens", "accountLinks", "linkedAccounts", "phones", "factors", "passwordModifiedAt"));
 
         def defaultAccount = new DefaultAccount(createStrictMock(InternalDataStore));
         def actualSimpleProperties = defaultAccount.PROPERTY_DESCRIPTORS

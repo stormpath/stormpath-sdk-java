@@ -41,6 +41,7 @@ import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
+import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
@@ -774,6 +775,46 @@ class TenantIT extends ClientIT {
         assertEquals retrieved.href, application.href
         assertEquals retrieved.name, application.name
         assertEquals retrieved.createdAt, application.createdAt
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testGetAccountsWithPasswordModifiedAtFilter() {
+        Application application = createTempApp()
+
+        //Dealing with Timezone issues here
+        Date now = new Date();
+        now.setTime(now.getTime() - 5000);  //let's decrease 5 seconds in case there is some clock drift
+
+        String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        TimeZone UTC = TimeZone.getTimeZone("GMT")
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT)
+        formatter.setTimeZone(UTC);
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        sdf.setTimeZone(UTC);
+        now = sdf.parse(formatter.format(now)) //now has timezone info at this point
+
+        //no account in Application, so the list must be empty
+        def appList = application.getAccounts(Accounts.where(Accounts.passwordModifiedAt().in(now, new Duration(10, TimeUnit.SECONDS))))
+        assertNotNull appList.href
+        assertFalse appList.iterator().hasNext()
+
+        Account account01 = createTestAccount(application)
+        Date rightAfterCreatingFirstAccount = account01.getCreatedAt();
+        rightAfterCreatingFirstAccount = sdf.parse(formatter.format(rightAfterCreatingFirstAccount))
+
+        // Is there an account whose password was changed (ie. created) 20 secs after starting this test? Yes
+        appList = application.getAccounts(Accounts.where(Accounts.passwordModifiedAt().in(now, new Duration(20, TimeUnit.SECONDS))))
+        assertNotNull appList.href
+        assertTrue appList.iterator().hasNext()
+
+        account01.setPassword("an3wP@assword!").save()
+
+        // We changed the password for the first account therefore account01 must not meet this criteria
+        appList = application.getAccounts(Accounts.where(Accounts.passwordModifiedAt().in(now, rightAfterCreatingFirstAccount)))
+        assertFalse appList.iterator().hasNext()
     }
 
     /**
