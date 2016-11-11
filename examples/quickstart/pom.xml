@@ -6,12 +6,14 @@
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-examples</artifactId>
         <version>1.2.0-SNAPSHOT</version>
+
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-examples-quickstart</artifactId>
     <version>1.2.0-SNAPSHOT</version>
+
 
     <name>Stormpath Java SDK :: Examples :: Quickstart Code</name>
     <description>A simple (non-web) application to demonstrate the example code in the Stormpath Java Quickstart</description>
