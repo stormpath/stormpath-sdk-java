@@ -33,6 +33,9 @@ package com.stormpath.sdk.tenant;
  import com.stormpath.sdk.organization.OrganizationCriteria;
  import com.stormpath.sdk.organization.OrganizationList;
  import com.stormpath.sdk.resource.ResourceException;
+ import com.stormpath.sdk.saml.RegisteredSamlServiceProvider;
+ import com.stormpath.sdk.saml.RegisteredSamlServiceProviderCriteria;
+ import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList;
 
  import java.util.Map;
 
@@ -438,5 +441,13 @@ public interface TenantActions {
      * @since 1.0.RC3
      */
     GroupList getGroups(Map<String, Object> queryParams);
+
+
+    //todo: saml javadoc
+    RegisteredSamlServiceProvider createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider registeredSamlServiceProvider) throws ResourceException;
+
+    RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders();
+
+    RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria);
 }
 

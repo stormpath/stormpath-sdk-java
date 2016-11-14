@@ -136,4 +136,13 @@ public interface TenantOptions<T> extends Options {
      * @since 1.0.RC5
      */
     T withOrganizations(int limit, int offset);
+
+    //todo: saml javadoc
+    T withRegisteredSamlServiceProviders();
+
+    //todo: saml javadoc
+    T withRegisteredSamlServiceProviders(int limit);
+
+    //todo: saml javadoc
+    T withRegisteredSamlServiceProviders(int limit, int offset);
 }
