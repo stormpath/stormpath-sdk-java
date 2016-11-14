@@ -278,7 +278,7 @@ public abstract class FormController extends AbstractController {
         //ensure required fields are present:
         List<Field> fields = form.getFields();
         for (Field field : fields) {
-            if (field.isRequired() || field.isEnabled()) {
+            if (field.isRequired() && field.isEnabled()) {
                 String value = form.getFieldValue(field.getName());
                 if (value == null) {
                     String key = "stormpath.web." + getControllerKey() + ".form.fields." + field.getName() + ".required";

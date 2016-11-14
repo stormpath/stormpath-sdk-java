@@ -39,11 +39,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @since 1.0.RC4
@@ -242,5 +238,23 @@ public class VerifyController extends FormController {
             return new DefaultViewModel(nextUri.replace("status=verified", "status=unverified")).setRedirect(true);
         }
 
+    }
+
+    @Override
+    protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
+        super.validate(request, response, form);
+
+        String loginValue = form.getFieldValue("login");
+        String emailValue = form.getFieldValue("email");
+
+        if (StringUtils.hasText(loginValue) && StringUtils.hasText(emailValue)) {
+            String key = "stormpath.web." + getControllerKey() + ".form.errors.fieldConflict";
+            String msg = i18n(request, key);
+            throw new ValidationException(msg);
+        } else if (!StringUtils.hasText(loginValue) && !StringUtils.hasText(emailValue)) {
+            String key = "stormpath.web." + getControllerKey() + ".form.fields.login.required";
+            String msg = i18n(request, key);
+            throw new ValidationException(msg);
+        }
     }
 }

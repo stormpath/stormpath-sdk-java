@@ -24,8 +24,9 @@ import com.stormpath.sdk.servlet.form.DefaultField
 import com.stormpath.sdk.servlet.form.Field
 import com.stormpath.sdk.servlet.form.Form
 import com.stormpath.sdk.servlet.http.MediaType
+import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
-import org.easymock.EasyMock
+import com.stormpath.sdk.servlet.i18n.MessageSource
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
 
@@ -33,12 +34,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import static com.stormpath.sdk.servlet.mvc.VerificationEmailRequestMatcher.containsLogin
-import static org.easymock.EasyMock.anyObject
-import static org.easymock.EasyMock.createStrictMock
-import static org.easymock.EasyMock.eq
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.replay
-import static org.easymock.EasyMock.verify
+import static org.easymock.EasyMock.*
 
 /**
  * @since 1.2.0
@@ -49,93 +45,106 @@ public class VerifyControllerTest {
     public void testLoginFieldFavoredOverEmail() {
         VerifyController verifyController = new VerifyController();
 
-        HttpServletRequest request = createStrictMock(HttpServletRequest)
-        HttpServletResponse response = createStrictMock(HttpServletResponse)
+        HttpServletRequest request = createNiceMock(HttpServletRequest)
+        HttpServletResponse response = createNiceMock(HttpServletResponse)
 
-        Field login = DefaultField.builder().setName("login").build()
-        Field email = DefaultField.builder().setName("email").build()
+        Field login = DefaultField.builder().setName("login").setEnabled(true).build()
+        Field email = DefaultField.builder().setName("email").setEnabled(true).build()
         List<Field> formFields = new ArrayList<>()
         formFields.add(login)
         formFields.add(email)
         verifyController.setFormFields(formFields)
 
-        ContentNegotiationResolver contentNegotiationResolver = createStrictMock(ContentNegotiationResolver)
+        ContentNegotiationResolver contentNegotiationResolver = createNiceMock(ContentNegotiationResolver)
         verifyController.setContentNegotiationResolver(contentNegotiationResolver)
 
-        RequestFieldValueResolver requestFieldValueResolver = createStrictMock(RequestFieldValueResolver)
+        RequestFieldValueResolver requestFieldValueResolver = createNiceMock(RequestFieldValueResolver)
         verifyController.setFieldValueResolver(requestFieldValueResolver)
 
-        Application application = createStrictMock(Application)
+        Application application = createNiceMock(Application)
 
-        AccountStoreResolver accountStoreResolver = createStrictMock(AccountStoreResolver)
+        AccountStoreResolver accountStoreResolver = createNiceMock(AccountStoreResolver)
         verifyController.setAccountStoreResolver(accountStoreResolver)
+
+        Resolver<Locale> localeResolver = createNiceMock(Resolver)
+        verifyController.setLocaleResolver(localeResolver)
+
+        MessageSource messageSource = createNiceMock(MessageSource)
+        verifyController.setMessageSource(messageSource)
 
         expect(request.getParameterMap()).andReturn(new HashMap<String, String[]>())
         expect(request.getContentLength()).andReturn(0)
 
         expect(contentNegotiationResolver.getContentType(anyObject(HttpServletRequest), anyObject(HttpServletResponse), anyObject(List))).andReturn(MediaType.APPLICATION_JSON).times(2)
         expect(requestFieldValueResolver.getAllFields(request)).andReturn(new HashMap<String, Object>())
+        expect(requestFieldValueResolver.getValue(eq(request), eq("login"))).andReturn("username")
+        expect(requestFieldValueResolver.getValue(request, "email")).andReturn(null)
 
         expect(request.getAttribute(Application.class.getName())).andReturn(application)
 
-        expect(requestFieldValueResolver.getValue(request, "login")).andReturn("username")
         expect(request.setAttribute(eq("form"), anyObject(Form)))
         expect(accountStoreResolver.getAccountStore(request, response)).andReturn(null)
 
         expect(application.sendVerificationEmail(containsLogin("username")))
 
-        replay(request, response, contentNegotiationResolver, requestFieldValueResolver, accountStoreResolver)
+        replay(request, response, contentNegotiationResolver, requestFieldValueResolver, accountStoreResolver, localeResolver, messageSource)
 
         verifyController.doPost(request, response)
 
-        verify(request, response, contentNegotiationResolver, requestFieldValueResolver, accountStoreResolver)
+        verify(request, response, contentNegotiationResolver, requestFieldValueResolver, accountStoreResolver, localeResolver, messageSource)
     }
 
     @Test
     public void testFallBackToEmailIfLoginFieldMissing() {
         VerifyController verifyController = new VerifyController();
 
-        HttpServletRequest request = createStrictMock(HttpServletRequest)
-        HttpServletResponse response = createStrictMock(HttpServletResponse)
+        HttpServletRequest request = createNiceMock(HttpServletRequest)
+        HttpServletResponse response = createNiceMock(HttpServletResponse)
 
-        Field login = DefaultField.builder().setName("login").build()
-        Field email = DefaultField.builder().setName("email").build()
+        Field login = DefaultField.builder().setName("login").setEnabled(true).build()
+        Field email = DefaultField.builder().setName("email").setEnabled(true).build()
         List<Field> formFields = new ArrayList<>()
         formFields.add(login)
         formFields.add(email)
         verifyController.setFormFields(formFields)
 
-        ContentNegotiationResolver contentNegotiationResolver = createStrictMock(ContentNegotiationResolver)
+        ContentNegotiationResolver contentNegotiationResolver = createNiceMock(ContentNegotiationResolver)
         verifyController.setContentNegotiationResolver(contentNegotiationResolver)
 
-        RequestFieldValueResolver requestFieldValueResolver = createStrictMock(RequestFieldValueResolver)
+        RequestFieldValueResolver requestFieldValueResolver = createNiceMock(RequestFieldValueResolver)
         verifyController.setFieldValueResolver(requestFieldValueResolver)
 
-        Application application = createStrictMock(Application)
+        Application application = createNiceMock(Application)
 
-        AccountStoreResolver accountStoreResolver = createStrictMock(AccountStoreResolver)
+        AccountStoreResolver accountStoreResolver = createNiceMock(AccountStoreResolver)
         verifyController.setAccountStoreResolver(accountStoreResolver)
+
+        Resolver<Locale> localeResolver = createNiceMock(Resolver)
+        verifyController.setLocaleResolver(localeResolver)
+
+        MessageSource messageSource = createNiceMock(MessageSource)
+        verifyController.setMessageSource(messageSource)
 
         expect(request.getParameterMap()).andReturn(new HashMap<String, String[]>())
         expect(request.getContentLength()).andReturn(0)
 
         expect(contentNegotiationResolver.getContentType(anyObject(HttpServletRequest), anyObject(HttpServletResponse), anyObject(List))).andReturn(MediaType.APPLICATION_JSON).times(2)
         expect(requestFieldValueResolver.getAllFields(request)).andReturn(new HashMap<String, Object>())
-
-        expect(request.getAttribute(Application.class.getName())).andReturn(application)
-
         expect(requestFieldValueResolver.getValue(request, "login")).andReturn(null)
         expect(requestFieldValueResolver.getValue(request, "email")).andReturn("test@test.com")
         expect(request.setAttribute(eq("form"), anyObject(Form)))
         expect(accountStoreResolver.getAccountStore(request, response)).andReturn(null)
 
+
+        expect(request.getAttribute(Application.class.getName())).andReturn(application)
+
         expect(application.sendVerificationEmail(containsLogin("test@test.com")))
 
-        replay(request, response, contentNegotiationResolver, requestFieldValueResolver, accountStoreResolver)
+        replay(request, response, contentNegotiationResolver, requestFieldValueResolver, accountStoreResolver, localeResolver, messageSource)
 
         verifyController.doPost(request, response)
 
-        verify(request, response, contentNegotiationResolver, requestFieldValueResolver, accountStoreResolver)
+        verify(request, response, contentNegotiationResolver, requestFieldValueResolver, accountStoreResolver, localeResolver, messageSource)
     }
 }
 
@@ -150,7 +159,7 @@ class VerificationEmailRequestMatcher implements IArgumentMatcher {
     }
 
     public static VerificationEmailRequest containsLogin(String login) {
-        EasyMock.reportMatcher(new VerificationEmailRequestMatcher(login));
+        reportMatcher(new VerificationEmailRequestMatcher(login));
         return null;
     }
 
