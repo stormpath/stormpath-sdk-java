@@ -54,7 +54,7 @@ import static com.stormpath.sdk.servlet.mvc.View.STORMPATH_JSON_VIEW_NAME;
 public class RegisterController extends FormController {
 
     private static final Logger log = LoggerFactory.getLogger(RegisterController.class);
-    public static final List<String> ACCOUNT_PROPERTIES = Collections.unmodifiableList(Arrays.asList("email", "username", "password", "givenName", "middleName", "surname"));
+    public static final List<String> ACCOUNT_PROPERTIES = Collections.unmodifiableList(Arrays.asList("email", "username", "password", "confirmPassword", "givenName", "middleName", "surname"));
 
     private boolean autoLogin;
     private String loginUri;
