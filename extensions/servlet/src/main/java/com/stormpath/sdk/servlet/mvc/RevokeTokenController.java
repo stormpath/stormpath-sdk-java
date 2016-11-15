@@ -20,6 +20,7 @@ import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.OAuthRevocationRequest;
 import com.stormpath.sdk.oauth.OAuthRevocationRequestBuilder;
 import com.stormpath.sdk.oauth.OAuthTokenRevocators;
 import com.stormpath.sdk.oauth.TokenTypeHint;
@@ -45,11 +46,8 @@ public class RevokeTokenController extends AbstractController {
 
     @Override
     protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String token = request.getParameter(TOKEN);
 
-        Assert.hasText(token, "token cannot be null or empty.");
-
-        OAuthRevocationRequestBuilder builder = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(token);
+        OAuthRevocationRequestBuilder builder = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder();
 
         String tokenTypeHint = request.getParameter(TOKEN_TYPE_HINT);
 
@@ -61,30 +59,45 @@ public class RevokeTokenController extends AbstractController {
         response.setHeader("Pragma", "no-cache");
 
         try {
-            OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(getApplication(request)).revoke(builder.build());
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setHeader("Content-Length", "0");
-        } catch (ResourceException e) {
-            response.setStatus(e.getStatus());
+            String token = request.getParameter(TOKEN);
 
-            com.stormpath.sdk.error.Error error = e.getStormpathError();
-            String message = error.getMessage();
-
-            OAuthErrorCode oauthError = OAuthErrorCode.INVALID_REQUEST;
-
-            if (error instanceof DefaultError) {
-                Object errorObject = ((DefaultError) error).getProperty("error");
-                oauthError = errorObject == null ? oauthError : new OAuthErrorCode(errorObject.toString());
+            if (!Strings.hasText(token)) {
+                throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
             }
 
-            OAuthException exception = new OAuthException(oauthError, message);
-            String json = exception.toJson();
+            this.revoke(getApplication(request), builder.setToken(token).build());
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setHeader("Content-Length", "0");
+        } catch (OAuthException e) {
+
+            log.debug("Error occurred revoking token: {}", e.getMessage());
+
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+            String json = e.toJson();
 
             response.setHeader("Content-Length", String.valueOf(json.length()));
             response.getWriter().print(json);
             response.getWriter().flush();
         }
         return null;
+    }
+
+    private void revoke(Application application, OAuthRevocationRequest request) throws OAuthException {
+        try {
+            OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(application).revoke(request);
+        } catch (ResourceException e) {
+            com.stormpath.sdk.error.Error error = e.getStormpathError();
+            String message = error.getMessage();
+
+            OAuthErrorCode oauthError = OAuthErrorCode.INVALID_REQUEST;
+            if (error instanceof DefaultError) {
+                Object errorObject = ((DefaultError) error).getProperty("error");
+                oauthError = errorObject == null ? oauthError : new OAuthErrorCode(errorObject.toString());
+            }
+            throw new OAuthException(oauthError, message);
+        }
     }
 
     @Override
