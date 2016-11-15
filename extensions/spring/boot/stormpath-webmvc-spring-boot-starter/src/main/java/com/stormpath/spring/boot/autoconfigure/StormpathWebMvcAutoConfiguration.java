@@ -15,7 +15,6 @@
  */
 package com.stormpath.spring.boot.autoconfigure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;

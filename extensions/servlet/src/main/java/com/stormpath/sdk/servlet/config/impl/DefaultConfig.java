@@ -60,6 +60,7 @@ import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,6 +100,10 @@ public class DefaultConfig implements Config {
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
     public static final String STORMPATH_ENABLED = "stormpath.enabled";
     public static final String STORMPATH_WEB_ENABLED = "stormpath.web.enabled";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_ORIGINS = "stormpath.web.cors.allowed.originUris";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_HEADERS = "stormpath.web.cors.allowed.headers";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_METHODS = "stormpath.web.cors.allowed.methods";
+    public static final String STORMPATH_WEB_CORS_ENABLED = "stormpath.web.cors.enabled";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -579,6 +584,59 @@ public class DefaultConfig implements Config {
         return this.getRuntimeInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
     }
 
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public List<String> getAllowedCorsOrigins() {
+        String allowedOrigins = get(STORMPATH_WEB_CORS_ALLOWED_ORIGINS);
+
+        if(Strings.hasText(allowedOrigins)) {
+            return Arrays.asList(Strings.split(allowedOrigins));
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public List<String> getAllowedCorsHaders() {
+        String allowedHeaders = get(STORMPATH_WEB_CORS_ALLOWED_HEADERS);
+
+        if(Strings.hasText(allowedHeaders)) {
+            return Arrays.asList(Strings.split(allowedHeaders));
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public List<String> getAllowedCorsMethods() {
+        String allowedMethods = get(STORMPATH_WEB_CORS_ALLOWED_METHODS);
+
+        if(Strings.hasText(allowedMethods)) {
+            return Arrays.asList(Strings.split(allowedMethods));
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public boolean isCorsEnabled() {
+        return CFG.getBoolean(STORMPATH_WEB_CORS_ENABLED);
+    }
+
+    /**
+     * @since 1.2.0
+     */
     @Override
     public GrantTypeStatusValidator getGrantTypeStatusValidator() {
         boolean clientCredentialsEnabled = CFG.getString(CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED) == null || CFG.getBoolean(CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED);
