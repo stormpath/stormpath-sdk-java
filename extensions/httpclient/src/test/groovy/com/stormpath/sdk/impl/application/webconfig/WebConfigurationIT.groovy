@@ -119,49 +119,35 @@ class WebConfigurationIT extends ClientIT {
 
     @Test
     void testGetReferences() {
-
         def application = createTempApp()
-
         def webConfig = application.getWebConfig()
-
         assertEquals application.getHref(), webConfig.getApplication().getHref()
-
         assertEquals application.getTenant(), webConfig.getTenant()
     }
 
     @Test
     void testUpdateNullableProperties()  {
-
         def webConfig = createTempApp().getWebConfig()
 
         VerifyEmailConfig verifyEmail = webConfig.getVerifyEmail()
-
         assertNull verifyEmail.isEnabled()
-
         verifyEmail.setEnabled(true)
-
         webConfig.save()
 
         def noCacheClient =  buildClient(false)
 
         webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
-
         verifyEmail = webConfig.getVerifyEmail()
-
         assertTrue verifyEmail.isEnabled()
 
         verifyEmail.setEnabled(null)
-
         webConfig.save()
-
         webConfig = noCacheClient.getResource(webConfig.href, ApplicationWebConfig)
-
         assertNull webConfig.getVerifyEmail().isEnabled()
     }
 
     @Test
     void testWebConfiguration_updateApiKey() {
-
         def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfig()
         def adminApp = getTenantApplication(client, criteria)
 
@@ -178,7 +164,6 @@ class WebConfigurationIT extends ClientIT {
 
     @Test
     void testEnableStormpathAdminApp_ErrorResponse() {
-
         def criteria = Applications.where(Applications.name().eqIgnoreCase("Stormpath")).withWebConfig()
         def adminApp = getTenantApplication(client, criteria)
 
@@ -212,20 +197,13 @@ class WebConfigurationIT extends ClientIT {
         mapping.save()
 
         def adminAccount = createTestAccount(application)
-
         return adminAccount.createApiKey()
-
     }
 
     static Application getTenantApplication(Client client, ApplicationCriteria criteria) {
-
         def applications = client.getApplications(criteria)
-
         Iterator<Application> iterator = applications.iterator()
-
         assertTrue iterator.hasNext()
-
         return iterator.next()
     }
-
 }

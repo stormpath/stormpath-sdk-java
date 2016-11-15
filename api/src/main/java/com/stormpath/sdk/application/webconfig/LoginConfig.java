@@ -23,6 +23,8 @@ import com.stormpath.sdk.resource.ResourceException;
 public interface LoginConfig extends WebFeatureConfig<LoginConfig> {
 
     /**
+     * Overriding to note that {@code this} configuration doesn't allow to set the {@code enable} flag to {@code null}.
+     *
      * @param enabled {@code boolean} value to enable or disable a web features.
      * @throws ResourceException when set to {@code null}.
      */

@@ -22,6 +22,9 @@ import com.stormpath.sdk.impl.resource.BooleanProperty;
 
 import java.util.Map;
 
+/**
+ * @since 1.2.0
+ */
 public class DefaultMeExpansionConfig extends ConfigurableProperty implements MeExpansionConfig {
 
     private static BooleanProperty API_KEYS = new BooleanProperty("apiKeys");

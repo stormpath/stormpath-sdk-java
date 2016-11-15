@@ -27,7 +27,7 @@ public interface VerifyEmailConfig extends WebFeatureConfig<VerifyEmailConfig> {
 
     /**
      * Returns whether the email verification should be enabled or disabled when an account is created through the
-     * Stormpath Client Api. If the return value is {@code null} it means that an email will be verified only if the
+     * Stormpath Client Api.
      * <p/>
      * <list>
      * <ul>{@link Boolean#TRUE} - The account created will require email verification.</ul>

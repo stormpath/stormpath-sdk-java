@@ -17,9 +17,14 @@ package com.stormpath.sdk.application.webconfig;
 
 import com.stormpath.sdk.resource.ResourceException;
 
+/**
+ * @since 1.2.0
+ */
 public interface Oauth2Config extends WebFeatureConfig<Oauth2Config> {
 
     /**
+     * Overriding to note that {@code this} configuration doesn't allow to set the {@code enable} flag to {@code null}.
+     *
      * @param enabled {@code boolean} value to enable or disable a web features.
      * @throws ResourceException when set to {@code null}.
      */

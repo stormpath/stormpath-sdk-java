@@ -33,6 +33,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Refactored methods from {@link AbstractResource} to make them common to subclasses.
+ *
+ * @since 1.2.0
+ */
 public abstract class AbstractPropertyRetriever {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractPropertyRetriever.class);
@@ -135,7 +140,6 @@ public abstract class AbstractPropertyRetriever {
     /**
      * @since 0.8
      */
-
     protected Date getDateProperty(DateProperty key) {
         Object value = getProperty(key.getName());
         if (value == null) {

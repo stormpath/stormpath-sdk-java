@@ -43,6 +43,8 @@ public interface MeConfig extends WebFeatureConfig<MeConfig> {
     MeExpansionConfig getExpansions();
 
     /**
+     * Overriding to note that {@code this} configuration doesn't allow to set the {@code enable} flag to {@code null}.
+     *
      * @param enabled {@code boolean} value to enable or disable a web features.
      * @throws ResourceException when set to {@code null}.
      */

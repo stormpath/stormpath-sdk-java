@@ -22,6 +22,9 @@ import com.stormpath.sdk.impl.resource.BooleanProperty;
 
 import java.util.Map;
 
+/**
+ * @since 1.2.0
+ */
 public class DefaultOauth2Config extends ConfigurableProperty implements Oauth2Config {
 
     private static final BooleanProperty ENABLED = new BooleanProperty("enabled");

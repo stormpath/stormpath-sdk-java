@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * @since 1.2.0
+ */
 public abstract class ConfigurableProperty extends AbstractPropertyRetriever {
 
     private final AbstractPropertyRetriever parent;

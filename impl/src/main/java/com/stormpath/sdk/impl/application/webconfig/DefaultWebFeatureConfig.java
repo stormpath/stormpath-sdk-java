@@ -27,6 +27,9 @@ import com.stormpath.sdk.impl.resource.BooleanProperty;
 
 import java.util.Map;
 
+/**
+ * @since 1.2.0
+ */
 public class DefaultWebFeatureConfig<T extends WebFeatureConfig<T>> extends ConfigurableProperty implements WebFeatureConfig<T> {
 
     private static BooleanProperty ENABLED = new BooleanProperty("enabled");

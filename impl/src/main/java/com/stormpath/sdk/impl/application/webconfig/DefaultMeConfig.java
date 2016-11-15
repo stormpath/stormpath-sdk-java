@@ -25,6 +25,9 @@ import com.stormpath.sdk.impl.resource.ParentAwareObjectProperty;
 
 import java.util.Map;
 
+/**
+ * @since 1.2.0
+ */
 public class DefaultMeConfig extends ConfigurableProperty implements MeConfig {
 
     private static final ParentAwareObjectProperty<DefaultMeExpansionConfig, AbstractPropertyRetriever> EXPAND;
