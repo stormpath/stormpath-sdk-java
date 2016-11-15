@@ -37,6 +37,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
     private List<Field> formFields;
     private List<String> defaultFieldNames = java.util.Collections.emptyList();
     private List<String> disabledFieldNames = java.util.Collections.emptyList();
+    private List<String> optionalFieldNames = java.util.Collections.emptyList();
 
     public AbstractControllerConfig(String controllerKey) {
         Assert.hasText(controllerKey, "controllerKey cannot be null or empty.");
@@ -49,6 +50,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
         Assert.notNull(this.formFields, "formFields cannot be null.  Use an empty list instead.");
         Assert.notNull(defaultFieldNames, "defaultFieldNames cannot be null.  Use an empty list instead.");
         Assert.notNull(disabledFieldNames, "disabledFieldNames cannot be null.  Use an empty list instead.");
+        Assert.notNull(disabledFieldNames, "optionalFieldNames cannot be null.  Use an empty list instead.");
     }
 
     @Override
@@ -70,6 +72,20 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
 
     public void setDisabledFieldNames(String... disabledFieldNames) {
         this.disabledFieldNames = Collections.toList(disabledFieldNames);
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public void setOptionalFieldNames(String... optionalFieldNames) {
+        this.optionalFieldNames = Collections.toList(optionalFieldNames);
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public List<String> getOptionalFieldNames() {
+        return this.optionalFieldNames;
     }
 
     @Override
@@ -100,7 +116,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
                 .setType(getPropValue(name, "type", getFieldType(name)))
                 .setLabel(getPropValue(name, "label", getFieldPropertyKey(name, "label")))
                 .setPlaceholder(getPropValue(name, "placeholder", getFieldPropertyKey(name, "placeholder")))
-                .setRequired(getPropBooleanValue(name, "required", true))
+                .setRequired(getPropBooleanValue(name, "required", !getOptionalFieldNames().contains(name)))
                 .setEnabled(getPropBooleanValue(name, "enabled", !getDisabledFieldNames().contains(name)))
                 .setVisible(getPropBooleanValue(name, "visible", !"sptoken".equals(name)))
                 .build();
