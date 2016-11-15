@@ -68,7 +68,7 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
      * <p/>
      * Warning: Changing this value will override the {@link #getDomainName() domainName} value.
      *
-     * @param dnsLabel to
+     * @param dnsLabel to use as part the {@link #getDomainName()} of {@code this} configuration/
      */
     ApplicationWebConfig setDnsLabel(String dnsLabel);
 
