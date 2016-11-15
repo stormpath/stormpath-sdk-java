@@ -10,6 +10,10 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.oauth.BaseOAuthToken;
+import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.OAuthRevocationRequest;
+import com.stormpath.sdk.oauth.OAuthTokenRevocators;
+import com.stormpath.sdk.oauth.TokenTypeHint;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Date;
@@ -85,4 +89,13 @@ public abstract class AbstractBaseOAuthToken extends AbstractInstanceResource im
         return getMap(EXPANDED_JWT);
     }
 
+    @Override
+    public void revoke() {
+        OAuthRevocationRequest revocationRequest = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder()
+                .setToken(getJwt()).setTokenTypeHint(getTokenTypeHint()).build();
+
+        OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(getApplication()).revoke(revocationRequest);
+    }
+
+    protected abstract TokenTypeHint getTokenTypeHint();
 }

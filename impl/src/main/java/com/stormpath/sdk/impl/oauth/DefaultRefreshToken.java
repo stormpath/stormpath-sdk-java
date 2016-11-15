@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.oauth.RefreshToken;
+import com.stormpath.sdk.oauth.TokenTypeHint;
 
 import java.util.Map;
 
@@ -31,5 +32,10 @@ public class DefaultRefreshToken extends AbstractBaseOAuthToken implements Refre
 
     public DefaultRefreshToken(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
+    }
+
+    @Override
+    protected TokenTypeHint getTokenTypeHint() {
+        return TokenTypeHint.REFRESH_TOKEN;
     }
 }

@@ -60,6 +60,10 @@ import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequests
+import com.stormpath.sdk.oauth.OAuthTokenRevocator
+import com.stormpath.sdk.oauth.OAuthTokenRevocators
+import com.stormpath.sdk.oauth.RefreshToken
+import com.stormpath.sdk.oauth.TokenTypeHint
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
@@ -71,6 +75,7 @@ import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.saml.SamlServiceProvider
 import com.stormpath.sdk.tenant.Tenant
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Header
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
@@ -1860,6 +1865,7 @@ class ApplicationIT extends ClientIT {
         assertNotNull oauthPolicy
         assertEquals oauthPolicy.getApplication().getHref(), app.href
         assertNotNull oauthPolicy.getTokenEndpoint()
+        assertNotNull oauthPolicy.getRevocationEndpoint()
 
         oauthPolicy.setAccessTokenTtl("P8D")
         oauthPolicy.setRefreshTokenTtl("P2D")
@@ -2146,6 +2152,188 @@ class ApplicationIT extends ClientIT {
             throw new Exception("Should have thrown. Expected Error code: 7104.");
         } catch (ResourceException e) {
             assertEquals(e.getCode(), 7104)
+        }
+    }
+
+    @Test
+    void testCallRevokeFromRefreshToken() {
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        OAuthPasswordGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(account.email).setPassword("Changeme1!").build()
+
+        def accessTokenResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
+
+        def accessToken = client.getResource(accessTokenResult.accessTokenHref, AccessToken)
+
+        OAuthRefreshTokenRequestAuthentication request = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder().setRefreshToken(accessTokenResult.getRefreshTokenString()).build();
+
+        def refreshTokenResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
+
+        def refreshToken = refreshTokenResult.getRefreshToken()
+
+        refreshToken.revoke()
+
+        assertRevoked(accessToken.getHref(), AccessToken)
+        assertRevoked(refreshTokenResult.getAccessToken().getHref(), RefreshToken)
+        assertRevoked(refreshToken.getHref(), RefreshToken)
+    }
+
+    @Test
+    void testCallRevokeFromOAuthTokenRequestsWithRefreshToken() {
+
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        OAuthPasswordGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(account.email).setPassword("Changeme1!").build()
+
+        def accessTokenResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
+
+        def accessTokens = [accessTokenResult.accessToken]
+
+        OAuthRefreshTokenRequestAuthentication request = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder().setRefreshToken(accessTokenResult.getRefreshTokenString()).build();
+
+        RefreshToken refreshToken = null
+
+        (1..5).each {
+            def refreshTokenResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
+            def accessToken = client.getResource(refreshTokenResult.accessTokenHref, AccessToken)
+            accessTokens.add(accessToken)
+
+            refreshToken = refreshToken == null ? refreshTokenResult.refreshToken : refreshToken
+        }
+
+        OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(app).revoke(OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(accessTokenResult.getRefreshTokenString()).build())
+
+        accessTokens.each {
+            at -> assertRevoked(at.getHref(), AccessToken)
+        }
+
+        assertRevoked(refreshToken.href, RefreshToken)
+    }
+
+    @Test
+    void testCallRevokeFromOAuthTokenRequestsWithAccessToken() {
+
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        OAuthPasswordGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(account.email).setPassword("Changeme1!").build()
+
+        def accessTokenResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
+
+        def accessTokens = [accessTokenResult.accessToken]
+
+        OAuthRefreshTokenRequestAuthentication request = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder().setRefreshToken(accessTokenResult.getRefreshTokenString()).build();
+
+        RefreshToken refreshToken = null
+
+        (1..5).each {
+            def refreshTokenResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
+            def accessToken = client.getResource(refreshTokenResult.accessTokenHref, AccessToken)
+            accessTokens.add(accessToken)
+
+            refreshToken = refreshToken == null ? refreshTokenResult.refreshToken : refreshToken
+        }
+
+        AccessToken toRevoke = accessTokens.get(3)
+
+        OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(app).revoke(OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(toRevoke.getJwt()).build())
+
+        accessTokens.each {
+            at -> assertRevoked(at.getHref(), AccessToken)
+        }
+
+        assertRevoked(refreshToken.href, RefreshToken)
+    }
+
+    @Test
+    void testCallRevokeFromAccessTokenWithNoRefreshToken() {
+        def app = createTempApp()
+
+        def oauthPolicy = app.getOAuthPolicy()
+        oauthPolicy.setRefreshTokenTtl("PT0S")
+        oauthPolicy.save()
+
+        def account = createTestAccount(app)
+
+        OAuthPasswordGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(account.email).setPassword("Changeme1!").build()
+
+        def accessTokenResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
+
+        assertNull accessTokenResult.refreshTokenString
+
+        OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(app).revoke(OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(accessTokenResult.accessToken.getJwt()).build())
+        assertRevoked(accessTokenResult.accessTokenHref, RefreshToken)
+    }
+
+    @Test
+    void testInvalidTokens_NoExceptionThrown() {
+
+        def app = createTempApp()
+
+        OAuthTokenRevocator revocator =  OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(app)
+
+        def request = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken("not.a.validjwt").build()
+
+        revocator.revoke(request)
+
+        request = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken("notvalidtoken").build()
+
+        revocator.revoke(request)
+    }
+
+    @Test
+    void testInvalidTokens_NoTokenType() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        OAuthPasswordGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(account.email).setPassword("Changeme1!").build()
+
+        def accessTokenResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(grantRequest)
+
+        String token = accessTokenResult.getAccessTokenString()
+
+        byte[] signingKey = client.apiKey.secret.bytes
+
+        Jws jws = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token)
+
+        Header header = jws.getHeader()
+        header.remove("stt")
+
+        String modifiedToken = Jwts.builder().setHeader(header).setClaims(jws.getBody()).signWith(SignatureAlgorithm.HS256, signingKey).compact()
+
+        def request = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(modifiedToken).build()
+
+        def revocator = OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(app)
+
+        try {
+            revocator.revoke(request)
+            fail("should have thrown cannot infer type error")
+        } catch (ResourceException e) {
+            assertEquals e.getStatus(), 400
+            assertEquals e.getCode(), 10024
+        }
+
+        request = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(modifiedToken).setTokenTypeHint(TokenTypeHint.ACCESS_TOKEN).build()
+        revocator.revoke(request)
+
+        assertRevoked(accessTokenResult.accessTokenHref, AccessToken)
+    }
+
+    private assertRevoked(String href, Class type, Client client = this.client) {
+        try {
+            client.getResource(href, type)
+            fail("should have thrown not found exception since revoked.")
+        } catch (ResourceException e) {
+            assertEquals 404, e.getStatus()
         }
     }
 
