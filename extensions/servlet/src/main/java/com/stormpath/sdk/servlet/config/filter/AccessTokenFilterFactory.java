@@ -27,7 +27,7 @@ import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
-import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 
 /**
  * @since 1.0.0
@@ -65,7 +65,7 @@ public class AccessTokenFilterFactory extends ControllerFilterFactory<AccessToke
         Saver<AuthenticationResult> accountSaver = config.getInstance(ACCOUNT_SAVER);
         Publisher<RequestEvent> eventPublisher = config.getInstance(EVENT_PUBLISHER);
         BasicAuthenticationScheme basicAuthenticationScheme = config.getInstance(BASIC_AUTHENTICATION_REQUEST_FACTORY);
-        GrantTypeStatusValidator grantTypeStatusValidator = config.getGrantTypeStatusValidator();
+        GrantTypeValidator grantTypeValidator = config.getGrantTypeStatusValidator();
 
         c.setEventPublisher(eventPublisher);
         c.setAccessTokenAuthenticationRequestFactory(accessTokenAuthenticationRequestFactory);
@@ -75,6 +75,6 @@ public class AccessTokenFilterFactory extends ControllerFilterFactory<AccessToke
         c.setAccountSaver(accountSaver);
         c.setRequestAuthorizer(requestAuthorizer);
         c.setBasicAuthenticationScheme(basicAuthenticationScheme);
-        c.setGrantTypeStatusValidator(grantTypeStatusValidator);
+        c.setGrantTypeValidator(grantTypeValidator);
     }
 }

@@ -20,7 +20,7 @@ import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 /**
  * @since 1.2.0
  */
-public interface GrantTypeStatusValidator {
+public interface GrantTypeValidator {
 
     String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
     String PASSWORD_GRANT_TYPE = "password";

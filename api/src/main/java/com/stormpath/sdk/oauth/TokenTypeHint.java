@@ -33,4 +33,13 @@ public enum TokenTypeHint {
     public String getValue() {
         return value;
     }
+
+    public static TokenTypeHint fromValue(String value) {
+        for (TokenTypeHint tokenTypeHint : TokenTypeHint.values()) {
+            if (tokenTypeHint.getValue().equalsIgnoreCase(value)) {
+                return tokenTypeHint;
+            }
+        }
+        return null;
+    }
 }

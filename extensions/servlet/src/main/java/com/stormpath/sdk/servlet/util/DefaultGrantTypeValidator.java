@@ -21,7 +21,7 @@ import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 /**
  * @since 1.2.0
  */
-public class DefaultGrantTypeStatusValidator implements GrantTypeStatusValidator {
+public class DefaultGrantTypeValidator implements GrantTypeValidator {
 
     private boolean clientCredentialsGrantTypeEnabled;
     private boolean passwordGrantTypeEnabled;
