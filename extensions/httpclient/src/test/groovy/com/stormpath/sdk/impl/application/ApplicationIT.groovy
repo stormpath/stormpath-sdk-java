@@ -44,6 +44,7 @@ import com.stormpath.sdk.http.HttpMethod
 import com.stormpath.sdk.impl.api.ApiKeyParameter
 import com.stormpath.sdk.impl.client.RequestCountingClient
 import com.stormpath.sdk.impl.ds.DefaultDataStore
+import com.stormpath.sdk.impl.error.DefaultError
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.idsite.IdSiteClaims
 import com.stormpath.sdk.impl.resource.AbstractResource
@@ -2320,6 +2321,10 @@ class ApplicationIT extends ClientIT {
         } catch (ResourceException e) {
             assertEquals e.getStatus(), 400
             assertEquals e.getCode(), 10024
+
+            String error  = ((DefaultError) e.getStormpathError()).getProperties().get("error")
+
+            assertEquals error, "unsupported_token_type"
         }
 
         request = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(modifiedToken).setTokenTypeHint(TokenTypeHint.ACCESS_TOKEN).build()

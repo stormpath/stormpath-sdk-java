@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.OAuthRequests;
@@ -23,6 +24,8 @@ import com.stormpath.sdk.oauth.OAuthRevocationRequestBuilder;
 import com.stormpath.sdk.oauth.OAuthTokenRevocators;
 import com.stormpath.sdk.oauth.TokenTypeHint;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
+import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @since 1.2.0.
  */
-public class RevokeTokenController  extends AbstractController {
+public class RevokeTokenController extends AbstractController {
 
     private static final Logger log = LoggerFactory.getLogger(RevokeTokenController.class);
 
@@ -46,7 +49,7 @@ public class RevokeTokenController  extends AbstractController {
 
         Assert.hasText(token, "token cannot be null or empty.");
 
-        OAuthRevocationRequestBuilder builder = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder();
+        OAuthRevocationRequestBuilder builder = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(token);
 
         String tokenTypeHint = request.getParameter(TOKEN_TYPE_HINT);
 
@@ -54,15 +57,34 @@ public class RevokeTokenController  extends AbstractController {
             builder.setTokenTypeHint(TokenTypeHint.fromValue(tokenTypeHint));
         }
 
+        response.setHeader("Cache-Control", "no-store, no-cache");
+        response.setHeader("Pragma", "no-cache");
+
         try {
             OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(getApplication(request)).revoke(builder.build());
             response.setStatus(HttpServletResponse.SC_OK);
-
-            return null;
-
+            response.setHeader("Content-Length", "0");
         } catch (ResourceException e) {
-            throw e;
+            response.setStatus(e.getStatus());
+
+            com.stormpath.sdk.error.Error error = e.getStormpathError();
+            String message = error.getMessage();
+
+            OAuthErrorCode oauthError = OAuthErrorCode.INVALID_REQUEST;
+
+            if (error instanceof DefaultError) {
+                Object errorObject = ((DefaultError) error).getProperty("error");
+                oauthError = errorObject == null ? oauthError : new OAuthErrorCode(errorObject.toString());
+            }
+
+            OAuthException exception = new OAuthException(oauthError, message);
+            String json = exception.toJson();
+
+            response.setHeader("Content-Length", String.valueOf(json.length()));
+            response.getWriter().print(json);
+            response.getWriter().flush();
         }
+        return null;
     }
 
     @Override
