@@ -14,7 +14,7 @@ if [ -e $STORMPATH_AUTHORS ]; then echo "$STORMPATH_AUTHORS_URL found. Proceedin
 export AUTHOR_EMAIL=$(git show --format="%ae" | head -n 1)
 echo "Author email is: $AUTHOR_EMAIL"
 source $STORMPATH_AUTHORS $AUTHOR_EMAIL
-test $TRAVIS_BRANCH = master && MIDDLE="/" || MIDDLE="/$AUTHOR/"
+MIDDLE="/$AUTHOR/"
 export ENC_ENV="stormpath_env.sh.enc"
 export ENC_ENV_URL="$S3_BASE$MIDDLE$ENC_ENV"
 wget $ENC_ENV_URL

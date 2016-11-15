@@ -73,4 +73,9 @@ public class DefaultApplicationOptions extends DefaultOptions<ApplicationOptions
     public ApplicationOptions withCustomData() {
         return expand(DefaultApplication.CUSTOM_DATA);
     }
+
+    @Override
+    public ApplicationOptions withWebConfig() {
+        return expand(DefaultApplication.WEB_CONFIGURATION);
+    }
 }

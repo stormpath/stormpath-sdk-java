@@ -117,7 +117,7 @@ function getParameterByName(name) {
 function buildUrl(url, params) {
     var next = getParameterByName('next');
 
-    if (next !== undefined && next !== '') {
+    if (next) {
         params.state = next;
     }
 

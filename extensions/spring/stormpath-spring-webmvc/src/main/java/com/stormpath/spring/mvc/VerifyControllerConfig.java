@@ -36,7 +36,8 @@ public class VerifyControllerConfig extends AbstractSpringControllerConfig {
 
     public VerifyControllerConfig() {
         super("verifyEmail");
-        setDefaultFieldNames("email");
+        setDefaultFieldNames("email", "login");
+        setOptionalFieldNames("email", "login");
     }
 
     @Override
