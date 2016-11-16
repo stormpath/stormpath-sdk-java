@@ -36,6 +36,7 @@ import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
+import com.stormpath.sdk.impl.tenant.TenantResolver;
 import com.stormpath.sdk.impl.util.BaseUrlResolver;
 import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver;
 import com.stormpath.sdk.lang.Assert;
@@ -264,6 +265,15 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
+    /**
+     * @since 1.2.0
+     */
+    public ClientBuilder setTenantResolver(TenantResolver tenantResolver) {
+        Assert.notNull(tenantResolver, "tenantResolver must not be null.");
+        this.clientConfig.setTenantResolver(tenantResolver);
+        return this;
+    }
+
     @Override
     public Client build() {
         if (!this.clientConfig.isCacheManagerEnabled()) {
@@ -317,6 +327,12 @@ public class DefaultClientBuilder implements ClientBuilder {
             Assert.notNull(this.clientConfig.getBaseUrl(), "Stormpath base url must not be null.");
             baseUrlResolver = new DefaultBaseUrlResolver(this.clientConfig.getBaseUrl());
         }
+
+        if (this.clientConfig.getTenantResolver() != null) {
+            return new DefaultClient(clientCredentials, apiKeyResolver, baseUrlResolver, this.proxy, this.cacheManager,
+                    this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout(), this.clientConfig.getTenantResolver());
+        }
+
 
         return new DefaultClient(clientCredentials, apiKeyResolver, baseUrlResolver, this.proxy, this.cacheManager,
                 this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout());
