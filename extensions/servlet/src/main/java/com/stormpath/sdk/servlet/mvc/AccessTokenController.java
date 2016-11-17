@@ -261,7 +261,7 @@ public class AccessTokenController extends AbstractController {
                     .authenticate(clientCredentialsGrantRequestAuthentication);
         } catch (ResourceException e) {
             log.debug("Unable to authenticate client credentials grant request: {}", e.getMessage(), e);
-            throw new OAuthException(OAuthErrorCode.INVALID_GRANT, "Unable to authenticate refresh token request");
+            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "Unable to authenticate client credentials grant request");
         }
 
         return createAccessTokenResult(request, response, authenticationResult);
