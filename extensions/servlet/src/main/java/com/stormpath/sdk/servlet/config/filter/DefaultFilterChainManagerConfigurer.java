@@ -130,14 +130,6 @@ public class DefaultFilterChainManagerConfigurer {
         String idSiteResultUrl = config.getCallbackUri();
         String idSiteResultUrlPattern = cleanUri(idSiteResultUrl);
 
-        String authorizeCallbackUrl = "/authorize/callback";
-        String authorizeCallbackUrlPattern = cleanUri(authorizeCallbackUrl);
-        boolean authorizeCallbackChainSpecified = false;
-
-        String authorizeUrl = "/authorize";
-        String authorizeUrlPattern = cleanUri(authorizeUrl);
-        boolean authorizeChainSpecified = false;
-
         String googleCallbackUrl = config.get("stormpath.web.social.google.uri");
         String googleCallbackUrlPattern = cleanUri(googleCallbackUrl);
         boolean googleCallbackChainSpecified = false;
@@ -155,7 +147,7 @@ public class DefaultFilterChainManagerConfigurer {
         boolean linkedinCallbackChainSpecified = false;
 
         //uriPattern-to-chainDefinition:
-        Map<String, String> patternChains = new LinkedHashMap<>();
+        Map<String, String> patternChains = new LinkedHashMap<String, String>();
 
         for (String key : config.keySet()) {
 
