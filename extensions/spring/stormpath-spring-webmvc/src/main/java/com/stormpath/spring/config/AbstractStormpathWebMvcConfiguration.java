@@ -385,15 +385,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.social.github.uri'] ?: '/callbacks/github' }")
     protected String githubCallbackUri;
 
-    @Value("#{ @environment['stormpath.web.social.flow.enabled'] ?: true }")
-    protected boolean socialFlowEnabled;
-
-    @Value("#{ @environment['stormpath.web.social.flow.authorize.uri'] ?: '/authorize' }")
-    protected String socialFlowAuthorizeUri;
-
-    @Value("#{ @environment['stormpath.web.social.flow.authorize.callback.uri'] ?: '/authorize/callback' }")
-    protected String socialFlowAuthorizeCallbackUri;
-
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
 
