@@ -776,7 +776,7 @@ class ApplicationIT extends ClientIT {
     }
 
     /**
-     * @see https://github.com/stormpath/stormpath-sdk-java/issues/164
+     * See: <a href="https://github.com/stormpath/stormpath-sdk-java/issues/164">Issue 164</a>
      *
      * @since 1.0.RC9
      */
@@ -2168,11 +2168,11 @@ class ApplicationIT extends ClientIT {
 
         def accessToken = client.getResource(accessTokenResult.accessTokenHref, AccessToken)
 
-        OAuthRefreshTokenRequestAuthentication request = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder().setRefreshToken(accessTokenResult.getRefreshTokenString()).build();
+        def refreshToken = accessTokenResult.getRefreshToken()
+
+        OAuthRefreshTokenRequestAuthentication request = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder().setRefreshToken(refreshToken.getJwt()).build();
 
         def refreshTokenResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
-
-        def refreshToken = refreshTokenResult.getRefreshToken()
 
         refreshToken.revoke()
 
@@ -2196,14 +2196,14 @@ class ApplicationIT extends ClientIT {
 
         OAuthRefreshTokenRequestAuthentication request = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder().setRefreshToken(accessTokenResult.getRefreshTokenString()).build();
 
-        RefreshToken refreshToken = null
+        RefreshToken refreshToken = accessTokenResult.getRefreshToken()
 
         (1..5).each {
             def refreshTokenResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
             def accessToken = client.getResource(refreshTokenResult.accessTokenHref, AccessToken)
             accessTokens.add(accessToken)
 
-            refreshToken = refreshToken == null ? refreshTokenResult.refreshToken : refreshToken
+            assertEquals refreshTokenResult.getRefreshToken().getHref(), refreshToken.getHref()
         }
 
         OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(app).revoke(OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(accessTokenResult.getRefreshTokenString()).build())
