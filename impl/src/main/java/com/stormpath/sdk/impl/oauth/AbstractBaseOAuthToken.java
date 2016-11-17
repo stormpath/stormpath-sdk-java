@@ -1,6 +1,7 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
@@ -9,12 +10,16 @@ import com.stormpath.sdk.impl.resource.MapProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.BaseOAuthToken;
 import com.stormpath.sdk.oauth.OAuthRequests;
 import com.stormpath.sdk.oauth.OAuthRevocationRequest;
 import com.stormpath.sdk.oauth.OAuthTokenRevocators;
 import com.stormpath.sdk.oauth.TokenTypeHint;
 import com.stormpath.sdk.tenant.Tenant;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 
 import java.util.Date;
 import java.util.Map;
@@ -95,6 +100,10 @@ public abstract class AbstractBaseOAuthToken extends AbstractInstanceResource im
                 .setToken(getJwt()).setTokenTypeHint(getTokenTypeHint()).build();
 
         OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(getApplication()).revoke(revocationRequest);
+    }
+
+    protected static Jws<Claims> parseJws(String token, ApiKey apiKey) {
+        return Jwts.parser().setSigningKey(apiKey.getSecret().getBytes(Strings.UTF_8)).parseClaimsJws(token);
     }
 
     protected abstract TokenTypeHint getTokenTypeHint();
