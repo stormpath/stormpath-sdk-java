@@ -50,6 +50,13 @@ public interface OAuthPolicy extends Resource, Saveable {
     String getTokenEndpoint();
 
     /**
+     * The href corresponding to the Endpoint for Tokens (access_tokens or refresh) revocation for the parent {@link Application Application}
+     *
+     * @return the href corresponding to the Endpoint for Tokens (access_tokens or refresh) revocation for the parent {@link Application Application}
+     */
+    String getRevocationEndpoint();
+
+    /**
      * Sets the Time To Live for the tokens created for the parent {@link Application Application} expressed in a period of time format, for example: PT1H.
      *
      * @return this instance for method chaining.

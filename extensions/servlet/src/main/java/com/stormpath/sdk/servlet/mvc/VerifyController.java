@@ -28,13 +28,12 @@ import com.stormpath.sdk.servlet.account.event.VerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultVerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.event.RequestEvent;
-import com.stormpath.sdk.servlet.form.DefaultField;
-import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -217,7 +216,12 @@ public class VerifyController extends FormController {
 
         Application application = (Application) request.getAttribute(Application.class.getName());
 
-        String email = getFieldValueResolver().getValue(request, "email");
+        String login = getFieldValueResolver().getValue(request, "login");
+
+        /*Fallback to email for backwards compatibility*/
+        if (!StringUtils.hasText(login)) {
+            login = getFieldValueResolver().getValue(request, "email");
+        }
 
         try {
             //set the form on the request in case the AccountStoreResolver needs to inspect it:
@@ -225,9 +229,9 @@ public class VerifyController extends FormController {
             AccountStore accountStore = accountStoreResolver.getAccountStore(request, response);
 
             VerificationEmailRequest verificationEmailRequest = Applications.verificationEmailBuilder()
-                .setLogin(email)
-                .setAccountStore(accountStore)
-                .build();
+                    .setLogin(login)
+                    .setAccountStore(accountStore)
+                    .build();
 
             application.sendVerificationEmail(verificationEmailRequest);
         } finally {
@@ -238,5 +242,23 @@ public class VerifyController extends FormController {
             return new DefaultViewModel(nextUri.replace("status=verified", "status=unverified")).setRedirect(true);
         }
 
+    }
+
+    @Override
+    protected void validate(HttpServletRequest request, HttpServletResponse response, Form form) {
+        super.validate(request, response, form);
+
+        String loginValue = form.getFieldValue("login");
+        String emailValue = form.getFieldValue("email");
+
+        if (StringUtils.hasText(loginValue) && StringUtils.hasText(emailValue)) {
+            String key = "stormpath.web." + getControllerKey() + ".form.errors.fieldConflict";
+            String msg = i18n(request, key);
+            throw new ValidationException(msg);
+        } else if (!StringUtils.hasText(loginValue) && !StringUtils.hasText(emailValue)) {
+            String key = "stormpath.web." + getControllerKey() + ".form.fields.login.required";
+            String msg = i18n(request, key);
+            throw new ValidationException(msg);
+        }
     }
 }

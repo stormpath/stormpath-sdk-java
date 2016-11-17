@@ -20,7 +20,7 @@ import com.stormpath.sdk.servlet.authz.RequestAuthorizer
 import com.stormpath.sdk.servlet.event.impl.Publisher
 import com.stormpath.sdk.servlet.filter.oauth.*
 import com.stormpath.sdk.servlet.http.Saver
-import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator
+import com.stormpath.sdk.servlet.util.GrantTypeValidator
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
@@ -55,9 +55,9 @@ class AccessTokenControllerTest {
         controller.setEventPublisher(eventPublisher)
         controller.setAccountSaver(saver)
 
-        GrantTypeStatusValidator grantTypeStatusValidator = createStrictMock(GrantTypeStatusValidator)
+        GrantTypeValidator grantTypeStatusValidator = createStrictMock(GrantTypeValidator)
         expect(grantTypeStatusValidator.validate(anyString())).andThrow(new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE)).once()
-        controller.setGrantTypeStatusValidator(grantTypeStatusValidator)
+        controller.setGrantTypeValidator(grantTypeStatusValidator)
 
         controller.init();
 

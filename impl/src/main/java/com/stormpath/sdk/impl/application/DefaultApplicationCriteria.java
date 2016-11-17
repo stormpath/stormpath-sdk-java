@@ -104,4 +104,10 @@ public class DefaultApplicationCriteria extends DefaultCriteria<ApplicationCrite
         getOptions().withCustomData();
         return this;
     }
+
+    @Override
+    public ApplicationCriteria withWebConfig() {
+        getOptions().withWebConfig();
+        return this;
+    }
 }

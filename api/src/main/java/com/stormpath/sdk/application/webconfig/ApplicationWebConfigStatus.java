@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.util;
-
-import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
+package com.stormpath.sdk.application.webconfig;
 
 /**
  * @since 1.2.0
  */
-public interface GrantTypeStatusValidator {
+public enum ApplicationWebConfigStatus {
 
-    String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
-    String PASSWORD_GRANT_TYPE = "password";
+    /**
+     * ApplicationWebConfigStatus that are enabled can be used in the Client API.
+     */
+    ENABLED,
 
-    void validate(String grantType) throws OAuthException;
+    /**
+     * ApplicationWebConfigStatus that are disabled cannot be used in the Client API..
+     */
+    DISABLED,
 
 }

@@ -37,6 +37,7 @@ public class DefaultOAuthPolicy extends AbstractInstanceResource implements OAut
     static final StringProperty REFRESH_TOKEN_TTL = new StringProperty("refreshTokenTtl");
 
     static final StringProperty TOKEN_ENDPOINT = new StringProperty("tokenEndpoint");
+    static final StringProperty REVOCATION_ENDPOINT = new StringProperty("revocationEndpoint");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Application> APPLICATION = new ResourceReference<Application>("application", Application.class);
@@ -71,6 +72,11 @@ public class DefaultOAuthPolicy extends AbstractInstanceResource implements OAut
     @Override
     public String getTokenEndpoint() {
         return getString(TOKEN_ENDPOINT);
+    }
+
+    @Override
+    public String getRevocationEndpoint() {
+        return getString(REVOCATION_ENDPOINT);
     }
 
     @Override

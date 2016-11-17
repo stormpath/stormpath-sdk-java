@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
  * @since 1.0.0
  */
 public class LinkedinCallbackController extends AbstractSocialCallbackController {
+
     private static final String FAKE_LINKEDIN_STATE = "oauthState";
 
     @Override
@@ -40,5 +41,4 @@ public class LinkedinCallbackController extends AbstractSocialCallbackController
         // of determining the redirectUri and just use this.nextUri instead.
         return super.shouldGetRedirectUriFromState(state) && !state.equals(FAKE_LINKEDIN_STATE);
     }
-
 }

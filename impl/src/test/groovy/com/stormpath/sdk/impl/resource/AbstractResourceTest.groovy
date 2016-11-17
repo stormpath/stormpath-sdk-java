@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 package com.stormpath.sdk.impl.resource
 
+import com.stormpath.sdk.impl.application.webconfig.DefaultMeConfig
+import com.stormpath.sdk.impl.application.webconfig.DefaultOauth2Config
+import com.stormpath.sdk.impl.application.webconfig.DefaultWebFeatureConfig
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import org.testng.annotations.Test
 
-import java.lang.reflect.Method
-
 import static org.easymock.EasyMock.*
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertNull
-import static org.testng.Assert.fail
+import static org.testng.Assert.*
 
 /**
  * @since 0.4.1
@@ -102,25 +103,61 @@ class AbstractResourceTest {
 
         def testResource = new TestResource(ds, props)
 
+        def linkBaseUrl = testResource.getMapProperty("defaultModel").get('linkBaseUrl')
 
-        Method method = AbstractResource.getDeclaredMethod("getMapProperty", String)
-        method.setAccessible(true)
+        assertEquals(linkBaseUrl, "https://api.stormpath.com/passwordReset")
 
-        Object[] parameters = new Object[1]
-        parameters[0] = "defaultModel"
+        assertNull testResource.getMapProperty("nonExistentMapProperty")
 
-        assertEquals(((Map) method.invoke(testResource, parameters)).get('linkBaseUrl'), "https://api.stormpath.com/passwordReset")
-
-        parameters[0] = "nonExistentMapProperty"
-        assertNull(method.invoke(testResource, parameters))
-
-        parameters[0] = "name"
         try {
-            method.invoke(testResource, parameters)
+            testResource.getMapProperty("name")
             fail("Should have thrown")
-        } catch (Exception e) {
-            assertEquals(e.getCause().toString(), "java.lang.IllegalArgumentException: 'name' property value type does not match the specified type. Specified type: Map. Existing type: java.lang.String.  Value: Default Password Reset Email Template")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "'name' property value type does not match the specified type. Specified type: Map. Existing type: java.lang.String.  Value: Default Password Reset Email Template")
         }
+    }
+
+    @Test
+    void testParentAwareObjectProperty() {
+
+        def props = [dnsLabel         : "d-label", status: "ENABLED", signingApiKey: [href: "http://api.stormpath.com/apiKeys/id"],
+                     oauth2           : [enabled: false],
+                     me               : [enabled: false, expand: [apiKeys: true]],
+                     accessTokenCookie: [name: "testCookie1"], refreshTokenCookie: [name: "testCookie2"]]
+
+
+        InternalDataStore ds = createStrictMock(InternalDataStore)
+
+        def testResource = new TestResource(ds, props)
+
+        assertTrue testResource.getProperty("oauth2") instanceof Map
+
+        def oauth2 = testResource.getParentAwareObjectProperty("oauth2", DefaultOauth2Config, AbstractPropertyRetriever)
+
+        assertEquals oauth2.isEnabled(), false
+
+        def me = testResource.getParentAwareObjectProperty("me", DefaultMeConfig, AbstractPropertyRetriever)
+
+        assertEquals me.isEnabled(), false
+        assertEquals me.getExpansions().isApiKeys(), true
+
+        def transformed = testResource.getProperty("oauth2")
+
+        assertTrue testResource.getProperty("oauth2") instanceof DefaultOauth2Config, "transformed class: " +  transformed.getClass().name
+
+        assertEquals oauth2, testResource.getParentAwareObjectProperty("oauth2",  DefaultOauth2Config, AbstractPropertyRetriever)
+
+        assertNull testResource.getParentAwareObjectProperty("unkownw", DefaultWebFeatureConfig, AbstractPropertyRetriever)
+
+        try {
+            testResource.getParentAwareObjectProperty("dnsLabel", DefaultWebFeatureConfig, AbstractPropertyRetriever)
+
+            fail("Should have thrown")
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "'dnsLabel' property value type does not match the specified property type. " +
+                    "Existing type: java.lang.String.  Value: d-label")
+        }
+
     }
 
 }
