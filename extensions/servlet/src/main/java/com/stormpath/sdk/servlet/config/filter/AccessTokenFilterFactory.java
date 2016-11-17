@@ -75,6 +75,6 @@ public class AccessTokenFilterFactory extends ControllerFilterFactory<AccessToke
         controller.setAccountSaver(accountSaver);
         controller.setRequestAuthorizer(requestAuthorizer);
         controller.setBasicAuthenticationScheme(basicAuthenticationScheme);
-        controller.setGrantTypeStatusValidator(grantTypeStatusValidator);
+        controller.setGrantTypeValidator(grantTypeValidator);
     }
 }
