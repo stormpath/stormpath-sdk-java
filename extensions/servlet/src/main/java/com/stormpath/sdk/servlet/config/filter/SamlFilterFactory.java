@@ -33,7 +33,7 @@ public class SamlFilterFactory extends ControllerFilterFactory<SamlController> {
     }
 
     @Override
-    protected void configure(SamlController c, Config config) throws Exception {
+    protected void configure(SamlController controller, Config config) throws Exception {
 
         SubdomainResolver subdomainResolver = new SubdomainResolver();
         subdomainResolver.setBaseDomainName(config.get("stormpath.web.application.domain"));
@@ -44,9 +44,9 @@ public class SamlFilterFactory extends ControllerFilterFactory<SamlController> {
         DefaultSamlOrganizationResolver samlOrganizationResolver = new DefaultSamlOrganizationResolver();
         samlOrganizationResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
 
-        c.setServerUriResolver(new DefaultServerUriResolver());
-        c.setCallbackUri(getConfig().get("stormpath.web.callback.uri"));
-        c.setAlreadyLoggedInUri(getConfig().getLoginConfig().getNextUri());
-        c.setSamlOrganizationResolver(samlOrganizationResolver);
+        controller.setServerUriResolver(new DefaultServerUriResolver());
+        controller.setCallbackUri(getConfig().get("stormpath.web.callback.uri"));
+        controller.setAlreadyLoggedInUri(getConfig().getLoginConfig().getNextUri());
+        controller.setSamlOrganizationResolver(samlOrganizationResolver);
     }
 }

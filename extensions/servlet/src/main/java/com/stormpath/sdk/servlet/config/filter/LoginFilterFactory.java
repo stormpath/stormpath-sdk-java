@@ -35,19 +35,19 @@ public class LoginFilterFactory extends FormControllerFilterFactory<LoginControl
     }
 
     @Override
-    protected void doConfigure(LoginController c, Config config) {
-        c.setForgotPasswordEnabled(config.getForgotPasswordConfig().isEnabled());
-        c.setForgotPasswordUri(config.getForgotPasswordConfig().getUri());
-        c.setVerifyEnabled(config.getVerifyConfig().isEnabled());
-        c.setVerifyUri(config.getVerifyConfig().getUri());
-        c.setRegisterEnabledResolver(config.getRegisterEnabledResolver());
-        c.setRegisterUri(config.getRegisterConfig().getUri());
-        c.setLogoutUri(config.getLogoutConfig().getUri());
-        c.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
-        c.setPreLoginHandler(config.getLoginPreHandler());
-        c.setPostLoginHandler(config.getLoginPostHandler());
-        c.setIdSiteEnabled(config.isIdSiteEnabled());
-        c.setCallbackEnabled(config.isCallbackEnabled());
-        c.setApplicationResolver(config.getApplicationResolver());
+    protected void doConfigure(LoginController controller, Config config) {
+        controller.setForgotPasswordEnabled(config.getForgotPasswordConfig().isEnabled());
+        controller.setForgotPasswordUri(config.getForgotPasswordConfig().getUri());
+        controller.setVerifyEnabled(config.getVerifyConfig().isEnabled());
+        controller.setVerifyUri(config.getVerifyConfig().getUri());
+        controller.setRegisterEnabledResolver(config.getRegisterEnabledResolver());
+        controller.setRegisterUri(config.getRegisterConfig().getUri());
+        controller.setLogoutUri(config.getLogoutConfig().getUri());
+        controller.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
+        controller.setPreLoginHandler(config.getLoginPreHandler());
+        controller.setPostLoginHandler(config.getLoginPostHandler());
+        controller.setIdSiteEnabled(config.isIdSiteEnabled());
+        controller.setCallbackEnabled(config.isCallbackEnabled());
+        controller.setApplicationResolver(config.getApplicationResolver());
     }
 }

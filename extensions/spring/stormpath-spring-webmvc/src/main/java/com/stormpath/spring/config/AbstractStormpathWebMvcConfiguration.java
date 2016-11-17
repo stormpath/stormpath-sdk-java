@@ -1304,19 +1304,19 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setProduces(stormpathProducedMediaTypes());
     }
 
-    private <T extends FormController> T configure(T c, ControllerConfig cr) {
-        configure(c);
-        c.setUri(cr.getUri());
-        c.setNextUri(cr.getNextUri());
-        c.setView(cr.getView());
-        c.setControllerKey(cr.getControllerKey());
-        c.setCsrfTokenManager(stormpathCsrfTokenManager());
-        c.setFieldValueResolver(stormpathFieldValueResolver());
+    private <T extends FormController> T configure(T controller, ControllerConfig cr) {
+        configure(controller);
+        controller.setUri(cr.getUri());
+        controller.setNextUri(cr.getNextUri());
+        controller.setView(cr.getView());
+        controller.setControllerKey(cr.getControllerKey());
+        controller.setCsrfTokenManager(stormpathCsrfTokenManager());
+        controller.setFieldValueResolver(stormpathFieldValueResolver());
         List<Field> fields = cr.getFormFields();
         if (!Collections.isEmpty(fields)) { //might be empty if the fields are static / configured within the controller
-            c.setFormFields(fields);
+            controller.setFormFields(fields);
         }
-        return c;
+        return controller;
     }
 
     private <T extends AbstractSocialCallbackController> T configure(T c) {

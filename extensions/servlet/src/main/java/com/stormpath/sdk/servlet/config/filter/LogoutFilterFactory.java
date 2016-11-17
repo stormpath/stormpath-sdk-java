@@ -29,8 +29,7 @@ public class LogoutFilterFactory extends ControllerFilterFactory<LogoutControlle
     }
 
     @Override
-    protected void configure(LogoutController c, Config config) throws Exception {
-        c.setNextUri(config.getLogoutConfig().getNextUri());
-        //c.setInvalidateHttpSession(); support this in plain servlet mode?
+    protected void configure(LogoutController controller, Config config) throws Exception {
+        controller.setNextUri(config.getLogoutConfig().getNextUri());
     }
 }

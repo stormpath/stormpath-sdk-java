@@ -25,9 +25,9 @@ public abstract class SocialCallbackControllerFilterFactory<T extends AbstractSo
     extends ControllerFilterFactory<T> {
 
     @Override
-    protected final void configure(T c, Config config) throws Exception {
-        c.setNextUri(config.getLoginConfig().getUri());
-        c.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
-        c.setApplicationResolver(config.getApplicationResolver());
+    protected final void configure(T controller, Config config) throws Exception {
+        controller.setNextUri(config.getLoginConfig().getUri());
+        controller.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
+        controller.setApplicationResolver(config.getApplicationResolver());
     }
 }

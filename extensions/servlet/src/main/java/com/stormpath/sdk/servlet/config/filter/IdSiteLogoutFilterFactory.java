@@ -30,14 +30,14 @@ public class IdSiteLogoutFilterFactory extends ControllerFilterFactory<IdSiteLog
     }
 
     @Override
-    protected void configure(IdSiteLogoutController c, Config config) {
-        c.setServerUriResolver(getConfig().getServerUriResolver());
-        c.setIdSiteResultUri(getConfig().getCallbackUri());
-        c.setIdSiteOrganizationResolver(getConfig().getIdSiteOrganizationResolver());
-        c.setNextUri(getConfig().getLogoutConfig().getNextUri());
+    protected void configure(IdSiteLogoutController controller, Config config) {
+        controller.setServerUriResolver(getConfig().getServerUriResolver());
+        controller.setIdSiteResultUri(getConfig().getCallbackUri());
+        controller.setIdSiteOrganizationResolver(getConfig().getIdSiteOrganizationResolver());
+        controller.setNextUri(getConfig().getLogoutConfig().getNextUri());
 
         ControllerFilter filter = new ControllerFilter();
         filter.setProducedMediaTypes(config.getProducedMediaTypes());
-        filter.setController(c);
+        filter.setController(controller);
     }
 }

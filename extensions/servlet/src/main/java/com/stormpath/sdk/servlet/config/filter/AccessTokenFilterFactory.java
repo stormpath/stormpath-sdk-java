@@ -51,7 +51,7 @@ public class AccessTokenFilterFactory extends ControllerFilterFactory<AccessToke
     }
 
     @Override
-    protected void configure(AccessTokenController c, Config config) throws Exception {
+    protected void configure(AccessTokenController controller, Config config) throws Exception {
 
         AccessTokenAuthenticationRequestFactory accessTokenAuthenticationRequestFactory =
             config.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
@@ -67,14 +67,14 @@ public class AccessTokenFilterFactory extends ControllerFilterFactory<AccessToke
         BasicAuthenticationScheme basicAuthenticationScheme = config.getInstance(BASIC_AUTHENTICATION_REQUEST_FACTORY);
         GrantTypeStatusValidator grantTypeStatusValidator = config.getGrantTypeStatusValidator();
 
-        c.setEventPublisher(eventPublisher);
-        c.setAccessTokenAuthenticationRequestFactory(accessTokenAuthenticationRequestFactory);
-        c.setAccessTokenResultFactory(accessTokenResultFactory);
-        c.setRefreshTokenAuthenticationRequestFactory(refreshTokenAuthenticationRequestFactory);
-        c.setRefreshTokenResultFactory(refreshTokenResultFactory);
-        c.setAccountSaver(accountSaver);
-        c.setRequestAuthorizer(requestAuthorizer);
-        c.setBasicAuthenticationScheme(basicAuthenticationScheme);
-        c.setGrantTypeStatusValidator(grantTypeStatusValidator);
+        controller.setEventPublisher(eventPublisher);
+        controller.setAccessTokenAuthenticationRequestFactory(accessTokenAuthenticationRequestFactory);
+        controller.setAccessTokenResultFactory(accessTokenResultFactory);
+        controller.setRefreshTokenAuthenticationRequestFactory(refreshTokenAuthenticationRequestFactory);
+        controller.setRefreshTokenResultFactory(refreshTokenResultFactory);
+        controller.setAccountSaver(accountSaver);
+        controller.setRequestAuthorizer(requestAuthorizer);
+        controller.setBasicAuthenticationScheme(basicAuthenticationScheme);
+        controller.setGrantTypeStatusValidator(grantTypeStatusValidator);
     }
 }
