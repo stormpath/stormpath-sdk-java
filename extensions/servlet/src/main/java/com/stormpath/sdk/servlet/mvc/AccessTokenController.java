@@ -169,7 +169,7 @@ public class AccessTokenController extends AbstractController {
         Assert.notNull(resultFactory, "accessTokenResultFactory cannot be null.");
         Assert.notNull(accountSaver, "accountSaver cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
-        Assert.notNull(grantTypeValidator, "grantTypeStatusValidator cannot be null.");
+        Assert.notNull(grantTypeValidator, "grantTypeValidator cannot be null.");
     }
 
     @Override
