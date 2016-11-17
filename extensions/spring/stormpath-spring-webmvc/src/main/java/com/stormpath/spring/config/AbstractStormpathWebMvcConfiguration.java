@@ -160,7 +160,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -1119,7 +1118,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setAccountSaver(stormpathAuthenticationResultSaver());
         c.setRequestAuthorizer(stormpathAccessTokenRequestAuthorizer());
         c.setBasicAuthenticationScheme(stormpathBasicAuthenticationScheme());
-        c.setGrantTypeStatusValidator(stormpathGrantTypeStatusValidator());
+        c.setGrantTypeValidator(stormpathGrantTypeStatusValidator());
 
         return init(c);
     }
@@ -1127,10 +1126,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     /**
      * @since 1.2.0
      */
-    public GrantTypeStatusValidator stormpathGrantTypeStatusValidator() {
+    public GrantTypeValidator stormpathGrantTypeStatusValidator() {
         AccessTokenControllerConfig config = stormpathAccessTokenConfig();
 
-        DefaultGrantTypeStatusValidator grantTypeStatusValidator = new DefaultGrantTypeStatusValidator();
+        DefaultGrantTypeValidator grantTypeStatusValidator = new DefaultGrantTypeValidator();
         grantTypeStatusValidator.setClientCredentialsGrantTypeEnabled(config.isClientCredentialsGrantTypeEnabled());
         grantTypeStatusValidator.setPasswordGrantTypeEnabled(config.isPasswordGrantTypeEnabled());
 

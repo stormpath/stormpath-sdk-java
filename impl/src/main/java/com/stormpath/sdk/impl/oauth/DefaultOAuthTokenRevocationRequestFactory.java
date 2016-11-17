@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.servlet.util;
+package com.stormpath.sdk.impl.oauth;
 
-import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
+import com.stormpath.sdk.oauth.OAuthRevocationRequestBuilder;
+import com.stormpath.sdk.oauth.OAuthTokenRevocationRequestFactory;
 
 /**
  * @since 1.2.0
  */
-public interface GrantTypeStatusValidator {
-
-    String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
-    String PASSWORD_GRANT_TYPE = "password";
-
-    void validate(String grantType) throws OAuthException;
-
+public class DefaultOAuthTokenRevocationRequestFactory implements OAuthTokenRevocationRequestFactory {
+    @Override
+    public OAuthRevocationRequestBuilder builder() {
+        return new DefaultOAuthRevocationRequestBuilder();
+    }
 }

@@ -25,16 +25,6 @@ import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 public interface OAuthGrantRequestAuthenticationResultBuilder {
 
     /**
-     * Modifies this builder to state whether the result to build corresponds to a Refresh Grant Authentication operation
-     *
-     * @param isRefreshAuthGrantRequest {@code true} if the result to build corresponds to a Refresh Grant Authentication operation,
-     * {@code false} if it corresponds to a Create Grant Authentication operation
-     *
-     * @return the {@link OAuthGrantRequestAuthenticationResultBuilder OAuthGrantRequestAuthenticationResultBuilder} object
-     */
-    OAuthGrantRequestAuthenticationResultBuilder setIsRefreshAuthGrantRequest(Boolean isRefreshAuthGrantRequest);
-
-    /**
      * Creates a new {@code OAuthGrantRequestAuthenticationResult} instance based on the current builder state.
      *
      * @return a new {@code OAuthGrantRequestAuthenticationResult} instance based on the current builder state.

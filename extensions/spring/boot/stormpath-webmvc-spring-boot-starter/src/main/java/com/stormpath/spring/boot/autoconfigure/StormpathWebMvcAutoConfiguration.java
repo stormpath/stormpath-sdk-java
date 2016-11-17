@@ -56,7 +56,7 @@ import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.View;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
-import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 import com.stormpath.spring.config.AbstractStormpathWebMvcConfiguration;
 import com.stormpath.spring.config.AccessTokenCookieProperties;
 import com.stormpath.spring.config.RefreshTokenCookieProperties;
@@ -663,7 +663,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
      */
     @Bean
     @ConditionalOnMissingBean
-    public GrantTypeStatusValidator stormpathGrantTypeStatusValidator() {
+    public GrantTypeValidator stormpathGrantTypeStatusValidator() {
         return super.stormpathGrantTypeStatusValidator();
     }
 }

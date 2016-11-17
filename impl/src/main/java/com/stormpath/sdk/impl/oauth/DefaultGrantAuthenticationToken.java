@@ -18,11 +18,12 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
-
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.GrantAuthenticationToken;
 import com.stormpath.sdk.oauth.RefreshToken;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -79,10 +80,18 @@ public class DefaultGrantAuthenticationToken extends AbstractInstanceResource im
         return getDataStore().instantiate(AccessToken.class, props);
     }
 
-    public RefreshToken getAsRefreshToken(){
+    public RefreshToken getAsRefreshToken() {
+
+        String refreshToken;
+
+        if ((refreshToken = getRefreshToken()) == null) {
+            return null;
+        }
+
+        Jws<Claims> jws = AbstractBaseOAuthToken.parseJws(refreshToken, getDataStore().getApiKey());
         Map<String, Object> props = new LinkedHashMap<String, Object>(1);
-        String refreshTokenID = (String)((Map)this.getAsAccessToken().getExpandedJwt().get("claims")).get("rti");
-        props.put("href", "/refreshTokens/" + refreshTokenID);
+        String refreshTokenID = jws.getBody().getId();
+        props.put("href", getDataStore().getBaseUrl() + "/refreshTokens/" + refreshTokenID);
         return getDataStore().instantiate(RefreshToken.class, props);
     }
 }
