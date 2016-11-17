@@ -322,16 +322,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public Controller stormpathAuthorizeController() {
-        return super.stormpathAuthorizeController();
-    }
-
-    @Bean
-    public Controller stormpathAuthorizeCallbackController() {
-        return super.stormpathAuthorizeCallbackController();
-    }
-
-    @Bean
     public ErrorModelFactory stormpathLoginErrorModelFactory() {
         return super.stormpathLoginErrorModelFactory();
     }

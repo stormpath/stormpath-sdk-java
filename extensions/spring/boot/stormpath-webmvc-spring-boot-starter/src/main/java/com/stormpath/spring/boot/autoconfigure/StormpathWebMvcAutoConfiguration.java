@@ -382,18 +382,6 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "stormpathAuthorizeController")
-    public Controller stormpathAuthorizeController() {
-        return super.stormpathAuthorizeController();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "stormpathAuthorizeCallbackController")
-    public Controller stormpathAuthorizeCallbackController() {
-        return super.stormpathAuthorizeCallbackController();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name = "stormpathLoginController")
     public Controller stormpathLoginController() {
         return super.stormpathLoginController();

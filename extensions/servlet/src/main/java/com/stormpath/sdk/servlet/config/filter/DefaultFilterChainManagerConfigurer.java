@@ -336,12 +336,6 @@ public class DefaultFilterChainManagerConfigurer {
         if (!meChainSpecified && meEnabled) {
             mgr.createChain(meUrlPattern, "authc," + DefaultFilter.me.name());
         }
-        if (!authorizeCallbackChainSpecified) {
-            mgr.createChain(authorizeCallbackUrlPattern, DefaultFilter.authorizeCallback.name());
-        }
-        if (!authorizeChainSpecified) {
-            mgr.createChain(authorizeUrlPattern, DefaultFilter.authorize.name());
-        }
         if (!googleCallbackChainSpecified) {
             mgr.createChain(googleCallbackUrlPattern, DefaultFilter.googleCallback.name());
         }

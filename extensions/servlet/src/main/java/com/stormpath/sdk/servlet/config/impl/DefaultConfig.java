@@ -51,16 +51,8 @@ import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
-import com.stormpath.sdk.servlet.mvc.DelegatingAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
-import com.stormpath.sdk.servlet.mvc.provider.DefaultProviderAccountRequestResolver;
-import com.stormpath.sdk.servlet.mvc.provider.FacebookAuthorizationEndpointResolver;
-import com.stormpath.sdk.servlet.mvc.provider.GithubAuthorizationEndpointResolver;
-import com.stormpath.sdk.servlet.mvc.provider.GoogleAuthorizationEndpointResolver;
-import com.stormpath.sdk.servlet.mvc.provider.LinkedInAuthorizationEndpointResolver;
-import com.stormpath.sdk.servlet.mvc.provider.ProviderAccountRequestResolver;
-import com.stormpath.sdk.servlet.mvc.provider.ProviderAuthorizationEndpointResolver;
 import com.stormpath.sdk.servlet.util.DefaultGrantTypeStatusValidator;
 import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
@@ -641,29 +633,6 @@ public class DefaultConfig implements Config {
     @Override
     public boolean isCorsEnabled() {
         return CFG.getBoolean(STORMPATH_WEB_CORS_ENABLED);
-    }
-
-    /**
-     * @since 1.2.0
-     */
-    @Override
-    public ProviderAccountRequestResolver getProviderAccountRequestResolver() {
-        return new DefaultProviderAccountRequestResolver();
-    }
-
-    @Override
-    public ProviderAuthorizationEndpointResolver getProviderAuthorizationEndpointResolver() {
-        FacebookAuthorizationEndpointResolver facebookAuthorizationEndpointResolver = new FacebookAuthorizationEndpointResolver();
-        facebookAuthorizationEndpointResolver.setCallback("/authorize/callback");
-        GoogleAuthorizationEndpointResolver googleAuthorizationEndpointResolver = new GoogleAuthorizationEndpointResolver();
-        googleAuthorizationEndpointResolver.setCallback("/authorize/callback");
-        GithubAuthorizationEndpointResolver githubAuthorizationEndpointResolver = new GithubAuthorizationEndpointResolver();
-        githubAuthorizationEndpointResolver.setCallback("/authorize/callback");
-        LinkedInAuthorizationEndpointResolver linkedInAuthorizationEndpointResolver = new LinkedInAuthorizationEndpointResolver();
-        linkedInAuthorizationEndpointResolver.setCallback("/authorize/callback");
-        return new DelegatingAuthorizationEndpointResolver(facebookAuthorizationEndpointResolver,
-                githubAuthorizationEndpointResolver, googleAuthorizationEndpointResolver,
-                linkedInAuthorizationEndpointResolver);
     }
 
     @Override
