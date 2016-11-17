@@ -18,8 +18,10 @@ package com.stormpath.sdk.saml;
 import com.stormpath.sdk.query.Options;
 
 //todo: saml javadoc
-public interface RegisteredSamlServiceProviderOptions<T> extends Options {
+public interface SamlIdentityProviderOptions<T> extends Options {
 
-    T withTenant();
+    T withAttributeMappingRules();
+
+    T withRegisteredSamlServiceProviders();
 
 }

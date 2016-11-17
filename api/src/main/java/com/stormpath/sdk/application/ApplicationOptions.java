@@ -79,4 +79,7 @@ public interface ApplicationOptions<T> extends AccountStoreOptions<T> {
      * @since 1.0.0
      */
     T withWebConfig();
+
+    //todo: saml javadoc
+    T withSamlPolicy();
 }

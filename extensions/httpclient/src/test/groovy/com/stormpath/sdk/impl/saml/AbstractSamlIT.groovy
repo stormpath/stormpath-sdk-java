@@ -15,8 +15,11 @@
  */
 package com.stormpath.sdk.impl.saml
 
+import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.ClientIT
-
+import com.stormpath.sdk.saml.SamlIdentityProvider
+import com.stormpath.sdk.saml.SamlPolicy
 /**
  * @since 1.2.0
  */
@@ -62,4 +65,23 @@ Ks+sF7ATR2ffb/Xg2NBScPcRdmHffQHavZuh44uygeAfSV/Lx4kb8/MdqOkPKRy0QrB/ZY/vRIL8
 xu/vQr6stjuzJIsDNAtW1FlG8WALOMjV
 -----END CERTIFICATE-----
 '''
+
+
+    protected SamlIdentityProvider getNewSamlIdentityProviderForNewApplication() {
+        def app = createTempApp()
+        return getSamlIdentityProviderForApplication(app)
+    }
+
+    protected SamlIdentityProvider getSamlIdentityProviderForApplication(Application app) {
+        def samlPolicy = client.getResource(app.getSamlPolicy().href, SamlPolicy)
+        samlPolicy.getSamlIdentityProvider()
+        return client.getResource(samlPolicy.getSamlIdentityProvider().href, SamlIdentityProvider)
+    }
+
+    protected SamlIdentityProvider getSamlIdentityProviderForDefaultApplication(){
+        def app = client.currentTenant.getApplications(Applications.where(Applications.name().eqIgnoreCase("Stormpath"))).asList().get(0)
+        return getSamlIdentityProviderForApplication(app)
+    }
 }
+
+

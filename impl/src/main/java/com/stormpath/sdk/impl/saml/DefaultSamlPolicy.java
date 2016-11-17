@@ -20,6 +20,7 @@ import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.saml.SamlIdentityProvider;
 import com.stormpath.sdk.saml.SamlPolicy;
 import com.stormpath.sdk.saml.SamlServiceProvider;
 
@@ -36,9 +37,10 @@ public class DefaultSamlPolicy extends AbstractInstanceResource implements SamlP
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
     // INSTANCE RESOURCE REFERENCES:
-    static final ResourceReference<SamlServiceProvider> SAML_SERVICE_PROVIDER = new ResourceReference<SamlServiceProvider>("serviceProvider", SamlServiceProvider.class);
+    static final ResourceReference<SamlServiceProvider> SAML_SERVICE_PROVIDER = new ResourceReference<>("serviceProvider", SamlServiceProvider.class);
+    static final ResourceReference<SamlIdentityProvider> SAML_IDENTITY_PROVIDER = new ResourceReference<>("identityProvider", SamlIdentityProvider.class);
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(SAML_SERVICE_PROVIDER, CREATED_AT, MODIFIED_AT);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(SAML_SERVICE_PROVIDER, SAML_IDENTITY_PROVIDER, CREATED_AT, MODIFIED_AT);
 
     public DefaultSamlPolicy(InternalDataStore dataStore) {
         super(dataStore);
@@ -55,6 +57,11 @@ public class DefaultSamlPolicy extends AbstractInstanceResource implements SamlP
 
     public SamlServiceProvider getSamlServiceProvider() {
         return getResourceProperty(SAML_SERVICE_PROVIDER);
+    }
+
+    @Override
+    public SamlIdentityProvider getSamlIdentityProvider() {
+        return getResourceProperty(SAML_IDENTITY_PROVIDER);
     }
 
     @Override

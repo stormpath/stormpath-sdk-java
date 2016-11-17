@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Stormpath, Inc.
+ * Copyright 2014 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,18 @@
  */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.query.Options;
+/**
+ * @since 1.2.0
+ */
+public enum SamlIdentityProviderStatus {
 
-//todo: saml javadoc
-public interface RegisteredSamlServiceProviderOptions<T> extends Options {
+    /**
+     * SamlIdentityProvider is enabled to be used.
+     */
+    ENABLED,
 
-    T withTenant();
-
+    /**
+     * SamlIdentityProvider is disabled and could not be used.
+     */
+    DISABLED
 }

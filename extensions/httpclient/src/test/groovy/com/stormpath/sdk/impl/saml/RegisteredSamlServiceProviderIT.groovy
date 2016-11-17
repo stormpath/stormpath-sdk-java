@@ -77,7 +77,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         assertRegisteredSAMLServiceProviderFields(registeredSamlServiceProviderReturned, registeredSamlServiceProvider)
 
         registeredSamlServiceProvider.setEntityId(registeredSamlServiceProvider.getEntityId())
-        updateRegisteredSAMLServiceProviderError(registeredSamlServiceProvider, 10110)
+        updatedSaveableError(registeredSamlServiceProvider, 10110)
     }
 
     @Test
@@ -419,20 +419,6 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         Throwable e = null;
         try {
             client.currentTenant.createRegisterdSamlServiceProvider(input)
-        }
-        catch (ResourceException re) {
-            e = re
-            assertEquals(re.status, 400)
-            assertEquals(re.getCode(), expectedErrorCode)
-        }
-
-        assertTrue(e instanceof ResourceException)
-    }
-
-    void updateRegisteredSAMLServiceProviderError(RegisteredSamlServiceProvider input, int expectedErrorCode) {
-        Throwable e = null;
-        try {
-            input.save()
         }
         catch (ResourceException re) {
             e = re

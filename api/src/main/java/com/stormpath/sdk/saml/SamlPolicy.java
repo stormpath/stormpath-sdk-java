@@ -35,4 +35,7 @@ public interface SamlPolicy extends Resource, Auditable {
      * @see SamlServiceProvider#getSsoInitiationEndpoint()
      */
     SamlServiceProvider getSamlServiceProvider();
+
+    //todo: saml javadoc
+    SamlIdentityProvider getSamlIdentityProvider();
 }

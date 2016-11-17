@@ -15,18 +15,14 @@
  */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.query.Criteria;
 
 //todo: saml javadoc
-public interface RegiseredSamlServiceProviderCriteria extends Criteria<RegiseredSamlServiceProviderCriteria>,  RegisteredSamlServiceProviderOptions<RegiseredSamlServiceProviderCriteria>{
+public interface CreateSamlIdentityProviderRequest {
 
+    SamlIdentityProvider getSamlIdentityProvider();
 
-    RegiseredSamlServiceProviderCriteria orderByName();
+    boolean hasSamlIdentityProviderOptions();
 
-
-    RegiseredSamlServiceProviderCriteria orderByDescription();
-
-
-    RegiseredSamlServiceProviderCriteria orderByStatus();
+    SamlIdentityProviderOptions getSamlIdentityProviderOptions() throws IllegalStateException;
 
 }

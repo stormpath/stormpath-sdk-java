@@ -22,11 +22,7 @@ import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @since 0.1
@@ -335,6 +331,29 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
                 clazz.getName() + ".  Existing type: " + value.getClass().getName();
         msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
         throw new IllegalArgumentException(msg);
+    }
+
+    /**
+     * Returns the {@link List} property identified by {@code key}
+     *
+     * @since 1.0.RC8
+     */
+    protected List getListProperty(String key){
+        Object list = getProperty(key);
+        return (List) list;
+    }
+
+    /**
+     * Returns the {@link Set} property identified by {@code key}
+     *
+     * @since 1.0.RC8
+     */
+    protected Set getSetProperty(String key){
+        Object set = getProperty(key);
+        if(set instanceof List){
+            return new HashSet((List)set);
+        }
+        return (Set) set;
     }
 
 //    /**

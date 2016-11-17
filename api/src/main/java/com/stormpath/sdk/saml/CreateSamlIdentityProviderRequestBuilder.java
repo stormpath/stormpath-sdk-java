@@ -15,12 +15,10 @@
  */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.phone.CreatePhoneRequest;
-
 //todo: saml javadoc
-public interface CreateRegisteredSamlServiceRequestBuilder {
+public interface CreateSamlIdentityProviderRequestBuilder {
 
-    CreateRegisteredSamlServiceRequestBuilder withResponseOptions(RegisteredSamlServiceProviderOptions options) throws IllegalArgumentException;
+    CreateSamlIdentityProviderRequestBuilder withResponseOptions(SamlIdentityProviderOptions options) throws IllegalArgumentException;
 
-    CreatePhoneRequest build();
+    CreateSamlIdentityProviderRequest build();
 }
