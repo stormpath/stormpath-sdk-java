@@ -37,8 +37,9 @@ public interface OAuthRevocationRequestBuilder {
     OAuthRevocationRequestBuilder setTokenTypeHint(TokenTypeHint tokenTypeHint);
 
     /**
-     * Returns
-     * @return
+     * Returns a new {@link OAuthRevocationRequest} based on the current builder state.
+     *
+     * @return a new {@link OAuthRevocationRequest}  based on the current builder state.
      */
     OAuthRevocationRequest build();
 }

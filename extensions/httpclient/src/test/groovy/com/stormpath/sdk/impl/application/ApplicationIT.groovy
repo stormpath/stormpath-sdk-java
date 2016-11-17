@@ -60,6 +60,7 @@ import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthRequestAuthenticator
 import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.oauth.OAuthTokenRevocator
 import com.stormpath.sdk.oauth.OAuthTokenRevocators
@@ -2252,6 +2253,34 @@ class ApplicationIT extends ClientIT {
     }
 
     @Test
+    void testCreateTwoPasswordGrantTokens_RevokeOne() {
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        OAuthPasswordGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(account.email).setPassword("Changeme1!").build()
+
+        OAuthRequestAuthenticator authenticator = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app)
+
+        def accessTokenResultOne = authenticator.authenticate(grantRequest)
+
+        def accessTokenResultTwo = authenticator.authenticate(grantRequest)
+
+        def refreshTokenOne = accessTokenResultOne.getRefreshToken()
+
+        OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(app).revoke(OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(refreshTokenOne.getJwt()).build())
+
+        assertRevoked(refreshTokenOne.href, RefreshToken)
+        assertRevoked(accessTokenResultOne.getAccessToken().href, RefreshToken)
+
+        def accessTokenTwo = client.getResource(accessTokenResultTwo.getAccessTokenHref(), AccessToken)
+        def refreshTokenTwo = client.getResource(accessTokenResultTwo.getRefreshToken().getHref(), RefreshToken)
+
+        assertNotNull accessTokenTwo
+        assertNotNull refreshTokenTwo
+    }
+
+    @Test
     void testCallRevokeFromAccessTokenWithNoRefreshToken() {
         def app = createTempApp()
 
@@ -2289,7 +2318,7 @@ class ApplicationIT extends ClientIT {
     }
 
     @Test
-    void testInvalidTokens_NoTokenType() {
+    void testRevokeTokens_NoTokenType() {
 
         def app = createTempApp()
 
