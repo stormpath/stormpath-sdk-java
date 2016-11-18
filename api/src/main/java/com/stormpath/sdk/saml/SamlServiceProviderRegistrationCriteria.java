@@ -15,14 +15,9 @@
  */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.query.Options;
+import com.stormpath.sdk.query.Criteria;
 
 //todo: saml javadoc
-public interface SamlIdentityProviderOptions<T> extends Options {
+public interface SamlServiceProviderRegistrationCriteria extends Criteria<SamlServiceProviderRegistrationCriteria>,  SamlServiceProviderRegistrationOptions<SamlServiceProviderRegistrationCriteria>{
 
-    T withAttributeMappingRules();
-
-    T withRegisteredSamlServiceProviders();
-
-    T withSamlServiceProviderRegistrations();
 }

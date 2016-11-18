@@ -17,25 +17,20 @@ package com.stormpath.sdk.impl.saml;
 
 
 import com.stormpath.sdk.impl.query.DefaultOptions;
-import com.stormpath.sdk.saml.SamlIdentityProviderOptions;
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationOptions;
 
 /**
  * @since 1.2.0
  */
-public class DefaultSamlIdentityProviderOptions extends DefaultOptions<SamlIdentityProviderOptions> implements SamlIdentityProviderOptions<SamlIdentityProviderOptions> {
+public class DefaultSamlServiceProviderRegistrationOptions extends DefaultOptions<SamlServiceProviderRegistrationOptions> implements SamlServiceProviderRegistrationOptions<SamlServiceProviderRegistrationOptions> {
 
     @Override
-    public SamlIdentityProviderOptions withAttributeMappingRules() {
-        return expand(DefaultSamlIdentityProvider.ATTRIBUTE_STATEMENT_MAPPING_RULES);
+    public SamlServiceProviderRegistrationOptions withServiceProviders() {
+        return expand(DefaultSamlServiceProviderRegistration.SERVICE_PROVIDER);
     }
 
     @Override
-    public SamlIdentityProviderOptions withRegisteredSamlServiceProviders() {
-        return expand(DefaultSamlIdentityProvider.REGISTERED_SAML_SERVICE_PROVIDERS);
-    }
-
-    @Override
-    public SamlIdentityProviderOptions withSamlServiceProviderRegistrations() {
-        return expand(DefaultSamlIdentityProvider.SAML_SERVICE_PROVIDER_REGISTRATIONS);
+    public SamlServiceProviderRegistrationOptions withIdentityProviders() {
+        return expand(DefaultSamlServiceProviderRegistration.IDENTITY_PROVIDER);
     }
 }

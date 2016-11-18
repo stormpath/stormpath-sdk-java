@@ -15,14 +15,17 @@
  */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.query.Options;
 
 //todo: saml javadoc
-public interface SamlIdentityProviderOptions<T> extends Options {
+public interface CreateSamlServiceProviderRegistrationRequest {
 
-    T withAttributeMappingRules();
 
-    T withRegisteredSamlServiceProviders();
+    SamlServiceProviderRegistration getSamlServiceProviderRegistration();
 
-    T withSamlServiceProviderRegistrations();
+
+    boolean hasSamlServiceProviderRegistrationOptions();
+
+
+    SamlServiceProviderRegistrationOptions getSamlServiceProviderRegistrationOptions() throws IllegalStateException;
+
 }

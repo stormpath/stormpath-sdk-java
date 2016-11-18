@@ -46,9 +46,7 @@ import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
-import com.stormpath.sdk.saml.RegisteredSamlServiceProvider;
-import com.stormpath.sdk.saml.RegisteredSamlServiceProviderCriteria;
-import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList;
+import com.stormpath.sdk.saml.*;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 

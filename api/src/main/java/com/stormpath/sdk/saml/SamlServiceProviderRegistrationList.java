@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Stormpath, Inc.
+ * Copyright 2013 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,12 @@
  */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.query.Options;
+import com.stormpath.sdk.resource.CollectionResource;
 
-//todo: saml javadoc
-public interface SamlIdentityProviderOptions<T> extends Options {
-
-    T withAttributeMappingRules();
-
-    T withRegisteredSamlServiceProviders();
-
-    T withSamlServiceProviderRegistrations();
+/**
+ * A {@link CollectionResource} containing {@link SamlServiceProviderRegistration} instances.
+ *
+ * @since 1.0.2
+ */
+public interface SamlServiceProviderRegistrationList extends CollectionResource<SamlServiceProviderRegistration> {
 }

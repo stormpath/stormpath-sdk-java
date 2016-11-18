@@ -15,14 +15,18 @@
  */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.query.Options;
+/**
+ * @since 1.2.0
+ */
+public enum SamlServiceProviderRegistrationStatus {
 
-//todo: saml javadoc
-public interface SamlIdentityProviderOptions<T> extends Options {
+    /**
+     * SamlServiceProviderRegistration is enabled.
+     */
+    ENABLED,
 
-    T withAttributeMappingRules();
-
-    T withRegisteredSamlServiceProviders();
-
-    T withSamlServiceProviderRegistrations();
+    /**
+     * SamlServiceProviderRegistration is disabled.
+     */
+    DISABLED
 }

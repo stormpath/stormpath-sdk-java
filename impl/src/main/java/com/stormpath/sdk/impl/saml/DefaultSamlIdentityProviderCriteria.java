@@ -39,4 +39,10 @@ public class DefaultSamlIdentityProviderCriteria extends DefaultCriteria<SamlIde
         getOptions().withRegisteredSamlServiceProviders();
         return this;
     }
+
+    @Override
+    public SamlIdentityProviderCriteria withSamlServiceProviderRegistrations() {
+        getOptions().withSamlServiceProviderRegistrations();
+        return this;
+    }
 }

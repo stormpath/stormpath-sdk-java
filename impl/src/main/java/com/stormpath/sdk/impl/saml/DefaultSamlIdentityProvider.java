@@ -17,6 +17,9 @@ package com.stormpath.sdk.impl.saml;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.query.Criteria;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.saml.*;
 
 import java.util.Date;
@@ -32,13 +35,12 @@ public class DefaultSamlIdentityProvider extends AbstractInstanceResource implem
     static final ResourceReference<SamlIdentityProviderMetadata> SAML_IDENTITY_PROVIDER_METADATA = new ResourceReference<>("metadata", SamlIdentityProviderMetadata.class);
     static final ResourceReference<AttributeStatementMappingRules> ATTRIBUTE_STATEMENT_MAPPING_RULES = new ResourceReference("attributeStatementMappingRules", AttributeStatementMappingRules.class);
     static final CollectionReference<RegisteredSamlServiceProviderList, RegisteredSamlServiceProvider> REGISTERED_SAML_SERVICE_PROVIDERS = new CollectionReference<>("registeredSamlServiceProviders", RegisteredSamlServiceProviderList.class, RegisteredSamlServiceProvider.class);
-    //todo: saml uncomment this once registrations created
-    //static final CollectionReference<SamlServiceProviderRegistrationList, SamlServiceProviderRegistration> SAML_SERVICE_PROVIDER_REGISTRATIONS = new CollectionReference<>("samlServiceProviderRegistrations", SamlServiceProviderRegistrationList.class, SamlServiceProviderRegistration.class);
+    static final CollectionReference<SamlServiceProviderRegistrationList, SamlServiceProviderRegistration> SAML_SERVICE_PROVIDER_REGISTRATIONS = new CollectionReference<>("samlServiceProviderRegistrations", SamlServiceProviderRegistrationList.class, SamlServiceProviderRegistration.class);
 
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
-    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(STATUS, SSO_LOGIN_ENDPOINT, SIGNATURE_ALGORITHM, X509_SIGNING_CERT, SAML_IDENTITY_PROVIDER_METADATA, ATTRIBUTE_STATEMENT_MAPPING_RULES, REGISTERED_SAML_SERVICE_PROVIDERS, /*SAML_SERVICE_PROVIDER_REGISTRATIONS,*/ CREATED_AT, MODIFIED_AT);
+    static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(STATUS, SSO_LOGIN_ENDPOINT, SIGNATURE_ALGORITHM, X509_SIGNING_CERT, SAML_IDENTITY_PROVIDER_METADATA, ATTRIBUTE_STATEMENT_MAPPING_RULES, REGISTERED_SAML_SERVICE_PROVIDERS, SAML_SERVICE_PROVIDER_REGISTRATIONS, CREATED_AT, MODIFIED_AT);
 
     public DefaultSamlIdentityProvider(InternalDataStore dataStore) {
         super(dataStore);
@@ -123,6 +125,23 @@ public class DefaultSamlIdentityProvider extends AbstractInstanceResource implem
     }
 
     @Override
+    public SamlServiceProviderRegistration createSamlServiceProviderRegistration(SamlServiceProviderRegistration samlServiceProviderRegistration) throws ResourceException {
+        Assert.notNull(samlServiceProviderRegistration, "SamlServiceProviderRegistration instance cannot be null.");
+        return getDataStore().create("/" + SAML_SERVICE_PROVIDER_REGISTRATIONS.getName(), samlServiceProviderRegistration);
+    }
+
+    @Override
+    public SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations() {
+        return getResourceProperty(SAML_SERVICE_PROVIDER_REGISTRATIONS);
+    }
+
+    @Override
+    public SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations(SamlServiceProviderRegistrationCriteria criteria) {
+        SamlServiceProviderRegistrationList proxy = getSamlServiceProviderRegistrations(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), SamlServiceProviderRegistrationList.class, (Criteria<SamlServiceProviderRegistrationCriteria>) criteria);
+    }
+
+    @Override
     public Date getCreatedAt() {
         return getDateProperty(CREATED_AT);
     }
@@ -135,5 +154,13 @@ public class DefaultSamlIdentityProvider extends AbstractInstanceResource implem
     @Override
     public void delete() {
         getDataStore().delete(this);
+    }
+
+    @Override
+    public SamlServiceProviderRegistration createSamlServiceProviderRegistration(CreateSamlServiceProviderRegistrationRequest request) {
+        Assert.notNull(request, "CreateSamlServiceProviderRegistrationRequest instance cannot be null.");
+        final SamlServiceProviderRegistration samlServiceProviderRegistration = request.getSamlServiceProviderRegistration();
+        String href = getSamlServiceProviderRegistrations().getHref();
+        return getDataStore().create(href, samlServiceProviderRegistration, request.getSamlServiceProviderRegistrationOptions());
     }
 }

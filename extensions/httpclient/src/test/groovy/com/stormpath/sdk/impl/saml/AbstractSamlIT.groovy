@@ -18,8 +18,15 @@ package com.stormpath.sdk.impl.saml
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.saml.SamlIdentityProvider
 import com.stormpath.sdk.saml.SamlPolicy
+import com.stormpath.sdk.saml.SamlServiceProviderRegistration
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrations
+
+import static org.testng.AssertJUnit.assertEquals
+import static org.testng.AssertJUnit.assertNotNull
+import static org.testng.AssertJUnit.assertTrue
 /**
  * @since 1.2.0
  */
@@ -81,6 +88,36 @@ xu/vQr6stjuzJIsDNAtW1FlG8WALOMjV
     protected SamlIdentityProvider getSamlIdentityProviderForDefaultApplication(){
         def app = client.currentTenant.getApplications(Applications.where(Applications.name().eqIgnoreCase("Stormpath"))).asList().get(0)
         return getSamlIdentityProviderForApplication(app)
+    }
+
+    protected SamlServiceProviderRegistration createAndGetAndAssertNewRegistration(SamlServiceProviderRegistration registration) {
+        def identityProviderHref = registration.getIdentityProvider().href
+        def builder = SamlServiceProviderRegistrations.newCreateRequestFor(registration)
+        registration = registration.getIdentityProvider().createSamlServiceProviderRegistration(builder.build())
+        assertNotNull(registration)
+
+        def registrationHref = registration.href
+
+        assertTrue(registrationHref.startsWith(baseUrl + "/samlServiceProviderRegistrations/"))
+        assertEquals(registration.identityProvider.href, identityProviderHref)
+
+        return registration
+    }
+
+    protected void createNewRegistrationError(SamlServiceProviderRegistration registration, int expectedErrorCode) {
+        def builder = SamlServiceProviderRegistrations.newCreateRequestFor(registration)
+
+        Throwable e = null;
+        try {
+            registration.getIdentityProvider().createSamlServiceProviderRegistration(builder.build())
+        }
+        catch (ResourceException re) {
+            e = re
+            assertEquals(re.status, 400)
+            assertEquals(re.getCode(), expectedErrorCode)
+        }
+
+        assertTrue(e instanceof ResourceException)
     }
 }
 

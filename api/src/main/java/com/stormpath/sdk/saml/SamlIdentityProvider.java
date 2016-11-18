@@ -15,10 +15,7 @@
 */
 package com.stormpath.sdk.saml;
 
-import com.stormpath.sdk.resource.Auditable;
-import com.stormpath.sdk.resource.Deletable;
-import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.*;
 
 import java.util.Map;
 
@@ -72,7 +69,11 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
 
     RegisteredSamlServiceProviderList getRegisteredSamlServiceProviders();
 
-    //todo: saml uncomment this once registrations created
-    //RegisteredSamlServiceProviderRegistrationList getSamlServiceProviderRegistrations();
+    SamlServiceProviderRegistration createSamlServiceProviderRegistration(CreateSamlServiceProviderRegistrationRequest createSamlServiceProviderRegistrationRequest);
 
+    SamlServiceProviderRegistration createSamlServiceProviderRegistration(SamlServiceProviderRegistration samlServiceProviderRegistration) throws ResourceException;
+
+    SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations();
+
+    SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations(SamlServiceProviderRegistrationCriteria criteria);
 }

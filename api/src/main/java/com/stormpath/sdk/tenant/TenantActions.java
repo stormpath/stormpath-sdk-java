@@ -33,9 +33,7 @@ package com.stormpath.sdk.tenant;
  import com.stormpath.sdk.organization.OrganizationCriteria;
  import com.stormpath.sdk.organization.OrganizationList;
  import com.stormpath.sdk.resource.ResourceException;
- import com.stormpath.sdk.saml.RegisteredSamlServiceProvider;
- import com.stormpath.sdk.saml.RegisteredSamlServiceProviderCriteria;
- import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList;
+ import com.stormpath.sdk.saml.*;
 
  import java.util.Map;
 

@@ -24,56 +24,35 @@ import com.stormpath.sdk.query.StringExpressionFactory;
 import java.lang.reflect.Constructor;
 
 //todo: saml javadoc
-public class RegisteredSamlServiceProviders {
-    private static final Class<CreateRegisteredSamlServiceProviderRequestBuilder> BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.saml.DefaultCreateRegisteredSamlServiceProviderRequestBuilder");
+public class SamlServiceProviderRegistrations {
+    private static final Class<CreateSamlServiceProviderRegistrationRequestBuilder> BUILDER_CLASS =
+            Classes.forName("com.stormpath.sdk.impl.saml.DefaultCreateSamlServiceProviderRegistrationRequestBuilder");
 
     //prevent instantiation
-    private RegisteredSamlServiceProviders() {
+    private SamlServiceProviderRegistrations() {
     }
 
 
-    public static RegisteredSamlServiceProviderOptions<RegisteredSamlServiceProviderOptions> options() {
-        return (RegisteredSamlServiceProviderOptions) Classes.newInstance("com.stormpath.sdk.impl.saml.DefaultRegisteredSamlServiceProviderOptions");
+    public static SamlServiceProviderRegistrationOptions<SamlServiceProviderRegistrationOptions> options() {
+        return (SamlServiceProviderRegistrationOptions) Classes.newInstance("com.stormpath.sdk.impl.saml.DefaultSamlServiceProviderRegistrationOptions");
     }
 
 
-    public static RegisteredSamlServiceProviderCriteria criteria() {
-        return (RegisteredSamlServiceProviderCriteria) Classes.newInstance("com.stormpath.sdk.impl.saml.DefaultRegisteredSamlServiceProviderCriteria");
+    public static SamlServiceProviderRegistrationCriteria criteria() {
+        return (SamlServiceProviderRegistrationCriteria) Classes.newInstance("com.stormpath.sdk.impl.saml.DefaultSamlServiceProviderRegistrationCriteria");
     }
 
 
-    public static RegisteredSamlServiceProviderCriteria where(Criterion criterion) {
+    public static SamlServiceProviderRegistrationCriteria where(Criterion criterion) {
         return criteria().add(criterion);
-    }
-
-
-    public static StringExpressionFactory name() {
-        return newStringExpressionFactory("name");
-    }
-
-    public static StringExpressionFactory description() {
-        return newStringExpressionFactory("description");
     }
 
     public static EqualsExpressionFactory status() {
         return newEqualsExpressionFactory("status");
     }
 
-    public static StringExpressionFactory assertionConsumerServiceURL() {
-        return newStringExpressionFactory("assertionConsumerServiceURL");
-    }
-
-    public static StringExpressionFactory entityId() {
-        return newStringExpressionFactory("entityId");
-    }
-
-    public static StringExpressionFactory nameIdFormat() {
-        return newStringExpressionFactory("nameIdFormat");
-    }
-
-    public static StringExpressionFactory encodedX509Certificate() {
-        return newStringExpressionFactory("encodedX509Certificate");
+    public static EqualsExpressionFactory defaultRelayState() {
+        return newEqualsExpressionFactory("defaultRelayState");
     }
 
     public static DateExpressionFactory createdAt(){
@@ -91,9 +70,9 @@ public class RegisteredSamlServiceProviders {
     }
 
 
-    public static CreateRegisteredSamlServiceProviderRequestBuilder newCreateRequestFor(RegisteredSamlServiceProvider registeredSamlServiceProvider) {
-        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, RegisteredSamlServiceProvider.class);
-        return (CreateRegisteredSamlServiceProviderRequestBuilder) Classes.instantiate(ctor, registeredSamlServiceProvider);
+    public static CreateSamlServiceProviderRegistrationRequestBuilder newCreateRequestFor(SamlServiceProviderRegistration samlServiceProviderRegistration) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, SamlServiceProviderRegistration.class);
+        return (CreateSamlServiceProviderRegistrationRequestBuilder) Classes.instantiate(ctor, samlServiceProviderRegistration);
     }
 
     private static StringExpressionFactory newStringExpressionFactory(String propName) {
