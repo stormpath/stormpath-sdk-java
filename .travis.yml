@@ -9,7 +9,7 @@ addons:
     packages:
       - xsltproc
 before_install:
-  - cat ~/.m2/settings.xml
+  - sed -i.bak -e 's|http://repo.maven.apache.org|https://repo1.maven.org|g' ~/.m2/settings.xml
   - source ./ci/before_install.sh
   - source ./ci/stormpath_env.sh
 install:
