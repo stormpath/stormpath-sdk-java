@@ -55,7 +55,7 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         final List<AccountStoreModel> accountStores = new ArrayList<>(mappings.getSize());
 
         AccountStoreModelVisitor visitor =
-                new AccountStoreModelVisitor(accountStores, getAuthorizeBaseUri(app.getWebConfig()));
+                new AccountStoreModelVisitor(accountStores, getAuthorizeBaseUri(request, app.getWebConfig()));
 
         for (ApplicationAccountStoreMapping mapping : mappings) {
 
@@ -67,7 +67,8 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         return visitor.getAccountStores();
     }
 
-    private String getAuthorizeBaseUri(ApplicationWebConfig webConfig) {
+    @SuppressWarnings("WeakerAccess") // Want to allow overriding this method
+    protected String getAuthorizeBaseUri(@SuppressWarnings("UnusedParameters") HttpServletRequest request, ApplicationWebConfig webConfig) {
         String authorizeBaseUri = null;
         if (webConfig.getLogin().isEnabled()) {
             authorizeBaseUri = "https://" + webConfig.getDomainName();
