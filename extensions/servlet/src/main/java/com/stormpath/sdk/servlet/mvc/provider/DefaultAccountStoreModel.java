@@ -32,7 +32,7 @@ public class DefaultAccountStoreModel implements AccountStoreModel {
     public DefaultAccountStoreModel(Directory directory, ProviderModel provider, String authorizeBaseUri) {
         this.directory = directory;
         this.providerModel = provider;
-        if (providerModel instanceof OAuthProviderModel) {
+        if (providerModel instanceof OAuthProviderModel && authorizeBaseUri != null) {
             try {
                 URIBuilder builder = new URIBuilder(authorizeBaseUri);
                 builder.setPath("/authorize");

@@ -96,6 +96,22 @@ class DefaultAccountStoreModelTest {
     }
 
     @Test
+    void testWithDefaultOAuthProviderAndNullBaseAuthorizeUri() {
+        Provider provider = createNiceMock(OAuthProvider)
+        expect(provider.href).andStubReturn(PROVIDER_HREF)
+        expect(provider.providerId).andStubReturn("facebook")
+        expect(provider.clientId).andStubReturn("12345657")
+        replay(provider)
+        ProviderModel providerModel = new DefaultOAuthProviderModel(provider)
+
+        DefaultAccountStoreModel modelUT = new DefaultAccountStoreModel(directory, providerModel, null)
+        assertThat("href", modelUT.href, equalTo(DIR_HREF))
+        assertThat("name", modelUT.name, equalTo(DIR_NAME))
+        assertThat("provider", modelUT.provider, sameInstance(providerModel as ProviderModel))
+        assertThat("authorizeUri", modelUT.authorizeUri, nullValue())
+    }
+
+    @Test
     void testWithDefaultProviderAndMalformedBaseAuthorizeUri() {
         Provider provider = createNiceMock(Provider)
         expect(provider.href).andStubReturn(PROVIDER_HREF)
