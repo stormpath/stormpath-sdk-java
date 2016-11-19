@@ -195,4 +195,7 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      * @return a paginated list of the samlIdentityProvider's samlServiceProviderRegistrations that match the specified query criteria.
      */
     SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations(SamlServiceProviderRegistrationCriteria criteria);
+
+    AuthnVerification createAuthnVerification(String identityProviderHref, AuthnVerificationRequest request);
+    SamlResponse createSamlResponse(String identityProviderHref, SamlResponseRequest samlResponseRequest);
 }
