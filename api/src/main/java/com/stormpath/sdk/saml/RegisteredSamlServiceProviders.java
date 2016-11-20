@@ -60,8 +60,8 @@ public class RegisteredSamlServiceProviders {
         return newEqualsExpressionFactory("status");
     }
 
-    public static StringExpressionFactory assertionConsumerServiceURL() {
-        return newStringExpressionFactory("assertionConsumerServiceURL");
+    public static StringExpressionFactory assertionConsumerServiceUrl() {
+        return newStringExpressionFactory("assertionConsumerServiceUrl");
     }
 
     public static StringExpressionFactory entityId() {

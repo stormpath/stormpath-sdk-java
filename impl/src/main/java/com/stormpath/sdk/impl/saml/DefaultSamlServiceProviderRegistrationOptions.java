@@ -25,12 +25,12 @@ import com.stormpath.sdk.saml.SamlServiceProviderRegistrationOptions;
 public class DefaultSamlServiceProviderRegistrationOptions extends DefaultOptions<SamlServiceProviderRegistrationOptions> implements SamlServiceProviderRegistrationOptions<SamlServiceProviderRegistrationOptions> {
 
     @Override
-    public SamlServiceProviderRegistrationOptions withServiceProviders() {
+    public SamlServiceProviderRegistrationOptions withServiceProvider() {
         return expand(DefaultSamlServiceProviderRegistration.SERVICE_PROVIDER);
     }
 
     @Override
-    public SamlServiceProviderRegistrationOptions withIdentityProviders() {
+    public SamlServiceProviderRegistrationOptions withIdentityProvider() {
         return expand(DefaultSamlServiceProviderRegistration.IDENTITY_PROVIDER);
     }
 }

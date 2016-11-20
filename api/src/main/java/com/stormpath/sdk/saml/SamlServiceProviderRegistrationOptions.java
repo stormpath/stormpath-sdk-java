@@ -20,7 +20,7 @@ import com.stormpath.sdk.query.Options;
 //todo: saml javadoc
 public interface SamlServiceProviderRegistrationOptions<T> extends Options {
 
-    T withServiceProviders();
+    T withServiceProvider();
 
-    T withIdentityProviders();
+    T withIdentityProvider();
 }

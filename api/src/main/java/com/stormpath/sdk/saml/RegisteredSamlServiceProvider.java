@@ -62,15 +62,15 @@ public interface RegisteredSamlServiceProvider extends Resource, Saveable, Delet
      *
      * @return the registeredSamlServiceProvider's assertion consumer service url.
      */
-    String getAssertionConsumerServiceURL();
+    String getAssertionConsumerServiceUrl();
 
     /**
      * Sets the registeredSamlServiceProvider's assertion consumer service url.
      *
-     * @param assertionConsumerServiceURL the registeredSamlServiceProvider's assertion consumer service url.
+     * @param assertionConsumerServiceUrl the registeredSamlServiceProvider's assertion consumer service url.
      * @return this instance for method chaining.
      */
-    RegisteredSamlServiceProvider setAssertionConsumerServiceURL(String assertionConsumerServiceURL);
+    RegisteredSamlServiceProvider setAssertionConsumerServiceUrl(String assertionConsumerServiceUrl);
 
     /**
      * Returns the registeredSamlServiceProvider's entity id.

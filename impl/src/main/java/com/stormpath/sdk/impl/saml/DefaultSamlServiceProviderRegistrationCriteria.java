@@ -30,14 +30,14 @@ public class DefaultSamlServiceProviderRegistrationCriteria extends DefaultCrite
     }
 
     @Override
-    public SamlServiceProviderRegistrationCriteria withServiceProviders() {
-        getOptions().withServiceProviders();
+    public SamlServiceProviderRegistrationCriteria withServiceProvider() {
+        getOptions().withServiceProvider();
         return this;
     }
 
     @Override
-    public SamlServiceProviderRegistrationCriteria withIdentityProviders() {
-        getOptions().withIdentityProviders();
+    public SamlServiceProviderRegistrationCriteria withIdentityProvider() {
+        getOptions().withIdentityProvider();
         return this;
     }
 }

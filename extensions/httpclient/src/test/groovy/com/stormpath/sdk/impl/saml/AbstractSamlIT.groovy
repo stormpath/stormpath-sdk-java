@@ -81,8 +81,8 @@ xu/vQr6stjuzJIsDNAtW1FlG8WALOMjV
 
     protected SamlIdentityProvider getSamlIdentityProviderForApplication(Application app) {
         def samlPolicy = client.getResource(app.getSamlPolicy().href, SamlPolicy)
-        samlPolicy.getSamlIdentityProvider()
-        return client.getResource(samlPolicy.getSamlIdentityProvider().href, SamlIdentityProvider)
+        samlPolicy.getIdentityProvider()
+        return client.getResource(samlPolicy.getIdentityProvider().href, SamlIdentityProvider)
     }
 
     protected SamlIdentityProvider getSamlIdentityProviderForDefaultApplication(){

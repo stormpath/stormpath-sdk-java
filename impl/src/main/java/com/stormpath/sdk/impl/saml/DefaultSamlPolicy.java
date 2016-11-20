@@ -38,9 +38,9 @@ public class DefaultSamlPolicy extends AbstractInstanceResource implements SamlP
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<SamlServiceProvider> SAML_SERVICE_PROVIDER = new ResourceReference<>("serviceProvider", SamlServiceProvider.class);
-    static final ResourceReference<SamlIdentityProvider> SAML_IDENTITY_PROVIDER = new ResourceReference<>("identityProvider", SamlIdentityProvider.class);
+    static final ResourceReference<SamlIdentityProvider> IDENTITY_PROVIDER = new ResourceReference<>("identityProvider", SamlIdentityProvider.class);
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(SAML_SERVICE_PROVIDER, SAML_IDENTITY_PROVIDER, CREATED_AT, MODIFIED_AT);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(SAML_SERVICE_PROVIDER, IDENTITY_PROVIDER, CREATED_AT, MODIFIED_AT);
 
     public DefaultSamlPolicy(InternalDataStore dataStore) {
         super(dataStore);
@@ -60,8 +60,8 @@ public class DefaultSamlPolicy extends AbstractInstanceResource implements SamlP
     }
 
     @Override
-    public SamlIdentityProvider getSamlIdentityProvider() {
-        return getResourceProperty(SAML_IDENTITY_PROVIDER);
+    public SamlIdentityProvider getIdentityProvider() {
+        return getResourceProperty(IDENTITY_PROVIDER);
     }
 
     @Override

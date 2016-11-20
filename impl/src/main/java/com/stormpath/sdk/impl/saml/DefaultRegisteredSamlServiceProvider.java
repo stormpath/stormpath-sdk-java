@@ -30,7 +30,7 @@ public class DefaultRegisteredSamlServiceProvider extends AbstractInstanceResour
 
     static final StringProperty NAME = new StringProperty("name");
     static final StringProperty DESCRIPTION = new StringProperty("description");
-    static final StringProperty ASSERTION_CONSUMER_SERVICE_URL = new StringProperty("assertionConsumerServiceURL");
+    static final StringProperty ASSERTION_CONSUMER_SERVICE_URL = new StringProperty("assertionConsumerServiceUrl");
     static final StringProperty NAME_ID_FORMAT = new StringProperty("nameIdFormat");
     static final StringProperty ENTITY_ID = new StringProperty("entityId");
     static final StringProperty ENCODED_X509_CERTIFICATE = new StringProperty("encodedX509Certificate");
@@ -78,13 +78,13 @@ public class DefaultRegisteredSamlServiceProvider extends AbstractInstanceResour
     }
 
     @Override
-    public String getAssertionConsumerServiceURL() {
+    public String getAssertionConsumerServiceUrl() {
         return getString(ASSERTION_CONSUMER_SERVICE_URL);
     }
 
     @Override
-    public RegisteredSamlServiceProvider setAssertionConsumerServiceURL(String assertionConsumerServiceURL) {
-        setProperty(ASSERTION_CONSUMER_SERVICE_URL, assertionConsumerServiceURL);
+    public RegisteredSamlServiceProvider setAssertionConsumerServiceUrl(String assertionConsumerServiceUrl) {
+        setProperty(ASSERTION_CONSUMER_SERVICE_URL, assertionConsumerServiceUrl);
         return this;
     }
 

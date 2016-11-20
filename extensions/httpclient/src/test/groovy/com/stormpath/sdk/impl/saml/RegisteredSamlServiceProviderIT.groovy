@@ -48,7 +48,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         registeredSamlServiceProvider
                 .setName("testName")
                 .setDescription("testDescription")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -68,7 +68,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -85,7 +85,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -109,7 +109,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -117,7 +117,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
         assertRegisteredSAMLServiceProviderFields(registeredSamlServiceProviderReturned, registeredSamlServiceProvider)
 
-        registeredSamlServiceProviderReturned.setAssertionConsumerServiceURL("https://some.sp-updatedacs.com/saml/sso/post")
+        registeredSamlServiceProviderReturned.setAssertionConsumerServiceUrl("https://some.sp-updatedacs.com/saml/sso/post")
 
         registeredSamlServiceProviderReturned.save()
 
@@ -131,7 +131,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -153,7 +153,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
                 .setNameIdFormat("persistent")
@@ -172,7 +172,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -194,7 +194,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -222,7 +222,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -257,7 +257,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -288,7 +288,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         createRegisteredSAMLServiceProviderError(registeredSamlServiceProvider, 2000)
 
         //invalid acs url
-        registeredSamlServiceProvider.setAssertionConsumerServiceURL("wwwwww.some.sp.com/saml/sso/post")
+        registeredSamlServiceProvider.setAssertionConsumerServiceUrl("wwwwww.some.sp.com/saml/sso/post")
         createRegisteredSAMLServiceProviderError(registeredSamlServiceProvider, 2006)
 
         //missing entityId
@@ -297,7 +297,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         registeredSamlServiceProvider.setEntityId(uniquify("urn:entity:id"))
 
         //missing cert
-        registeredSamlServiceProvider.setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+        registeredSamlServiceProvider.setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
         registeredSamlServiceProvider.setEncodedX509SigningCert(null)
         createRegisteredSAMLServiceProviderError(registeredSamlServiceProvider, 2000)
 
@@ -322,7 +322,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -331,7 +331,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider2 = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider2
                 .setName("testName2")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post2")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post2")
                 .setEntityId(uniquify("urn:entity:id2"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -340,7 +340,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         assertRegisteredSAMLServiceProviderFields(registeredSamlServiceProviderReturned, registeredSamlServiceProvider)
         assertRegisteredSAMLServiceProviderFields(registeredSamlServiceProviderReturned2, registeredSamlServiceProvider2)
 
-        RegisteredSamlServiceProviderList list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.assertionConsumerServiceURL().eqIgnoreCase("https://some.sp.com/saml/sso/post")))
+        RegisteredSamlServiceProviderList list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.assertionConsumerServiceUrl().eqIgnoreCase("https://some.sp.com/saml/sso/post")))
         assertEquals(list.asList().size(), 1)
 
         list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.name().eqIgnoreCase("some wrong name")))
@@ -383,7 +383,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
-                .setAssertionConsumerServiceURL("https://some.sp.com/saml/sso/post")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
@@ -402,7 +402,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         assertNotNull(response.href)
         assertEquals(response.name, input.name)
         assertEquals(response.description, input.description)
-        assertEquals(response.assertionConsumerServiceURL, input.assertionConsumerServiceURL)
+        assertEquals(response.getAssertionConsumerServiceUrl(), input.assertionConsumerServiceUrl)
         assertEquals(response.entityId, input.entityId)
         assertEquals(response.encodedX509SigningCert, input.encodedX509SigningCert)
         if (input.nameIdFormat == null) {
