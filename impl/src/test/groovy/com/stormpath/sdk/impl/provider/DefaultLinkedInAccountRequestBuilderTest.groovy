@@ -21,7 +21,9 @@ import com.stormpath.sdk.provider.ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
 
 /**
  * @since 1.RC5.1
@@ -29,7 +31,7 @@ import static org.testng.Assert.*
 class DefaultLinkedInAccountRequestBuilderTest {
 
     @Test
-    void test() {
+    void testWithAccessToken() {
         def providerRequest = Providers.LINKEDIN;
         def requestBuilder = providerRequest.account();
         assertTrue(requestBuilder instanceof LinkedInAccountRequestBuilder)
@@ -44,6 +46,21 @@ class DefaultLinkedInAccountRequestBuilderTest {
     }
 
     @Test
+    void testWithAuthorizationCode() {
+        def providerRequest = Providers.LINKEDIN;
+        def requestBuilder = providerRequest.account();
+        assertTrue(requestBuilder instanceof LinkedInAccountRequestBuilder)
+        assertTrue(ProviderAccountRequestBuilder.isInstance(requestBuilder))
+        def request = requestBuilder.setCode("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build();
+        assertTrue(request instanceof ProviderAccountRequest)
+        assertEquals(request.getProviderData().getProviderId(), "linkedin")
+        def providerData = request.getProviderData()
+        assertTrue(providerData instanceof DefaultLinkedInProviderData)
+        providerData = (DefaultLinkedInProviderData) providerData
+        assertEquals(providerData.getProperty('code'), "CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD")
+    }
+
+    @Test
     void testMissingAccessTokenAndCode() {
         def requestBuilder = Providers.LINKEDIN.account();
 
@@ -51,7 +68,7 @@ class DefaultLinkedInAccountRequestBuilderTest {
             requestBuilder.build();
             fail("Should have failed")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "Either 'code' or 'accessToken' properties must exist in a LinkedIn account request.")
+            assertEquals(e.getMessage(), "Either accessToken or code must be provided before building.")
         }
     }
 
@@ -63,7 +80,7 @@ class DefaultLinkedInAccountRequestBuilderTest {
             requestBuilder.setAccessToken("abc").setCode("sdc").build();
             fail("Should have failed")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "Either 'code' or 'accessToken' properties must exist in a LinkedIn account request.")
+            assertEquals(e.getMessage(), "Either accessToken or code must be provided before building.")
         }
     }
 

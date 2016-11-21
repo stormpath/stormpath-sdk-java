@@ -89,4 +89,12 @@ class QueryStringTest {
     void testCreateWithKeyOnly() {
         assertEquals QueryString.create("foo").toString(), "foo="
     }
+
+    /**
+     * @since 1.2
+     */
+    @Test
+    void testCreateWithEncodedQuery() {
+        assertEquals(QueryString.create("foo%3Abar=http%3A%2F%2Ffoo.com").toString(), "foo%3Abar=http%3A%2F%2Ffoo.com")
+    }
 }

@@ -25,11 +25,9 @@ import java.util.Map;
 /**
  * @since 1.0.beta
  */
-public class DefaultGoogleProviderData extends AbstractProviderData implements GoogleProviderData {
+public class DefaultGoogleProviderData extends AbstractProviderData<GoogleProviderData> implements GoogleProviderData {
 
     // SIMPLE PROPERTIES
-    static final StringProperty ACCESS_TOKEN = new StringProperty("accessToken");
-    static final StringProperty CODE = new StringProperty("code");
     static final StringProperty REFRESH_TOKEN = new StringProperty("refreshToken");
 
     static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN, CODE, REFRESH_TOKEN);
@@ -45,25 +43,6 @@ public class DefaultGoogleProviderData extends AbstractProviderData implements G
     @Override
     public Map<String, Property> getPropertyDescriptors() {
         return PROPERTY_DESCRIPTORS;
-    }
-
-    @Override
-    public String getAccessToken() {
-        return getString(ACCESS_TOKEN);
-    }
-
-    public GoogleProviderData setAccessToken(String accessToken) {
-        setProperty(ACCESS_TOKEN, accessToken);
-        return this;
-    }
-
-    public String getCode() {
-        return getString(CODE);
-    }
-
-    public GoogleProviderData setCode(String code) {
-        setProperty(CODE, code);
-        return this;
     }
 
     @Override

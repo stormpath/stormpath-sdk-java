@@ -35,14 +35,14 @@ public class RegisterFilterFactory extends FormControllerFilterFactory<RegisterC
     }
 
     @Override
-    protected void doConfigure(RegisterController c, Config config) {
-        c.setClient(config.getClient());
-        c.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
-        c.setLoginUri(config.getLoginConfig().getUri());
-        c.setVerifyViewName(config.getVerifyConfig().getView());
-        c.setAutoLogin(config.isRegisterAutoLoginEnabled());
-        c.setPreRegisterHandler(config.getRegisterPreHandler());
-        c.setPostRegisterHandler(config.getRegisterPostHandler());
-        c.setAccountStoreResolver(config.getAccountStoreResolver());
+    protected void doConfigure(RegisterController controller, Config config) {
+        controller.setClient(config.getClient());
+        controller.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
+        controller.setLoginUri(config.getLoginConfig().getUri());
+        controller.setVerifyViewName(config.getVerifyConfig().getView());
+        controller.setAutoLogin(config.isRegisterAutoLoginEnabled());
+        controller.setPreRegisterHandler(config.getRegisterPreHandler());
+        controller.setPostRegisterHandler(config.getRegisterPostHandler());
+        controller.setAccountStoreResolver(config.getAccountStoreResolver());
     }
 }

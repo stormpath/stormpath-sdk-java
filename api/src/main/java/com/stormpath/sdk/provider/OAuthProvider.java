@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.provider;
 
+import java.util.List;
+
 /**
  * @since 1.0.0
  */
@@ -33,4 +35,11 @@ public interface OAuthProvider extends Provider {
      * @return the client secret used to authenticate requests to the 3rd party oauth provider.
      */
     String getClientSecret();
+
+    /**
+     * Returns the list of scopes configured for the oauth provider
+     * @return the list of scopes configured for the oauth provider
+     * @since 1.2.0
+     */
+    List<String> getScope();
 }

@@ -576,7 +576,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         if (Collections.isEmpty(names)) {
             return java.util.Collections.emptySet();
         }
-        Set<DispatcherType> types = new LinkedHashSet<DispatcherType>(names.size());
+        Set<DispatcherType> types = new LinkedHashSet<>(names.size());
         for (String name : names) {
             types.add(DispatcherType.valueOf(name));
         }

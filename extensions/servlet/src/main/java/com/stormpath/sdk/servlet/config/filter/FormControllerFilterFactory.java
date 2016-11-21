@@ -28,25 +28,25 @@ import java.util.List;
  */
 public abstract class FormControllerFilterFactory<T extends FormController> extends ControllerFilterFactory<T> {
 
-    protected final void configure(T c, Config config) throws Exception {
-        c.setCsrfTokenManager(config.getCsrfTokenManager());
-        c.setFieldValueResolver(config.getFieldValueResolver());
-        apply(c, getResolver(config));
-        doConfigure(c, config);
+    protected final void configure(T controller, Config config) throws Exception {
+        controller.setCsrfTokenManager(config.getCsrfTokenManager());
+        controller.setFieldValueResolver(config.getFieldValueResolver());
+        apply(controller, getResolver(config));
+        doConfigure(controller, config);
     }
 
-    private void apply(FormController c, ControllerConfig cr) {
-        c.setUri(cr.getUri());
-        c.setNextUri(cr.getNextUri());
-        c.setView(cr.getView());
-        c.setControllerKey(cr.getControllerKey());
+    private void apply(FormController controller, ControllerConfig cr) {
+        controller.setUri(cr.getUri());
+        controller.setNextUri(cr.getNextUri());
+        controller.setView(cr.getView());
+        controller.setControllerKey(cr.getControllerKey());
         List<Field> fields = cr.getFormFields();
         if (!Collections.isEmpty(fields)) { //might be empty if the fields are static / configured within the controller
-            c.setFormFields(fields);
+            controller.setFormFields(fields);
         }
     }
 
-    protected abstract void doConfigure(T c, Config config) throws Exception;
+    protected abstract void doConfigure(T controller, Config config) throws Exception;
 
     protected abstract ControllerConfig getResolver(Config config);
 }

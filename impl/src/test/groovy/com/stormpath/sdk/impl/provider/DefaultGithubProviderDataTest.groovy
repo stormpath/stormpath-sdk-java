@@ -38,12 +38,13 @@ class DefaultGithubProviderDataTest {
 
         def propertyDescriptors = providerData.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 4)
+        assertEquals(propertyDescriptors.size(), 5, propertyDescriptors.toString())
 
         assertTrue(propertyDescriptors.get("providerId") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("createdAt") instanceof DateProperty)
         assertTrue(propertyDescriptors.get("modifiedAt") instanceof DateProperty)
         assertTrue(propertyDescriptors.get("accessToken") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("code") instanceof StringProperty)
         assertTrue(ProviderData.isInstance(providerData))
         assertTrue(GithubProviderData.isInstance(providerData))
     }

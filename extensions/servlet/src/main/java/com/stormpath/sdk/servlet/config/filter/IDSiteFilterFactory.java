@@ -34,7 +34,7 @@ public abstract class IDSiteFilterFactory extends ControllerFilterFactory<IdSite
     }
 
     @Override
-    protected void configure(IdSiteController c, Config config) throws Exception {
+    protected void configure(IdSiteController controller, Config config) throws Exception {
 
         SubdomainResolver subdomainResolver = new SubdomainResolver();
         subdomainResolver.setBaseDomainName(config.get("stormpath.web.application.domain"));
@@ -45,18 +45,18 @@ public abstract class IDSiteFilterFactory extends ControllerFilterFactory<IdSite
         DefaultIdSiteOrganizationResolver idSiteOrganizationResolver = new DefaultIdSiteOrganizationResolver();
         idSiteOrganizationResolver.setOrganizationNameKeyResolver(organizationNameKeyResolver);
 
-        c.setServerUriResolver(new DefaultServerUriResolver());
-        c.setCallbackUri(getConfig().getCallbackUri());
-        c.setAlreadyLoggedInUri(config.get("stormpath.web.login.nextUri"));
-        c.setIdSiteOrganizationResolver(idSiteOrganizationResolver);
+        controller.setServerUriResolver(new DefaultServerUriResolver());
+        controller.setCallbackUri(getConfig().getCallbackUri());
+        controller.setAlreadyLoggedInUri(config.get("stormpath.web.login.nextUri"));
+        controller.setIdSiteOrganizationResolver(idSiteOrganizationResolver);
 
         ControllerFilter filter = new ControllerFilter();
         filter.setProducedMediaTypes(config.getProducedMediaTypes());
-        filter.setController(c);
+        filter.setController(controller);
 
         //Let's give the chance to sub-classes of this factory to configure this controller as well
-        doConfigure(c, config);
+        doConfigure(controller, config);
     }
 
-    public abstract void doConfigure(IdSiteController c, Config config);
+    public abstract void doConfigure(IdSiteController controller, Config config);
 }
