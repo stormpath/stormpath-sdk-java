@@ -14,12 +14,12 @@ public class DefaultAuthnVerificationRequest extends AbstractResource implements
     static final StringProperty RELAY_STATE = new StringProperty("relayState");
     static final StringProperty SIG_ALG = new StringProperty("sigAlg");
     static final StringProperty SIGNATURE = new StringProperty("signature");
-    static final StringProperty RAW_QUERY_STRING = new StringProperty("rawQueryString");
+    static final StringProperty QUERY_STRING = new StringProperty("queryString");
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS;
 
     static {
-        PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(new Property[] { SAML_REQUEST, SIG_ALG, SIGNATURE, RAW_QUERY_STRING });
+        PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(new Property[] { SAML_REQUEST, SIG_ALG, SIGNATURE, QUERY_STRING });
     }
 
     public DefaultAuthnVerificationRequest(InternalDataStore dataStore) {
@@ -80,13 +80,13 @@ public class DefaultAuthnVerificationRequest extends AbstractResource implements
     }
 
     @Override
-    public String getRawQueryString() {
-        return getString(RAW_QUERY_STRING);
+    public String getQueryString() {
+        return getString(QUERY_STRING);
     }
 
     @Override
-    public AuthnVerificationRequest setRawQueryString(String rawQueryString) {
-        setProperty(RAW_QUERY_STRING, rawQueryString);
+    public AuthnVerificationRequest setQueryString(String queryString) {
+        setProperty(QUERY_STRING, queryString);
         return this;
     }
 

@@ -11,6 +11,6 @@ public interface AuthnVerificationRequest extends Resource {
     AuthnVerificationRequest setSigAlg(String sigAlg);
     String getSignature();
     AuthnVerificationRequest setSignature(String signature);
-    String getRawQueryString();
-    AuthnVerificationRequest setRawQueryString(String rawQueryString);
+    String getQueryString();
+    AuthnVerificationRequest setQueryString(String queryString);
 }
