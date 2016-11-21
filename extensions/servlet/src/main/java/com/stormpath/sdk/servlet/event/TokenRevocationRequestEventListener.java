@@ -108,7 +108,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
     // addresses https://github.com/stormpath/stormpath-sdk-java/issues/788
     // ensures that we look both in the Authorization header and in cookies
     // for an access_token
-    private String getJwtFromLogoutRequestEvent(LogoutRequestEvent event) {
+    protected String getJwtFromLogoutRequestEvent(LogoutRequestEvent event) {
         String jwt = tokenExtractor.getAccessToken(event.getRequest());
         if (jwt == null && accessTokenCookieResolver.get(event.getRequest(), null) != null) {
             jwt = accessTokenCookieResolver.get(event.getRequest(), null).getValue();

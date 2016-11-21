@@ -27,6 +27,8 @@ import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.client.RequestCountingClient
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver
+import com.stormpath.sdk.impl.util.BaseUrlResolver
 import com.stormpath.sdk.resource.Deletable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -107,8 +109,9 @@ abstract class ClientIT {
         ApiKey apiKey = ApiKeys.builder().build();
         ApiKeyCredentials apiKeyCredentials = new ApiKeyCredentials(apiKey);
         ApiKeyResolver apiKeyResolver = new DefaultApiKeyResolver(apiKey)
+        BaseUrlResolver baseUrlResolver = new DefaultBaseUrlResolver(baseUrl)
 
-        return new RequestCountingClient(apiKeyCredentials, apiKeyResolver, baseUrl, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
+        return new RequestCountingClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
     }
 
     //Creates a new Application with an auto-created directory
@@ -135,7 +138,7 @@ abstract class ClientIT {
         def password = 'Changeme1!'
         acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
         acct.password = password
-        acct.email = acct.username + '@nowhere.com'
+        acct.email = acct.username + '@testmail.stormpath.com'
         acct.givenName = 'Joe'
         acct.surname = 'Smith'
         acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
@@ -145,18 +148,17 @@ abstract class ClientIT {
     }
 
     //@since 1.1.0
-    Account createTempAccountInDir(Directory directory){
+    Account createTempAccountInDir(Directory directory) {
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
                 .setSurname('DELETEME')
-                .setEmail(uniquify('randomEmail')+'@somemail.com')
+                .setEmail(uniquify('randomEmail')+'@testmail.stormpath.com.com')
                 .setPassword('Changeme1!')
 
         account = directory.createAccount(account)
         deleteOnTeardown(account)
 
         return account
-
     }
 }

@@ -23,6 +23,7 @@ import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -86,7 +87,7 @@ public class OriginAccessTokenRequestAuthorizer implements RequestAuthorizer {
         // #659: if the Accept header is explicitly Accept:application/json or the
         // produces property favors json, the Origin header should not be required.
         String accepts = Strings.clean(request.getHeader(ACCEPTS_HEADER_NAME));
-        boolean originHeaderNotRequired = accepts.contains(MediaType.APPLICATION_JSON_VALUE) || producesFavorsJSON;
+        boolean originHeaderNotRequired = (StringUtils.hasText(accepts) && accepts.contains(MediaType.APPLICATION_JSON_VALUE)) || producesFavorsJSON;
 
         if (!originHeaderNotRequired) {
             boolean localhostClient = isLocalhostClient(request, response);

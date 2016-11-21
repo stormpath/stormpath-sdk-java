@@ -21,7 +21,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.authc.DefaultBasicApiAuthenticationRequest;
 import com.stormpath.sdk.impl.authc.DefaultHttpServletRequestWrapper;
-import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthentication;
+import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthentication;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
@@ -48,10 +48,9 @@ import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestF
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.http.authc.AuthorizationHeaderParser;
-import com.stormpath.sdk.servlet.http.authc.DefaultAuthorizationHeaderParser;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationException;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +78,7 @@ public class AccessTokenController extends AbstractController {
     private Saver<AuthenticationResult> accountSaver;
     private Publisher<RequestEvent> eventPublisher;
     private HttpAuthenticationScheme basicAuthenticationScheme;
-    private final AuthorizationHeaderParser parser = new DefaultAuthorizationHeaderParser();
+    private GrantTypeValidator grantTypeValidator;
 
     public void setBasicAuthenticationScheme(HttpAuthenticationScheme basicAuthenticationScheme) {
         this.basicAuthenticationScheme = basicAuthenticationScheme;
@@ -153,6 +152,13 @@ public class AccessTokenController extends AbstractController {
         this.refreshTokenAuthenticationRequestFactory = refreshTokenAuthenticationRequestFactory;
     }
 
+    /**
+     * @since 1.2.0
+     */
+    public void setGrantTypeValidator(GrantTypeValidator grantTypeValidator) {
+        this.grantTypeValidator = grantTypeValidator;
+    }
+
     public void init() {
         Assert.notNull(refreshTokenResultFactory, "refreshTokenResultFactory cannot be null.");
         Assert.notNull(refreshTokenAuthenticationRequestFactory, "refreshTokenAuthenticationRequestFactory cannot be null.");
@@ -161,6 +167,7 @@ public class AccessTokenController extends AbstractController {
         Assert.notNull(resultFactory, "accessTokenResultFactory cannot be null.");
         Assert.notNull(accountSaver, "accountSaver cannot be null.");
         Assert.notNull(eventPublisher, "eventPublisher cannot be null.");
+        Assert.notNull(grantTypeValidator, "grantTypeValidator cannot be null.");
     }
 
     @Override
@@ -201,12 +208,11 @@ public class AccessTokenController extends AbstractController {
             Application app = getApplication(request);
             OAuthPasswordGrantRequestAuthentication passwordGrantRequest = createPasswordGrantAuthenticationRequest(request);
 
-            authenticationResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR
-                    .forApplication(app)
+            authenticationResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app)
                     .authenticate(passwordGrantRequest);
         } catch (ResourceException e) {
             log.debug("Unable to authenticate access token request: {}", e.getMessage(), e);
-            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST, "Unable to authenticate access token request", e);
+            throw convertToOAuthException(e, OAuthErrorCode.INVALID_REQUEST);
         }
 
         return createAccessTokenResult(request, response, authenticationResult);
@@ -228,7 +234,7 @@ public class AccessTokenController extends AbstractController {
                     .authenticate(refreshGrantRequest);
         } catch (ResourceException e) {
             log.debug("Unable to authenticate refresh token request: {}", e.getMessage(), e);
-            throw new OAuthException(OAuthErrorCode.INVALID_GRANT, "Unable to authenticate refresh token request");
+            throw convertToOAuthException(e, OAuthErrorCode.INVALID_GRANT);
         }
 
         return createRefreshTokenResult(request, response, authenticationResult);
@@ -280,10 +286,23 @@ public class AccessTokenController extends AbstractController {
                     .authenticate(grantRequestAuthentication);
         } catch (ResourceException e) {
             log.debug("Unable to authenticate stormpath social grant request: {}", e.getMessage(), e);
-            throw new OAuthException(OAuthErrorCode.INVALID_CLIENT, "Unable to authenticate stormpath social grant request");
+            throw convertToOAuthException(e, OAuthErrorCode.INVALID_CLIENT);
         }
 
         return createAccessTokenResult(request, response, authenticationResult);
+    }
+
+    private OAuthException convertToOAuthException(ResourceException e, OAuthErrorCode defaultErrorCode) {
+        com.stormpath.sdk.error.Error error = e.getStormpathError();
+        String message = error.getMessage();
+
+        OAuthErrorCode oauthError = defaultErrorCode;
+        if (error instanceof DefaultError) {
+            Object errorObject = ((DefaultError) error).getProperty("error");
+            oauthError = errorObject == null ? oauthError : new OAuthErrorCode(errorObject.toString());
+        }
+
+        return new OAuthException(oauthError, message);
     }
 
     @Override
@@ -292,12 +311,12 @@ public class AccessTokenController extends AbstractController {
         String json;
 
         AuthenticationRequest authcRequest = null;
-        AccessTokenResult result = null;
+        AccessTokenResult result;
 
         try {
 
             assertAuthorized(request, response);
-            String grantType = null;
+            String grantType;
 
             try {
                 grantType = request.getParameter(GRANT_TYPE_PARAM_NAME);
@@ -305,6 +324,8 @@ public class AccessTokenController extends AbstractController {
             } catch (IllegalArgumentException e) {
                 throw new OAuthException(OAuthErrorCode.INVALID_GRANT);
             }
+
+            grantTypeValidator.validate(grantType);
 
             switch (grantType) {
                 case PASSWORD_GRANT_TYPE:
@@ -330,7 +351,7 @@ public class AccessTokenController extends AbstractController {
                     }
                     break;
                 default:
-                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE);
+                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE, "'" + grantType + "' is an unsupported grant type.");
             }
 
             saveResult(request, response, result);
@@ -344,7 +365,7 @@ public class AccessTokenController extends AbstractController {
 
         } catch (OAuthException e) {
 
-            log.debug("OAuth Access Token request failed.", e);
+            log.debug("OAuth Access Token request failed. Root cause: {}", e.getMessage());
 
             json = e.toJson();
 

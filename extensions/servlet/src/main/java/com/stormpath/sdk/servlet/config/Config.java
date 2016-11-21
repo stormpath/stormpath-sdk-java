@@ -40,6 +40,7 @@ import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -181,4 +182,28 @@ public interface Config extends Map<String, String> {
 
     Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver();
 
+    /**
+     * @since 1.2.0
+     */
+    List<String> getAllowedCorsOrigins();
+
+    /**
+     * @since 1.2.0
+     */
+    boolean isCorsEnabled();
+
+    /**
+     * @since 1.2.0
+     */
+    List<String> getAllowedCorsHaders();
+
+    /**
+     * @since 1.2.0
+     */
+    List<String> getAllowedCorsMethods();
+
+    /**
+     * @since 1.2.0
+     */
+    GrantTypeValidator getGrantTypeStatusValidator();
 }

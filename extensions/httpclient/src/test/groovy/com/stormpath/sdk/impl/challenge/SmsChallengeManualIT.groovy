@@ -47,7 +47,7 @@ class SmsChallengeManualIT extends ClientIT{
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
                 .setSurname('DELETEME')
-                .setEmail('johndeleteme@nowhere.com')
+                .setEmail('johndeleteme@testmail.stormpath.com')
                 .setPassword('Changeme1!')
 
         deleteOnTeardown(account)

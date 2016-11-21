@@ -41,6 +41,7 @@ import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationList
 import com.stormpath.sdk.phone.PhoneList
@@ -211,7 +212,7 @@ class DefaultTenantTest {
         def apiKey = ApiKeys.builder().setId('foo').setSecret('bar').build()
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
         def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
-
+        def baseUrlResolver = new DefaultBaseUrlResolver("https://api.stormpath.com/v1")
         def cacheManager = Caches.newCacheManager().build()
         def requestExecutor = createStrictMock(RequestExecutor)
         def response = createStrictMock(Response)
@@ -226,7 +227,7 @@ class DefaultTenantTest {
 
         replay requestExecutor, response
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, apiKeyResolver, cacheManager)
+        def dataStore = new DefaultDataStore(requestExecutor, baseUrlResolver, apiKeyCredentials, apiKeyResolver, cacheManager)
 
         //assert that the account is not already cached
         assertNull cacheManager.getCache(Account.name).get(returnedProperties.href)

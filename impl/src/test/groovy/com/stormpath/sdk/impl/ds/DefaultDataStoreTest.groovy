@@ -27,6 +27,7 @@ import com.stormpath.sdk.impl.http.support.DefaultRequest
 import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.query.DefaultOptions
+import com.stormpath.sdk.impl.util.BaseUrlResolver
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.Resource
@@ -258,6 +259,7 @@ class DefaultDataStoreTest {
         def response = createStrictMock(Response)
         def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def apiKeyResolver = createStrictMock(ApiKeyResolver)
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
 
         def providerResponseMap = [href: "https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider",
                            createdAt: "2014-04-01T22:05:25.661Z",
@@ -311,7 +313,7 @@ class DefaultDataStoreTest {
                 .withDefaultTimeToIdle(1, TimeUnit.HOURS)
                 .withDefaultTimeToLive(1, TimeUnit.HOURS)
                 .build();
-        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, apiKeyResolver, cache)
+        def defaultDataStore = new DefaultDataStore(requestExecutor, baseUrlResolver, apiKeyCredentials, apiKeyResolver, cache)
         def app = new DefaultApplication(defaultDataStore, appProperties)
 
         defaultDataStore.getResource(providerResponseMap.href, Provider, childIdProperty, map)

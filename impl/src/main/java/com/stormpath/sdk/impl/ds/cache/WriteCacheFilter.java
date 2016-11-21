@@ -19,14 +19,30 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.impl.api.ApiKeyParameter;
-import com.stormpath.sdk.impl.ds.*;
+import com.stormpath.sdk.impl.ds.CacheMapInitializer;
+import com.stormpath.sdk.impl.ds.DefaultCacheMapInitializer;
+import com.stormpath.sdk.impl.ds.DefaultResourceFactory;
+import com.stormpath.sdk.impl.ds.FilterChain;
+import com.stormpath.sdk.impl.ds.ResourceAction;
+import com.stormpath.sdk.impl.ds.ResourceDataRequest;
+import com.stormpath.sdk.impl.ds.ResourceDataResult;
+import com.stormpath.sdk.impl.ds.SubtypeDispatchingResourceFactory;
 import com.stormpath.sdk.impl.http.QueryString;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.oauth.OAuthTokenRevocationAttempt;
+import com.stormpath.sdk.impl.oauth.OAuthTokenRevoked;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ReferenceFactory;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.util.BaseUrlResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
@@ -36,23 +52,45 @@ import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 import static com.stormpath.sdk.impl.resource.AbstractResource.HREF_PROP_NAME;
 
 public class WriteCacheFilter extends AbstractCacheFilter {
 
+    private final BaseUrlResolver baseUrlResolver;
     private final ReferenceFactory referenceFactory;
     private final CacheMapInitializer cacheMapInitializer;
 
-    public WriteCacheFilter(CacheResolver cacheResolver, boolean collectionCachingEnabled, ReferenceFactory referenceFactory) {
+    private final Set<String> webConfigurationMaps;
+
+    public WriteCacheFilter(BaseUrlResolver baseUrlResolver, CacheResolver cacheResolver, boolean collectionCachingEnabled, ReferenceFactory referenceFactory) {
         super(cacheResolver, collectionCachingEnabled);
         Assert.notNull(referenceFactory, "referenceFactory cannot be null.");
+        Assert.notNull(baseUrlResolver, "baseUrlResolver cannot be null.");
         this.referenceFactory = referenceFactory;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
+        this.baseUrlResolver = baseUrlResolver;
+        this.webConfigurationMaps = new HashSet<>();
+        this.webConfigurationMaps.add("oauth2");
+        this.webConfigurationMaps.add("register");
+        this.webConfigurationMaps.add("login");
+        this.webConfigurationMaps.add("verifyEmail");
+        this.webConfigurationMaps.add("forgotPassword");
+        this.webConfigurationMaps.add("changePassword");
+        this.webConfigurationMaps.add("me");
     }
 
     @Override
@@ -64,6 +102,13 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         }
 
         ResourceDataResult result = chain.filter(request);
+
+        if (result.getAction() == ResourceAction.READ
+                && OAuthTokenRevocationAttempt.class.isAssignableFrom(request.getResourceClass())
+                && OAuthTokenRevoked.class.isAssignableFrom(result.getResourceClass())) {
+
+            uncacheRevokedToken(request.getData());
+        }
 
         if (isCacheable(request, result)) {
             cache(result.getResourceClass(), result.getData(), result.getUri().getQuery());
@@ -204,15 +249,17 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
             boolean isTokenDataMap = (AccessToken.class.isAssignableFrom(clazz) || RefreshToken.class.isAssignableFrom(clazz)) && name.equals("expandedJwt");
 
+            boolean isWebConfigurationMap = ApplicationWebConfig.class.isAssignableFrom(clazz) && webConfigurationMaps.contains(name);
+
             boolean isApiEncryptionMetadata = ApiKey.class.isAssignableFrom(clazz) && name.equals(ApiKeyParameter.ENCRYPTION_METADATA.getName());
 
             // Since defaultModel and Grant Authentication tokens are maps, the DataStore thinks they are Resources. This causes the code to crash later on as Resources
             // do need to have an href property
-            if (isDefaultModelMap || isTokenDataMap) {
+            if (isDefaultModelMap || isTokenDataMap || isWebConfigurationMap) {
                 value = new LinkedHashMap<String, Object>((Map) value);
             }
 
-            if (value instanceof Map && !isDefaultModelMap && !isTokenDataMap && !isApiEncryptionMetadata) {
+            if (value instanceof Map && !isDefaultModelMap && !isTokenDataMap && !isWebConfigurationMap && !isApiEncryptionMetadata) {
                 //the value is a resource reference
                 Map<String, ?> nested = (Map<String, ?>) value;
 
@@ -371,9 +418,46 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         cache.remove(cacheKey);
     }
 
-    private boolean isApiKeyCollectionQuery(ResourceDataRequest request) {
-        return ApiKeyList.class.isAssignableFrom(request.getResourceClass()) &&
-                request.getUri().hasQuery() && request.getUri().getQuery().containsKey(ID.getName());
+    private void uncacheRevokedToken(Map<String, Object> data) {
+
+        String token = data.get(OAuthTokenRevocationAttempt.TOKEN.getName()).toString();
+
+        int signatureIndex = token.lastIndexOf('.');
+
+        if (signatureIndex <= 0) {
+            return;
+        }
+
+        Object typeObject = data.get(OAuthTokenRevocationAttempt.TOKEN_TYPE_HINT.getName());
+
+        String tokenTypeHint = null;
+
+        if (typeObject instanceof String) {
+            tokenTypeHint = typeObject.toString();
+        }
+
+        try {
+            String nonSignedToken = token.substring(0, signatureIndex + 1);
+            Jwt<Header, Claims> jwt = Jwts.parser().parseClaimsJwt(nonSignedToken);
+
+            Object stt = jwt.getHeader().get("stt");
+
+            String rti = null;
+
+            Claims body = jwt.getBody();
+
+            if ("refresh".equals(stt) || "refresh_token".equals(tokenTypeHint)) {
+                rti = body.getId();
+            } else if ("access".equals(stt) || "access_token".equals(tokenTypeHint)) {
+                rti = body.get("rti", String.class);
+            }
+
+            if (rti != null) {
+                String href = baseUrlResolver.getBaseUrl() + "/refreshTokens/" + rti;
+                uncache(href, RefreshToken.class);
+            }
+        } catch (Exception e) {//ignored
+        }
     }
 
 }

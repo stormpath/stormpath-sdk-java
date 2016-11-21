@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.Assert;
 
 import javax.servlet.FilterChain;
@@ -38,11 +39,11 @@ public class SpringSecurityResolvedAccountFilter extends HttpFilter implements I
 
             boolean forceRefresh;
 
-            if (currentAuthentication == null || !(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof String)) {
+            if (currentAuthentication == null || !(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User)) {
                 forceRefresh = true;
             } else {
-                String href = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                forceRefresh = !href.equals(account.getHref());
+                User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                forceRefresh = !user.getUsername().equals(account.getHref());
             }
 
             if (forceRefresh) {

@@ -62,7 +62,7 @@ class DefaultAccountTest {
 
         def propertyDescriptors = defaultAccount.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 23)
+        assertEquals(propertyDescriptors.size(), 24)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("email") instanceof StringProperty)
@@ -72,6 +72,7 @@ class DefaultAccountTest {
         assertTrue(propertyDescriptors.get("password") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("fullName") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("status") instanceof EnumProperty && propertyDescriptors.get("status").getType().equals(AccountStatus))
+        assertTrue(propertyDescriptors.get("emailVerificationStatus") instanceof EnumProperty && propertyDescriptors.get("emailVerificationStatus").getType().equals(EmailVerificationStatus))
         assertTrue(propertyDescriptors.get("emailVerificationToken") instanceof ResourceReference && propertyDescriptors.get("emailVerificationToken").getType().equals(EmailVerificationToken))
         assertTrue(propertyDescriptors.get("customData") instanceof ResourceReference && propertyDescriptors.get("customData").getType().equals(CustomData))
         assertTrue(propertyDescriptors.get("directory") instanceof ResourceReference && propertyDescriptors.get("directory").getType().equals(Directory))
@@ -115,7 +116,7 @@ class DefaultAccountTest {
         assertNull(defaultAccount.getStatus())
 
         defaultAccount = defaultAccount.setUsername("pacoman")
-            .setEmail("some@email.com")
+            .setEmail("some@testmail.stormpath.com")
             .setSurname("Smuk")
             .setMiddleName("Ben")
             .setGivenName("Mel")
@@ -125,7 +126,7 @@ class DefaultAccountTest {
         DateFormat df = new ISO8601DateFormat();
 
         assertEquals(defaultAccount.getUsername(), "pacoman")
-        assertEquals(defaultAccount.getEmail(), "some@email.com")
+        assertEquals(defaultAccount.getEmail(), "some@testmail.stormpath.com")
         assertEquals(defaultAccount.getSurname(), "Smuk")
         assertEquals(defaultAccount.getMiddleName(), "Ben")
         assertEquals(defaultAccount.getGivenName(), "Mel")

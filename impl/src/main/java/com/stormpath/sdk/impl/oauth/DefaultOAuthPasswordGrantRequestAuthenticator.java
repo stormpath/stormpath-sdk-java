@@ -52,7 +52,6 @@ public class DefaultOAuthPasswordGrantRequestAuthenticator extends AbstractOAuth
         GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, oauthPasswordGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthGrantRequestAuthenticationResultBuilder(grantResult);
-
         return builder.build();
     }
 }

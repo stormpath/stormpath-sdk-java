@@ -31,7 +31,7 @@ class DefaultVerificationEmailRequestTest {
         def accountStore = createStrictMock(AccountStore)
         def verificationEmailRequest = new DefaultVerificationEmailRequest(null)
 
-        String email = "email@domain.com"
+        String email = "email@testmail.stormpath.com"
         verificationEmailRequest.setLogin(email)
         verificationEmailRequest.setAccountStore(accountStore)
 

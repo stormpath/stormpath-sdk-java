@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,16 @@
 package com.stormpath.sdk.application;
 
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountLinker;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.PasswordResetToken;
+import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyOptions;
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.UsernamePasswordRequestBuilder;
@@ -1131,6 +1138,14 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
     SamlPolicy getSamlPolicy();
 
     /**
+     * Returns the {@link ApplicationWebConfig} associated with this application.
+     *
+     * @return the {@link ApplicationWebConfig} associated with this application.
+     * @since 1.2.0
+     */
+    ApplicationWebConfig getWebConfig();
+
+    /**
      * Returns the valid list of Valid Callback URIs for this application.
      * @return the list of String valid callback URIs for this application.
      *
@@ -1159,4 +1174,34 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * @since 1.0.RC8
      */
     Application addAuthorizedCallbackUri(String authorizedCallbackUri);
+
+    /**
+     * Returns the valid list of Valid Origin URIs for this application.
+     * @return the list of String valid Origin URIs for this application.
+     *
+     * @since 1.2.0
+     */
+    List<String> getAuthorizedOriginUris();
+
+    /**
+     * Sets the list of Authorized Origin URIs for this application.
+     * @return this instance for method chaining.
+     *
+     * @since 1.2.0
+     */
+    Application setAuthorizedOriginUris(List<String> authorizedOriginUris);
+
+    /**
+     * Adds a valid URI as an authorized origin URI for this application.
+     * This is a convenience method and using it is equivalent to:
+     * <pre>
+     *     setAuthorizedOriginUris(getAuthorizedOriginUris().add(authorizedOriginUri));
+     * </pre>
+     *
+     * @return this instance for method chaining.
+     * @see #setAuthorizedCallbackUris(java.util.List)
+     *
+     * @since 1.2.0
+     */
+    Application addAuthorizedOriginUri(String authorizedOriginUri);
 }

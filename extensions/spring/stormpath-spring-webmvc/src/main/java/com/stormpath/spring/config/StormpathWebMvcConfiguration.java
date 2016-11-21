@@ -39,7 +39,6 @@ import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import com.stormpath.sdk.servlet.filter.account.AuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
@@ -53,8 +52,11 @@ import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
+import com.stormpath.spring.mvc.AccessTokenControllerConfig;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
 import org.springframework.beans.factory.InitializingBean;
@@ -189,11 +191,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
-    public Saver<AuthenticationResult> stormpathSessionAuthenticationResultSaver() {
-        return super.stormpathSessionAuthenticationResultSaver();
-    }
-
-    @Bean
     public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
         return super.stormpathAuthenticationResultSavers();
     }
@@ -282,11 +279,6 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public Resolver<Account> stormpathCookieAccountResolver() {
         return super.stormpathCookieAccountResolver();
-    }
-
-    @Bean
-    public Resolver<Account> stormpathSessionAccountResolver() {
-        return super.stormpathSessionAccountResolver();
     }
 
     @Bean
@@ -416,6 +408,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    public ExpandsResolver stormpathMeExpandsResolver(){
+        return super.stormpathMeExpandsResolver();
+    }
+
+    @Bean
     public Controller stormpathIdSiteResultController() {
         return super.stormpathIdSiteResultController();
     }
@@ -506,5 +503,21 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public ControllerConfig stormpathLogoutConfig() {
         return super.stormpathLogoutConfig();
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Bean
+    public AccessTokenControllerConfig stormpathAccessTokenConfig(){
+        return super.stormpathAccessTokenConfig();
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Bean
+    public GrantTypeValidator stormpathGrantTypeStatusValidator(){
+        return super.stormpathGrantTypeStatusValidator();
     }
 }

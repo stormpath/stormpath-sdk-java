@@ -56,7 +56,7 @@
       mvn clean package
       mvn spring-boot:run
 
-  You should now be able to browse to `<http://localhost:8080>`_ and see a welcome message with your Stormpath application's name.
+  You should now be able to browse to `<http://localhost:${port}>`_ and see a welcome message with your Stormpath application's name.
 
   This application has just two code files and a properties file in it. Here's the structure:
 
@@ -449,7 +449,7 @@
           ...
       }
 
-  Try it out. Launch the application as before, and then browse to: ``http://localhost:8080/me``. You will be redirected to the ``/login``
+  Try it out. Launch the application as before, and then browse to: ``http://localhost:${port}/me``. You will be redirected to the ``/login``
   and then after you login to a valid Stormpath Account, you will automatically be brought back to ``/me``. That's the Stormpath magic at work!
 
   Now, we'll look at fine grained controls using Spring Security permissions connected to Stormpath custom data.
@@ -555,10 +555,10 @@
   .. code-block:: bash
 
       curl -v -X POST \
-        -H "Origin: http://localhost:8080" \
+        -H "Origin: http://localhost:${port}" \
         -H "Content-Type: application/x-www-form-urlencoded" \
         -d "grant_type=password&username=<valid_email_address>&password=<valid_password>" \
-        http://localhost:8080/oauth/token
+        http://localhost:${port}/oauth/token
 
 
   Note: Make sure that the email address and password are URL encoded.
@@ -584,7 +584,7 @@
 
       curl \
         -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa1FBNjRTdEdUQjFhVEhlNGdPIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQxNzQ3LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.-3NNpi7-DTvl2VNCfHHFNwWVikmeCyNPy6KEu--XYjk" \
-        http://localhost:8080/me
+        http://localhost:${port}/me
 
   You will get a response like this:
 
@@ -607,10 +607,10 @@
   .. code-block:: bash
 
       curl -v -X POST \
-        -H "Origin: http://localhost:8080" \
+        -H "Origin: http://localhost:${port}" \
         -H "Content-Type: application/x-www-form-urlencoded" \
         -d "grant_type=refresh_token&refresh_token=eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU5NjIyMTQ3fQ.yK5twgj3-v51z4pszKXWTX9VtCbs1KxQU4vH1eXvgGo" \
-        http://localhost:8080/oauth/token
+        http://localhost:${port}/oauth/token
 
   Notice that in this case the `grant_type` is `refresh_token` and that we are using the `refresh_token` that we obtained
   previously.
@@ -634,7 +634,7 @@
 
       curl -v \
         -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q" \
-        http://localhost:8080/logout
+        http://localhost:${port}/logout
 
   Now, if you attempt to use the `access_token` again, you will not be granted access as it's been invalidated. You will
   need to login again.
@@ -644,7 +644,7 @@
 
       curl \
         -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q" \
-        http://localhost:8080/me
+        http://localhost:${port}/me
 
   Here's the response:
 

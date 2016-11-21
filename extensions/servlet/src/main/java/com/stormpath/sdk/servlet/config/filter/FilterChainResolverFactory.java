@@ -23,7 +23,7 @@ import com.stormpath.sdk.servlet.filter.PrioritizedFilterChainResolver;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,7 +42,19 @@ public class FilterChainResolverFactory extends ConfigSingletonFactory<FilterCha
         AccountResolverFilterFactory factory = new AccountResolverFilterFactory();
         factory.init(servletContext);
         Filter accountFilter = factory.getInstance();
-        final List<Filter> priorityFilters = Collections.singletonList(accountFilter);
+
+        final List<Filter> priorityFilters = new ArrayList<>();
+        priorityFilters.add(accountFilter);
+
+        //The CORS filter is added to the priority filters just after the AccountResolverFilter to ensure that if
+        //CORS is enabled the filter runs at the top of the chain and nobody could add and endpoint filter before the CORS filter
+        //Fixes https://github.com/stormpath/stormpath-sdk-java/issues/699
+        //@since 1.2.0
+        if (getConfig().isCorsEnabled()) {
+            CorsFilterFactory corsFilterFactory = new CorsFilterFactory();
+            corsFilterFactory.init(servletContext);
+            priorityFilters.add(corsFilterFactory.getInstance());
+        }
 
         //we always want our immediateExecutionFilters to run before the default chain:
         return new PrioritizedFilterChainResolver(resolver, priorityFilters);

@@ -30,6 +30,7 @@ public class DefaultUsernamePasswordRequest implements AuthenticationRequest<Str
     private String host;
     private AccountStore accountStore;
     private BasicAuthenticationOptions authenticationOptions;
+    private String organizationNameKey;
 
     /**
      * Constructs a new {@code UsernamePasswordRequest} with the specified {@code usernameOrEmail} and {@code password}.
@@ -87,6 +88,24 @@ public class DefaultUsernamePasswordRequest implements AuthenticationRequest<Str
     }
 
     /**
+     * @since 1.2.0
+     */
+    @Override
+    public String getOrganizationNameKey() {
+        return this.organizationNameKey;
+    }
+
+
+    /**
+     * @since 1.2.0
+     */
+    public DefaultUsernamePasswordRequest setOrganizationNameKey(String orgNameKey) {
+        Assert.hasText(orgNameKey, "orgNameKey cannot be null or empty.");
+        this.organizationNameKey = orgNameKey;
+        return this;
+    }
+
+    /**
      * Clears out (nulls) the username, password, host, accountStore and options.  The password bytes are explicitly set to
      * <tt>0x00</tt> to eliminate the possibility of memory access at a later time.
      */
@@ -96,6 +115,7 @@ public class DefaultUsernamePasswordRequest implements AuthenticationRequest<Str
         this.host = null;
         this.accountStore = null;
         this.authenticationOptions = null;
+        this.organizationNameKey = null;
 
         char[] password = this.password;
         this.password = null;

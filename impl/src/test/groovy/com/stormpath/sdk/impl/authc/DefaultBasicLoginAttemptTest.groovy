@@ -58,7 +58,7 @@ class DefaultBasicLoginAttemptTest {
         assertEquals(map.size(), 3)
         assertTrue(map.get("type").getType().getName().equals("java.lang.String"))
         assertTrue(map.get("value").getType().getName().equals("java.lang.String"))
-        assertTrue(map.get("accountStore").getType().getName().equals("com.stormpath.sdk.directory.AccountStore"))
+        assertTrue(map.get("accountStore").getType().getName().equals("java.util.Map"))
 
     }
 

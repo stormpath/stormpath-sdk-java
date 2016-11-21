@@ -69,6 +69,7 @@ import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.saml.DefaultSamlPolicy
 import com.stormpath.sdk.impl.tenant.DefaultTenant
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver
 import com.stormpath.sdk.lang.Objects
 import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.organization.Organization
@@ -102,7 +103,7 @@ class DefaultApplicationTest {
 
         def propertyDescriptors = defaultApplication.getPropertyDescriptors()
 
-        assertEquals( propertyDescriptors.size(), 15)
+        assertEquals( propertyDescriptors.size(), 16)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
@@ -237,7 +238,7 @@ class DefaultApplicationTest {
 
         defaultApplication.delete()
 
-        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@testmail.stormpath.com").getAccount(), account)
         assertEquals(defaultApplication.verifyPasswordResetToken("token"), account)
         assertEquals(defaultApplication.authenticateAccount(UsernamePasswordRequests.builder().setUsernameOrEmail("username").setPassword("password").build()), authenticationResult01)
 
@@ -734,7 +735,7 @@ class DefaultApplicationTest {
 
         replay internalDataStore, account
 
-        assertEquals(defaultApplication.sendPasswordResetEmail("some@email.com").getAccount(), account)
+        assertEquals(defaultApplication.sendPasswordResetEmail("some@testmail.stormpath.com").getAccount(), account)
         assertEquals(defaultApplication.resetPassword("token", "myNewPassword"), account)
         assertEquals(defaultApplication.authenticateAccount(UsernamePasswordRequests.builder().setUsernameOrEmail("username").setPassword("myNewPassword").build()), authenticationResult, null)
 
@@ -995,6 +996,7 @@ class DefaultApplicationTest {
         def apiKeyCredentials = new ApiKeyCredentials(apiKey)
         def apiKeyResolver = new DefaultApiKeyResolver(apiKey)
         def cacheManager = new DefaultCacheManager()
+        def baseUrlResolver = new DefaultBaseUrlResolver("https://api.stormpath.com/v1")
         def requestExecutor = createStrictMock(RequestExecutor)
         def response = createStrictMock(Response)
         def mapMarshaller = new JacksonMapMarshaller();
@@ -1008,7 +1010,7 @@ class DefaultApplicationTest {
 
         replay requestExecutor, response
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, apiKeyResolver, cacheManager)
+        def dataStore = new DefaultDataStore(requestExecutor, baseUrlResolver, apiKeyCredentials, apiKeyResolver, cacheManager)
 
         def application = new DefaultApplication(dataStore, properties)
         //Since this issue shows up only when the caching is enabled, let's make sure that it is indeed enabled, otherwise

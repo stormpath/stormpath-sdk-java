@@ -7,25 +7,115 @@ Registration
    :local:
    :depth: 2
 
+The registration feature of this library allows you to use Stormpath to create new accounts in a Stormpath directory.
+You can create traditional password-based accounts, or gather account data from other providers such as
+Facebook and Google.
+
+By default, this library will serve an HTML registration page at ``/register``. You can change this URI by setting
+``stormpath.web.register.uri`` to a different context-relative path.  You can also disable this feature entirely
+by setting ``stormpath.web.register.enabled = false``.
+
 Overview
 --------
 
-One of the very first things most web apps need is the ability to create a user account and login.  So how do we create user accounts?
+One of the very first things most web apps need is the ability to create a user account.  So how do you do it?
 
-1. Visit ``http://localhost:8080/register`` and you'll see the registration view:
+1. Visit ``http://localhost:${port}/register`` and you'll see the registration view:
 
 .. image:: /_static/register.png
 
-2. Fill out the form and click submit and you'll be redirected back to your application's root path, for example, ``http://localhost:8080/``.
+2. Fill out the form and click submit and you'll be redirected back to your application's root path, for example, ``http://localhost:${port}/``.
 
 Pretty nice!  Not a single line of code required. :)
 
-And while we think the default look and feel of the pages automatically rendered by the plugin are pretty nice, you have full control over the CSS and HTML for these pages - we'll cover customizing them later.
+And while the page is automatically rendered with a default look and feel, you have full control over the CSS and HTML
+for these pages - we'll discuss customizing them later.
+
+Configuration
+-------------
+
+.. contents::
+   :local:
+   :depth: 2
+
+The registration feature supports several options.  We'll show an example here, and cover their meaning next.
+
+.. code-block:: yaml
+
+   stormpath:
+     web:
+       register:
+         enabled: true
+         uri: "/register"
+         nextUri: "/"
+         view: "register"
+         autoLogin: false
+         form:
+           fields:
+             givenName:
+               enabled: true
+               label: "First Name"
+               placeholder: "First Name"
+               required: true
+               type: "text"
+             surname:
+               enabled: true
+               label: "Last Name"
+               placeholder: "Last Name"
+               required: true
+               type: "text"
+             username:
+               enabled: false
+               label: "Username"
+               placeholder: "Username"
+               required: true
+               type: "text"
+             email:
+               enabled: true
+               label: "Email"
+               placeholder: "Email"
+               required: true
+               type: "email"
+             password:
+               enabled: true
+               label: "Password"
+               placeholder: "Password"
+               required: true
+               type: "password"
+             confirmPassword:
+               enabled: false
+               label: "Confirm Password"
+               placeholder: "Confirm Password"
+               required: true
+               type: "password"
+           fieldOrder:
+             - "username"
+             - "givenName"
+             - "middleName"
+             - "surname"
+             - "email"
+             - "password"
+             - "confirmPassword"
+
+
+Enabled
+^^^^^^^
+
+Self-registration is enabled by default.  If you don't want users to self-register (perhaps because you will create
+or import accounts for your users another way), you can disable registration by setting the
+``stormpath.web.register.enabled`` property to ``false``:
+
+.. code-block:: properties
+
+    stormpath.web.register.enabled = false
+
+This means the |project| will not process registration requests to ``stormpath.web.register.uri`` at all and allow any
+such requests (if they exist) to fall through to your code.
 
 URI
----
+^^^
 
-Users can self-register for your web application by visiting ``/register``
+If self-registration is enabled, users can self-register by visiting ``/register``.
 
 If you want to change this path, set the ``stormpath.web.register.uri`` configuration property:
 
@@ -35,133 +125,413 @@ If you want to change this path, set the ``stormpath.web.register.uri`` configur
     stormpath.web.register.uri = /register
 
 Next URI
---------
-**If** ``stormpath.web.register.autoLogin = false`` **, this is the default**
+^^^^^^^^
 
-If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically redirected to the application's context root (home page) by default.  If you want to change this destination, set the ``stormpath.web.register.nextUri`` configuration property:
+If :ref:`autoLogin <register-autologin>` is false (and it is false by default), and
+:ref:`email verification <email verification>` is disabled, a successfully registered user will be
+automatically redirected to the application's context root (home page) by default.
+
+If you want to change this destination, set the ``stormpath.web.register.nextUri`` configuration property:
 
 .. code-block:: properties
 
     stormpath.web.register.nextUri = /
 
-**If** ``stormpath.web.register.autoLogin = true``
-
-If :ref:`email verification <email verification>` is disabled, a successfully registered user will be automatically logged in to the application and redirected to the page specified in the ``stormpath.web.login.nextUri`` configuration property:
+If :ref:`autoLogin <register-autologin>` is true and :ref:`email verification <email verification>` is disabled, a
+successfully registered user will be automatically logged in to the application and redirected to the page
+specified in the ``stormpath.web.login.nextUri`` configuration property instead:
 
 .. code-block:: properties
 
     stormpath.web.login.nextUri = /
 
-Again, this property is only referenced if email verification is disabled.  If email verification is enabled, a page will be rendered asking the user to check their email.
+Again, these properties are only referenced if email verification is disabled.  If email verification is enabled, a page
+will be rendered asking the user to check their email.
 
 Next Query Parameter
-^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""
 
-If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by clicking a link or via a redirect), and the URI has a ``next`` query parameter, the ``next`` query parameter value will take precedence as the post-registration redirect location. For example:
+If :ref:`email verification <email verification>` is disabled and the user is directed to the registration view (by
+clicking a link or via a redirect), and the URI has a ``next`` query parameter, the ``next`` query parameter value
+will take precedence as the post-registration redirect location. For example:
 
 ``https://myapp.com/register?next=/registerSuccess``
 
-This will cause the user to be redirected ``/registerSuccess`` instead of the configured ``stormpath.web.register.nextUri`` path.
+This will cause the user to be redirected ``/registerSuccess`` instead of the configured
+``stormpath.web.register.nextUri`` path.
 
-Again, this functionality is only executed if email verification is disabled.  If email verification is enabled, a page will be rendered asking the user to check their email.
+Again, this functionality is only executed if email verification is disabled.  If email verification is enabled, a
+page will be rendered asking the user to check their email.
 
-.. only:: springboot
+#if( !$servlet )
 
-  View
-  ----
+View
+^^^^
 
-  When the URI is visited a default template view named ``stormpath/register`` is rendered by default.  If you wanted to render your own template instead of the default, you can set the name of the template to render with the ``stormpath.web.register.view`` property:
+When the URI is visited a default template view named ``stormpath/register`` is rendered by default.  If you wanted to
+render your own template instead of the default, you can set the name of the template to render with the
+``stormpath.web.register.view`` property:
 
-  .. code-block:: properties
+.. code-block:: yaml
 
-    stormpath.web.register.view = stormpath/register
+   stormpath:
+     web:
+       register:
+         view: "stormpath/register"
 
-  Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+Remember that the property value is the *name* of a view, and the effective Spring ``ViewResolver`` will resolve that
+name to a template file.  See the :ref:`Custom Views <views>` chapter for more information.
+
+#end
+
+.. _register-autologin:
+
+AutoLogin
+^^^^^^^^^
+
+It is generally recommended for security reasons to use email verification and require users to login with their
+password after clicking an email verification link.
+
+However, if you do not want to use email verification, and instead want users to automatically be considered
+authenticated and logged in immediately after they register for a new user account, you can set autoLogin to true:
+
+.. code-block:: properties
+
+   stormpath.web.register.autoLogin = false # set to true if not using email verification
+
+Because this can weaken security, the default value is ``false``.
 
 Form Fields
------------
-
-You can specify a which form fields will be displayed by editing the ``stormpath.web.register.form.fields`` configuration property.  For example, the default value for ``givenName`` is:
-
-.. code-block:: properties
-
-    stormpath.web.register.form.fields.givenName.enabled = true
-    stormpath.web.register.form.fields.givenName.visible = true
-    stormpath.web.register.form.fields.givenName.label = stormpath.web.register.form.fields.givenName.label
-    stormpath.web.register.form.fields.givenName.placeholder = stormpath.web.register.form.fields.givenName.placeholder
-    stormpath.web.register.form.fields.givenName.required = true
-    stormpath.web.register.form.fields.givenName.type = text
-
-By default the supported directives are:
-
-* ``enabled``: the field is enabled for edit.
-* ``visible``: the field is visible.
-* ``label``: this is the label to display and its value is defined in i18n.properties with the key ``stormpath.web.register.form.fields.givenName.label``.
-* ``placeholder``: this is the placeholder to display and its value is defined in i18n.properties with the key ``stormpath.web.register.form.fields.givenName.placeholder``.
-* ``required``: makes the field required, If the field is blank, the error message is defined in i18n.properties as ``stormpath.web.register.form.fields.email.required``. If the input is invalid the error message is in the i18n.properties with the key ``stormpath.web.register.form.fields.email.invalid``.
-* ``type``: The input type of the field.
-
-By default the supported fields are: (remember to set the directives for each one)
-
-* ``givenName``: person's given name, also known as 'first name' in Western countries.
-* ``middleName``: any middle name(s).
-* ``surname``: person's family name, also known as 'last name' in Western countries.
-* ``username``: a username.  If unspecified, Stormpath defaults the username to the ``email`` value.
-* ``email``: the user's email address.  This field is always required.
-* ``password``: the user's password.
-
-You can customize this list of fields, those extra fields will be saved as custom data. The order field is defined in
-
-.. code-block:: properties
-
-    stormpath.web.register.form.fieldOrder = username,givenName,middleName,surname,email,password,confirmPassword
-
-You can also customize additional directives as necessary, but note:
-
-**The** ``email`` **form field is always required.  If you customize your form fields, ensure that you always have at least an** ``email`` **and set it as** ``required`` **.**
-
-Custom Data
 ^^^^^^^^^^^
 
-The registration form provides the ability to have custom fields defined by the developer. The registration controller will
-automatically figure out which are those fields (i.e not part of the pre-defined properties supported by the Account) and
-they will be added as `Custom Data`_ in the account.
+.. contents::
+   :local:
+   :depth: 1
 
-For example, let's suppose we want to add a custom field to capture a user's birthday during registration. Then the
-following properties should be added to the ``stormpath.properties`` file:
+The registration form will render the following fields by default (all required):
+
+* First Name (aka Stormpath account ``givenName`` field)
+* Last Name (aka Stormpath account ``surname`` field)
+* Email
+* Password
+
+You can customize the form by simply changing the configuration. For example, while email and password will always be
+required, you could make first and last name optional. Or, you can ask the user for both an email address and a
+username. You can even specify your own custom fields, no code required!
+
+Form Field Definitions
+""""""""""""""""""""""
+
+The ``stormpath.web.register.form.fields`` is a map of ``Field Name`` -to- ``Field Definition`` entries.
+
+Field Name
+++++++++++
+
+The name of the field in the field map must be a JSON string without spaces.  If it matches a predefined field name,
+the form field value will be automatically set as the associated value in the newly created Stormpath ``Account``.
+
+If the name of the field does not match a predefined field name, the field is treated as a
+`custom field <register-custom-form-fields>`_ and saved in the account's ``Custom Data``.
+
+Field Definition
+++++++++++++++++
+
+A field definition has properties that control the behavior of a form field.  Here is an example a form
+field definition - in this case, a field that represents a user account's ``givenName``:
+
+.. code-block:: yaml
+
+   stormpath:
+     web:
+       register:
+         form:
+           fields:
+             givenName:
+               enabled: true
+               label: "stormpath.web.register.form.fields.givenName.label"
+               placeholder: "stormpath.web.register.form.fields.givenName.placeholder"
+               required: true
+               type: "text"
+
+
+What do these field definition properties mean?
+
++------------------------+--------------------------------------------------------------------------------------------+
+| Field Property         | Description                                                                                |
+|                        |                                                                                            |
++========================+============================================================================================+
+| ``enabled``            | A boolean that indicates if the field will be included in the form.                        |
++------------------------+--------------------------------------------------------------------------------------------+
+| ``label``              | The text value of the HTML <label> element shown to the left of the form field.  The value |
+|                        | can be raw text or an i18n key.  If an i18n key, the resolved internationalized text will  |
+|                        | be displayed, not the 18n key itself.  Defaults to                                         |
+|                        | ``stormpath.web.register.form.fields.givenName.label``, a key in :ref:`i18n.properties     |
+|                        | <i18n>`.                                                                                   |
++------------------------+--------------------------------------------------------------------------------------------+
+| ``placeholder``        | The placeholder text value to display within the form field itself.  The value can be raw  |
+|                        | text or an i18n key.  If an i18n key, the resolved internationalized text will be          |
+|                        | displayed, not the i18n key itself.  Defaults to                                           |
+|                        | ``stormpath.web.register.form.fields.givenName.placeholder``, a key in                     |
+|                        | :ref:`i18n.properties <i18n>`.                                                             |
++------------------------+--------------------------------------------------------------------------------------------+
+| ``required``           | A boolean that indicates if the field must be entered by the user or not.  If ``required`` |
+|                        | is ``true`` and the field is blank, the post data will be validated to ensure that the     |
+|                        | field is supplied, and an error will be returned if the field is empty.                    |
+|                        |                                                                                            |
+|                        | The error message displayed is an internationalized message defined in                     |
+|                        | :ref:`i18n.properties <i18n>` as a property with the form of                               |
+|                        | ``stormpath.web.register.form.fields.[fieldName].required``. If the input is invalid, the  |
+|                        | error message is an internationalized message defined i18n.properties as a property with   |
+|                        | the form of                                                                                |
+|                        | ``stormpath.web.register.form.fields.[fieldName].invalid``.                                |
++------------------------+--------------------------------------------------------------------------------------------+
+| ``type``               | The HTML input type of the field.  Most field types will be ``text`` or maybe ``email``,   |
+|                        | but the ``password`` or ``confirmPassword`` fields should ideally be a type of ``password``|
+|                        | so the browser does not show (masks) password characters as the user types.                |
++------------------------+--------------------------------------------------------------------------------------------+
+
+
+Standard Form Fields
+""""""""""""""""""""
+
+Standard Form Fields already supported:
+
++---------------------+-----------------------------------------------------------------------------------------------+
+| Field Name          | Description                                                                                   |
+|                     |                                                                                               |
++=====================+===============================================================================================+
+| ``givenName``       | A person's given name, also known as the 'first name' in Western countries. This will be      |
+|                     | saved in the new Stormpath ``Account`` record's ``givenName`` field.                          |
++---------------------+-----------------------------------------------------------------------------------------------+
+| ``middleName``      | Any middle name(s).  This will be saved in the new Stormpath ``Account`` record's             |
+|                     | ``middleName`` field.                                                                         |
++---------------------+-----------------------------------------------------------------------------------------------+
+| ``surname``         | A person's family name, also known as 'last name' in Western countries.  This will be saved   |
+|                     | in the new Stormpath ``Account`` record's ``surname`` field.                                  |
++---------------------+-----------------------------------------------------------------------------------------------+
+| ``username``        | The user's desired username.  If unspecified, Stormpath defaults the username to the          |
+|                     | ``email`` value.  This will be saved in the new Stormpath ``Account`` record's ``username``   |
+|                     | field.                                                                                        |
++---------------------+-----------------------------------------------------------------------------------------------+
+| ``email``           | The user's email address.  This field is always required.  This will be saved in the new      |
+|                     | Stormpath ``Account`` record's ``email`` field.                                               |
++---------------------+-----------------------------------------------------------------------------------------------+
+| ``password``        | The user's password, always required.                                                         |
++---------------------+-----------------------------------------------------------------------------------------------+
+| ``confirmPassword`` | An additional field that, if enabled, must have a value equal the ``password`` value upon     |
+|                     | form submission. This field is used to help ensure the user doesn't accidentally type their   |
+|                     | password incorrectly, which may help in usability after registration.                         |
+|                     |                                                                                               |
+|                     | If the submitted value                                                                        |
+|                     | does not equal the ``password`` value, an internationalized error will be shown to the user   |
+|                     | to ensure that they enter in the password correctly.  The :ref:`i18n.properties <i18n>` key   |
+|                     | for this message is ``stormpath.web.register.form.errors.passwordMismatch``.                  |
++---------------------+-----------------------------------------------------------------------------------------------+
+
+If these fields are not sufficient for your needs, you can add custom form fields, covered next.  But please note:
+
+.. note::
+   The ``email`` and ``password`` fields are always required. If you modify the form fields, ensure that at least these
+   two are present.
+
+.. _register-custom-form-fields:
+
+Custom Form Fields
+""""""""""""""""""
+
+The above Standard Form Fields are the ones that are supported by default and match directly to a Stormpath ``Account``
+attribute.
+
+If you wanted to collect information that does not directly match a Stormpath account attribute, you can still add
+your own custom fields to the Form Field definition map.  Any values entered in these fields will be automatically
+added to the user account's ``CustomData`` object when they register successfully.
+
+For example, let's suppose we want to add a custom field to capture a user's birthday during registration:
+
+#if( $servlet )
 
 .. code-block:: properties
 
     stormpath.web.register.form.fields.birthday.type = text
-    stormpath.web.register.form.fields.birthday.label = Birthday
     stormpath.web.register.form.fields.birthday.enabled = true
     stormpath.web.register.form.fields.birthday.visible = true
     stormpath.web.register.form.fields.birthday.required = true
+    stormpath.web.register.form.fields.birthday.label = Birthday
     stormpath.web.register.form.fields.birthday.placeholder = Birthday
 
-When the registration form is rendered, this field will be added to the bottom of the form.
+#else
+
+.. code-block:: yaml
+
+   stormpath:
+     web:
+       register:
+         form:
+           fields:
+             # ... other standard fields here ...
+             birthday:
+               enabled: true
+               label: "Birthday" # or i18n key
+               placeholder: "Birthday" # or i18n key
+               required: true
+               type: "text"
+
+#end
+
+When the registration form is rendered, this field will be added:
 
    .. image:: /_static/register-with-birthday.png
 
-When the form is submitted, the field's name and value will be added to the account's custom data.
+When the form is submitted, the field's name and value will be added automatically to the account's custom data.
 
-If you want to provide user's with a good internationalization experience, then you should define the label property like this:
+.. caution:: Clear Text for Custom Fields
+
+    If the ``type`` of a custom form field is ``password``, input on the field will be masked as usual.
+    However, the value input into any custom form field will be stored in Custom Data as clear text.
+
+If you want to provide users with a good internationalization experience, then you should define the label and
+placeholder properties like this:
+
+#if( $servlet )
 
 .. code-block:: properties
 
     stormpath.web.register.form.fields.birthday.label = stormpath.web.register.form.fields.birthday.label
+    stormpath.web.register.form.fields.birthday.placeholder = stormpath.web.register.form.fields.birthday.placeholder
+
+#else
+
+.. code-block:: yaml
+
+   stormpath:
+     web:
+       register:
+         form:
+           fields:
+             birthday:
+               label: "stormpath.web.register.form.fields.birthday.label"
+               placeholder: "stormpath.web.register.form.fields.birthday.placeholder"
+
+#end
 
 And then, in your ``i18n_en.properties`` file you would add:
 
 .. code-block:: properties
 
     stormpath.web.register.form.fields.birthday.label = Birthday
+    stormpath.web.register.form.fields.birthday.placeholder = 4/1/1980
 
 While in your tentative ``i18n_es.properties`` file you would add:
 
 .. code-block:: properties
 
     stormpath.web.register.form.fields.birthday.label = Fecha de nacimiento
+    stormpath.web.register.form.fields.birthday.placeholder = 1/4/1980
+
+
+Optional Form Fields
+""""""""""""""""""""
+
+If you want to make a form field visible, but optional, set the form field definition's ``required`` property to
+``false``.  For example, if you wanted to make First Name (surname) and Last Name (givenName) optional:
+
+.. code-block:: yaml
+   :emphasize-lines: 11,17
+
+   stormpath:
+     web:
+       register:
+         # ... truncated for brevity ...
+         form:
+           fields:
+             givenName:
+               enabled: true
+               label: "First Name"
+               placeholder: "First Name"
+               required: false
+               type: "text"
+             surname:
+               enabled: true
+               label: "Last Name"
+               placeholder: "Last Name"
+               required: false
+               type: "text"
+             # ... truncated for brevity ...
+
+
+Disabling Form Fields
+"""""""""""""""""""""
+
+If you want to disable a form field entirely, set the form field definition's ``enabled`` property to
+``false``.  For example, if you wanted to remove First Name (surname) and Last Name (givenName) fields from the form
+entirely:
+
+If you want to remove fields entirely, you can set enabled to false:
+
+.. code-block:: yaml
+   :emphasize-lines: 8,14
+
+       stormpath:
+         web:
+           register:
+             # ... truncated for brevity ...
+             form:
+               fields:
+                 givenName:
+                   enabled: false
+                   label: "First Name"
+                   placeholder: "First Name"
+                   required: false
+                   type: "text"
+                 surname:
+                   enabled: false
+                   label: "Last Name"
+                   placeholder: "Last Name"
+                   required: false
+                   type: "text"
+                 # ... truncated for brevity ...
+
+.. note::
+
+   Because the Stormpath API currently requires Account records to have ``givenName`` and ``surname`` values, if you
+   make these fields optional or disable them entirely in your registration form, the |project| will auto-fill these
+   fields with a String value of ``UNKNOWN``.
+
+
+Form Field Order
+""""""""""""""""
+
+You can control the order in which the fields are rendered by setting the ``stormpath.web.register.form.fieldOrder``
+property.  The fields will be rendered with the first named field at the top, the 2nd named field under the first, and
+so on until the fields are fully rendered.
+
+#if( $servlet )
+
+.. code-block:: properties
+
+    stormpath.web.register.form.fieldOrder = username,givenName,middleName,surname,email,password,confirmPassword
+
+#else
+
+.. code-block:: yaml
+
+   stormpath:
+     web:
+       register:
+         form:
+           fieldOrder:
+             - "username"
+             - "givenName"
+             - "middleName"
+             - "surname"
+             - "email"
+             - "password"
+             - "confirmPassword"
+
+#end
+
+Any fields not listed in the ``fieldOrder`` will be rendered under the listed fields in the order they are declared
+in the ``fields`` map.
 
 .. _password strength:
 
@@ -170,18 +540,7 @@ Password Strength
 
 When you first fill out the registration form, you probably noticed that you couldn't register a user account without specifying a sufficiently strong password.  This is because, by default, Stormpath enforces certain password strength rules.
 
-If you'd like to change these password strength rules, you can do so easily by visiting the `Stormpath Admin Console`_, navigating to your your application's user account ``Directory``, and then changing the "Password Strength Policy".
-
-i18n
-----
-
-The :ref:`i18n` message keys used in the default register view have names prefixed with ``stormpath.web.register.``:
-
-.. literalinclude:: ../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
-   :language: properties
-   :lines: 49-87
-
-For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
+If you'd like to change these password strength rules, you can do so easily by visiting the `Stormpath Admin Console`_, navigating to your application's associated user account ``Directory``, and then changing the directory's "Password Strength Policy".
 
 .. _email verification:
 
@@ -209,7 +568,7 @@ If you want to enable email verification for newly registered accounts, you have
 #. On the Directory Workflows screen, the 'Verification Email' workflow is shown first.  Ensure that you
 
    #. Enable the workflow, and
-   #. Change the 'Link Base URL' text field to equal the fully qualified URL of your application's :ref:`verify link base URL <verify link base url>`.  The default context-relative path for this feature is ``/verify``, implying a base URL (for example, during localhost testing) of ``http://localhost:8080/verify``.
+   #. Change the 'Link Base URL' text field to equal the fully qualified URL of your application's :ref:`verify link base URL <verify link base url>`.  The default context-relative path for this feature is ``/verify``, implying a base URL (for example, during localhost testing) of ``http://localhost:${port}/verify``.
 
    .. image:: /_static/console-directory-workflows-ann.png
 
@@ -218,7 +577,7 @@ If you want to enable email verification for newly registered accounts, you have
 Try it!
 ^^^^^^^
 
-#. Visit ``http://localhost:8080/register`` and you'll see the registration view:
+#. Visit ``http://localhost:${port}/register`` and you'll see the registration view:
 
    .. image:: /_static/register.png
 
@@ -244,7 +603,7 @@ Try it!
 Verify Link Base URL
 ^^^^^^^^^^^^^^^^^^^^
 
-The Verify 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the email.  For example, during development, this is often something like ``http://localhost:8080/verify`` and in production, something like ``https://myapp.com/verify``.
+The Verify 'Link Base URL' mentioned above is the fully qualified base URL used to generate a unique link the user will click when reading the email.  For example, during development, this is often something like ``http://localhost:${port}/verify`` and in production, something like ``https://myapp.com/verify``.
 
 When a user clicks the link in the email, the |project| will automatically process the resulting request.  By default, the context-relative path that will process these requests is ``/verify`` as the above link examples show.  This path is controlled via the ``stormpath.web.verifyEmail.uri`` configuration property:
 
@@ -281,6 +640,19 @@ When the user clicks the email verification link and the request is processed by
 
             stormpath.web.verifyEmail.autoLogin = true
             stormpath.web.login.nextUri = /
+
+
+Internationalization (i18n)
+---------------------------
+
+The :ref:`i18n` message keys used in the default register view have names prefixed with ``stormpath.web.register.``:
+
+.. literalinclude:: ../../../../extensions/servlet/src/main/resources/com/stormpath/sdk/servlet/i18n.properties
+   :language: properties
+   :lines: 49-87
+
+For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
+
 
 Events
 ------

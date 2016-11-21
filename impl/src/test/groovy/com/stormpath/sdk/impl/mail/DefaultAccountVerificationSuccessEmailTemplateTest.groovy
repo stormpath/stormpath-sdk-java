@@ -58,7 +58,7 @@ class DefaultAccountVerificationSuccessEmailTemplateTest {
                 name: "Test Email",
                 description: "Test Description",
                 fromName: "John Doe",
-                fromEmailAddress: "john@email.com",
+                fromEmailAddress: "john@testmail.stormpath.com",
                 subject: "Your account has been confirmed",
                 textBody: "Your account has been successfully verified",
                 htmlBody: "Your account has been <b>successfully</b> verified",
@@ -69,7 +69,7 @@ class DefaultAccountVerificationSuccessEmailTemplateTest {
         assertEquals(emailTemplate.getName(), "Test Email")
         assertEquals(emailTemplate.getDescription(), "Test Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
-        assertEquals(emailTemplate.getFromEmailAddress(), "john@email.com")
+        assertEquals(emailTemplate.getFromEmailAddress(), "john@testmail.stormpath.com")
         assertEquals(emailTemplate.getSubject(), "Your account has been confirmed")
         assertEquals(emailTemplate.getTextBody(), "Your account has been successfully verified")
         assertEquals(emailTemplate.getHtmlBody(), "Your account has been <b>successfully</b> verified")
@@ -78,7 +78,7 @@ class DefaultAccountVerificationSuccessEmailTemplateTest {
         emailTemplate = emailTemplate.setName("New Email Name")
                 .setDescription("My New Description")
                 .setFromName("New John Doe")
-                .setFromEmailAddress("john@newemail.com")
+                .setFromEmailAddress("john@testmail.stormpath.com")
                 .setSubject("New Your account has been confirmed")
                 .setTextBody("New Your account has been successfully verified")
                 .setHtmlBody("New Your account has been <b>successfully</b> verified")
@@ -87,7 +87,7 @@ class DefaultAccountVerificationSuccessEmailTemplateTest {
         assertEquals(emailTemplate.getName(), "New Email Name")
         assertEquals(emailTemplate.getDescription(), "My New Description")
         assertEquals(emailTemplate.getFromName(), "New John Doe")
-        assertEquals(emailTemplate.getFromEmailAddress(), "john@newemail.com")
+        assertEquals(emailTemplate.getFromEmailAddress(), "john@testmail.stormpath.com")
         assertEquals(emailTemplate.getSubject(), "New Your account has been confirmed")
         assertEquals(emailTemplate.getTextBody(), "New Your account has been successfully verified")
         assertEquals(emailTemplate.getHtmlBody(), "New Your account has been <b>successfully</b> verified")

@@ -1,13 +1,37 @@
 ## Change Log ##
 
+### 1.1.5 ##
+
+This release fixes two bugs. The first is a fix for the LinkedIn Social login integration. Login with LinkedIn was failing under certain conditions. The second is a fix for enabling the confirmPassword form field.
+
+See [1.1.5 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.5+is%3Aclosed) for a complete list of changes.
+
+### 1.1.4 ##
+
+This release has a bug fix for custom registration fields.
+
+See [1.1.4 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.4+is%3Aclosed) for a complete list of changes.
+
+### 1.1.3 ##
+
+This release has a bug fix for Spring Security that was causing unnecessary API calls.
+
+See [1.1.3 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.3+is%3Aclosed) for a complete list of changes.
+
+### 1.1.2 ##
+
+This release includes a fix for the `next` parameter when deployed at a non-root context and a change in the JSON structure of the /me endpoint (now returns `groups.items` instead of `groups`).
+
+See [1.1.2 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.2+is%3Aclosed) for a complete list of changes.
+
 ### 1.1.1 ##
 
 See [1.1.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.1+is%3Aclosed) for a complete list of changes.
 
 ### 1.1.0 ##
 
-This release includes support for multi-factor authentication, Spring Cloud Zuul, a `stormpath_social` grant type for OAuth, improved
-documentation and a CORS Filter for servlet. 
+This release includes support for multi-factor authentication, Spring Cloud Zuul, a `stormpath_social` grant type for OAuth, and improved
+documentation. 
 
 See [1.1.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.0+is%3Aclosed) for a complete list of changes.
 

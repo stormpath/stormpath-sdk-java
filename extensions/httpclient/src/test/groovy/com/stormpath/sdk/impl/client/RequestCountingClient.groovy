@@ -26,6 +26,7 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.RestException
+import com.stormpath.sdk.impl.util.BaseUrlResolver
 
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -41,12 +42,12 @@ public class RequestCountingClient extends DefaultClient {
 
     private AtomicInteger count = new AtomicInteger();
 
-    public RequestCountingClient(ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
-        super(apiKeyCredentials, apiKeyResolver, baseUrl, proxy, cacheManager, authenticationScheme, null, connectionTimeout)
+    public RequestCountingClient(ApiKeyCredentials apiKeyCredentials, ApiKeyResolver apiKeyResolver, BaseUrlResolver baseUrlResolver, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
+        super(apiKeyCredentials, apiKeyResolver, baseUrlResolver, proxy, cacheManager, authenticationScheme, null, connectionTimeout)
     }
 
     @Override
-    protected DataStore createDataStore(final RequestExecutor requestExecutor, String baseUrl, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
+    protected DataStore createDataStore(final RequestExecutor requestExecutor, BaseUrlResolver baseUrlResolver, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
 
         RequestExecutor countingExecutor = new RequestExecutor() {
             @Override
@@ -56,7 +57,7 @@ public class RequestCountingClient extends DefaultClient {
             }
         };
 
-        return super.createDataStore(countingExecutor, baseUrl, clientCredentials, apiKeyResolver, cacheManager)
+        return super.createDataStore(countingExecutor, baseUrlResolver, clientCredentials, apiKeyResolver, cacheManager)
     }
 
     /**
