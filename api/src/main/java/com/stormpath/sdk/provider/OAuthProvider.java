@@ -39,6 +39,7 @@ public interface OAuthProvider extends Provider {
     /**
      * Returns the list of scopes configured for the oauth provider
      * @return the list of scopes configured for the oauth provider
+     * @since 1.2.0
      */
     List<String> getScope();
 }

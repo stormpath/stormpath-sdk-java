@@ -40,9 +40,11 @@
                                         </c:when>
                                         <c:otherwise>
                                             <sp:message key="stormpath.web.login.form.titleWithRegister">
-                                                <sp:param><a
-                                                        href="${pageContext.request.contextPath}${registerUri}"><sp:message
-                                                        key="stormpath.web.login.form.registerLink.text"/></a></sp:param>
+                                                <sp:param>
+                                                    <a href="${pageContext.request.contextPath}${registerUri}">
+                                                        <sp:message key="stormpath.web.login.form.registerLink.text"/>
+                                                    </a>
+                                                </sp:param>
                                             </sp:message>
                                         </c:otherwise>
                                     </c:choose>
@@ -76,7 +78,7 @@
                                         <c:otherwise>
                                             <div form-group="true" class="form-group group-${field.name}">
                                                 <label class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-4'}"/>">
-                                                        ${field.label}</label>
+                                                    ${field.label}</label>
                                                 <div class="<c:out value="${!empty accountStores ? 'col-sm-12' : 'col-sm-8'}"/>">
                                                     <input name="${field.name}" value="${field.value}"
                                                            type="${field.type}"

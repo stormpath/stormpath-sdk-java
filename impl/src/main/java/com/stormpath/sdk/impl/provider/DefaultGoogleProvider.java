@@ -31,6 +31,8 @@ import java.util.Map;
 public class DefaultGoogleProvider extends AbstractOAuthProvider<GoogleProvider> implements GoogleProvider {
 
     // SIMPLE PROPERTIES
+    // REDIRECT_URI is here for backwards compatibility, but the recommended way to specify the redirectUri is
+    // to specify it as part of the com.stormpath.sdk.provider.ProviderAccountRequest
     private static final StringProperty REDIRECT_URI = new StringProperty("redirectUri");
     private static final StringProperty HD = new StringProperty("hd");
     private static final EnumProperty<GoogleProviderAccessType> ACCESS_TYPE = new EnumProperty<>("accessType", GoogleProviderAccessType.class);

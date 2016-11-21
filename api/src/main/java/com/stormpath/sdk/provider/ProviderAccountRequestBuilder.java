@@ -36,6 +36,7 @@ public interface ProviderAccountRequestBuilder<T extends ProviderAccountRequestB
      *
      * @param code the Provider App authorization code.
      * @return the builder instance for method chaining.
+     * @since 1.2.0
      */
     T setCode(String code);
 
@@ -44,6 +45,7 @@ public interface ProviderAccountRequestBuilder<T extends ProviderAccountRequestB
      *
      * @param redirectUri the uri to use when validating the authorization code.
      * @return the builder instance for method chaining.
+     * @since 1.2.0
      */
     T setRedirectUri(String redirectUri);
 

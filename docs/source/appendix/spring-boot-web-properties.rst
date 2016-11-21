@@ -777,6 +777,7 @@ stormpath.web.changePassword.errorUri
 **Default Value:** ``/forgot?status=invalid_sptoken``
 
 
+
 stormpath.web.social.facebook.uri
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``/callbacks/facebook``

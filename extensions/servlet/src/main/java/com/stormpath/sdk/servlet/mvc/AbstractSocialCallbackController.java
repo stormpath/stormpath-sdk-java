@@ -76,7 +76,6 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
         eventPublisher.publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
         String redirectUri = getRedirectUri(request);
 
-
         return new DefaultViewModel(redirectUri).setRedirect(true);
     }
 
