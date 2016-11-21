@@ -21,7 +21,9 @@ import com.stormpath.sdk.provider.ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
 
 /**
  * @since 1.0.0
@@ -29,7 +31,7 @@ import static org.testng.Assert.*
 class DefaultGithubAccountRequestBuilderTest {
 
     @Test
-    void test() {
+    void testWithAccessToken() {
         def providerRequest = Providers.GITHUB;
         def requestBuilder = providerRequest.account();
         assertTrue(requestBuilder instanceof GithubAccountRequestBuilder)
@@ -44,14 +46,42 @@ class DefaultGithubAccountRequestBuilderTest {
     }
 
     @Test
-    void testMissingAccessToken() {
+    void testWithAuthorizationCode() {
+        def providerRequest = Providers.GITHUB;
+        def requestBuilder = providerRequest.account();
+        assertTrue(requestBuilder instanceof GithubAccountRequestBuilder)
+        assertTrue(ProviderAccountRequestBuilder.isInstance(requestBuilder))
+        def request = requestBuilder.setCode("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build();
+        assertTrue(request instanceof ProviderAccountRequest)
+        assertEquals(request.getProviderData().getProviderId(), "github")
+        def providerData = request.getProviderData()
+        assertTrue(providerData instanceof DefaultGithubProviderData)
+        providerData = (DefaultGithubProviderData) providerData
+        assertEquals(providerData.getProperty('code'), "CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD")
+    }
+
+    @Test
+    void testMissingAccessTokenAndCode() {
         def requestBuilder = Providers.GITHUB.account();
 
         try {
             requestBuilder.build();
             fail("Should have failed")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "accessToken is a required property. It must be provided before building.")
+            assertEquals(e.getMessage(), "Either accessToken or code must be provided before building.")
         }
     }
+
+    @Test
+    void testAddingAccessTokenAndCode() {
+        def requestBuilder = Providers.GITHUB.account();
+
+        try {
+            requestBuilder.setAccessToken("abc").setCode("sdc").build();
+            fail("Should have failed")
+        } catch (IllegalStateException e) {
+            assertEquals(e.getMessage(), "Either accessToken or code must be provided before building.")
+        }
+    }
+
 }

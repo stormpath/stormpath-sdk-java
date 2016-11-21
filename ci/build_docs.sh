@@ -22,7 +22,7 @@ if [ "$EXIT_CODE" -ne 0 ]; then
 fi
 
 info "Generating JavaDocs..."
-(mvn -q javadoc:aggregate -P travis-docs &> $WORKDIR/target/javadocs.log) &
+(mvn -s ci/settings.xml -q javadoc:aggregate -P travis-docs &> $WORKDIR/target/javadocs.log) &
 PID=$!
 
 show_spinner "$PID"

@@ -29,8 +29,8 @@ public class IDSiteResultFilterFactory extends CallbackControllerFilterFactory<I
     }
 
     @Override
-    public void doConfigure(IdSiteResultController c, Config config) {
-        c.setRegisterNextUri(config.getRegisterConfig().getNextUri());
+    public void doConfigure(IdSiteResultController controller, Config config) {
+        controller.setRegisterNextUri(config.getRegisterConfig().getNextUri());
     }
 
 }

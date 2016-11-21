@@ -21,6 +21,7 @@ import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.ProviderData;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -30,20 +31,29 @@ import java.util.Map;
  *
  * @since 1.0.beta
  */
-public abstract class AbstractProviderData extends AbstractResource implements ProviderData {
+public abstract class AbstractProviderData<T extends ProviderData> extends AbstractResource implements ProviderData {
 
     // SIMPLE PROPERTIES
     public static final StringProperty PROVIDER_ID = new StringProperty("providerId");
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
     public static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
+    static final StringProperty ACCESS_TOKEN = new StringProperty("accessToken");
+    static final StringProperty CODE = new StringProperty("code");
 
     public AbstractProviderData(InternalDataStore dataStore) {
-        this(dataStore, null);
+        //noinspection unchecked
+        this(dataStore, Collections.EMPTY_MAP);
     }
 
     public AbstractProviderData(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
         setProperty(PROVIDER_ID, getConcreteProviderId());
+        if (properties.containsKey(ACCESS_TOKEN.getName())) {
+            setProperty(ACCESS_TOKEN, properties.get(ACCESS_TOKEN.getName()));
+        }
+        if (properties.containsKey(CODE.getName())) {
+            setProperty(CODE, properties.get(CODE.getName()));
+        }
     }
 
     @Override
@@ -60,6 +70,27 @@ public abstract class AbstractProviderData extends AbstractResource implements P
     public Date getModifiedAt() {
         return getDateProperty(MODIFIED_AT);
     }
+
+    public String getAccessToken() {
+        return getString(ACCESS_TOKEN);
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setAccessToken(String accessToken) {
+        setProperty(ACCESS_TOKEN, accessToken);
+        return (T) this;
+    }
+
+    public String getCode() {
+        return getString(CODE);
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setCode(String code) {
+        setProperty(CODE, code);
+        return (T) this;
+    }
+
 
     /**
      * Each Provider-specific reification of this class must provide the concrete Stormpath ID it represents

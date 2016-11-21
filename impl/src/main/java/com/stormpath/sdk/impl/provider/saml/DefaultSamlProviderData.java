@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @since 1.0.RC8
  */
-public class DefaultSamlProviderData extends AbstractProviderData implements SamlProviderData {
+public class DefaultSamlProviderData extends AbstractProviderData<SamlProviderData> implements SamlProviderData {
 
     static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT);
 

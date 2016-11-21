@@ -24,5 +24,10 @@ public interface AccountStoreModel {
 
     String getName();
 
+    /**
+     * @since 1.2.0
+     */
+    String getAuthorizeUri();
+
     ProviderModel getProvider();
 }

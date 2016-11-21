@@ -51,5 +51,5 @@ public abstract class ControllerFilterFactory<T extends AbstractController> exte
 
     protected abstract T newController();
 
-    protected abstract void configure(T c, Config config) throws Exception;
+    protected abstract void configure(T controller, Config config) throws Exception;
 }

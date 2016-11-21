@@ -22,4 +22,6 @@ public interface OAuthProviderModel extends ProviderModel {
 
     @SuppressWarnings("unused") //This is used via reflection in html/jsp page templates
     String getClientId();
+
+    String getScope();
 }

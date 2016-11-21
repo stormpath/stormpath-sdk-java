@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.LinkedInProviderData;
 
 import java.util.Map;
@@ -25,12 +24,7 @@ import java.util.Map;
 /**
  * @since 1.0.0
  */
-public class DefaultLinkedInProviderData extends AbstractProviderData implements LinkedInProviderData {
-
-    // SIMPLE PROPERTIES
-    static final StringProperty ACCESS_TOKEN = new StringProperty("accessToken");
-
-    static final StringProperty CODE = new StringProperty("code");
+public class DefaultLinkedInProviderData extends AbstractProviderData<LinkedInProviderData> implements LinkedInProviderData {
 
     static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN, CODE);
 
@@ -45,21 +39,6 @@ public class DefaultLinkedInProviderData extends AbstractProviderData implements
     @Override
     public Map<String, Property> getPropertyDescriptors() {
         return PROPERTY_DESCRIPTORS;
-    }
-
-    @Override
-    public String getAccessToken() {
-        return getString(ACCESS_TOKEN);
-    }
-
-    public LinkedInProviderData setAccessToken(String accessToken) {
-        setProperty(ACCESS_TOKEN, accessToken);
-        return this;
-    }
-
-    public LinkedInProviderData setCode(String code) {
-        setProperty(CODE, code);
-        return this;
     }
 
     @Override
