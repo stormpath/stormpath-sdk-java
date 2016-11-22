@@ -16,16 +16,33 @@
 package com.stormpath.sdk.saml;
 
 
-//todo: saml javadoc
+/**
+ * Represents an attempt to create a new {@link RegisteredSamlServiceProvider} record in Stormpath.
+ *
+ * @see com.stormpath.sdk.tenant.Tenant#createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider)
+ * @since 1.2.0
+ */
 public interface CreateRegisteredSamlServiceProviderRequest {
 
-
+    /**
+     * Returns the RegisteredSamlServiceProvider instance for which a new record will be created in Stormpath.
+     *
+     * @return the RegisteredSamlServiceProvider instance for which a new record will be created in Stormpath.
+     */
     RegisteredSamlServiceProvider getRegisteredSamlServiceProvider();
 
-
+    /**
+     * Returns true in case RegisteredSamlServiceProvider has options.
+     *
+     * @return true in case RegisteredSamlServiceProvider has options.
+     */
     boolean hasRegisteredSamlServiceProviderOptions();
 
-
+    /**
+     * Returns the {@link RegisteredSamlServiceProviderOptions}.
+     *
+     * @return  {@link RegisteredSamlServiceProviderOptions}.
+     */
     RegisteredSamlServiceProviderOptions getRegisteredSamlServiceProviderOptions() throws IllegalStateException;
 
 }

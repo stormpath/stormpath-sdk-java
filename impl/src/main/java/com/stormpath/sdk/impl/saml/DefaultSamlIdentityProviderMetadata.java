@@ -23,7 +23,9 @@ import com.stormpath.sdk.saml.SamlIdentityProviderMetadata;
 import java.util.Date;
 import java.util.Map;
 
-//todo: saml javadoc
+/**
+ * @since 1.2.0
+ */
 public class DefaultSamlIdentityProviderMetadata extends AbstractInstanceResource implements SamlIdentityProviderMetadata {
 
     static final StringProperty SAML_ENTITY_ID = new StringProperty("entityId");
@@ -54,31 +56,13 @@ public class DefaultSamlIdentityProviderMetadata extends AbstractInstanceResourc
     }
 
     @Override
-    public SamlIdentityProviderMetadata setEntityId(String entityId) {
-        setProperty(SAML_ENTITY_ID, entityId);
-        return this;
-    }
-
-    @Override
     public Map<String, String> getX509SigninCert() {
         return getMap(X509_SIGNING_CERT);
     }
 
     @Override
-    public SamlIdentityProviderMetadata setSamlIdentityProvider(Map<String, String> x509SigninCert) {
-        setProperty(X509_SIGNING_CERT, x509SigninCert);
-        return this;
-    }
-
-    @Override
     public SamlIdentityProvider getSamlIdentityProvider() {
         return getResourceProperty(SAML_IDENTITY_PROVIDER);
-    }
-
-    @Override
-    public SamlIdentityProviderMetadata setSamlIdentityProvider(SamlIdentityProvider samlIdentityProvider) {
-        setProperty(SAML_IDENTITY_PROVIDER, samlIdentityProvider);
-        return this;
     }
 
     @Override

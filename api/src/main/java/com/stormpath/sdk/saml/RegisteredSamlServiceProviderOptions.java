@@ -17,9 +17,19 @@ package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.query.Options;
 
-//todo: saml javadoc
+/**
+ * RegisteredSamlServiceProvider-specific options that may be specified when retrieving {@link RegisteredSamlServiceProvider} resources.
+ *
+ * @since 1.2.0
+ */
 public interface RegisteredSamlServiceProviderOptions<T> extends Options {
 
+    /**
+     * Ensures that when retrieving a RegisteredSamlServiceProvider, the RegisteredSamlServiceProvider's assigned {@link RegisteredSamlServiceProvider#getTenant()}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
     T withTenant();
-
 }

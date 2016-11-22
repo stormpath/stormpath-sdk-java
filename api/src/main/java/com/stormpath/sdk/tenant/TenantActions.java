@@ -440,12 +440,41 @@ public interface TenantActions {
      */
     GroupList getGroups(Map<String, Object> queryParams);
 
-
-    //todo: saml javadoc
+    /**
+     * Creates a new {@link RegisteredSamlServiceProvider} under this tenant in the Stormpath server and returns the created resource.
+     *
+     * @param registeredSamlServiceProvider {@link RegisteredSamlServiceProvider} pojo to hold necessary data to send to the back- end to create a {@link RegisteredSamlServiceProvider}.
+     * @return the newly created {@link RegisteredSamlServiceProvider}.
+     *
+     * @since 1.2.0
+     */
     RegisteredSamlServiceProvider createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider registeredSamlServiceProvider) throws ResourceException;
 
+    /**
+     * Returns a paginated list of all the registeredSamlServiceProvider that belonging to this Tenant.
+     *
+     * @return a paginated list of all the registeredSamlServiceProvider that belonging to this Tenant.
+     *
+     * @since 1.2.0
+     */
     RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders();
 
+    /**
+     * Returns a paginated list of all the registeredSamlServiceProvider that belonging to this Tenant
+     * that match the specified query criteria.  The
+     * {@link RegisteredSamlServiceProviders} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * tenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(
+     *     RegisteredSamlServiceProviders.description().containsIgnoreCase("foo"))
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the account's phones that match the specified query criteria.
+     * @since 1.2.0
+     */
     RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria);
 }
 

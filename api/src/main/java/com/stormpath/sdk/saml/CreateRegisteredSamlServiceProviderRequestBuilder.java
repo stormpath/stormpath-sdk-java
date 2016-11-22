@@ -15,10 +15,28 @@
  */
 package com.stormpath.sdk.saml;
 
-//todo: saml javadoc
+/**
+ * A Builder to construct {@link CreateRegisteredSamlServiceProviderRequest}s.
+ *
+ * @see com.stormpath.sdk.tenant.Tenant#createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider)
+ * @since 1.2.0
+ */
 public interface CreateRegisteredSamlServiceProviderRequestBuilder {
 
+    /**
+     * Ensures that after a RegisteredSamlServiceProvider is created, the creation response is retrieved with the specified registeredSamlServiceProvider's
+     * options. This enhances performance by leveraging a single request to retrieve multiple related
+     * resources you know you will use.
+     *
+     * @return the builder instance for method chaining.
+     * @throws IllegalArgumentException if {@code options} is null.
+     */
     CreateRegisteredSamlServiceProviderRequestBuilder withResponseOptions(RegisteredSamlServiceProviderOptions options) throws IllegalArgumentException;
 
+    /**
+     * Creates a new {@code CreateRegisteredSamlServiceProviderRequest} instance based on the current builder state.
+     *
+     * @return a new {@code CreateRegisteredSamlServiceProviderRequest} instance based on the current builder state.
+     */
     CreateRegisteredSamlServiceProviderRequest build();
 }

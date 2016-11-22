@@ -128,7 +128,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         def webConfigHref = application.webConfig.href
         def webConfig = client.getResource(webConfigHref, ApplicationWebConfig)
         def domainName = webConfig.domainName
-        assertEquals(ssoLoginEndpointHref, "http://" + domainName + "/saml/sso/login")
+        assertEquals(ssoLoginEndpointHref, "http://" + domainName + "/saml/sso")
     }
 
     @Test
@@ -445,6 +445,8 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
     void testUpdatingAlgorithmUpdatesCertificate() {
         def identityProvider = getNewSamlIdentityProviderForNewApplication()
         def oldCertHref = identityProvider.getX509SigninCert().href
+        assertNotNull(identityProvider.shaFingerprint)
+        def fingerprint = identityProvider.shaFingerprint
         client.getResource(identityProvider.getX509SigninCert().href, com.stormpath.sdk.cert.X509SigningCert.class)
         // todo: saml the above line fails, fix and continue implementing
     }

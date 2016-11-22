@@ -36,6 +36,10 @@ public interface SamlPolicy extends Resource, Auditable {
      */
     SamlServiceProvider getSamlServiceProvider();
 
-    //todo: saml javadoc
+    /**
+     * Returns the relevant Stormpath's SAML Identity Provider information.
+     *
+     * @return the relevant he relevant Stormpath's SAML Identity Provider information.
+     */
     SamlIdentityProvider getIdentityProvider();
 }

@@ -375,7 +375,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
     @Test
     void testSearchIdentityProviderCollectionOfRegisteredSamlServiceProvidersByDifferentProperties(){
-        //todo: saml javadoc implement this oce identityProvider is ready
+        //todo: saml implement this once identityProvider is ready
     }
 
     @Test
@@ -395,7 +395,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
         getRegisteredSAMLServiceProviderError(registeredSamlServiceProviderReturned)
 
-        //todo: saml javadoc elaborate more once identityProvider becomes available
+        //todo: saml elaborate more once identityProvider becomes available
     }
 
     void assertRegisteredSAMLServiceProviderFields(RegisteredSamlServiceProvider response, RegisteredSamlServiceProvider input) {

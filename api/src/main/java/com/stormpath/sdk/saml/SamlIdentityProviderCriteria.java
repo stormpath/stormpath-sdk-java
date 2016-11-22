@@ -17,6 +17,15 @@ package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.query.Criteria;
 
-//todo: saml javadoc
+/**
+ * A {@link SamlIdentityProvider}-specific {@link Criteria} class, enabling a SamlIdentityProvider-specific
+ * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. PhoneCriteria instances can be
+ * constructed by using the {@link SamlIdentityProviders} utility class, for example:
+ * <pre>
+ * SamlIdentityProviders.where(SamlIdentityProviders.createdAt().eq("2016-01-01")...
+ *
+ * @since 1.2.0
+ */
 public interface SamlIdentityProviderCriteria extends Criteria<SamlIdentityProviderCriteria>,  SamlIdentityProviderOptions<SamlIdentityProviderCriteria>{
+    //todo: saml do we need to add some search criteria here? see PhoneCriteria
 }

@@ -20,7 +20,11 @@ import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.Saveable;
 
-//todo: saml javadoc
+/**
+ * A SamlServiceProviderRegistration represents the link between a {@link SamlIdentityProvider} and a {@link RegisteredSamlServiceProvider}
+ *
+ * @since 1.2.0
+ */
 public interface SamlServiceProviderRegistration extends Resource, Saveable, Deletable, Auditable {
     /**
      * Returns the samlServiceProviderRegistration's status.
@@ -32,23 +36,56 @@ public interface SamlServiceProviderRegistration extends Resource, Saveable, Del
 
     /**
      * Sets the samlServiceProviderRegistration's status.
-     * @param status the samlServiceProviderRegistration's status.
-     * {@link SamlServiceProviderRegistrationStatus}
      *
+     * @param status the samlServiceProviderRegistration's status.
+     *               {@link SamlServiceProviderRegistrationStatus}
      * @return this instance for method chaining.
      */
     SamlServiceProviderRegistration setStatus(SamlServiceProviderRegistrationStatus status);
 
+    /**
+     * Returns the samlServiceProviderRegistration's {@link RegisteredSamlServiceProvider} portion of the link.
+     *
+     * @return the samlServiceProviderRegistration's {@link RegisteredSamlServiceProvider}.
+     */
     RegisteredSamlServiceProvider getServiceProvider();
 
+    /**
+     * Sets the samlServiceProviderRegistration's {@link RegisteredSamlServiceProvider} portion of the link.
+     *
+     * @param registeredSamlServiceProvider the samlServiceProviderRegistration's {@link RegisteredSamlServiceProvider}.
+     * @return this instance for method chaining.
+     */
     SamlServiceProviderRegistration setServiceProvider(RegisteredSamlServiceProvider registeredSamlServiceProvider);
 
+    /**
+     * Returns the samlServiceProviderRegistration's {@link SamlIdentityProvider} portion of the link.
+     *
+     * @return the samlServiceProviderRegistration's {@link SamlIdentityProvider}.
+     */
     SamlIdentityProvider getIdentityProvider();
 
+    /**
+     * Sets the samlServiceProviderRegistration's {@link SamlIdentityProvider} portion of the link.
+     *
+     * @param samlIdentityProvider the samlServiceProviderRegistration's {@link SamlIdentityProvider}.
+     * @return this instance for method chaining.
+     */
     SamlServiceProviderRegistration setIdentityProvider(SamlIdentityProvider samlIdentityProvider);
 
+    /**
+     * Returns the samlServiceProviderRegistration's default relay state.
+     *
+     * @return the samlServiceProviderRegistration's default relay state.
+     */
     String getDefaultRelayState();
 
+    /**
+     * Sets the samlServiceProviderRegistration's default relay state.
+     *
+     * @param defaultRelayState the samlServiceProviderRegistration's default relay state.
+     * @return this instance for method chaining.
+     */
     SamlServiceProviderRegistration setDefaultRelayState(String defaultRelayState);
 
 }

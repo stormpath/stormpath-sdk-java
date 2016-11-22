@@ -19,7 +19,11 @@ import com.stormpath.sdk.resource.*;
 
 import java.util.Map;
 
-//todo: saml javadoc
+/**
+ * A SamlIdentityProvider represents data supporting Stormpath as an saml identity provider.
+ *
+ * @since 1.2.0
+ */
 public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Auditable {
     /**
      * Returns the samlIdentityProvider's status.
@@ -38,18 +42,75 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      */
     SamlIdentityProvider setStatus(SamlIdentityProviderStatus status);
 
+    /**
+     * Returns the samlIdentityProvider's sso login endpoint.
+     *
+     * @return the samlIdentityProvider's sso login endpoint.
+     */
     Map<String, String> getSsoLoginEndpoint();
 
+    /**
+     * Sets the samlIdentityProvider's sso login endpoint.
+     *
+     * @param ssoLoginEndpoint the samlIdentityProvider's sso login endpoint.
+     *
+     * @return this instance for method chaining.
+     */
     SamlIdentityProvider setSsoLoginEndpoint(String ssoLoginEndpoint);
 
+    /**
+     * Returns the samlIdentityProvider's signature algorithm.
+     *
+     * @return the samlIdentityProvider's signature algorithm.
+     */
     String getSignatureAlgorithm();
 
+    /**
+     * Sets the samlIdentityProvider's signature algorithm.
+     *
+     * @param signatureAlgorithm the samlIdentityProvider's signature algorithm..
+     *
+     * @return this instance for method chaining.
+     */
     SamlIdentityProvider setSignatureAlgorithm(String signatureAlgorithm);
 
+    /**
+     * Returns the samlIdentityProvider's x509 Signin Certificate.
+     *
+     * @return the samlIdentityProvider's x509 Signin Certificate.
+     */
     Map<String, String> getX509SigninCert();
 
+    /**
+     * Sets the samlIdentityProvider's x509 Signin Certificate.
+     *
+     * @param x509SigninCert the samlIdentityProvider's x509 Signin Certificate.
+     *
+     * @return this instance for method chaining.
+     */
     SamlIdentityProvider setX509SigninCert(Map<String, String> x509SigninCert);
 
+    /**
+     * Returns the samlIdentityProvider's SHA fingerprint.
+     *
+     * @return the samlIdentityProvider's SHA fingerprint.
+     */
+    String getShaFingerprint();
+
+    /**
+     * Sets the samlIdentityProvider's SHA fingerprint.
+     *
+     * @param shaFingerprint the samlIdentityProvider's SHA fingerprint.
+     *
+     * @return this instance for method chaining.
+     */
+    SamlIdentityProvider setShaFingerprint(String shaFingerprint);
+
+    /**
+     * Returns the samlIdentityProvider's metadata.
+     *
+     * @return the samlIdentityProvider's metadata.
+     */
     SamlIdentityProviderMetadata getSamlIdentityProviderMetadata();
 
     /**
@@ -67,13 +128,53 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      */
     SamlIdentityProvider setAttributeStatementMappingRules(AttributeStatementMappingRules attributeStatementMappingRules);
 
+    /**
+     * Returns the list of {@link RegisteredSamlServiceProvider}s as {@link RegisteredSamlServiceProviderList} for which Stormpath serves as an identity provider.
+     *
+     * @return the list of {@link RegisteredSamlServiceProvider}s as {@link RegisteredSamlServiceProviderList} for which Stormpath serves as an identity provider.
+     */
     RegisteredSamlServiceProviderList getRegisteredSamlServiceProviders();
 
+    /**
+     * Creates a {@link SamlServiceProviderRegistration} registering a {@link RegisteredSamlServiceProvider} with this identity provider.
+     * @param createSamlServiceProviderRegistrationRequest the {@link CreateSamlServiceProviderRegistrationRequest} which the creation of the {@link SamlServiceProviderRegistration} is based upon.
+     *
+     * @return the {@link SamlServiceProviderRegistration}.
+     */
     SamlServiceProviderRegistration createSamlServiceProviderRegistration(CreateSamlServiceProviderRegistrationRequest createSamlServiceProviderRegistrationRequest);
 
+    /**
+     * Creates a {@link SamlServiceProviderRegistration} registering a {@link RegisteredSamlServiceProvider} with this identity provider.
+     * @param samlServiceProviderRegistration the {@link SamlServiceProviderRegistration} to be created.
+     *
+     * @return the {@link SamlServiceProviderRegistration}.
+     */
     SamlServiceProviderRegistration createSamlServiceProviderRegistration(SamlServiceProviderRegistration samlServiceProviderRegistration) throws ResourceException;
 
+    /**
+     * Returns the list of {@link SamlServiceProviderRegistration}s as {@link SamlServiceProviderRegistrationList} which is held by this identity provider.
+     *
+     * @return the list of {@link SamlServiceProviderRegistration}s as {@link SamlServiceProviderRegistrationList} which is held by this identity provider.
+     */
     SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations();
 
+    /**
+     * Returns a paginated list of the samlIdentityProviders's assigned samlServiceProviderRegistrations that match the specified query criteria.  The
+     * {@link SamlIdentityProviders} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * SamlIdentityProviders.getSamlServiceProviderRegistrations(SamlIdentityProviders.where(
+     *     SamlIdentityProviders.createdAt().equals("2016-01-01")
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the samlIdentityProvider's samlServiceProviderRegistrations that match the specified query criteria.
+     * @since 1.2.0
+     */
     SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations(SamlServiceProviderRegistrationCriteria criteria);
 }

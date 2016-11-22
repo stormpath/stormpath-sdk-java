@@ -15,6 +15,7 @@
 */
 package com.stormpath.sdk.saml;
 
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
@@ -22,18 +23,33 @@ import com.stormpath.sdk.resource.Saveable;
 
 import java.util.Map;
 
-//todo: saml javadoc
+/**
+ * The (read-only) Saml Identity Provider metadata providing meta data for a given Stormpath's {@link Application}
+ * as part of its {@link SamlPolicy}
+
+ * @since 1.0.RC8
+ */
 public interface SamlIdentityProviderMetadata extends Resource, Saveable, Deletable, Auditable {
 
+    /**
+     * Returns the SamlIdentityProvider's entity id.
+     *
+     * @return the SamlIdentityProvider's entity id.
+     */
     String getEntityId();
 
-    SamlIdentityProviderMetadata setEntityId(String entityId);
-
+    /**
+     * Returns the SamlIdentityProvider's x509 Signin Certificate.
+     *
+     * @return the SamlIdentityProvider's x509 Signin Certificate.
+     */
     Map<String, String> getX509SigninCert();
 
-    SamlIdentityProviderMetadata setSamlIdentityProvider(Map<String, String> x509SigninCert);
-
+    /**
+     * Returns the SamlIdentityProvider instance.
+     *
+     * @return the the SamlIdentityProvider instance.
+     */
     SamlIdentityProvider getSamlIdentityProvider();
 
-    SamlIdentityProviderMetadata setSamlIdentityProvider(SamlIdentityProvider samlIdentityProvider);
 }

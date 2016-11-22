@@ -17,12 +17,37 @@ package com.stormpath.sdk.saml;
 
 import com.stormpath.sdk.query.Options;
 
-//todo: saml javadoc
+/**
+ * SamlIdentityProvider-specific options that may be specified when retrieving {@link SamlIdentityProvider} resources.
+ *
+ * @since 1.2.0
+ */
 public interface SamlIdentityProviderOptions<T> extends Options {
 
+    /**
+     * Ensures that when retrieving a SamlIdentityProvider, the SamlIdentityProvider's assigned {@link SamlIdentityProvider#getAttributeStatementMappingRules()}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
     T withAttributeMappingRules();
 
+    /**
+     * Ensures that when retrieving a SamlIdentityProvider, the SamlIdentityProvider's assigned {@link SamlIdentityProvider#getRegisteredSamlServiceProviders()}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
     T withRegisteredSamlServiceProviders();
 
+    /**
+     * Ensures that when retrieving a SamlIdentityProvider, the SamlIdentityProvider's assigned {@link SamlIdentityProvider#getSamlServiceProviderRegistrations()}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
     T withSamlServiceProviderRegistrations();
 }
