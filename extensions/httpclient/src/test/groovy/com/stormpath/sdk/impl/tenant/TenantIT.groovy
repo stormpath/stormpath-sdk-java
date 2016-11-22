@@ -803,7 +803,7 @@ class TenantIT extends ClientIT {
 
         Account account = createTestAccount(application)
         Date rightAfterCreatingFirstAccount = account.getCreatedAt();
-        Thread.sleep(750) //preventing clock drift issues
+        Thread.sleep(1000) //preventing clock drift issues
 
         // Is there an account whose password was changed (ie. created) 20 secs after starting this test? Yes
         appList = application.getAccounts(Accounts.where(Accounts.passwordModifiedAt().in(now, rightAfterCreatingFirstAccount)))
