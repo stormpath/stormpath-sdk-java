@@ -1335,7 +1335,28 @@ class AccountIT extends ClientIT {
         for (def acct : allAccounts){
             acct.delete()
         }
-
     }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    public void testPasswordModifiedAt() {
+
+        def app = createTempApp()
+        def account = createTestAccount(app)
+
+        def originalPasswordModifiedAt = account.getPasswordModifiedAt()
+        Thread.sleep(1000) //preventing clock drift issues
+        account.setPassword("mYn3wP@assword").save()
+
+        account = client.getResource(account.href, Account)
+
+        def newPasswordModifiedAt = account.getPasswordModifiedAt()
+
+        assertTrue(newPasswordModifiedAt.after(originalPasswordModifiedAt))
+    }
+
+
 
 }
