@@ -31,5 +31,10 @@ public class LogoutFilterFactory extends ControllerFilterFactory<LogoutControlle
     @Override
     protected void configure(LogoutController controller, Config config) throws Exception {
         controller.setNextUri(config.getLogoutConfig().getNextUri());
+        /*
+            resolves https://github.com/stormpath/stormpath-sdk-java/issues/1121
+         */
+        controller.setInvalidateHttpSession(config.isLogoutInvalidateHttpSession());
+        controller.setProduces(config.getProducedMediaTypes());
     }
 }
