@@ -1,5 +1,21 @@
 ## Change Log ##
 
+### 1.2.0 ##
+
+This release has a number of feature additions and bug fixes. Of note:
+
+* Support for [Account Linking](https://docs.stormpath.com/java/product-guide/latest/accnt_mgmt.html#account-linking)
+* Support for [Application WebConfig](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/webconfig/package-summary.html) - critical to interacting with the soon-to-be released Stormpath Client API
+* Support for OAuth2 [revocation](https://tools.ietf.org/html/rfc7009) in the SDK as well as in all integrations exposed at the `/oauth/revoke` endpoont
+* Support for Cross Origin Resource Sharing ([CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)) entirely by configuration in all integrations using these properties:
+    * stormpath.web.cors.enabled
+    * stormpath.web.cors.allowed.originUris
+    * stormpath.web.cors.allowed.headers
+    * stormpath.web.cors.allowed.methods
+* Idiomatic support for the `passwordModifiedAt` field in the [Account](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/account/Account.html) interface in in search criteria on [Accounts](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/account/Accounts.html#passwordModifiedAt--)
+
+See [1.2.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.0+is%3Aclosed) for a complete list of changes.
+
 ### 1.1.5 ##
 
 This release fixes two bugs. The first is a fix for the LinkedIn Social login integration. Login with LinkedIn was failing under certain conditions. The second is a fix for enabling the confirmPassword form field.
