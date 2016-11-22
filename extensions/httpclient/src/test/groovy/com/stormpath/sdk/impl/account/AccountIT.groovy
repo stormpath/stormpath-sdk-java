@@ -1342,15 +1342,17 @@ class AccountIT extends ClientIT {
      */
     @Test
     public void testPasswordModifiedAt() {
+
         def app = createTempApp()
+        def account = createTestAccount(app)
 
-        Account account = createTestAccount(app)
-
-        Date originalPasswordModifiedAt = account.getPasswordModifiedAt()
-        Thread.sleep(750) //preventing clock drift issues
+        def originalPasswordModifiedAt = account.getPasswordModifiedAt()
+        Thread.sleep(1000) //preventing clock drift issues
         account.setPassword("mYn3wP@assword").save()
 
-        Date newPasswordModifiedAt = account.getPasswordModifiedAt()
+        account = client.getResource(account.href, Account)
+
+        def newPasswordModifiedAt = account.getPasswordModifiedAt()
 
         assertTrue(newPasswordModifiedAt.after(originalPasswordModifiedAt))
     }
