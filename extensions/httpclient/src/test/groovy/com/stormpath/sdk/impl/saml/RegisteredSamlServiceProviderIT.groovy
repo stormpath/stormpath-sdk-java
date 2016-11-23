@@ -17,17 +17,16 @@ package com.stormpath.sdk.impl.saml
 
 import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.ResourceException
-import com.stormpath.sdk.saml.RegisteredSamlServiceProvider
-import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList
-import com.stormpath.sdk.saml.RegisteredSamlServiceProviders
+import com.stormpath.sdk.saml.*
 import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 
 import static org.testng.AssertJUnit.*
+
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
@@ -375,27 +374,95 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
     @Test
     void testSearchIdentityProviderCollectionOfRegisteredSamlServiceProvidersByDifferentProperties(){
-        //todo: saml implement this once identityProvider is ready
+        def identityProvider = getSamlIdentityProviderForDefaultApplication()
+
+        def serviceProvider = client.instantiate(RegisteredSamlServiceProvider)
+        serviceProvider
+                .setName("testName")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
+                .setEntityId(uniquify("urn:entity:id"))
+                .setEncodedX509SigningCert(validX509Cert)
+        serviceProvider = client.currentTenant.createRegisterdSamlServiceProvider(serviceProvider)
+
+        def registration = client.instantiate(SamlServiceProviderRegistration)
+        registration.setIdentityProvider(identityProvider).setServiceProvider(serviceProvider)
+        registration = createAndGetAndAssertNewRegistration(registration)
+
+        RegisteredSamlServiceProviderList list =  client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.assertionConsumerServiceUrl().eqIgnoreCase("https*")))
+        assertEquals(list.size, 1)
+
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.assertionConsumerServiceUrl().eqIgnoreCase("doesNotExist")))
+        assertEquals(list.size, 0)
+
+        registration.serviceProvider.setName("My Registered Saml Service Provider").setDescription("This is an epic description").save()
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.name().eqIgnoreCase("My Registered Saml Service Provider")))
+        assertEquals(list.size, 1)
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.description().eqIgnoreCase("This is an epic description")))
+        assertEquals(list.size, 1)
+
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.name().eqIgnoreCase("My*")))
+        assertEquals(list.size, 1)
+
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.name().eqIgnoreCase("*Provider")))
+        assertEquals(list.size, 1)
+
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.entityId().eqIgnoreCase("urn*")))
+        assertEquals(list.size, 1)
+
+        registration.serviceProvider.setNameIdFormat("persistent").save()
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.nameIdFormat().eqIgnoreCase("persistent")))
+        assertEquals(list.size, 1)
+
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.nameIdFormat().eqIgnoreCase("transient")))
+        assertEquals(list.size, 0)
+
+        list = client.currentTenant.getRegisterdSamlServiceProviders(RegisteredSamlServiceProviders.where(RegisteredSamlServiceProviders.encodedX509Certificate().eqIgnoreCase(validX509Cert)))
+        assertEquals(list.size, 1)
     }
 
     @Test
     void testDeletion() {
-        def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
-        registeredSamlServiceProvider
+        def identityProvider = getSamlIdentityProviderForDefaultApplication()
+
+        def serviceProvider = client.instantiate(RegisteredSamlServiceProvider)
+        serviceProvider
                 .setName("testName")
                 .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
                 .setEntityId(uniquify("urn:entity:id"))
                 .setEncodedX509SigningCert(validX509Cert)
 
-        def registeredSamlServiceProviderReturned = client.currentTenant.createRegisterdSamlServiceProvider(registeredSamlServiceProvider)
+        serviceProvider = client.currentTenant.createRegisterdSamlServiceProvider(serviceProvider)
+        assertNotNull(serviceProvider.href)
 
-        assertNotNull(registeredSamlServiceProviderReturned.href)
+        def registration = client.instantiate(SamlServiceProviderRegistration)
+        registration.setIdentityProvider(identityProvider).setServiceProvider(serviceProvider)
+        createAndGetAndAssertNewRegistration(registration)
 
-        registeredSamlServiceProviderReturned.delete()
+        serviceProvider.delete()
+        getRegisteredSAMLServiceProviderError(serviceProvider)
 
-        getRegisteredSAMLServiceProviderError(registeredSamlServiceProviderReturned)
+        Options options = SamlIdentityProviders.options().withSamlServiceProviderRegistrations().withRegisteredSamlServiceProviders()
+        identityProvider = client.getResource(identityProvider.href, SamlIdentityProvider, options)
+        SamlServiceProviderRegistrationList samlServiceProviderRegistrations = identityProvider.samlServiceProviderRegistrations
+        assertEquals(samlServiceProviderRegistrations.href, identityProvider.href + "/samlServiceProviderRegistrations")
 
-        //todo: saml elaborate more once identityProvider becomes available
+        assertEquals(samlServiceProviderRegistrations.offset, 0)
+        assertEquals(samlServiceProviderRegistrations.size, 0)
+        assertEquals(samlServiceProviderRegistrations.limit, 25)
+
+        def registrationItems = samlServiceProviderRegistrations.getProperties().items
+        assertEquals(registrationItems.size, 0)
+
+        def registeredSamlServiceProviders = identityProvider.registeredSamlServiceProviders
+        assertEquals(registeredSamlServiceProviders.href, identityProvider.href + "/registeredSamlServiceProviders")
+
+        assertEquals(registeredSamlServiceProviders.offset, 0)
+        assertEquals(registeredSamlServiceProviders.size, 0)
+        assertEquals(registeredSamlServiceProviders.limit, 25)
+        assertNotNull(registeredSamlServiceProviders.properties.items)
+
+        def serviceProviderItems = registeredSamlServiceProviders.properties.items
+        assertEquals(serviceProviderItems.size, 0)
     }
 
     void assertRegisteredSAMLServiceProviderFields(RegisteredSamlServiceProvider response, RegisteredSamlServiceProvider input) {

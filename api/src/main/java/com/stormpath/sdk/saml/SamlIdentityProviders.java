@@ -32,7 +32,7 @@ import com.stormpath.sdk.query.StringExpressionFactory;
  *     .limitTo(25));
  * </pre>
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
 public class SamlIdentityProviders {
 

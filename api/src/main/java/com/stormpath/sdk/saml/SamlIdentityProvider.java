@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * A SamlIdentityProvider represents data supporting Stormpath as an saml identity provider.
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
 public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Auditable {
     /**
@@ -136,6 +136,26 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
     RegisteredSamlServiceProviderList getRegisteredSamlServiceProviders();
 
     /**
+     * Returns a paginated list of the samlIdentityProviders's assigned registeredSamlServiceProviders that match the specified query criteria.  The
+     * {@link SamlIdentityProviders} utility class is available to help construct
+     * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
+     * query-building experience.  For example:
+     * <pre>
+     * samlIdentityProvider.getRegisteredSamlServiceProviders(RegisteredSamlServiceProviders.where(
+     *     RegisteredSamlServiceProviders.createdAt().equals("2016-01-01")
+     *     .offsetBy(20)
+     *     .limitTo(25));
+     * </pre>
+     * or, if you use static imports:
+     * <pre>
+     *
+     * @param criteria the criteria to use when performing a request to the collection.
+     * @return a paginated list of the samlIdentityProvider's samlServiceProviderRegistrations that match the specified query criteria.
+     * @since 1.2.1
+     */
+    RegisteredSamlServiceProviderList getRegisteredSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria);
+
+    /**
      * Creates a {@link SamlServiceProviderRegistration} registering a {@link RegisteredSamlServiceProvider} with this identity provider.
      * @param createSamlServiceProviderRegistrationRequest the {@link CreateSamlServiceProviderRegistrationRequest} which the creation of the {@link SamlServiceProviderRegistration} is based upon.
      *
@@ -164,8 +184,8 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      * the criteria DSL - most modern IDEs can auto-suggest and auto-complete as you type, allowing for an easy
      * query-building experience.  For example:
      * <pre>
-     * SamlIdentityProviders.getSamlServiceProviderRegistrations(SamlIdentityProviders.where(
-     *     SamlIdentityProviders.createdAt().equals("2016-01-01")
+     * samlIdentityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.where(
+     *     SamlServiceProviderRegistrations.createdAt().equals("2016-01-01")
      *     .offsetBy(20)
      *     .limitTo(25));
      * </pre>
@@ -174,7 +194,7 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the samlIdentityProvider's samlServiceProviderRegistrations that match the specified query criteria.
-     * @since 1.2.0
+     * @since 1.2.1
      */
     SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations(SamlServiceProviderRegistrationCriteria criteria);
 }

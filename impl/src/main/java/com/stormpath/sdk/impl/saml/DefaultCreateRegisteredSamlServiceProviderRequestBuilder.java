@@ -22,7 +22,7 @@ import com.stormpath.sdk.saml.RegisteredSamlServiceProvider;
 import com.stormpath.sdk.saml.RegisteredSamlServiceProviderOptions;
 
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 public class DefaultCreateRegisteredSamlServiceProviderRequestBuilder implements CreateRegisteredSamlServiceProviderRequestBuilder {
 

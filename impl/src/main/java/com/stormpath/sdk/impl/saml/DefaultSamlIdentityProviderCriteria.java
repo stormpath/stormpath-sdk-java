@@ -21,7 +21,7 @@ import com.stormpath.sdk.saml.SamlIdentityProviderCriteria;
 import com.stormpath.sdk.saml.SamlIdentityProviderOptions;
 
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 public class DefaultSamlIdentityProviderCriteria extends DefaultCriteria<SamlIdentityProviderCriteria, SamlIdentityProviderOptions> implements SamlIdentityProviderCriteria {
 

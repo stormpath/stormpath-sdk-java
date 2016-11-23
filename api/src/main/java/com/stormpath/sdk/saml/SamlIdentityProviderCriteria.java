@@ -24,8 +24,7 @@ import com.stormpath.sdk.query.Criteria;
  * <pre>
  * SamlIdentityProviders.where(SamlIdentityProviders.createdAt().eq("2016-01-01")...
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
-public interface SamlIdentityProviderCriteria extends Criteria<SamlIdentityProviderCriteria>,  SamlIdentityProviderOptions<SamlIdentityProviderCriteria>{
-    //todo: saml do we need to add some search criteria here? see PhoneCriteria
+public interface SamlIdentityProviderCriteria extends Criteria<SamlIdentityProviderCriteria>, SamlIdentityProviderOptions<SamlIdentityProviderCriteria> {
 }

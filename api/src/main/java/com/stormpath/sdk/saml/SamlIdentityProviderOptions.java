@@ -20,7 +20,7 @@ import com.stormpath.sdk.query.Options;
 /**
  * SamlIdentityProvider-specific options that may be specified when retrieving {@link SamlIdentityProvider} resources.
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
 public interface SamlIdentityProviderOptions<T> extends Options {
 

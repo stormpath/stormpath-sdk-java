@@ -20,7 +20,7 @@ package com.stormpath.sdk.saml;
  * Represents an attempt to create a new {@link SamlServiceProviderRegistration} record in Stormpath.
  *
  * @see com.stormpath.sdk.saml.SamlIdentityProvider#createSamlServiceProviderRegistration(CreateSamlServiceProviderRegistrationRequest)
- * @since 1.2.0
+ * @since 1.2.1
  */
 public interface CreateSamlServiceProviderRegistrationRequest {
 

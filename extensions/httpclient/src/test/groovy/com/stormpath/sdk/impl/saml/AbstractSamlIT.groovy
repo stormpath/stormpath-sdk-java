@@ -28,7 +28,7 @@ import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.assertNotNull
 import static org.testng.AssertJUnit.assertTrue
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 abstract class AbstractSamlIT extends ClientIT{
     public static String validX509Cert = '''-----BEGIN CERTIFICATE-----

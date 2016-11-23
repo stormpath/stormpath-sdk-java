@@ -25,9 +25,11 @@ import org.joda.time.format.ISODateTimeFormat
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 
+import static org.testng.Assert.assertNotEquals
+import static org.testng.Assert.assertNotNull
 import static org.testng.AssertJUnit.*
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 class SamlIdentityProviderIT extends AbstractSamlIT{
 
@@ -174,13 +176,13 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
     void identityProvidersShouldHaveRegisteredSamlServiceProvidersCollection() {
         def identityProvider = getNewSamlIdentityProviderForNewApplication()
         def identityProviderHref = identityProvider.href
-        assertNotNull(identityProvider.registeredSamlServiceProviders)
+        assertNotNull(identityProvider.getRegisteredSamlServiceProviders(RegisteredSamlServiceProviders.criteria().orderByDescription()))
         Options options = SamlIdentityProviders.options().withRegisteredSamlServiceProviders()
         identityProvider = client.getResource(identityProviderHref, SamlIdentityProvider, options)
 
         assertEquals(identityProviderHref, identityProvider.href)
 
-        def registeredSamlServiceProviders = identityProvider.registeredSamlServiceProviders
+        def registeredSamlServiceProviders = identityProvider.getRegisteredSamlServiceProviders(RegisteredSamlServiceProviders.criteria().orderByName())
         assertEquals(registeredSamlServiceProviders.href, identityProviderHref + "/registeredSamlServiceProviders")
 
         assertEquals(registeredSamlServiceProviders.offset, 0)
@@ -195,7 +197,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
     @Test
     void identityProvidersShouldHaveSamlServiceProviderRegistrationsCollection() {
         def identityProvider = getNewSamlIdentityProviderForNewApplication()
-        assertNotNull(identityProvider.samlServiceProviderRegistrations)
+        assertNotNull(identityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.criteria().orderByStatus()))
 
         def identityProviderHref = identityProvider.href
         Options options = SamlIdentityProviders.options().withSamlServiceProviderRegistrations()
@@ -203,7 +205,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
 
         assertEquals(identityProvider.href, identityProviderHref)
 
-        def samlServiceProviderRegistrations = identityProvider.samlServiceProviderRegistrations
+        def samlServiceProviderRegistrations = identityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.criteria().orderByDefaultRelayState())
         assertEquals(samlServiceProviderRegistrations.href, identityProviderHref + "/samlServiceProviderRegistrations")
 
         assertEquals(samlServiceProviderRegistrations.offset, 0)
@@ -432,23 +434,23 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
     }
 
     @Test
-    void testAuthNConsumptionAndValidation(){
-        // todo: saml implement this ?
-    }
-
-    @Test
-    void testAuthNConsumptionErrors() {
-        // todo: saml implement this ?
-    }
-
-    @Test(enabled = false)
-    void testUpdatingAlgorithmUpdatesCertificate() {
+    void testUpdatingAlgorithmUpdatesCertificateAndFingerprint() {
         def identityProvider = getNewSamlIdentityProviderForNewApplication()
-        def oldCertHref = identityProvider.getX509SigninCert().href
         assertNotNull(identityProvider.shaFingerprint)
-        def fingerprint = identityProvider.shaFingerprint
-        client.getResource(identityProvider.getX509SigninCert().href, com.stormpath.sdk.cert.X509SigningCert.class)
-        // todo: saml the above line fails, fix and continue implementing
+
+        def oldFingerprint = identityProvider.shaFingerprint
+        def oldCertHref = identityProvider.getX509SigninCert().href
+
+        identityProvider.setSignatureAlgorithm("RSA-SHA1").save()
+
+        identityProvider = client.getResource(identityProvider.href, SamlIdentityProvider)
+
+        assertNotEquals(oldFingerprint, identityProvider.shaFingerprint)
+        assertNotEquals(oldCertHref, identityProvider.getX509SigninCert().href)
+
+        def metedata = client.getResource(identityProvider.samlIdentityProviderMetadata.href, SamlIdentityProviderMetadata)
+
+        assertNotEquals(oldCertHref, metedata.getX509SigninCert().href)
     }
 
     @Test
@@ -511,23 +513,18 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         createAndGetAndAssertNewRegistration(registration)
 
         def registrationList = client.getResource(identityProviderHref + "/samlServiceProviderRegistrations", SamlServiceProviderRegistrationList)
-
         assertEquals(registrationList.size, 1)
 
         registrationList = identityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.where(SamlServiceProviderRegistrations.status().eq(SamlServiceProviderRegistrationStatus.ENABLED)))
-
         assertEquals(registrationList.size, 1)
 
         registrationList = identityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.where(SamlServiceProviderRegistrations.status().eq(SamlServiceProviderRegistrationStatus.DISABLED)))
-
         assertEquals(registrationList.size, 0)
 
         registrationList = identityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.where(SamlServiceProviderRegistrations.defaultRelayState().eq("aNice*")))
-
         assertEquals(registrationList.size, 1)
 
         registrationList = identityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.where(SamlServiceProviderRegistrations.defaultRelayState().eq("aNotNice*")))
-
         assertEquals(registrationList.size, 0)
     }
 }

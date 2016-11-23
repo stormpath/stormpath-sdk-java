@@ -21,7 +21,7 @@ import com.stormpath.sdk.saml.SamlServiceProviderRegistrationCriteria;
 import com.stormpath.sdk.saml.SamlServiceProviderRegistrationOptions;
 
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 public class DefaultSamlServiceProviderRegistrationCriteria extends DefaultCriteria<SamlServiceProviderRegistrationCriteria, SamlServiceProviderRegistrationOptions> implements SamlServiceProviderRegistrationCriteria {
 
@@ -39,5 +39,15 @@ public class DefaultSamlServiceProviderRegistrationCriteria extends DefaultCrite
     public SamlServiceProviderRegistrationCriteria withIdentityProvider() {
         getOptions().withIdentityProvider();
         return this;
+    }
+
+    @Override
+    public SamlServiceProviderRegistrationCriteria orderByStatus() {
+        return orderBy(DefaultSamlServiceProviderRegistration.STATUS);
+    }
+
+    @Override
+    public SamlServiceProviderRegistrationCriteria orderByDefaultRelayState() {
+        return orderBy(DefaultSamlServiceProviderRegistration.DEFAULT_RELAY_STATE);
     }
 }

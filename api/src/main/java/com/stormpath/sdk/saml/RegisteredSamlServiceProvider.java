@@ -24,7 +24,7 @@ import com.stormpath.sdk.tenant.Tenant;
 /**
  * A registeredSamlServiceProvider is associated with an {@link Tenant} and represents a service provider for Stormpath as an identity provider flow.
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
 public interface RegisteredSamlServiceProvider extends Resource, Saveable, Deletable, Auditable {
     /**

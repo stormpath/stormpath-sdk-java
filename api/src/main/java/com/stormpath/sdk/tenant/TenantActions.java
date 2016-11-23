@@ -446,7 +446,7 @@ public interface TenantActions {
      * @param registeredSamlServiceProvider {@link RegisteredSamlServiceProvider} pojo to hold necessary data to send to the back- end to create a {@link RegisteredSamlServiceProvider}.
      * @return the newly created {@link RegisteredSamlServiceProvider}.
      *
-     * @since 1.2.0
+     * @since 1.2.1
      */
     RegisteredSamlServiceProvider createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider registeredSamlServiceProvider) throws ResourceException;
 
@@ -455,7 +455,7 @@ public interface TenantActions {
      *
      * @return a paginated list of all the registeredSamlServiceProvider that belonging to this Tenant.
      *
-     * @since 1.2.0
+     * @since 1.2.1
      */
     RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders();
 
@@ -473,7 +473,7 @@ public interface TenantActions {
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the account's phones that match the specified query criteria.
-     * @since 1.2.0
+     * @since 1.2.1
      */
     RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria);
 }

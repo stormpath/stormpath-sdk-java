@@ -23,7 +23,7 @@ import com.stormpath.sdk.resource.Saveable;
 /**
  * A SamlServiceProviderRegistration represents the link between a {@link SamlIdentityProvider} and a {@link RegisteredSamlServiceProvider}
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
 public interface SamlServiceProviderRegistration extends Resource, Saveable, Deletable, Auditable {
     /**

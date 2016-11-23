@@ -25,8 +25,27 @@ import com.stormpath.sdk.query.Criteria;
  * <pre>
  * SamlServiceProviderRegistrations.where(SamlServiceProviderRegistrations.createdAt().eq("2016-01-01")...
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
 public interface SamlServiceProviderRegistrationCriteria extends Criteria<SamlServiceProviderRegistrationCriteria>,  SamlServiceProviderRegistrationOptions<SamlServiceProviderRegistrationCriteria>{
-    //todo: saml do we need to add some search criteria here? see PhoneCriteria
+
+    /**
+     * Ensures that the query results are ordered by group {@link SamlServiceProviderRegistration#getStatus() status}.
+     * <p/>
+     * Please see the {@link SamlServiceProviderRegistrationCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
+    SamlServiceProviderRegistrationCriteria orderByStatus();
+
+    /**
+     * Ensures that the query results are ordered by group {@link SamlServiceProviderRegistration#getDefaultRelayState() defaultRelayState}.
+     * <p/>
+     * Please see the {@link SamlServiceProviderRegistrationCriteria class-level documentation} for controlling sort order (ascending or
+     * descending) and chaining multiple {@code orderBy} clauses.
+     *
+     * @return this instance for method chaining
+     */
+    SamlServiceProviderRegistrationCriteria orderByDefaultRelayState();
 }

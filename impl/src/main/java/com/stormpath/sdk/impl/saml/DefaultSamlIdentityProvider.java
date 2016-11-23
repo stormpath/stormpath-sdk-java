@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 public class DefaultSamlIdentityProvider extends AbstractInstanceResource implements SamlIdentityProvider {
 
@@ -136,6 +136,12 @@ public class DefaultSamlIdentityProvider extends AbstractInstanceResource implem
     @Override
     public RegisteredSamlServiceProviderList getRegisteredSamlServiceProviders() {
         return getResourceProperty(REGISTERED_SAML_SERVICE_PROVIDERS);
+    }
+
+    @Override
+    public RegisteredSamlServiceProviderList getRegisteredSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria) {
+        RegisteredSamlServiceProviderList proxy = getRegisteredSamlServiceProviders(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), RegisteredSamlServiceProviderList.class, (Criteria<RegisteredSamlServiceProviderCriteria>) criteria);
     }
 
     @Override

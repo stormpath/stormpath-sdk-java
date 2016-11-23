@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.saml.RegisteredSamlServiceProviderOptions;
 
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 public class DefaultRegisteredSamlServiceProviderOptions extends DefaultOptions<RegisteredSamlServiceProviderOptions> implements RegisteredSamlServiceProviderOptions<RegisteredSamlServiceProviderOptions> {
 

@@ -25,7 +25,7 @@ import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList;
 import java.util.Map;
 
 /**
- * @since 1.2.0
+ * @since 1.2.1
  */
 public class DefaultRegisteredSamlServiceProviderList extends AbstractCollectionResource<RegisteredSamlServiceProvider> implements RegisteredSamlServiceProviderList {
 

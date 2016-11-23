@@ -47,7 +47,7 @@ import com.stormpath.sdk.query.Criteria;
  *     ...
  * </pre>
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
 public interface RegisteredSamlServiceProviderCriteria extends Criteria<RegisteredSamlServiceProviderCriteria>,  RegisteredSamlServiceProviderOptions<RegisteredSamlServiceProviderCriteria>{
 

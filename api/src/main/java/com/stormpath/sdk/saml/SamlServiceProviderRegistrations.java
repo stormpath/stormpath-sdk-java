@@ -34,7 +34,7 @@ import java.lang.reflect.Constructor;
  *     .limitTo(25));
  * </pre>
  *
- * @since 1.2.0
+ * @since 1.2.1
  */
 public class SamlServiceProviderRegistrations {
     private static final Class<CreateSamlServiceProviderRegistrationRequestBuilder> BUILDER_CLASS =
@@ -201,7 +201,7 @@ public class SamlServiceProviderRegistrations {
      * @return a new {@link com.stormpath.sdk.saml.CreateSamlServiceProviderRegistrationRequestBuilder createSamlServiceProviderRegistrationRequestBuilder}
      *         instance reflecting the specified {@link com.stormpath.sdk.saml.SamlServiceProviderRegistration} instance.
      *
-     * @since 1.2.0
+     * @since 1.2.1
      */
     public static CreateSamlServiceProviderRegistrationRequestBuilder newCreateRequestFor(SamlServiceProviderRegistration samlServiceProviderRegistration) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, SamlServiceProviderRegistration.class);

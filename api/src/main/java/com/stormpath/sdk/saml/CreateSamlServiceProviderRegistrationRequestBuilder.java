@@ -19,7 +19,7 @@ package com.stormpath.sdk.saml;
  * A Builder to construct {@link CreateSamlServiceProviderRegistrationRequest}s.
  *
  * @see com.stormpath.sdk.saml.SamlIdentityProvider#createSamlServiceProviderRegistration(CreateSamlServiceProviderRegistrationRequest)
- * @since 1.2.0
+ * @since 1.2.1
  */
 public interface CreateSamlServiceProviderRegistrationRequestBuilder {
 
