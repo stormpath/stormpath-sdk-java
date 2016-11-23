@@ -39,6 +39,7 @@ import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.*;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -962,4 +963,11 @@ public interface Account extends Resource, Saveable, Deletable, Extendable, Audi
      * @since 1.1.0
      */
     AccountLinkList getAccountLinks(AccountLinkCriteria criteria);
+
+    /**
+     * Returns the date the last time this Account's password has been modified.
+     * @return the date the last time this Account's password has been modified.
+     * @since 1.2.0
+     */
+    Date getPasswordModifiedAt();
 }

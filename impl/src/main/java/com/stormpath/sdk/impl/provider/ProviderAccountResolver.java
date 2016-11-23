@@ -20,6 +20,11 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import static com.stormpath.sdk.lang.Strings.hasText;
+
 /**
  * Executes the actual attempt to access a Provider-based Account.
  *
@@ -40,9 +45,18 @@ public class ProviderAccountResolver {
         Assert.notNull(request.getProviderData(), "request's providerData must be specified");
 
         ProviderAccountAccess providerAccountAccess = new DefaultProviderAccountAccess(this.dataStore);
+        //noinspection unchecked
         providerAccountAccess.setProviderData(request.getProviderData());
         String href = parentHref + "/accounts";
-
+        String redirectUri = request.getRedirectUri();
+        if (hasText(redirectUri)) {
+            try {
+                href += "?redirectUri=" + URLEncoder.encode(redirectUri, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                // should never happen
+                throw new IllegalStateException(e);
+            }
+        }
         return this.dataStore.create(href, providerAccountAccess, ProviderAccountResult.class);
     }
 

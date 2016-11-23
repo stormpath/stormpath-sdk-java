@@ -29,9 +29,9 @@ public class IDSiteRegisterFilterFactory extends IDSiteFilterFactory {
     }
 
     @Override
-    public void doConfigure(IdSiteController c, Config config) {
-        c.setIdSiteUri(config.get("stormpath.web.idSite.registerUri"));
-        c.setNextUri(config.get("stormpath.web.register.nextUri"));
+    public void doConfigure(IdSiteController controller, Config config) {
+        controller.setIdSiteUri(config.get("stormpath.web.idSite.registerUri"));
+        controller.setNextUri(config.get("stormpath.web.register.nextUri"));
     }
 
 }

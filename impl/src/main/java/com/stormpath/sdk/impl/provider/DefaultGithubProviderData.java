@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.GithubProviderData;
 
 import java.util.Map;
@@ -25,12 +24,9 @@ import java.util.Map;
 /**
  * @since 1.0.0
  */
-public class DefaultGithubProviderData extends AbstractProviderData implements GithubProviderData {
+public class DefaultGithubProviderData extends AbstractProviderData<GithubProviderData> implements GithubProviderData {
 
-    // SIMPLE PROPERTIES
-    static final StringProperty ACCESS_TOKEN = new StringProperty("accessToken");
-
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN, CODE);
 
     public DefaultGithubProviderData(InternalDataStore dataStore) {
         super(dataStore);
@@ -43,16 +39,6 @@ public class DefaultGithubProviderData extends AbstractProviderData implements G
     @Override
     public Map<String, Property> getPropertyDescriptors() {
         return PROPERTY_DESCRIPTORS;
-    }
-
-    @Override
-    public String getAccessToken() {
-        return getString(ACCESS_TOKEN);
-    }
-
-    public GithubProviderData setAccessToken(String accessToken) {
-        setProperty(ACCESS_TOKEN, accessToken);
-        return this;
     }
 
     @Override

@@ -16,7 +16,9 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.oauth.AccessToken;
+import com.stormpath.sdk.oauth.GrantAuthenticationToken;
+import com.stormpath.sdk.oauth.RefreshToken;
 
 /**
  * @since 1.0.RC7
@@ -36,8 +38,6 @@ public class DefaultOAuthGrantRequestAuthenticationResultBuilder implements OAut
     protected String tokenType;
 
     protected long expiresIn;
-
-    protected Boolean isRefreshGrantAuthRequest = false;
 
     protected GrantAuthenticationToken grantAuthenticationToken;
 
@@ -75,12 +75,6 @@ public class DefaultOAuthGrantRequestAuthenticationResultBuilder implements OAut
     }
 
     @Override
-    public OAuthGrantRequestAuthenticationResultBuilder setIsRefreshAuthGrantRequest(Boolean isRefreshAuthGrantRequest) {
-        this.isRefreshGrantAuthRequest = isRefreshAuthGrantRequest;
-        return this;
-    }
-
-    @Override
     public DefaultOAuthGrantRequestAuthenticationResult build() {
         Assert.notNull(this.grantAuthenticationToken, "grantAuthenticationToken has not been set. It is a required attribute.");
 
@@ -91,7 +85,7 @@ public class DefaultOAuthGrantRequestAuthenticationResultBuilder implements OAut
         this.tokenType = grantAuthenticationToken.getTokenType();
         this.expiresIn = Integer.parseInt(grantAuthenticationToken.getExpiresIn());
 
-        if (isRefreshGrantAuthRequest){
+        if (refreshTokenString != null) {
             this.refreshToken = grantAuthenticationToken.getAsRefreshToken();
         }
         return new DefaultOAuthGrantRequestAuthenticationResult(this);

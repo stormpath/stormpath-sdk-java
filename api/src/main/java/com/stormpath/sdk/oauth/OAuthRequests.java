@@ -72,4 +72,10 @@ public final class OAuthRequests {
      */
     public static final OAuthClientCredentialsGrantRequestAuthenticationFactory OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST = (OAuthClientCredentialsGrantRequestAuthenticationFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthenticationFactory");
 
+    /**
+     * Returns a new {@link OAuthTokenRevocationRequestFactory} instance, used to construct OAuth Token Revocation Requests.
+     *
+     * @since 1.2.0
+     */
+    public static final OAuthTokenRevocationRequestFactory OAUTH_TOKEN_REVOCATION_REQUEST = (OAuthTokenRevocationRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocationRequestFactory");
 }

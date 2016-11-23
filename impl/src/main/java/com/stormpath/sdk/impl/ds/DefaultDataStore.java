@@ -41,6 +41,7 @@ import com.stormpath.sdk.impl.http.Response;
 import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
+import com.stormpath.sdk.impl.oauth.OAuthTokenRevoked;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractResource;
@@ -168,7 +169,7 @@ public class DefaultDataStore implements InternalDataStore {
 
         if (isCachingEnabled()) {
             this.filters.add(new ReadCacheFilter(this.baseUrlResolver, this.cacheResolver, COLLECTION_CACHING_ENABLED));
-            this.filters.add(new WriteCacheFilter(this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
+            this.filters.add(new WriteCacheFilter(this.baseUrlResolver, this.cacheResolver, COLLECTION_CACHING_ENABLED, referenceFactory));
         }
 
         if(clientCredentials instanceof ApiKeyCredentials) {
@@ -451,6 +452,8 @@ public class DefaultDataStore implements InternalDataStore {
                 if (Collections.isEmpty(responseBody)) {
                     // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/218
                     if ( response.getHttpStatus() == 202 ) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
+                        responseBody = java.util.Collections.emptyMap();
+                    } else if(response.getHttpStatus() == 200 && OAuthTokenRevoked.class.isAssignableFrom(returnType)) {
                         responseBody = java.util.Collections.emptyMap();
                     } else {
                         throw new IllegalStateException("Unable to obtain resource data from the API server.");

@@ -35,12 +35,12 @@ public class ChangePasswordFilterFactory extends FormControllerFilterFactory<Cha
     }
 
     @Override
-    protected void doConfigure(ChangePasswordController c, Config config) {
-        c.setForgotPasswordUri(config.getForgotPasswordConfig().getUri());
-        c.setLoginUri(config.getLoginConfig().getUri());
-        c.setLoginNextUri(config.getLoginConfig().getNextUri());
-        c.setErrorUri(config.getChangePasswordConfig().getErrorUri());
-        c.setAutoLogin(config.getChangePasswordConfig().isAutoLogin());
-        c.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
+    protected void doConfigure(ChangePasswordController controller, Config config) {
+        controller.setForgotPasswordUri(config.getForgotPasswordConfig().getUri());
+        controller.setLoginUri(config.getLoginConfig().getUri());
+        controller.setLoginNextUri(config.getLoginConfig().getNextUri());
+        controller.setErrorUri(config.getChangePasswordConfig().getErrorUri());
+        controller.setAutoLogin(config.getChangePasswordConfig().isAutoLogin());
+        controller.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
     }
 }

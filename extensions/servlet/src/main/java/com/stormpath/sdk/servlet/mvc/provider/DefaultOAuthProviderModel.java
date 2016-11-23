@@ -18,21 +18,41 @@ package com.stormpath.sdk.servlet.mvc.provider;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.OAuthProvider;
 
+import java.util.List;
+
 /**
  * @since 1.0.0
  */
 public class DefaultOAuthProviderModel extends DefaultProviderModel implements OAuthProviderModel {
 
     private final String clientId;
+    private final String scope;
 
     public DefaultOAuthProviderModel(OAuthProvider provider) {
         super(provider);
         this.clientId = provider.getClientId();
         Assert.hasText(this.clientId, "provider clientId cannot be null or empty.");
+        this.scope = toScopeString(provider.getScope());
     }
 
     @Override
     public String getClientId() {
         return this.clientId;
     }
+
+    @Override
+    public String getScope() {
+        return scope;
+    }
+
+    private static String toScopeString(List<String> scopeList) {
+        if (scopeList == null) {
+            return null;
+        }
+        String scope = scopeList.toString();
+        scope = scope.replaceAll("[\\s\\[\\]]", "");
+        scope = scope.replaceAll(",", " ");
+        return scope;
+    }
+
 }

@@ -15,17 +15,15 @@
  */
 package com.stormpath.sdk.impl.provider;
 
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.GithubAccountRequestBuilder;
-import com.stormpath.sdk.provider.ProviderAccountRequest;
+import com.stormpath.sdk.provider.ProviderData;
 
 import java.util.Map;
 
 /**
  * @since 1.0.0
  */
-public class DefaultGithubAccountRequestBuilder extends AbstractProviderAccountRequestBuilder<GithubAccountRequestBuilder> implements GithubAccountRequestBuilder {
+public class DefaultGithubAccountRequestBuilder extends AbstractSocialProviderAccountRequestBuilder<GithubAccountRequestBuilder> implements GithubAccountRequestBuilder {
 
     @Override
     protected String getConcreteProviderId() {
@@ -33,13 +31,7 @@ public class DefaultGithubAccountRequestBuilder extends AbstractProviderAccountR
     }
 
     @Override
-    protected ProviderAccountRequest doBuild(Map<String, Object> map) {
-        Assert.state(Strings.hasText(super.accessToken), "accessToken is a required property. It must be provided before building.");
-
-        DefaultGithubProviderData providerData = new DefaultGithubProviderData(null, map);
-
-        providerData.setAccessToken(super.accessToken);
-
-        return new DefaultProviderAccountRequest(providerData);
+    protected ProviderData newProviderData(Map<String, Object> properties) {
+        return new DefaultGithubProviderData(null, properties);
     }
 }

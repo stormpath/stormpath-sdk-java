@@ -40,7 +40,7 @@ import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
-import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -205,5 +205,5 @@ public interface Config extends Map<String, String> {
     /**
      * @since 1.2.0
      */
-    GrantTypeStatusValidator getGrantTypeStatusValidator();
+    GrantTypeValidator getGrantTypeStatusValidator();
 }

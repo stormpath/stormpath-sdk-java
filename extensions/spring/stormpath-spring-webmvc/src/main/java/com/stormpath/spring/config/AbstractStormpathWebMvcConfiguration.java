@@ -99,7 +99,36 @@ import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.idsite.DefaultIdSiteOrganizationResolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
-import com.stormpath.sdk.servlet.mvc.*;
+import com.stormpath.sdk.servlet.mvc.AbstractController;
+import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
+import com.stormpath.sdk.servlet.mvc.AccessTokenController;
+import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
+import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
+import com.stormpath.sdk.servlet.mvc.Controller;
+import com.stormpath.sdk.servlet.mvc.DefaultExpandsResolver;
+import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
+import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
+import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
+import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
+import com.stormpath.sdk.servlet.mvc.FormController;
+import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
+import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
+import com.stormpath.sdk.servlet.mvc.JacksonView;
+import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.LogoutController;
+import com.stormpath.sdk.servlet.mvc.MeController;
+import com.stormpath.sdk.servlet.mvc.RegisterController;
+import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
+import com.stormpath.sdk.servlet.mvc.SamlController;
+import com.stormpath.sdk.servlet.mvc.SamlResultController;
+import com.stormpath.sdk.servlet.mvc.VerifyController;
+import com.stormpath.sdk.servlet.mvc.View;
+import com.stormpath.sdk.servlet.mvc.ViewModel;
+import com.stormpath.sdk.servlet.mvc.ViewResolver;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
@@ -111,8 +140,25 @@ import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
 import com.stormpath.sdk.servlet.saml.DefaultSamlOrganizationResolver;
 import com.stormpath.sdk.servlet.saml.SamlOrganizationContext;
-import com.stormpath.sdk.servlet.util.*;
-import com.stormpath.spring.mvc.*;
+import com.stormpath.sdk.servlet.util.DefaultGrantTypeValidator;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
+import com.stormpath.sdk.servlet.util.IsLocalhostResolver;
+import com.stormpath.sdk.servlet.util.RemoteAddrResolver;
+import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
+import com.stormpath.sdk.servlet.util.SubdomainResolver;
+import com.stormpath.spring.mvc.AccessTokenControllerConfig;
+import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
+import com.stormpath.spring.mvc.DisabledHandlerMapping;
+import com.stormpath.spring.mvc.ForgotPasswordControllerConfig;
+import com.stormpath.spring.mvc.LoginControllerConfig;
+import com.stormpath.spring.mvc.LogoutControllerConfig;
+import com.stormpath.spring.mvc.MessageContextRegistrar;
+import com.stormpath.spring.mvc.RegisterControllerConfig;
+import com.stormpath.spring.mvc.SingleNamedViewResolver;
+import com.stormpath.spring.mvc.SpringMessageSource;
+import com.stormpath.spring.mvc.SpringView;
+import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
+import com.stormpath.spring.mvc.VerifyControllerConfig;
 import com.stormpath.spring.util.SpringPatternMatcher;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
@@ -160,7 +206,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -922,6 +967,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setLogoutUri(stormpathLogoutConfig().getUri());
         c.setApplicationResolver(stormpathApplicationResolver());
         c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
+        c.setAccountStoreModelFactory(stormpathAccountStoreModelFactory());
         c.setPreLoginHandler(loginPreHandler);
         c.setPostLoginHandler(loginPostHandler);
         c.setIdSiteEnabled(idSiteEnabled);
@@ -1119,7 +1165,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setAccountSaver(stormpathAuthenticationResultSaver());
         c.setRequestAuthorizer(stormpathAccessTokenRequestAuthorizer());
         c.setBasicAuthenticationScheme(stormpathBasicAuthenticationScheme());
-        c.setGrantTypeStatusValidator(stormpathGrantTypeStatusValidator());
+        c.setGrantTypeValidator(stormpathGrantTypeStatusValidator());
 
         return init(c);
     }
@@ -1127,10 +1173,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     /**
      * @since 1.2.0
      */
-    public GrantTypeStatusValidator stormpathGrantTypeStatusValidator() {
+    public GrantTypeValidator stormpathGrantTypeStatusValidator() {
         AccessTokenControllerConfig config = stormpathAccessTokenConfig();
 
-        DefaultGrantTypeStatusValidator grantTypeStatusValidator = new DefaultGrantTypeStatusValidator();
+        DefaultGrantTypeValidator grantTypeStatusValidator = new DefaultGrantTypeValidator();
         grantTypeStatusValidator.setClientCredentialsGrantTypeEnabled(config.isClientCredentialsGrantTypeEnabled());
         grantTypeStatusValidator.setPasswordGrantTypeEnabled(config.isPasswordGrantTypeEnabled());
 
@@ -1250,19 +1296,19 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setProduces(stormpathProducedMediaTypes());
     }
 
-    private <T extends FormController> T configure(T c, ControllerConfig cr) {
-        configure(c);
-        c.setUri(cr.getUri());
-        c.setNextUri(cr.getNextUri());
-        c.setView(cr.getView());
-        c.setControllerKey(cr.getControllerKey());
-        c.setCsrfTokenManager(stormpathCsrfTokenManager());
-        c.setFieldValueResolver(stormpathFieldValueResolver());
+    private <T extends FormController> T configure(T controller, ControllerConfig cr) {
+        configure(controller);
+        controller.setUri(cr.getUri());
+        controller.setNextUri(cr.getNextUri());
+        controller.setView(cr.getView());
+        controller.setControllerKey(cr.getControllerKey());
+        controller.setCsrfTokenManager(stormpathCsrfTokenManager());
+        controller.setFieldValueResolver(stormpathFieldValueResolver());
         List<Field> fields = cr.getFormFields();
         if (!Collections.isEmpty(fields)) { //might be empty if the fields are static / configured within the controller
-            c.setFormFields(fields);
+            controller.setFormFields(fields);
         }
-        return c;
+        return controller;
     }
 
     private <T extends AbstractSocialCallbackController> T configure(T c) {

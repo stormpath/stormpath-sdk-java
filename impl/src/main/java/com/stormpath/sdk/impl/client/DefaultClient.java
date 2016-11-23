@@ -39,6 +39,8 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.http.RequestExecutor;
 import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.tenant.DefaultTenantResolver;
+import com.stormpath.sdk.impl.tenant.TenantResolver;
 import com.stormpath.sdk.impl.util.BaseUrlResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
@@ -68,23 +70,22 @@ public class DefaultClient implements Client {
 
     private final DataStore dataStore;
 
-    private String currentTenantHref;
+    private TenantResolver tenantResolver;
 
     /**
      * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
      * JavaDoc for a usage example.
      *
-     * @param clientCredentials the Stormpath account credentials that will be used to authenticate the client with
+     * @param clientCredentials    the Stormpath account credentials that will be used to authenticate the client with
      *                             Stormpath's API server
-     * @param apiKeyResolver    Stormpath API Key resolver
-     * @param baseUrlResolver   Stormpath base URL resolver
+     * @param apiKeyResolver       Stormpath API Key resolver
+     * @param baseUrlResolver      Stormpath base URL resolver
      * @param proxy                the HTTP proxy to be used when communicating with the Stormpath API server (can be
      *                             null)
      * @param cacheManager         the {@link com.stormpath.sdk.cache.CacheManager} that should be used to cache
      *                             Stormpath REST resources (can be null)
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API
      *                             server (can be null)
-     *
      * @since 1.2.0
      */
     public DefaultClient(ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, BaseUrlResolver baseUrlResolver, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
@@ -92,8 +93,37 @@ public class DefaultClient implements Client {
         Assert.notNull(apiKeyResolver, "apiKeyResolver argument cannot be null.");
         Assert.notNull(baseUrlResolver, "baseUrlResolver argument cannot be null.");
         Assert.isTrue(connectionTimeout >= 0, "connectionTimeout cannot be a negative number.");
-        RequestExecutor requestExecutor = createRequestExecutor(clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory,connectionTimeout);
+        RequestExecutor requestExecutor = createRequestExecutor(clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory, connectionTimeout);
         this.dataStore = createDataStore(requestExecutor, baseUrlResolver, clientCredentials, apiKeyResolver, cacheManager);
+        this.tenantResolver = new DefaultTenantResolver(dataStore);
+    }
+
+    /**
+     * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
+     * JavaDoc for a usage example.
+     *
+     * @param clientCredentials    the Stormpath account credentials that will be used to authenticate the client with
+     *                             Stormpath's API server
+     * @param apiKeyResolver       Stormpath API Key resolver
+     * @param baseUrlResolver      Stormpath base URL resolver
+     * @param proxy                the HTTP proxy to be used when communicating with the Stormpath API server (can be
+     *                             null)
+     * @param cacheManager         the {@link com.stormpath.sdk.cache.CacheManager} that should be used to cache
+     *                             Stormpath REST resources (can be null)
+     * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API
+     *                             server (can be null)
+     * @param tenantResolver       resolver which returns current tenant details
+     * @since 1.2.0
+     */
+    public DefaultClient(ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, BaseUrlResolver baseUrlResolver, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout, TenantResolver tenantResolver) {
+        Assert.notNull(clientCredentials, "clientCredentials argument cannot be null.");
+        Assert.notNull(apiKeyResolver, "apiKeyResolver argument cannot be null.");
+        Assert.notNull(baseUrlResolver, "baseUrlResolver argument cannot be null.");
+        Assert.isTrue(connectionTimeout >= 0, "connectionTimeout cannot be a negative number.");
+        Assert.notNull(tenantResolver, "tenantResolver argument cannot be null.");
+        RequestExecutor requestExecutor = createRequestExecutor(clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory, connectionTimeout);
+        this.dataStore = createDataStore(requestExecutor, baseUrlResolver, clientCredentials, apiKeyResolver, cacheManager);
+        this.tenantResolver = tenantResolver;
     }
 
     /**
@@ -105,13 +135,7 @@ public class DefaultClient implements Client {
 
     @Override
     public Tenant getCurrentTenant() {
-        String href = currentTenantHref;
-        if (href == null) {
-            href = "/tenants/current";
-        }
-        Tenant current = this.dataStore.getResource(href, Tenant.class);
-        this.currentTenantHref = current.getHref();
-        return current;
+        return this.tenantResolver.getCurrentTenant();
     }
 
     @Override
@@ -426,14 +450,7 @@ public class DefaultClient implements Client {
      */
     @Override
     public Tenant getCurrentTenant(TenantOptions tenantOptions) {
-        String href = currentTenantHref;
-        if (href == null) {
-            href = "/tenants/current";
-        }
-
-        Tenant current = this.dataStore.getResource(href, Tenant.class, tenantOptions);
-        this.currentTenantHref = current.getHref();
-        return current;
+        return this.tenantResolver.getCurrentTenant(tenantOptions);
     }
 
     /**

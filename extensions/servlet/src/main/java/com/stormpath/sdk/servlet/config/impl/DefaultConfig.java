@@ -53,8 +53,8 @@ import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
-import com.stormpath.sdk.servlet.util.DefaultGrantTypeStatusValidator;
-import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator;
+import com.stormpath.sdk.servlet.util.DefaultGrantTypeValidator;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
 
 import javax.servlet.ServletContext;
@@ -84,6 +84,7 @@ public class DefaultConfig implements Config {
 
     protected static final String SERVER_URI_RESOLVER = "stormpath.web.oauth2.origin.authorizer.serverUriResolver";
     protected static final String IDSITE_ORGANIZATION_RESOLVER_FACTORY = "stormpath.web.idSite.OrganizationResolverFactory";
+    private static final String PROVIDER_ACCOUNT_REQUEST_RESOLVER = "";
 
     public static final String WEB_APPLICATION_DOMAIN = "stormpath.web.application.domain";
 
@@ -290,7 +291,7 @@ public class DefaultConfig implements Config {
 
     @Override
     public List<String> getMeExpandedProperties() {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
 
         Pattern pattern = Pattern.compile("^stormpath\\.web\\.me\\.expand\\.(\\w+)$");
 
@@ -408,7 +409,7 @@ public class DefaultConfig implements Config {
         Map<String, Class<T>> classes =
             new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
 
-        Map<String, T> instances = new LinkedHashMap<String, T>(classes.size());
+        Map<String, T> instances = new LinkedHashMap<>(classes.size());
 
         for (Map.Entry<String, Class<T>> entry : classes.entrySet()) {
 
@@ -634,15 +635,12 @@ public class DefaultConfig implements Config {
         return CFG.getBoolean(STORMPATH_WEB_CORS_ENABLED);
     }
 
-    /**
-     * @since 1.2.0
-     */
     @Override
-    public GrantTypeStatusValidator getGrantTypeStatusValidator() {
+    public GrantTypeValidator getGrantTypeStatusValidator() {
         boolean clientCredentialsEnabled = CFG.getString(CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED) == null || CFG.getBoolean(CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED);
         boolean passwordEnabled = CFG.getString(PASSWORD_GRANT_TYPE_ENABLED) == null || CFG.getBoolean(PASSWORD_GRANT_TYPE_ENABLED);
 
-        DefaultGrantTypeStatusValidator validator = new DefaultGrantTypeStatusValidator();
+        DefaultGrantTypeValidator validator = new DefaultGrantTypeValidator();
         validator.setClientCredentialsGrantTypeEnabled(clientCredentialsEnabled);
         validator.setPasswordGrantTypeEnabled(passwordEnabled);
         return validator;

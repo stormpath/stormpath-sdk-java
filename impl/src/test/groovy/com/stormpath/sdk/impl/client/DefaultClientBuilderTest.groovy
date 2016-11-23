@@ -8,13 +8,20 @@ import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
 import com.stormpath.sdk.impl.cache.DefaultCache
+import com.stormpath.sdk.impl.tenant.TenantResolver
 import com.stormpath.sdk.impl.util.BaseUrlResolver
 import com.stormpath.sdk.lang.Duration
+import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.tenant.TenantOptions
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
 import java.util.concurrent.TimeUnit
 
+import static org.easymock.EasyMock.createStrictMock
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.easymock.EasyMock.verify
 import static org.testng.Assert.assertTrue
 import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.fail
@@ -90,6 +97,28 @@ class DefaultClientBuilderTest {
     @Test
     void testDefaultBaseUrlResolver(){
         assertEquals(client.dataStore.baseUrlResolver.getBaseUrl(), "https://api.stormpath.com/v42")
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testConfigureTenantResolver(){
+        def tenant = createStrictMock(Tenant)
+        def tenantOptions = createStrictMock(TenantOptions)
+        def tenantResolver = createStrictMock(TenantResolver)
+
+        expect(tenantResolver.getCurrentTenant()).andReturn(tenant)
+        expect(tenantResolver.getCurrentTenant(tenantOptions)).andReturn(tenant)
+
+        replay(tenantResolver)
+
+        def testClient = new DefaultClientBuilder().setTenantResolver(tenantResolver).build()
+
+        assertEquals(testClient.getCurrentTenant(), tenant)
+        assertEquals(testClient.getCurrentTenant(tenantOptions), tenant)
+
+        verify(tenantResolver)
     }
 }
 

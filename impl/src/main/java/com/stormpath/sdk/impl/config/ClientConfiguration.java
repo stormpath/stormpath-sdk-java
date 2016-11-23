@@ -4,6 +4,7 @@ import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.impl.tenant.TenantResolver;
 import com.stormpath.sdk.impl.util.BaseUrlResolver;
 
 import java.util.LinkedHashMap;
@@ -37,6 +38,7 @@ public class ClientConfiguration {
     private String proxyUsername;
     private String proxyPassword;
     private BaseUrlResolver baseUrlResolver;
+    private TenantResolver tenantResolver;
 
     public String getApiKeyFile() {
         return apiKeyFile;
@@ -209,6 +211,20 @@ public class ClientConfiguration {
      */
     public void setBaseUrlResolver(BaseUrlResolver baseUrlResolver) {
         this.baseUrlResolver = baseUrlResolver;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public TenantResolver getTenantResolver() {
+        return tenantResolver;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public void setTenantResolver(TenantResolver tenantResolver) {
+        this.tenantResolver = tenantResolver;
     }
 
     @Override

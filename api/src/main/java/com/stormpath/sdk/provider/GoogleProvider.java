@@ -22,4 +22,9 @@ package com.stormpath.sdk.provider;
  */
 public interface GoogleProvider extends RedirectableOAuthProvider {
 
+    String getHd();
+
+    GoogleProviderDisplay getDisplay();
+
+    GoogleProviderAccessType getAccessType();
 }

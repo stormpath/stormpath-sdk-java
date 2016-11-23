@@ -35,12 +35,12 @@ public class VerifyFilterFactory extends FormControllerFilterFactory<VerifyContr
     }
 
     @Override
-    protected void doConfigure(VerifyController c, Config config) {
-        c.setLoginUri(config.getLoginConfig().getUri());
-        c.setLoginNextUri(config.getLoginConfig().getNextUri());
-        c.setClient(config.getClient());
-        c.setAutoLogin(config.isRegisterAutoLoginEnabled());
-        c.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
-        c.setAccountStoreResolver(config.getAccountStoreResolver());
+    protected void doConfigure(VerifyController controller, Config config) {
+        controller.setLoginUri(config.getLoginConfig().getUri());
+        controller.setLoginNextUri(config.getLoginConfig().getNextUri());
+        controller.setClient(config.getClient());
+        controller.setAutoLogin(config.isRegisterAutoLoginEnabled());
+        controller.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
+        controller.setAccountStoreResolver(config.getAccountStoreResolver());
     }
 }

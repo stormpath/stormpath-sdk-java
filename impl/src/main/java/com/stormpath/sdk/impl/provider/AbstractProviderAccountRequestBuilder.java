@@ -29,9 +29,12 @@ import java.util.Map;
  *
  * @since 1.0.beta
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractProviderAccountRequestBuilder<T extends ProviderAccountRequestBuilder<T>> implements ProviderAccountRequestBuilder<T> {
 
     protected String accessToken;
+    protected String code;
+    protected String redirectUri;
 
     @Override
     public T setAccessToken(String accessToken) {
@@ -40,11 +43,23 @@ public abstract class AbstractProviderAccountRequestBuilder<T extends ProviderAc
     }
 
     @Override
+    public T setCode(String code) {
+        this.code = code;
+        return (T) this;
+    }
+
+    @Override
+    public T setRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
+        return (T) this;
+    }
+
+    @Override
     public ProviderAccountRequest build() {
         final String providerId = getConcreteProviderId();
         Assert.state(Strings.hasText(providerId), "The providerId property is missing.");
 
-        Map<String, Object> properties = new LinkedHashMap<String, Object>();
+        Map<String, Object> properties = new LinkedHashMap<>();
         properties.put("providerId", providerId);
 
         return doBuild(Collections.unmodifiableMap(properties));

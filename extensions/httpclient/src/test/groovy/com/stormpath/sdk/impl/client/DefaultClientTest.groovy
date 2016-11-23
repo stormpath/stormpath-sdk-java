@@ -41,8 +41,10 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
+import com.stormpath.sdk.impl.tenant.TenantResolver
 import com.stormpath.sdk.impl.util.BaseUrlResolver
 import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.tenant.TenantOptions
 import org.apache.http.client.params.AllClientPNames
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
@@ -258,12 +260,12 @@ class DefaultClientTest {
     @Test
     void testTenantActions() {
 
-        def apiKey = createStrictMock(ApiKey)
         def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def apiKeyResolver = createStrictMock(ApiKeyResolver)
 
         def dataStore = createStrictMock(DataStore)
         def baseUrlResolver = createStrictMock(BaseUrlResolver)
+        def tenantResolver = createStrictMock(TenantResolver)
 
         def tenant = createStrictMock(Tenant)
         def application = createStrictMock(Application)
@@ -280,68 +282,47 @@ class DefaultClientTest {
         def directoryCriteria = createStrictMock(DirectoryCriteria)
         def account = createStrictMock(Account)
 
-        def tenantHref = "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"
         def token = "ExAmPleEmAilVeRiFiCaTiOnTokEnHeRE"
 
         //createApplication(Application)
-        expect(dataStore.getResource("/tenants/current", Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
-        expect(tenant.createApplication(application)).andReturn(returnedApplication)
+        expect(tenant.createApplication(application)).andReturn(returnedApplication).times(1)
 
         //createApplication(CreateApplicationRequest)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.createApplication(createApplicationRequest)).andReturn(returnedApplication)
 
         //getApplications()
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getApplications()).andReturn(applicationList)
 
         //getApplications(Map<String, Object>)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getApplications(map)).andReturn(applicationList)
 
         //getApplications(ApplicationCriteria)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getApplications(applicationCriteria)).andReturn(applicationList)
 
         //createDirectory(Directory)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.createDirectory(directory)).andReturn(returnedDir)
 
         //createDirectory(CreateDirectoryRequest)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.createDirectory(createDirectoryRequest)).andReturn(returnedDir)
 
         //getDirectories()
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getDirectories()).andReturn(directoryList)
 
         //getDirectories(Map<String, Object>)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getDirectories(map)).andReturn(directoryList)
 
         //getDirectories(ApplicationCriteria)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getDirectories(directoryCriteria)).andReturn(directoryList)
 
         //verifyAccountEmail(String)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.verifyAccountEmail(token)).andReturn(account)
 
-        replay(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
-                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
+        expect(tenantResolver.getCurrentTenant()).andReturn(tenant).times(11)
 
-        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newDisabledCacheManager(), null, null, 20000)
+        replay(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
+                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account, tenantResolver)
+
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newDisabledCacheManager(), null, null, 20000, tenantResolver)
         setNewValue(client, "dataStore", dataStore)
         assertSame(client.createApplication(application), returnedApplication)
         assertSame(client.createApplication(createApplicationRequest), returnedApplication)
@@ -356,9 +337,42 @@ class DefaultClientTest {
         assertSame(client.verifyAccountEmail(token), account)
 
         verify(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
-                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
+                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account, tenantResolver)
     }
 
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    public void testGetCurrentTenant(){
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
+        def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
+        def cacheManager = createStrictMock(CacheManager)
+        def authcScheme = AuthenticationScheme.SAUTHC1
+        def connectionTimeout = 990011
+        def tenantResolver = createStrictMock(TenantResolver)
+
+        def tenant = createStrictMock(Tenant)
+        def tenantOptions = createStrictMock(TenantOptions)
+
+        expect(tenantResolver.getCurrentTenant()).andReturn(tenant)
+        expect(tenantResolver.getCurrentTenant(tenantOptions)).andReturn(tenant)
+
+        expect(proxy.getHost()).andReturn("192.168.2.110")
+        expect(proxy.getPort()).andReturn(777)
+        expect(proxy.isAuthenticationRequired()).andReturn(false)
+
+        replay(apiKeyCredentials, proxy, cacheManager, tenantResolver)
+
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, proxy, cacheManager, authcScheme, null, connectionTimeout, tenantResolver)
+
+        assertEquals(client.getCurrentTenant(), tenant)
+        assertEquals(client.getCurrentTenant(tenantOptions), tenant)
+
+        verify(apiKeyCredentials, proxy, cacheManager, tenantResolver)
+    }
 
     /**
      * Allows to set a new value to a final property

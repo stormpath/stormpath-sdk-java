@@ -29,9 +29,9 @@ public class IDSiteForgotFilterFactory extends IDSiteFilterFactory {
     }
 
     @Override
-    public void doConfigure(IdSiteController c, Config config) {
-        c.setIdSiteUri(config.get("stormpath.web.idSite.forgotUri"));
-        c.setNextUri(config.get("stormpath.web.forgot.nextUri"));
+    public void doConfigure(IdSiteController controller, Config config) {
+        controller.setIdSiteUri(config.get("stormpath.web.idSite.forgotUri"));
+        controller.setNextUri(config.get("stormpath.web.forgot.nextUri"));
     }
 
 }

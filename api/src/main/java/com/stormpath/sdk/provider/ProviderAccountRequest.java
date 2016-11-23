@@ -21,7 +21,7 @@ package com.stormpath.sdk.provider;
  * NOTE: A Provider-specific {@link com.stormpath.sdk.directory.Directory} must previously exist in Stormpath and it must also
  * be an Enabled Account Store within the Application.
  *
- * @see {@link com.stormpath.sdk.directory.CreateDirectoryRequestBuilder}
+ * @see com.stormpath.sdk.directory.CreateDirectoryRequestBuilder
  * @since 1.0.beta
  */
 public interface ProviderAccountRequest {
@@ -32,4 +32,6 @@ public interface ProviderAccountRequest {
      * @return the {@link ProviderData} Resource containing the data required to access to the account.
      */
     ProviderData getProviderData();
+
+    String getRedirectUri();
 }

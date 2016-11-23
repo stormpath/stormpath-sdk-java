@@ -18,8 +18,8 @@ package com.stormpath.sdk.servlet.utils
 
 import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode
 import com.stormpath.sdk.servlet.filter.oauth.OAuthException
-import com.stormpath.sdk.servlet.util.DefaultGrantTypeStatusValidator
-import com.stormpath.sdk.servlet.util.GrantTypeStatusValidator
+import com.stormpath.sdk.servlet.util.DefaultGrantTypeValidator
+import com.stormpath.sdk.servlet.util.GrantTypeValidator
 import org.testng.Assert
 import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
@@ -27,19 +27,19 @@ import org.testng.annotations.Test
 /**
  * @since 1.2.0
  */
-class DefaultGrantTypeStatusValidatorTest {
+class DefaultGrantTypeValidatorTest {
 
-    private DefaultGrantTypeStatusValidator defaultGrantTypeStatusValidator;
+    private DefaultGrantTypeValidator defaultGrantTypeStatusValidator;
 
     @BeforeTest
     public void init() {
-        defaultGrantTypeStatusValidator = new DefaultGrantTypeStatusValidator()
+        defaultGrantTypeStatusValidator = new DefaultGrantTypeValidator()
     }
 
     @Test()
     public void testPasswordGrantTypeEnabledPassesValidation() {
         defaultGrantTypeStatusValidator.setPasswordGrantTypeEnabled(true)
-        defaultGrantTypeStatusValidator.validate(GrantTypeStatusValidator.PASSWORD_GRANT_TYPE)
+        defaultGrantTypeStatusValidator.validate(GrantTypeValidator.PASSWORD_GRANT_TYPE)
         //does not throw exception
     }
 
@@ -47,7 +47,7 @@ class DefaultGrantTypeStatusValidatorTest {
     public void testPasswordGrantTypeDisabledThrowsOauthException() {
         try {
             defaultGrantTypeStatusValidator.setPasswordGrantTypeEnabled(false)
-            defaultGrantTypeStatusValidator.validate(GrantTypeStatusValidator.PASSWORD_GRANT_TYPE)
+            defaultGrantTypeStatusValidator.validate(GrantTypeValidator.PASSWORD_GRANT_TYPE)
             Assert.fail("should have thrown OAuthException")
         }
         catch (Exception ex) {
@@ -61,7 +61,7 @@ class DefaultGrantTypeStatusValidatorTest {
     @Test
     public void testClientCredentialsGrantTypeEnabledPassesValidation() {
         defaultGrantTypeStatusValidator.setClientCredentialsGrantTypeEnabled(true)
-        defaultGrantTypeStatusValidator.validate(GrantTypeStatusValidator.CLIENT_CREDENTIALS_GRANT_TYPE)
+        defaultGrantTypeStatusValidator.validate(GrantTypeValidator.CLIENT_CREDENTIALS_GRANT_TYPE)
         //does not throw exception
     }
 
@@ -69,7 +69,7 @@ class DefaultGrantTypeStatusValidatorTest {
     public void testClientCredentialsGrantTypeDisabledThrowsOauthException() {
         try {
             defaultGrantTypeStatusValidator.setClientCredentialsGrantTypeEnabled(false)
-            defaultGrantTypeStatusValidator.validate(GrantTypeStatusValidator.CLIENT_CREDENTIALS_GRANT_TYPE)
+            defaultGrantTypeStatusValidator.validate(GrantTypeValidator.CLIENT_CREDENTIALS_GRANT_TYPE)
             Assert.fail("should have thrown OAuthException")
         }
         catch (Exception ex) {

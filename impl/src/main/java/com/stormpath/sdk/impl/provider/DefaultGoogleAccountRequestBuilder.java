@@ -15,25 +15,15 @@
  */
 package com.stormpath.sdk.impl.provider;
 
-import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.GoogleAccountRequestBuilder;
-import com.stormpath.sdk.provider.ProviderAccountRequest;
+import com.stormpath.sdk.provider.ProviderData;
 
 import java.util.Map;
 
 /**
  * @since 1.0.beta
  */
-public class DefaultGoogleAccountRequestBuilder extends AbstractProviderAccountRequestBuilder<GoogleAccountRequestBuilder> implements GoogleAccountRequestBuilder {
-
-    private String code;
-
-    @Override
-    public GoogleAccountRequestBuilder setCode(String code) {
-        this.code = code;
-        return this;
-    }
+public class DefaultGoogleAccountRequestBuilder extends AbstractSocialProviderAccountRequestBuilder<GoogleAccountRequestBuilder> implements GoogleAccountRequestBuilder {
 
     @Override
     protected String getConcreteProviderId() {
@@ -41,18 +31,8 @@ public class DefaultGoogleAccountRequestBuilder extends AbstractProviderAccountR
     }
 
     @Override
-    protected ProviderAccountRequest doBuild(Map<String, Object> map) {
-        Assert.state(Strings.hasText(this.code) ^ Strings.hasText(super.accessToken), "Either 'code' or 'accessToken' properties must exist in a Google account request.");
-
-        DefaultGoogleProviderData providerData = new DefaultGoogleProviderData(null, map);
-
-        if(this.accessToken != null) {
-            providerData.setAccessToken(super.accessToken);
-        } else {
-            providerData.setCode(this.code);
-        }
-
-        return new DefaultProviderAccountRequest(providerData);
+    protected ProviderData newProviderData(Map<String, Object> properties) {
+        return new DefaultGoogleProviderData(null, properties);
     }
 
 }
