@@ -244,11 +244,11 @@ public class AccessTokenController extends AbstractController {
      * @since 1.0.0
      */
     private AccessTokenResult clientCredentialsAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
-        DefaultBasicApiAuthenticationRequest authenticationRequest = new DefaultBasicApiAuthenticationRequest(new DefaultHttpServletRequestWrapper(request));
-
         OAuthGrantRequestAuthenticationResult authenticationResult;
 
         try {
+            DefaultBasicApiAuthenticationRequest authenticationRequest = new DefaultBasicApiAuthenticationRequest(new DefaultHttpServletRequestWrapper(request));
+
             Application app = getApplication(request);
             OAuthClientCredentialsGrantRequestAuthentication clientCredentialsGrantRequestAuthentication =
                     OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()
@@ -287,6 +287,8 @@ public class AccessTokenController extends AbstractController {
         } catch (ResourceException e) {
             log.debug("Unable to authenticate stormpath social grant request: {}", e.getMessage(), e);
             throw convertToOAuthException(e, OAuthErrorCode.INVALID_CLIENT);
+        } catch (IllegalArgumentException ex) {
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
         }
 
         return createAccessTokenResult(request, response, authenticationResult);
