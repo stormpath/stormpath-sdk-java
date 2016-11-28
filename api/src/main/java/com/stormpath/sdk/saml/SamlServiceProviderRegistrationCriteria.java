@@ -25,7 +25,7 @@ import com.stormpath.sdk.query.Criteria;
  * <pre>
  * SamlServiceProviderRegistrations.where(SamlServiceProviderRegistrations.createdAt().eq("2016-01-01")...
  *
- * @since 1.2.1
+ * @since 1.3.0
  */
 public interface SamlServiceProviderRegistrationCriteria extends Criteria<SamlServiceProviderRegistrationCriteria>,  SamlServiceProviderRegistrationOptions<SamlServiceProviderRegistrationCriteria>{
 

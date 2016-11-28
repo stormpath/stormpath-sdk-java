@@ -112,7 +112,7 @@ public class DefaultApplicationCriteria extends DefaultCriteria<ApplicationCrite
     }
 
     /**
-     * @since 1.2.1
+     * @since 1.3.0
      */
     @Override
     public ApplicationCriteria withSamlPolicy() {

@@ -456,7 +456,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.2.0
+     * @since 1.3.0
      */
     @Override
     public RegisteredSamlServiceProvider createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider registeredSamlServiceProvider) throws ResourceException {
@@ -466,7 +466,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.2.0
+     * @since 1.3.0
      */
     @Override
     public RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders() {
@@ -476,7 +476,7 @@ public class DefaultClient implements Client {
     /**
      * {@inheritDoc}
      *
-     * @since 1.2.0
+     * @since 1.3.0
      */
     @Override
     public RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria) {

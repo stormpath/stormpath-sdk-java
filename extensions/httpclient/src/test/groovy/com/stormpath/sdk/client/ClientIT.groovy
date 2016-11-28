@@ -170,8 +170,7 @@ abstract class ClientIT {
         Throwable e = null;
         try {
             client.getResource(href, resourceClass)
-        }
-        catch (ResourceException re) {
+        } catch (ResourceException re) {
             e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
@@ -184,8 +183,7 @@ abstract class ClientIT {
         Throwable e = null;
         try {
             input.save()
-        }
-        catch (ResourceException re) {
+        } catch (ResourceException re) {
             e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), expectedErrorCode)

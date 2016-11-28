@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @since 1.2.1
+ * @since 1.3.0
  */
 public class DefaultRegisteredSamlServiceProvider extends AbstractInstanceResource implements RegisteredSamlServiceProvider {
 

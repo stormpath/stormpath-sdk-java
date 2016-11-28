@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @since 1.2.1
+ * @since 1.3.0
  */
 public class DefaultSamlIdentityProvider extends AbstractInstanceResource implements SamlIdentityProvider {
 
@@ -79,7 +79,7 @@ public class DefaultSamlIdentityProvider extends AbstractInstanceResource implem
     }
 
     @Override
-    public SamlIdentityProvider setSsoLoginEndpoint(String ssoLoginEndpoint) {
+    public SamlIdentityProvider setSsoLoginEndpoint(Map<String, String> ssoLoginEndpoint) {
         setProperty(SSO_LOGIN_ENDPOINT, ssoLoginEndpoint);
         return this;
     }

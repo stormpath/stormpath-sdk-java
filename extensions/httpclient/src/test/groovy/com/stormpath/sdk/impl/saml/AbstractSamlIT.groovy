@@ -24,11 +24,12 @@ import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.saml.SamlServiceProviderRegistration
 import com.stormpath.sdk.saml.SamlServiceProviderRegistrations
 
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.assertNotNull
-import static org.testng.AssertJUnit.assertTrue
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
+
 /**
- * @since 1.2.1
+ * @since 1.3.0
  */
 abstract class AbstractSamlIT extends ClientIT{
     public static String validX509Cert = '''-----BEGIN CERTIFICATE-----
@@ -74,12 +75,12 @@ xu/vQr6stjuzJIsDNAtW1FlG8WALOMjV
 '''
 
 
-    protected SamlIdentityProvider getNewSamlIdentityProviderForNewApplication() {
+    protected SamlIdentityProvider getNewSamlIdentityProviderForNewApplication(){
         def app = createTempApp()
         return getSamlIdentityProviderForApplication(app)
     }
 
-    protected SamlIdentityProvider getSamlIdentityProviderForApplication(Application app) {
+    protected SamlIdentityProvider getSamlIdentityProviderForApplication(Application app){
         def samlPolicy = client.getResource(app.getSamlPolicy().href, SamlPolicy)
         samlPolicy.getIdentityProvider()
         return client.getResource(samlPolicy.getIdentityProvider().href, SamlIdentityProvider)
@@ -90,7 +91,7 @@ xu/vQr6stjuzJIsDNAtW1FlG8WALOMjV
         return getSamlIdentityProviderForApplication(app)
     }
 
-    protected SamlServiceProviderRegistration createAndGetAndAssertNewRegistration(SamlServiceProviderRegistration registration) {
+    protected SamlServiceProviderRegistration createAndGetAndAssertNewRegistration(SamlServiceProviderRegistration registration){
         def identityProviderHref = registration.getIdentityProvider().href
         def builder = SamlServiceProviderRegistrations.newCreateRequestFor(registration)
         registration = registration.getIdentityProvider().createSamlServiceProviderRegistration(builder.build())
@@ -104,7 +105,7 @@ xu/vQr6stjuzJIsDNAtW1FlG8WALOMjV
         return registration
     }
 
-    protected void createNewRegistrationError(SamlServiceProviderRegistration registration, int expectedErrorCode) {
+    protected void createNewRegistrationError(SamlServiceProviderRegistration registration, int expectedErrorCode){
         def builder = SamlServiceProviderRegistrations.newCreateRequestFor(registration)
 
         Throwable e = null;

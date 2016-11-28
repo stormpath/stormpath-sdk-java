@@ -16,7 +16,7 @@
 package com.stormpath.sdk.saml;
 
 /**
- * @since 1.2.1
+ * @since 1.3.0
  */
 public enum SamlServiceProviderRegistrationStatus {
 

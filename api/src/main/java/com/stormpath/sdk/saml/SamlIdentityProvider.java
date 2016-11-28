@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * A SamlIdentityProvider represents data supporting Stormpath as an saml identity provider.
  *
- * @since 1.2.1
+ * @since 1.3.0
  */
 public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Auditable {
     /**
@@ -56,7 +56,7 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      *
      * @return this instance for method chaining.
      */
-    SamlIdentityProvider setSsoLoginEndpoint(String ssoLoginEndpoint);
+    SamlIdentityProvider setSsoLoginEndpoint(Map<String, String> ssoLoginEndpoint);
 
     /**
      * Returns the samlIdentityProvider's signature algorithm.
@@ -151,7 +151,6 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the samlIdentityProvider's samlServiceProviderRegistrations that match the specified query criteria.
-     * @since 1.2.1
      */
     RegisteredSamlServiceProviderList getRegisteredSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria);
 
@@ -194,7 +193,6 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      *
      * @param criteria the criteria to use when performing a request to the collection.
      * @return a paginated list of the samlIdentityProvider's samlServiceProviderRegistrations that match the specified query criteria.
-     * @since 1.2.1
      */
     SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations(SamlServiceProviderRegistrationCriteria criteria);
 }

@@ -86,7 +86,7 @@ public interface ApplicationOptions<T> extends AccountStoreOptions<T> {
      * related resources you know you will use.
      *
      * @return this instance for method chaining.
-     * @since 1.2.0
+     * @since 1.3.0
      */
     T withSamlPolicy();
 }

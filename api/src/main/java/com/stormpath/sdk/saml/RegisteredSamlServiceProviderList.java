@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 /**
  * A {@link CollectionResource} containing {@link RegisteredSamlServiceProvider} instances.
  *
- * @since 1.0.2
+ * @since 1.3.0
  */
 public interface RegisteredSamlServiceProviderList extends CollectionResource<RegisteredSamlServiceProvider> {
 }

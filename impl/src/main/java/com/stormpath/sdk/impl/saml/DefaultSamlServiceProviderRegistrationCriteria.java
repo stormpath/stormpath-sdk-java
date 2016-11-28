@@ -21,7 +21,7 @@ import com.stormpath.sdk.saml.SamlServiceProviderRegistrationCriteria;
 import com.stormpath.sdk.saml.SamlServiceProviderRegistrationOptions;
 
 /**
- * @since 1.2.1
+ * @since 1.3.0
  */
 public class DefaultSamlServiceProviderRegistrationCriteria extends DefaultCriteria<SamlServiceProviderRegistrationCriteria, SamlServiceProviderRegistrationOptions> implements SamlServiceProviderRegistrationCriteria {
 

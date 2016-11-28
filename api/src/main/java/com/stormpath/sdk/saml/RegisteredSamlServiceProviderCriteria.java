@@ -47,9 +47,9 @@ import com.stormpath.sdk.query.Criteria;
  *     ...
  * </pre>
  *
- * @since 1.2.1
+ * @since 1.3.0
  */
-public interface RegisteredSamlServiceProviderCriteria extends Criteria<RegisteredSamlServiceProviderCriteria>,  RegisteredSamlServiceProviderOptions<RegisteredSamlServiceProviderCriteria>{
+public interface RegisteredSamlServiceProviderCriteria extends Criteria<RegisteredSamlServiceProviderCriteria>, RegisteredSamlServiceProviderOptions<RegisteredSamlServiceProviderCriteria> {
 
     /**
      * Ensures that the query results are ordered by group {@link RegisteredSamlServiceProvider#getName() name}.

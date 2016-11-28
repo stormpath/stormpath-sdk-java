@@ -27,7 +27,7 @@ import java.util.Map;
  * The (read-only) Saml Identity Provider metadata providing meta data for a given Stormpath's {@link Application}
  * as part of its {@link SamlPolicy}
 
- * @since 1.0.RC8
+ * @since 1.3.0
  */
 public interface SamlIdentityProviderMetadata extends Resource, Saveable, Deletable, Auditable {
 

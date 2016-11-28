@@ -22,7 +22,7 @@ import com.stormpath.sdk.resource.Resource;
  * A SamlPolicy represents an {@link com.stormpath.sdk.application.Application Application}'s SAML-specific
  * configuration.
  *
- * @since 1.0.RC8
+ * @since 1.3.0
  */
 public interface SamlPolicy extends Resource, Auditable {
 

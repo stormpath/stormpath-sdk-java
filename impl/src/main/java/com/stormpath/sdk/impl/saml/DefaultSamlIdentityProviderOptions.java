@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.saml.SamlIdentityProviderOptions;
 
 /**
- * @since 1.2.1
+ * @since 1.3.0
  */
 public class DefaultSamlIdentityProviderOptions extends DefaultOptions<SamlIdentityProviderOptions> implements SamlIdentityProviderOptions<SamlIdentityProviderOptions> {
 

@@ -26,7 +26,7 @@ import org.testng.annotations.Test
 import static org.testng.AssertJUnit.*
 
 /**
- * @since 1.2.1
+ * @since 1.3.0
  */
 class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 

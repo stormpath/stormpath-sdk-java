@@ -19,12 +19,12 @@ import com.stormpath.sdk.query.Criteria;
 
 /**
  * A {@link SamlIdentityProvider}-specific {@link Criteria} class, enabling a SamlIdentityProvider-specific
- * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. PhoneCriteria instances can be
+ * <a href="http://en.wikipedia.org/wiki/Fluent_interface">fluent</a>query DSL. SamlIdentityProviderCriteria instances can be
  * constructed by using the {@link SamlIdentityProviders} utility class, for example:
  * <pre>
  * SamlIdentityProviders.where(SamlIdentityProviders.createdAt().eq("2016-01-01")...
  *
- * @since 1.2.1
+ * @since 1.3.0
  */
 public interface SamlIdentityProviderCriteria extends Criteria<SamlIdentityProviderCriteria>, SamlIdentityProviderOptions<SamlIdentityProviderCriteria> {
 }

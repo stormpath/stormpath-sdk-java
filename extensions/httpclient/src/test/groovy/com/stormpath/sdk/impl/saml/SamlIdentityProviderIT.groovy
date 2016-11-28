@@ -25,11 +25,13 @@ import org.joda.time.format.ISODateTimeFormat
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 
+import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotEquals
+import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertNotNull
-import static org.testng.AssertJUnit.*
+import static org.testng.Assert.assertTrue
 /**
- * @since 1.2.1
+ * @since 1.3.0
  */
 class SamlIdentityProviderIT extends AbstractSamlIT{
 

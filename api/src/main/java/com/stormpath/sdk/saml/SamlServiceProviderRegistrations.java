@@ -34,7 +34,7 @@ import java.lang.reflect.Constructor;
  *     .limitTo(25));
  * </pre>
  *
- * @since 1.2.1
+ * @since 1.3.0
  */
 public class SamlServiceProviderRegistrations {
     private static final Class<CreateSamlServiceProviderRegistrationRequestBuilder> BUILDER_CLASS =
@@ -181,7 +181,6 @@ public class SamlServiceProviderRegistrations {
      *
      * @return a new {@link SamlServiceProviderRegistration#getModifiedAt() modifiedAt}-specific {@link DateExpressionFactory} instance, to be
      *         used to construct a criterion when building an {@link SamlServiceProviderRegistrationCriteria} query.
-     * @since 1.0.RC4.6
      */
     public static DateExpressionFactory modifiedAt() {
         return newDateExpressionFactory("modifiedAt");
@@ -201,7 +200,6 @@ public class SamlServiceProviderRegistrations {
      * @return a new {@link com.stormpath.sdk.saml.CreateSamlServiceProviderRegistrationRequestBuilder createSamlServiceProviderRegistrationRequestBuilder}
      *         instance reflecting the specified {@link com.stormpath.sdk.saml.SamlServiceProviderRegistration} instance.
      *
-     * @since 1.2.1
      */
     public static CreateSamlServiceProviderRegistrationRequestBuilder newCreateRequestFor(SamlServiceProviderRegistration samlServiceProviderRegistration) {
         Constructor ctor = Classes.getConstructor(BUILDER_CLASS, SamlServiceProviderRegistration.class);

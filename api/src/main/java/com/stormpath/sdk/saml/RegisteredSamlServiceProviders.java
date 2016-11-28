@@ -34,7 +34,7 @@ import java.lang.reflect.Constructor;
  *     .limitTo(25));
  * </pre>
  *
- * @since 1.2.1
+ * @since 1.3.0
  */
 public class RegisteredSamlServiceProviders {
     private static final Class<CreateRegisteredSamlServiceProviderRequestBuilder> BUILDER_CLASS =
