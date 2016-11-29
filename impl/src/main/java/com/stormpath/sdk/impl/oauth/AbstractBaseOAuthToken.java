@@ -19,7 +19,9 @@ import com.stormpath.sdk.oauth.TokenTypeHint;
 import com.stormpath.sdk.tenant.Tenant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SigningKeyResolverAdapter;
 
 import java.util.Date;
 import java.util.Map;
@@ -102,8 +104,26 @@ public abstract class AbstractBaseOAuthToken extends AbstractInstanceResource im
         OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(getApplication()).revoke(revocationRequest);
     }
 
-    protected static Jws<Claims> parseJws(String token, ApiKey apiKey) {
-        return Jwts.parser().setSigningKey(apiKey.getSecret().getBytes(Strings.UTF_8)).parseClaimsJws(token);
+    /**
+     * @since 1.2.1
+     */
+    protected static Jws<Claims> parseJws(String token, final InternalDataStore dataStore) {
+
+        final ApiKey clientApiKey = dataStore.getApiKey();
+
+        return Jwts.parser().setSigningKeyResolver(new SigningKeyResolverAdapter() {
+            @Override
+            public byte[] resolveSigningKeyBytes(JwsHeader header, Claims claims) {
+                String keyId = header.getKeyId();
+
+                if (Strings.hasText(keyId) && !clientApiKey.getId().equals(keyId)) {
+                    String url = dataStore.getBaseUrl() + "/apiKeys/" + keyId;
+                    ApiKey apiKey = dataStore.getResource(url, ApiKey.class);
+                    return Strings.getBytesUtf8(apiKey.getSecret());
+                }
+                return Strings.getBytesUtf8(clientApiKey.getSecret());
+            }
+        }).parseClaimsJws(token);
     }
 
     protected abstract TokenTypeHint getTokenTypeHint();
