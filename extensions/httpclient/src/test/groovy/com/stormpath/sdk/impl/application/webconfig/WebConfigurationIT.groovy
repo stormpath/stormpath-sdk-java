@@ -32,11 +32,13 @@ import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.client.Clients
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequestAuthenticator
 import com.stormpath.sdk.oauth.OAuthRequests
+import com.stormpath.sdk.oauth.RefreshToken
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -218,6 +220,14 @@ class WebConfigurationIT extends ClientIT {
 
         assertEquals authResultRemote.getApplication().getHref(), app.href
         assertEquals authResultRemote.getAccount().getHref(), account.href
+
+        def accessToken = client.getResource(accessTokenResult.accessTokenHref, AccessToken)
+
+        assertNotNull accessToken
+
+        def refreshToken = client.getResource(accessTokenResult.refreshToken.href, RefreshToken)
+
+        assertNotNull refreshToken
     }
 
     ApiKey createTmpApiKey(Application application) {
