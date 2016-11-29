@@ -47,8 +47,7 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
         if(isMaterialized()) {
             try {
 
-                ApiKey apiKey = getDataStore().getApiKey();
-                JwsHeader header = AbstractBaseOAuthToken.parseJws(getString(JWT), apiKey).getHeader();
+                JwsHeader header = AbstractBaseOAuthToken.parseJws(getString(JWT), getDataStore()).getHeader();
 
                 String tokenType = (String) header.get("stt");
                 Assert.isTrue(tokenType.equals("access"));

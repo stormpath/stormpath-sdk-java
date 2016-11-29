@@ -22,10 +22,12 @@ import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.authc.DefaultBasicApiAuthenticationRequest;
 import com.stormpath.sdk.impl.authc.DefaultHttpServletRequestWrapper;
 import com.stormpath.sdk.impl.error.DefaultError;
+import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticationRequest;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthentication;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.Authenticators;
+import com.stormpath.sdk.oauth.IdSiteAuthenticationRequest;
 import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
@@ -67,6 +69,7 @@ public class AccessTokenController extends AbstractController {
     private static final String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
     private static final String PASSWORD_GRANT_TYPE = "password";
     private static final String STORMPATH_SOCIAL_GRANT_TYPE = "stormpath_social";
+    private static final String STORMPATH_TOKEN_GRANT_TYPE = "stormpath_token";
     private static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
     private static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 
@@ -244,11 +247,11 @@ public class AccessTokenController extends AbstractController {
      * @since 1.0.0
      */
     private AccessTokenResult clientCredentialsAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
-        DefaultBasicApiAuthenticationRequest authenticationRequest = new DefaultBasicApiAuthenticationRequest(new DefaultHttpServletRequestWrapper(request));
-
         OAuthGrantRequestAuthenticationResult authenticationResult;
 
         try {
+            DefaultBasicApiAuthenticationRequest authenticationRequest = new DefaultBasicApiAuthenticationRequest(new DefaultHttpServletRequestWrapper(request));
+
             Application app = getApplication(request);
             OAuthClientCredentialsGrantRequestAuthentication clientCredentialsGrantRequestAuthentication =
                     OAuthRequests.OAUTH_CLIENT_CREDENTIALS_GRANT_REQUEST.builder()
@@ -287,6 +290,8 @@ public class AccessTokenController extends AbstractController {
         } catch (ResourceException e) {
             log.debug("Unable to authenticate stormpath social grant request: {}", e.getMessage(), e);
             throw convertToOAuthException(e, OAuthErrorCode.INVALID_CLIENT);
+        } catch (IllegalArgumentException ex) {
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
         }
 
         return createAccessTokenResult(request, response, authenticationResult);
@@ -304,6 +309,29 @@ public class AccessTokenController extends AbstractController {
 
         return new OAuthException(oauthError, message);
     }
+
+    private AccessTokenResult stormpathTokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
+        OAuthGrantRequestAuthenticationResult authenticationResult;
+
+        try {
+            Application app = getApplication(request);
+            String token = request.getParameter("token");
+
+            IdSiteAuthenticationRequest authenticationRequest = new DefaultIdSiteAuthenticationRequest(token);
+
+            authenticationResult = Authenticators.ID_SITE_AUTHENTICATOR
+                    .forApplication(app)
+                    .authenticate(authenticationRequest);
+        } catch (ResourceException e) {
+            log.debug("Unable to authenticate stormpath token grant request: {}", e.getMessage(), e);
+            throw convertToOAuthException(e, OAuthErrorCode.INVALID_CLIENT);
+        } catch (IllegalArgumentException ex) {
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
+        }
+
+        return createAccessTokenResult(request, response, authenticationResult);
+    }
+
 
     @Override
     protected ViewModel doPost(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -347,6 +375,14 @@ public class AccessTokenController extends AbstractController {
                         result = this.stormpathSocialAuthenticationRequest(request, response);
                     } catch (HttpAuthenticationException e) {
                         log.warn("Unable to authenticate client", e);
+                        throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
+                    }
+                    break;
+                case STORMPATH_TOKEN_GRANT_TYPE:
+                    try {
+                        result = this.stormpathTokenAuthenticationRequest(request, response);
+                    } catch (HttpAuthenticationException ex) {
+                        log.warn("Unable to authenticate client", ex);
                         throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
                     }
                     break;
