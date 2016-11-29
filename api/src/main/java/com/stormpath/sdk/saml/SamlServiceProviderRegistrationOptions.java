@@ -20,7 +20,7 @@ import com.stormpath.sdk.query.Options;
 /**
  * SamlServiceProviderRegistration-specific options that may be specified when retrieving {@link SamlServiceProviderRegistration} resources.
  *
- * @since 1.2.1
+ * @since 1.3.0
  */
 public interface SamlServiceProviderRegistrationOptions<T> extends Options {
 

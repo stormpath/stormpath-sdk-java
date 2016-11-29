@@ -312,8 +312,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                 Class itemType;
                 if(property instanceof SetProperty){
                     itemsProperty = SetProperty.class.cast(property);
-                }
-                else{
+                }else {
                     itemsProperty = ArrayProperty.class.cast(property);
                 }
                 itemType = itemsProperty.getType();
