@@ -27,9 +27,16 @@ import com.stormpath.sdk.application.webconfig.MeConfig
 import com.stormpath.sdk.application.webconfig.MeExpansionConfig
 import com.stormpath.sdk.application.webconfig.Oauth2Config
 import com.stormpath.sdk.application.webconfig.VerifyEmailConfig
+import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
+import com.stormpath.sdk.client.Clients
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthRequestAuthenticator
+import com.stormpath.sdk.oauth.OAuthRequests
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -183,6 +190,34 @@ class WebConfigurationIT extends ClientIT {
         } catch (com.stormpath.sdk.resource.ResourceException e) {
             assertEquals e.getStatus(), 400
         }
+    }
+
+    @Test
+    void testGetAccessTokenSignedWithDifferentKey() {
+
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        OAuthPasswordGrantRequestAuthentication grantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
+                .setLogin(account.email).setPassword("Changeme1!").build()
+
+        OAuthRequestAuthenticator authenticator = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(app)
+
+        def accessTokenResult = authenticator.authenticate(grantRequest)
+
+        def webConfigApiKey = app.getWebConfig().getSigningApiKey()
+
+        def client = Clients.builder().setBaseUrl(baseUrl).setCacheManager(Caches.newDisabledCacheManager()).setApiKey(webConfigApiKey).build()
+
+        def newClientApp = client.getResource(app.href, Application)
+
+        // Authenticate token against Stormpath
+        OAuthBearerRequestAuthentication authRequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(accessTokenResult.getAccessTokenString()).build()
+        def authResultRemote = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR.forApplication(newClientApp).authenticate(authRequest)
+
+        assertEquals authResultRemote.getApplication().getHref(), app.href
+        assertEquals authResultRemote.getAccount().getHref(), account.href
     }
 
     ApiKey createTmpApiKey(Application application) {

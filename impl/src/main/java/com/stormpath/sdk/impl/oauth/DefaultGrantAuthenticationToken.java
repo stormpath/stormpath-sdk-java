@@ -88,7 +88,7 @@ public class DefaultGrantAuthenticationToken extends AbstractInstanceResource im
             return null;
         }
 
-        Jws<Claims> jws = AbstractBaseOAuthToken.parseJws(refreshToken, getDataStore().getApiKey());
+        Jws<Claims> jws = AbstractBaseOAuthToken.parseJws(refreshToken, getDataStore());
         Map<String, Object> props = new LinkedHashMap<String, Object>(1);
         String refreshTokenID = jws.getBody().getId();
         props.put("href", getDataStore().getBaseUrl() + "/refreshTokens/" + refreshTokenID);
