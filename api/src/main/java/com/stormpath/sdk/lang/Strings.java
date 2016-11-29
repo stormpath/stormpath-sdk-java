@@ -1268,11 +1268,10 @@ public abstract class Strings {
     /**
      * Calls {@link String#getBytes(Charset)}
      *
-     * @param string
-     *            The string to encode (if null, return null).
-     * @param charset
-     *            The {@link Charset} to encode the <code>String</code>
+     * @param string  The string to encode (if null, return null).
+     * @param charset The {@link Charset} to encode the <code>String</code>
      * @return the encoded bytes
+     * @since 1.2.1
      */
     private static byte[] getBytes(final String string, final Charset charset) {
         if (string == null) {
@@ -1281,19 +1280,16 @@ public abstract class Strings {
         return string.getBytes(charset);
     }
 
-
     /**
      * Encodes the given string into a sequence of bytes using the UTF-8 charset, storing the result into a new byte
      * array.
      *
-     * @param string
-     *            the String to encode, may be <code>null</code>
+     * @param string the String to encode, may be <code>null</code>
      * @return encoded bytes, or <code>null</code> if the input string was <code>null</code>
-     * @throws NullPointerException
-     *             Thrown if {@link StandardCharsets#UTF_8} is not initialized, which should never happen since it is
-     *             required by the Java platform specification.
-     * @since As of 1.7, throws {@link NullPointerException} instead of UnsupportedEncodingException
+     * @throws NullPointerException Thrown if {@link StandardCharsets#UTF_8} is not initialized, which should never happen since it is
+     *                              required by the Java platform specification.
      * @see <a href="http://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @since 1.2.1
      */
     public static byte[] getBytesUtf8(final String string) {
         return getBytes(string, StandardCharsets.UTF_8);

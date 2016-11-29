@@ -104,6 +104,9 @@ public abstract class AbstractBaseOAuthToken extends AbstractInstanceResource im
         OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(getApplication()).revoke(revocationRequest);
     }
 
+    /**
+     * @since 1.2.1
+     */
     protected static Jws<Claims> parseJws(String token, final InternalDataStore dataStore) {
 
         final ApiKey clientApiKey = dataStore.getApiKey();
