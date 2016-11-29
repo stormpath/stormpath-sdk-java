@@ -3,23 +3,26 @@ package com.stormpath.sdk.impl.saml;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.saml.RegisteredSamlServiceProvider;
 import com.stormpath.sdk.saml.SamlResponseRequest;
 
+import java.util.Date;
 import java.util.Map;
 
 public class DefaultSamlResponseRequest extends AbstractResource implements SamlResponseRequest {
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
     static final ResourceReference<RegisteredSamlServiceProvider> SERVICE_PROVIDER = new ResourceReference<>("serviceProvider", RegisteredSamlServiceProvider.class);
     static final StringProperty REQUEST_ID = new StringProperty("requestId");
+    static final DateProperty AUTHN_ISSUE_INSTANT = new DateProperty("authnIssueInstant");
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS;
 
     static {
-        PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(new Property[] { ACCOUNT, SERVICE_PROVIDER, REQUEST_ID });
+        PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(new Property[] { ACCOUNT, SERVICE_PROVIDER, REQUEST_ID, AUTHN_ISSUE_INSTANT });
     }
 
     public DefaultSamlResponseRequest(InternalDataStore dataStore) {
@@ -68,4 +71,14 @@ public class DefaultSamlResponseRequest extends AbstractResource implements Saml
         return this;
     }
 
+    @Override
+    public Date getAuthnIssueInstant() {
+        return getDateProperty(AUTHN_ISSUE_INSTANT);
+    }
+
+    @Override
+    public SamlResponseRequest setAuthnIssueInstant(Date authnIssueInstant) {
+        setProperty(AUTHN_ISSUE_INSTANT, authnIssueInstant);
+        return this;
+    }
 }
