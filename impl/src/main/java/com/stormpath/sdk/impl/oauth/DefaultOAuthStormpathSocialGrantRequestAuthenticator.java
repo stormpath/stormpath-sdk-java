@@ -44,7 +44,7 @@ public class DefaultOAuthStormpathSocialGrantRequestAuthenticator extends Abstra
 
         GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, authenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
-        OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthStormpathSocialGrantRequestAuthenticationResultBuilder(grantResult);
+        OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthGrantRequestAuthenticationResultBuilder(grantResult);
 
         return builder.build();
     }
