@@ -27,9 +27,11 @@ import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.client.RequestCountingClient
-import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver
 import com.stormpath.sdk.impl.util.BaseUrlResolver
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver
 import com.stormpath.sdk.resource.Deletable
+import com.stormpath.sdk.resource.ResourceException
+import com.stormpath.sdk.resource.Saveable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.testng.annotations.AfterTest
@@ -37,6 +39,8 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeTest
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
+import static org.testng.AssertJUnit.assertEquals
+import static org.testng.AssertJUnit.assertTrue
 
 abstract class ClientIT {
 
@@ -160,5 +164,31 @@ abstract class ClientIT {
         deleteOnTeardown(account)
 
         return account
+    }
+
+    protected void getDeletedResourceError(String href, Class resourceClass){
+        Throwable e = null;
+        try {
+            client.getResource(href, resourceClass)
+        } catch (ResourceException re) {
+            e = re
+            assertEquals(re.status, 404)
+            assertEquals(re.getCode(), 404)
+        }
+
+        assertTrue(e instanceof ResourceException)
+    }
+
+    protected void updatedSaveableError(Saveable input, int expectedErrorCode){
+        Throwable e = null;
+        try {
+            input.save()
+        } catch (ResourceException re) {
+            e = re
+            assertEquals(re.status, 400)
+            assertEquals(re.getCode(), expectedErrorCode)
+        }
+
+        assertTrue(e instanceof ResourceException)
     }
 }

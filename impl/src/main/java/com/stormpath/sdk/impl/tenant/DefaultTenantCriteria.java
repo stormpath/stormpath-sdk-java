@@ -126,4 +126,22 @@ public class DefaultTenantCriteria extends DefaultCriteria<TenantCriteria, Tenan
         getOptions().withOrganizations(limit, offset);
         return this;
     }
+
+    @Override
+    public TenantCriteria withRegisteredSamlServiceProviders() {
+        getOptions().withRegisteredSamlServiceProviders();
+        return this;
+    }
+
+    @Override
+    public TenantCriteria withRegisteredSamlServiceProviders(int limit) {
+        getOptions().withRegisteredSamlServiceProviders(limit);
+        return this;
+    }
+
+    @Override
+    public TenantCriteria withRegisteredSamlServiceProviders(int limit, int offset) {
+        getOptions().withRegisteredSamlServiceProviders(limit, offset);
+        return this;
+    }
 }
