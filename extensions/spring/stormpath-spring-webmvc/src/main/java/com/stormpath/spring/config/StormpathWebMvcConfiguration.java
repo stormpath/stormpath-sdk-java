@@ -43,6 +43,8 @@ import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -247,6 +249,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    public RefreshTokenResultFactory stormpathRefreshTokenResultFactory(){
+        return super.stormpathRefreshTokenResultFactory();
+    }
+
+    @Bean
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
         return super.stormpathWrappedServletRequestFactory();
     }
@@ -420,6 +427,11 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Bean
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {
         return super.stormpathAccessTokenAuthenticationRequestFactory();
+    }
+
+    @Bean
+    public RefreshTokenAuthenticationRequestFactory stormpathRefreshTokenAuthenticationRequestFactory(){
+        return super.stormpathRefreshTokenAuthenticationRequestFactory();
     }
 
     @Bean
