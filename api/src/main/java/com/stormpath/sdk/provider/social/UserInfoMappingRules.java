@@ -1,30 +1,24 @@
 package com.stormpath.sdk.provider.social;
 
 
+import com.stormpath.sdk.resource.Auditable;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
 
-import java.util.Set;
+import java.util.List;
 
-public interface UserInfoMappingRules extends Resource, Set<UserInfoMappingRule> {
-
-    /**
-     * Removes the {@link UserInfoMappingRule}(s) identified by {@code ruleNames}.
-     *
-     * @param ruleNames the name of the {@link UserInfoMappingRule}(s) to remove.
-     *
-     * @return  the {@code Set<AttributeStatementMappingRule>} after the "remove" operation is performed.
-     */
-    Set<UserInfoMappingRule> removeByName(String... ruleNames);
+public interface UserInfoMappingRules extends Resource, Saveable, Auditable {
 
     /**
      * Specifies the Set of all {@link UserInfoMappingRule}s that indicate how SAML Attribute Statements should
      * populate one or more Stormpath Account field values after a successful SAML login.
      *
-     * @param attributeStatementMappingRules the set of {@link UserInfoMappingRule AttributeStatementMappingRule}s to build a SAML provider.
+     * @param userInfoMappingRules the set of {@link UserInfoMappingRule userInfoMappingRules}s to build a Social provider.
      *
      * @return this instance for method chaining.
+     * @since 1.3.0
      */
-    void setItems(Set<UserInfoMappingRule> attributeStatementMappingRules);
+    void setItems(List<UserInfoMappingRule> userInfoMappingRules);
 
     /**
      * Returns the Set of all {@link UserInfoMappingRule}s that indicate how SAML Attribute Statements should
@@ -32,6 +26,7 @@ public interface UserInfoMappingRules extends Resource, Set<UserInfoMappingRule>
      *
      * @return the Set of all {@link UserInfoMappingRule}s that indicate how SAML Attribute Statements should
      * populate one or more Stormpath Account field values after a successful SAML login.
+     * @since 1.3.0
      */
-    Set<UserInfoMappingRule> getItems();
+    List<UserInfoMappingRule> getItems();
 }

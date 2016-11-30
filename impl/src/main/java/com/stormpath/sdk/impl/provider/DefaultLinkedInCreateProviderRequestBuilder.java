@@ -49,6 +49,9 @@ public class DefaultLinkedInCreateProviderRequestBuilder extends AbstractCreateP
             provider.setRedirectUri(redirectUri);
         }
 
+        if(super.userInfoMappingRules != null) {
+            provider.setUserInfoMappingRules(super.userInfoMappingRules);
+        }
         return new DefaultCreateProviderRequest(provider);
     }
 }

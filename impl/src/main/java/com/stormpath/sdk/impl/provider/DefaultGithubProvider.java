@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.GithubProvider;
 
 import java.util.Map;
@@ -27,7 +26,7 @@ import java.util.Map;
  */
 public class DefaultGithubProvider extends AbstractOAuthProvider<GithubProvider> implements GithubProvider {
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE, USER_INFO_MAPPING_RULES);
 
     public DefaultGithubProvider(InternalDataStore dataStore) {
         super(dataStore);
