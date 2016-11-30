@@ -75,6 +75,11 @@ public class DefaultApplicationOptions extends DefaultOptions<ApplicationOptions
     }
 
     @Override
+    public Object withSamlPolicy() {
+        return expand(DefaultApplication.SAML_POLICY);
+    }
+
+    @Override
     public ApplicationOptions withWebConfig() {
         return expand(DefaultApplication.WEB_CONFIGURATION);
     }

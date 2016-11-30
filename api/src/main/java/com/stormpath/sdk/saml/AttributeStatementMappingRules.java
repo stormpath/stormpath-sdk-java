@@ -15,9 +15,10 @@
 */
 package com.stormpath.sdk.saml;
 
+import com.stormpath.sdk.resource.Deletable;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.resource.Saveable;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -31,7 +32,7 @@ import java.util.Set;
  *
  * @since 1.0.RC8
  */
-public interface AttributeStatementMappingRules extends Resource, Set<AttributeStatementMappingRule> {
+public interface AttributeStatementMappingRules extends Resource, Set<AttributeStatementMappingRule>, Saveable, Deletable{
 
     /**
      * Removes the {@link AttributeStatementMappingRule}(s) identified by {@code ruleNames}.
