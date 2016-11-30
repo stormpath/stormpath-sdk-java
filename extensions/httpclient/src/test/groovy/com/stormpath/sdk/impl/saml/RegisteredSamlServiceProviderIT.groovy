@@ -295,11 +295,6 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
         createRegisteredSAMLServiceProviderError(registeredSamlServiceProvider, 2000)
         registeredSamlServiceProvider.setEntityId(uniquify("urn:entity:id"))
 
-        //missing cert
-        registeredSamlServiceProvider.setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
-        registeredSamlServiceProvider.setEncodedX509SigningCert(null)
-        createRegisteredSAMLServiceProviderError(registeredSamlServiceProvider, 2000)
-
         //invalid cert
         registeredSamlServiceProvider.setEncodedX509SigningCert("invalid cert")
         createRegisteredSAMLServiceProviderError(registeredSamlServiceProvider, 2006)
