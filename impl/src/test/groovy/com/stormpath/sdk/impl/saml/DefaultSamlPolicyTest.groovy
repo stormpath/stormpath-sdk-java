@@ -38,7 +38,7 @@ class DefaultSamlPolicyTest {
         SamlPolicy policy = new DefaultSamlPolicy(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = policy.getPropertyDescriptors()
-        assertEquals(propertyDescriptors.size(), 3)
+        assertEquals(propertyDescriptors.size(), 4)
 
         assertTrue(propertyDescriptors.get("serviceProvider") instanceof ResourceReference && propertyDescriptors.get("serviceProvider").getType().equals(SamlServiceProvider.class))
         assertTrue(propertyDescriptors.get("createdAt") instanceof DateProperty)

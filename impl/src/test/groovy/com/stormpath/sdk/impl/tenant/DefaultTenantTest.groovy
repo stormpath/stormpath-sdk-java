@@ -68,7 +68,7 @@ class DefaultTenantTest {
 
         def propertyDescriptors = defaultTenant.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 9)
+        assertEquals(propertyDescriptors.size(), 11)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("key") instanceof StringProperty)
