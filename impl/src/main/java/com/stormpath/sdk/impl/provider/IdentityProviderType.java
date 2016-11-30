@@ -50,7 +50,12 @@ public enum IdentityProviderType {
     /**
      * @since 1.0.RC8
      */
-    SAML("saml", SamlProvider.class, SamlProviderData.class);
+    SAML("saml", SamlProvider.class, SamlProviderData.class),
+
+    /**
+     * @since 1.3.0
+     */
+    TWITTER("twitter", TwitterProvider.class, TwitterProviderData.class);
 
     private static final Map<String, IdentityProviderType> IDENTITY_PROVIDER_MAP;
     public static final Map<String, Class<? extends Provider>> IDENTITY_PROVIDER_CLASS_MAP;
