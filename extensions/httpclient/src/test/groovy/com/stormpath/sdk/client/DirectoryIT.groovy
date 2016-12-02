@@ -427,7 +427,7 @@ class DirectoryIT extends ClientIT {
                 .setClientSecret("wJhXc81l63qEOc43")
                 .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
         dir = client.createDirectory(request);
-        //deleteOnTeardown(dir)
+        deleteOnTeardown(dir)
         assertNotNull dir.href
         assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<TwitterProvider>) dir.provider)
 

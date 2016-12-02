@@ -1,7 +1,8 @@
-package com.stormpath.sdk.servlet.mvc;
+package com.stormpath.sdk.servlet.mvc.provider;
 
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
+import com.stormpath.sdk.servlet.mvc.AbstractSocialCallbackController;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;

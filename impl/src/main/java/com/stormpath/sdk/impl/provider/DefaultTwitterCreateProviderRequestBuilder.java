@@ -12,7 +12,7 @@ public class DefaultTwitterCreateProviderRequestBuilder extends AbstractCreatePr
 
     @Override
     protected String getConcreteProviderId() {
-        return IdentityProviderType.FACEBOOK.getNameKey();
+        return IdentityProviderType.TWITTER.getNameKey();
     }
 
     @Override
