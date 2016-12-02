@@ -55,7 +55,12 @@ public enum IdentityProviderType {
     /**
      * @since 1.3.0
      */
-    TWITTER("twitter", TwitterProvider.class, TwitterProviderData.class);
+    TWITTER("twitter", TwitterProvider.class, TwitterProviderData.class),
+
+    /**
+     * @since 1.3.0
+     */
+    OAUTH2("oauth2", OAuth2Provider.class, OAuth2ProviderData.class);
 
     private static final Map<String, IdentityProviderType> IDENTITY_PROVIDER_MAP;
     public static final Map<String, Class<? extends Provider>> IDENTITY_PROVIDER_CLASS_MAP;

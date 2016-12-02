@@ -30,7 +30,7 @@ class IdentityProviderTypeTest {
     @Test
     void testMaps() {
 
-        final int PROVIDER_COUNT = 7;
+        final int PROVIDER_COUNT = 8;
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), PROVIDER_COUNT)
         IdentityProviderType item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("stormpath");
@@ -68,6 +68,11 @@ class IdentityProviderTypeTest {
         assertEquals(item.getProviderClass(), TwitterProvider.class)
         assertEquals(item.getProviderDataClass(), TwitterProviderData.class)
 
+        item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("oauth2");
+        assertEquals(item.getNameKey(), "oauth2")
+        assertEquals(item.getProviderClass(), OAuth2Provider.class)
+        assertEquals(item.getProviderDataClass(), OAuth2ProviderData.class)
+
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.size(), PROVIDER_COUNT)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("stormpath"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("facebook"))
@@ -76,6 +81,7 @@ class IdentityProviderTypeTest {
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("linkedin"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("saml"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("twitter"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("oauth2"))
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.size(), PROVIDER_COUNT)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("stormpath"))
@@ -85,6 +91,7 @@ class IdentityProviderTypeTest {
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("linkedin"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("saml"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("twitter"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("oauth2"))
     }
 
     @Test
@@ -95,6 +102,7 @@ class IdentityProviderTypeTest {
         assertSame(IdentityProviderType.fromNameKey("GitHUB"), IdentityProviderType.GITHUB)
         assertSame(IdentityProviderType.fromNameKey("LiNKEdIn"), IdentityProviderType.LINKEDIN)
         assertSame(IdentityProviderType.fromNameKey("TwiTTer"), IdentityProviderType.TWITTER)
+        assertSame(IdentityProviderType.fromNameKey("OAuTH2"), IdentityProviderType.OAUTH2)
     }
 
     @Test
