@@ -1,6 +1,6 @@
 package com.stormpath.sdk.servlet.config.filter;
 
-import com.stormpath.sdk.servlet.mvc.TwitterCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.TwitterCallbackController;
 
 /**
  * @since 1.3.0
