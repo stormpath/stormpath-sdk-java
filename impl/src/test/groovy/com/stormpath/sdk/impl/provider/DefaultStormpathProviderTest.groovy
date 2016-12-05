@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.stormpath.sdk.impl.provider
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.provider.saml.DefaultStormpathProvider
 import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.provider.Provider
@@ -26,14 +28,14 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.0.beta
+ * @since 1.2.2
  */
-class DefaultProviderTest {
+class DefaultStormpathProviderTest {
 
     @Test
     void testGetPropertyDescriptors() {
 
-        def provider = new DefaultProvider(createStrictMock(InternalDataStore))
+        def provider = new DefaultStormpathProvider(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = provider.getPropertyDescriptors()
 
@@ -49,16 +51,15 @@ class DefaultProviderTest {
     void testMethods() {
 
         def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider",
-                createdAt: "2013-10-01T23:38:55.000Z",
-                modifiedAt: "2013-10-02T23:38:55.000Z",
-                providerId: "my-social-thing"
+                          createdAt: "2013-10-01T23:38:55.000Z",
+                          modifiedAt: "2013-10-02T23:38:55.000Z",
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def provider = new DefaultProvider(internalDataStore, properties)
+        def provider = new DefaultStormpathProvider(internalDataStore, properties)
 
         assertEquals(provider.getHref(), "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider")
-        assertEquals(provider.getProviderId(), "my-social-thing")
+        assertEquals(provider.getProviderId(), "stormpath")
         assertEquals(provider.getCreatedAt().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT")), "2013-10-01T23:38:55.000Z")
         assertEquals(provider.getModifiedAt().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT")) , "2013-10-02T23:38:55.000Z")
     }

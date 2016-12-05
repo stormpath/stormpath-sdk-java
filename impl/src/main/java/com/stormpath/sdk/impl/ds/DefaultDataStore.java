@@ -17,10 +17,10 @@ package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.cache.CacheManager;
-import com.stormpath.sdk.impl.api.ApiKeyResolver;
-import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.http.HttpMethod;
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.impl.ds.api.ApiKeyQueryFilter;
 import com.stormpath.sdk.impl.ds.api.DecryptApiKeySecretFilter;
@@ -42,6 +42,7 @@ import com.stormpath.sdk.impl.http.support.DefaultCanonicalUri;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.UserAgent;
 import com.stormpath.sdk.impl.oauth.OAuthTokenRevoked;
+import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.query.DefaultCriteria;
 import com.stormpath.sdk.impl.query.DefaultOptions;
 import com.stormpath.sdk.impl.resource.AbstractResource;
@@ -274,21 +275,23 @@ public class DefaultDataStore implements InternalDataStore {
         Assert.notEmpty(idClassMap, "idClassMap cannot be null or empty.");
 
         ResourceDataResult result = getResourceData(href, parent, null);
-        Map<String,?> data = result.getData();
+        Map<String, ?> data = result.getData();
 
-        if (Collections.isEmpty(data)) {
+        if (Collections.isEmpty(data) || !data.containsKey(childIdProperty)) {
             throw new IllegalStateException(childIdProperty + " could not be found in: " + data + ".");
         }
 
-        String childClassName = null;
-        Object val = data.get(childIdProperty);
-        if (val != null) {
-            childClassName = String.valueOf(val);
+        Object propertyValue = data.get(childIdProperty);
+        if (propertyValue == null) {
+            throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + ".");
         }
-        Class<? extends R> childClass = idClassMap.get(childClassName);
+
+        Class<? extends R> childClass = idClassMap.get(propertyValue.toString());
 
         if (childClass == null) {
-            throw new IllegalStateException("No Class mapping could be found for " + childIdProperty + ".");
+            childClass = idClassMap.get(IdentityProviderType.DEFAULT.getNameKey());
+            Assert.state(childClass != null, "No Class mapping could be found to instantiate resource.");
+            log.warn("Could not find class for '{}' with value '{}'. Using '{}' as fallback.", childIdProperty, propertyValue, childClass);
         }
 
         return instantiate(childClass, data, result.getUri().getQuery());
