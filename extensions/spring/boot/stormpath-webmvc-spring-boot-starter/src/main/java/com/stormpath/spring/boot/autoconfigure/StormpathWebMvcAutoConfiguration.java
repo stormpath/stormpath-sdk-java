@@ -44,6 +44,8 @@ import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
+import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
@@ -293,6 +295,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
 
     @Bean
     @ConditionalOnMissingBean
+    public RefreshTokenResultFactory stormpathRefreshTokenResultFactory() {
+        return super.stormpathRefreshTokenResultFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
         return super.stormpathWrappedServletRequestFactory();
     }
@@ -488,6 +496,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean
+    public RefreshTokenAuthenticationRequestFactory stormpathRefreshTokenAuthenticationRequestFactory() {
+        return super.stormpathRefreshTokenAuthenticationRequestFactory();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "stormpathAccessTokenRequestAuthorizer")
     public RequestAuthorizer stormpathAccessTokenRequestAuthorizer() {
         return super.stormpathAccessTokenRequestAuthorizer();
@@ -526,7 +540,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
 
     @Bean
     @ConditionalOnMissingBean
-    public ExpandsResolver stormpathMeExpandsResolver(){
+    public ExpandsResolver stormpathMeExpandsResolver() {
         return super.stormpathMeExpandsResolver();
     }
 
@@ -654,7 +668,7 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
      */
     @Bean
     @ConditionalOnMissingBean(name = "stormpathAccessTokenConfig")
-    public AccessTokenControllerConfig stormpathAccessTokenConfig(){
+    public AccessTokenControllerConfig stormpathAccessTokenConfig() {
         return super.stormpathAccessTokenConfig();
     }
 
