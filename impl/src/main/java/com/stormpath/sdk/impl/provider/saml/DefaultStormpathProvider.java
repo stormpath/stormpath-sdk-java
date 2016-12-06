@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.sdk.impl.provider;
+package com.stormpath.sdk.impl.provider.saml;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.provider.AbstractProvider;
+import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.provider.saml.StormpathProvider;
 
 import java.util.Map;
 
 /**
- * This DefaultProvider represents a {@link IdentityProviderType#DEFAULT} provider. For example, the provider of is
- * "a-new-social-provider".
+ * This DefaultProvider represents Stormpath as a Provider. For example, the provider of a Stormpath-owned directory is
+ * "stormpath".
  *
- * @since 1.0.beta
+ * @since 1.2.2
  */
-public final class DefaultProvider extends AbstractProvider implements StormpathProvider {
+public class DefaultStormpathProvider extends AbstractProvider implements StormpathProvider {
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT);
 
-    public DefaultProvider(InternalDataStore dataStore) {
+    public DefaultStormpathProvider(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultProvider(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultStormpathProvider(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -46,7 +48,6 @@ public final class DefaultProvider extends AbstractProvider implements Stormpath
 
     @Override
     protected String getConcreteProviderId() {
-        return getString(PROVIDER_ID);
+        return IdentityProviderType.STORMPATH.getNameKey();
     }
-
 }

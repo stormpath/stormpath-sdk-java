@@ -19,8 +19,8 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.impl.api.ApiKeyResolver
 import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
-import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.application.DefaultApplication
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
@@ -28,7 +28,12 @@ import com.stormpath.sdk.impl.provider.DefaultGoogleProviderData
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.query.DefaultOptions
 import com.stormpath.sdk.impl.util.BaseUrlResolver
-import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.provider.FacebookProvider
+import com.stormpath.sdk.provider.GithubProvider
+import com.stormpath.sdk.provider.GoogleProviderData
+import com.stormpath.sdk.provider.Provider
+import com.stormpath.sdk.provider.ProviderData
+import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.Resource
 import org.testng.annotations.Test
@@ -213,6 +218,45 @@ class DefaultDataStoreTest {
         verify(requestExecutor, response, facebookProvider)
     }
 
+
+    @Test
+    void getSpecificResourceUnknownProviderId() {
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def response = createStrictMock(Response)
+        def facebookProvider = createStrictMock(FacebookProvider)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+
+        def responseMap = [href: "https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider",
+                           createdAt: "2014-04-01T22:05:25.661Z",
+                           modifiedAt: "2014-04-01T22:05:53.177Z",
+                           clientId: "237396459765014",
+                           clientSecret: "a93fae44d2a4f21d4de6201aae9b849a",
+                           providerId: "unknown"
+        ]
+        def mapMarshaller = new JacksonMapMarshaller();
+        // convert String into InputStream
+        InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(responseMap).getBytes());
+
+        def childIdProperty = "providerId"
+        def map = IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP
+
+        expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(is)
+
+        replay(requestExecutor, response, facebookProvider)
+
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, apiKeyResolver)
+
+        def provider = defaultDataStore.getResource("https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider", Provider, childIdProperty, map)
+
+        assertEquals "unknown", provider.getProviderId()
+
+        verify(requestExecutor, response, facebookProvider)
+    }
+
     @Test
     void getSpecificResourceNonexistentPropertyException() {
         def requestExecutor = createStrictMock(RequestExecutor)
@@ -247,7 +291,47 @@ class DefaultDataStoreTest {
             defaultDataStore.getResource("https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider", Provider, childIdProperty, map)
             fail("should have thrown")
         } catch (IllegalStateException e) {
-            assertEquals(e.getMessage(), "No Class mapping could be found for nonexistentProperty.")
+            assertTrue e.getMessage().contains("nonexistentProperty could not be found in:"), "Message '${e.getMessage()}' doesn't contain expected: 'nonexistentProperty could not be found in:' "
+        }
+
+        verify(requestExecutor, response, facebookProvider)
+    }
+
+    @Test
+    void getSpecificResourceNullProviderIdExceptionIsThrown() {
+        def requestExecutor = createStrictMock(RequestExecutor)
+        def response = createStrictMock(Response)
+        def facebookProvider = createStrictMock(FacebookProvider)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+
+        def responseMap = [href: "https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider",
+                           createdAt: "2014-04-01T22:05:25.661Z",
+                           modifiedAt: "2014-04-01T22:05:53.177Z",
+                           clientId: "237396459765014",
+                           clientSecret: "a93fae44d2a4f21d4de6201aae9b849a",
+                           providerId: null
+        ]
+        def mapMarshaller = new JacksonMapMarshaller();
+        // convert String into InputStream
+        InputStream is = new ByteArrayInputStream(mapMarshaller.marshal(responseMap).getBytes())
+
+        def childIdProperty = "providerId"
+        def map = IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP
+
+        expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
+        expect(response.isError()).andReturn(false)
+        expect(response.hasBody()).andReturn(true)
+        expect(response.getBody()).andReturn(is)
+
+        replay(requestExecutor, response, facebookProvider)
+
+        def defaultDataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, apiKeyResolver)
+        try {
+            defaultDataStore.getResource("https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider", Provider, childIdProperty, map)
+            fail("should have thrown")
+        } catch (IllegalStateException e) {
+            assertEquals e.getMessage(), "No Class mapping could be found for providerId."
         }
 
         verify(requestExecutor, response, facebookProvider)
