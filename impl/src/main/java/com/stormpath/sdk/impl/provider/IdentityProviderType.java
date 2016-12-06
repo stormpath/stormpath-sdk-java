@@ -54,7 +54,7 @@ public enum IdentityProviderType {
     SAML("saml", SamlProvider.class, SamlProviderData.class),
 
     /**
-     * @since 1.2.0
+     * @since 1.2.2
      */
     DEFAULT("default", Provider.class, ProviderData.class);
 
