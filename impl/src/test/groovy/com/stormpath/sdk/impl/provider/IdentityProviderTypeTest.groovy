@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.provider
 import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.provider.saml.SamlProvider
 import com.stormpath.sdk.provider.saml.SamlProviderData
+import com.stormpath.sdk.provider.saml.StormpathProvider
 import org.testng.annotations.Test
 
 import static org.testng.Assert.*
@@ -30,12 +31,12 @@ class IdentityProviderTypeTest {
     @Test
     void testMaps() {
 
-        final int PROVIDER_COUNT = 7;
+        final int PROVIDER_COUNT = 8;
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), PROVIDER_COUNT)
         IdentityProviderType item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("stormpath");
         assertEquals(item.getNameKey(), "stormpath")
-        assertEquals(item.getProviderClass(), Provider.class)
+        assertEquals(item.getProviderClass(), StormpathProvider.class)
         assertEquals(item.getProviderDataClass(), ProviderData.class)
 
         item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("facebook");
@@ -63,6 +64,11 @@ class IdentityProviderTypeTest {
         assertEquals(item.getProviderClass(), SamlProvider.class)
         assertEquals(item.getProviderDataClass(), SamlProviderData.class)
 
+        item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("default");
+        assertEquals(item.getNameKey(), "default")
+        assertEquals(item.getProviderClass(), Provider.class)
+        assertEquals(item.getProviderDataClass(), ProviderData.class)
+
         item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("twitter");
         assertEquals(item.getNameKey(), "twitter")
         assertEquals(item.getProviderClass(), TwitterProvider.class)
@@ -75,6 +81,7 @@ class IdentityProviderTypeTest {
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("github"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("linkedin"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("saml"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("default"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("twitter"))
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.size(), PROVIDER_COUNT)
@@ -84,6 +91,7 @@ class IdentityProviderTypeTest {
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("github"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("linkedin"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("saml"))
+        assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("default"))
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP.get("twitter"))
     }
 

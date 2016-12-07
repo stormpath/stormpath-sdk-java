@@ -35,7 +35,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.organization.DefaultOrganizationAccountStoreMappingList
 import com.stormpath.sdk.impl.organization.DefaultOrganizationList
-import com.stormpath.sdk.impl.provider.DefaultProvider
+import com.stormpath.sdk.impl.provider.saml.DefaultStormpathProvider
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
@@ -165,7 +165,7 @@ class DefaultDirectoryTest {
                 andReturn(new DefaultTenant(internalDataStore, properties.tenant))
 
         expect(internalDataStore.getResource(properties.provider.href, Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP))
-                .andReturn(new DefaultProvider(internalDataStore, properties.provider))
+                .andReturn(new DefaultStormpathProvider(internalDataStore, properties.provider))
 
         expect(internalDataStore.instantiate(PasswordPolicy, properties.passwordPolicy)).
                 andReturn(new DefaultPasswordPolicy(internalDataStore, properties.passwordPolicy))
@@ -258,9 +258,9 @@ class DefaultDirectoryTest {
         assertTrue(resource instanceof DefaultTenant && resource.getHref().equals(properties.tenant.href))
 
         resource = defaultDirectory.getProvider()
-        assertTrue(resource instanceof DefaultProvider && resource.getHref().equals(properties.provider.href))
+        assertTrue(resource instanceof DefaultStormpathProvider && resource.getHref().equals(properties.provider.href))
         resource = defaultDirectory.getProvider() //Second invocation must not internally call internalDataStore.getResource(...) as it is already fully available in the internal properties
-        assertTrue(resource instanceof DefaultProvider && resource.getHref().equals(properties.provider.href))
+        assertTrue(resource instanceof DefaultStormpathProvider && resource.getHref().equals(properties.provider.href))
 
         resource = defaultDirectory.getPasswordPolicy()
         assertTrue(resource instanceof DefaultPasswordPolicy && resource.getHref().equals(properties.passwordPolicy.href))

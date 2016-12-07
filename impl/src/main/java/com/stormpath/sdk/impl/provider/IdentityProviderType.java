@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.*;
 import com.stormpath.sdk.provider.saml.SamlProvider;
 import com.stormpath.sdk.provider.saml.SamlProviderData;
+import com.stormpath.sdk.provider.saml.StormpathProvider;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import java.util.Map;
  */
 public enum IdentityProviderType {
 
-    STORMPATH("stormpath", Provider.class, ProviderData.class),
+    STORMPATH("stormpath", StormpathProvider.class, ProviderData.class),
 
     FACEBOOK("facebook", FacebookProvider.class, FacebookProviderData.class),
 
@@ -55,7 +56,13 @@ public enum IdentityProviderType {
     /**
      * @since 1.3.0
      */
-    TWITTER("twitter", TwitterProvider.class, TwitterProviderData.class);
+    TWITTER("twitter", TwitterProvider.class, TwitterProviderData.class),
+
+    /**
+     * @since 1.2.2
+     */
+    DEFAULT("default", Provider.class, ProviderData.class);
+
 
     private static final Map<String, IdentityProviderType> IDENTITY_PROVIDER_MAP;
     public static final Map<String, Class<? extends Provider>> IDENTITY_PROVIDER_CLASS_MAP;
