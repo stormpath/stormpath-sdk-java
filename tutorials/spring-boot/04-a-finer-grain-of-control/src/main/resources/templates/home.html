@@ -35,7 +35,7 @@
                         <h1 th:inline="text">Hello, [[${account.givenName}]]!</h1>
                         <form th:action="@{/logout}" method="post">
                             <a href="/restricted" class="btn btn-primary">Restricted</a>
-                            <a href="/me" class="btn btn-warning">My Groups</a>
+                            <a href="/userdetails" class="btn btn-warning">My Groups</a>
                             <input type="submit" class="btn btn-danger" value="Logout"/>
                         </form>
                     </div>
