@@ -12,7 +12,7 @@ import org.testng.annotations.Test
 import static org.testng.AssertJUnit.assertEquals
 import static org.testng.AssertJUnit.assertNotNull
 
-class SamlServiceProviderRegistrationIT extends AbstractSamlIT{
+class SamlServiceProviderRegistrationIT extends AbstractSamlIT {
 
     @AfterMethod
     public void cleanUp() {

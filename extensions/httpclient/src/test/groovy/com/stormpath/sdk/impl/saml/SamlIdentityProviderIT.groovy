@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.saml
 
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig
+import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.saml.*
@@ -30,10 +31,11 @@ import static org.testng.Assert.assertNotEquals
 import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
+
 /**
  * @since 1.3.0
  */
-class SamlIdentityProviderIT extends AbstractSamlIT{
+class SamlIdentityProviderIT extends AbstractSamlIT {
 
     @AfterMethod
     public void cleanUp() {
@@ -132,7 +134,8 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         def webConfigHref = application.webConfig.href
         def webConfig = client.getResource(webConfigHref, ApplicationWebConfig)
         def domainName = webConfig.domainName
-        assertEquals(ssoLoginEndpointHref, "http://" + domainName + "/saml/sso")
+        URI baseUri = new URI(((InternalDataStore) client.getDataStore()).getBaseUrl())
+        assertEquals(ssoLoginEndpointHref, baseUri.getScheme() + "://" + domainName + "/saml/sso")
     }
 
     @Test
@@ -357,10 +360,10 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         registration.delete()
 
         Throwable e = null;
-        try{
+        try {
             client.getResource(registration.href, SamlServiceProviderRegistration)
         }
-        catch(ResourceException re){
+        catch (ResourceException re) {
             e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
@@ -391,7 +394,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         assertNotNull(registeredSamlServiceProviders.getProperties().items)
 
         def serviceProviderItems = registeredSamlServiceProviders.getProperties().items
-        assertEquals(serviceProviderItems.size,0)
+        assertEquals(serviceProviderItems.size, 0)
     }
 
     @Test
@@ -474,7 +477,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         def identityProviderHref = samlPolicy.getIdentityProvider().href
         assertNotNull(identityProviderHref)
 
-        def identityProvider =  client.getResource(identityProviderHref, SamlIdentityProvider)
+        def identityProvider = client.getResource(identityProviderHref, SamlIdentityProvider)
         assertEquals(identityProvider.href, identityProviderHref)
 
         def registration = client.instantiate(SamlServiceProviderRegistration)
