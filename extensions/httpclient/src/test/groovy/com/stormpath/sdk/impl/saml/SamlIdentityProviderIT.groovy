@@ -21,16 +21,33 @@ import com.stormpath.sdk.application.webconfig.ApplicationWebConfig
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.ResourceException
-import com.stormpath.sdk.saml.*
+import com.stormpath.sdk.saml.AttributeStatementMappingRule
+import com.stormpath.sdk.saml.AttributeStatementMappingRules
+import com.stormpath.sdk.saml.CreateSamlResponseRequest
+import com.stormpath.sdk.saml.RegisteredSamlServiceProvider
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviders
+import com.stormpath.sdk.saml.SamlIdentityProvider
+import com.stormpath.sdk.saml.SamlIdentityProviderMetadata
+import com.stormpath.sdk.saml.SamlIdentityProviderStatus
+import com.stormpath.sdk.saml.SamlIdentityProviders
+import com.stormpath.sdk.saml.SamlPolicy
+import com.stormpath.sdk.saml.SamlResponse
+import com.stormpath.sdk.saml.SamlServiceProviderRegistration
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationList
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationStatus
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrations
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 
+import javax.xml.bind.DatatypeConverter
+
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotEquals
-import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
 
 /**
@@ -559,8 +576,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT {
         SamlResponse samlResponse = identityProvider.createSamlResponse(createSamlResponseRequest)
         String base64EncodedXml = samlResponse.getValue()
 
-        String xml = new String(Base64.decoder.
-                decode(base64EncodedXml))
+        String xml = new String(DatatypeConverter.parseBase64Binary(base64EncodedXml))
 
         assertTrue(xml.contains(account.email))
         assertTrue(xml.contains("InResponseTo=\"" + requestId + "\""))
