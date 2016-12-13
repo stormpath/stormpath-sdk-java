@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.saml
 
+import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig
 import com.stormpath.sdk.impl.ds.InternalDataStore
@@ -531,5 +532,37 @@ class SamlIdentityProviderIT extends AbstractSamlIT {
 
         registrationList = identityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.where(SamlServiceProviderRegistrations.defaultRelayState().eq("aNotNice*")))
         assertEquals(registrationList.size, 0)
+    }
+
+    @Test
+    void testSamlResponse() {
+        def identityProvider = getNewSamlIdentityProviderForNewApplication()
+
+        Account account = client.getAccounts().iterator().next()
+
+        def serviceProvider = client.instantiate(RegisteredSamlServiceProvider)
+        serviceProvider
+                .setName("testName")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
+                .setEntityId(uniquify("urn:entity:id"))
+                .setEncodedX509SigningCert(validX509Cert)
+        def registeredSamlServiceProvider = client.currentTenant.createRegisterdSamlServiceProvider(serviceProvider)
+
+        String requestId = "blargle"
+
+        CreateSamlResponseRequest createSamlResponseRequest = client.instantiate(CreateSamlResponseRequest.class)
+        createSamlResponseRequest.setAccount(account)
+                createSamlResponseRequest.setAuthnIssueInstant(new Date())
+        createSamlResponseRequest.setRequestId(requestId)
+                .setServiceProvider(registeredSamlServiceProvider)
+
+        SamlResponse samlResponse = identityProvider.createSamlResponse(createSamlResponseRequest)
+        String base64EncodedXml = samlResponse.getValue()
+
+        String xml = new String(Base64.decoder.
+                decode(base64EncodedXml))
+
+        assertTrue(xml.contains(account.email))
+        assertTrue(xml.contains("InResponseTo=\"" + requestId + "\""))
     }
 }
