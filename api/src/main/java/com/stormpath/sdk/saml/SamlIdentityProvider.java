@@ -207,11 +207,11 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
     AuthnVerification createAuthnVerification(AuthnVerificationRequest request);
 
     /**
-     * Given a {@link SamlResponseRequest} for a given {@link com.stormpath.sdk.account.Account} and {@link RegisteredSamlServiceProvider},
+     * Given a {@link CreateSamlResponseRequest} for a given {@link com.stormpath.sdk.account.Account} and {@link RegisteredSamlServiceProvider},
      * creates a {@link SamlResponse} wrapping the XML of the SAML response to be returned to the service provider.
      *
-     * @param samlResponseRequest a {@link SamlResponseRequest} wrapping the values needed to prepare the SAML response.
+     * @param samlResponseRequest a {@link CreateSamlResponseRequest} wrapping the values needed to prepare the SAML response.
      * @return a {@link SamlResponse} wrapping the XML of the SAML response to be returned to the service provider.
      */
-    SamlResponse createSamlResponse(SamlResponseRequest samlResponseRequest);
+    SamlResponse createSamlResponse(CreateSamlResponseRequest samlResponseRequest);
 }

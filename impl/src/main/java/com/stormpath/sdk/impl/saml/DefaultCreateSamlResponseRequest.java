@@ -8,12 +8,12 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.saml.RegisteredSamlServiceProvider;
-import com.stormpath.sdk.saml.SamlResponseRequest;
+import com.stormpath.sdk.saml.CreateSamlResponseRequest;
 
 import java.util.Date;
 import java.util.Map;
 
-public class DefaultSamlResponseRequest extends AbstractResource implements SamlResponseRequest {
+public class DefaultCreateSamlResponseRequest extends AbstractResource implements CreateSamlResponseRequest {
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
     static final ResourceReference<RegisteredSamlServiceProvider> SERVICE_PROVIDER = new ResourceReference<>("serviceProvider", RegisteredSamlServiceProvider.class);
     static final StringProperty REQUEST_ID = new StringProperty("requestId");
@@ -25,11 +25,11 @@ public class DefaultSamlResponseRequest extends AbstractResource implements Saml
         PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(new Property[] { ACCOUNT, SERVICE_PROVIDER, REQUEST_ID, AUTHN_ISSUE_INSTANT });
     }
 
-    public DefaultSamlResponseRequest(InternalDataStore dataStore) {
+    public DefaultCreateSamlResponseRequest(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultSamlResponseRequest(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultCreateSamlResponseRequest(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -44,7 +44,7 @@ public class DefaultSamlResponseRequest extends AbstractResource implements Saml
     }
 
     @Override
-    public SamlResponseRequest setAccount(Account account) {
+    public CreateSamlResponseRequest setAccount(Account account) {
         setResourceProperty(ACCOUNT, account);
         return this;
     }
@@ -55,7 +55,7 @@ public class DefaultSamlResponseRequest extends AbstractResource implements Saml
     }
 
     @Override
-    public SamlResponseRequest setServiceProvider(RegisteredSamlServiceProvider serviceProvider) {
+    public CreateSamlResponseRequest setServiceProvider(RegisteredSamlServiceProvider serviceProvider) {
         setResourceProperty(SERVICE_PROVIDER, serviceProvider);
         return this;
     }
@@ -66,7 +66,7 @@ public class DefaultSamlResponseRequest extends AbstractResource implements Saml
     }
 
     @Override
-    public SamlResponseRequest setRequestId(String requestId) {
+    public CreateSamlResponseRequest setRequestId(String requestId) {
         setProperty(REQUEST_ID, requestId);
         return this;
     }
@@ -77,7 +77,7 @@ public class DefaultSamlResponseRequest extends AbstractResource implements Saml
     }
 
     @Override
-    public SamlResponseRequest setAuthnIssueInstant(Date authnIssueInstant) {
+    public CreateSamlResponseRequest setAuthnIssueInstant(Date authnIssueInstant) {
         setProperty(AUTHN_ISSUE_INSTANT, authnIssueInstant);
         return this;
     }

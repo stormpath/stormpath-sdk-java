@@ -10,7 +10,7 @@ import java.util.Date;
  *
  * @since 1.3.0
  */
-public interface SamlResponseRequest extends Resource {
+public interface CreateSamlResponseRequest extends Resource {
 
     /**
      * Returns the {@link Account} to be represented in this SAML response.
@@ -25,7 +25,7 @@ public interface SamlResponseRequest extends Resource {
      * @param account the {@link Account} to be represented in this SAML response.
      * @return this instance for method chaining.
      */
-    SamlResponseRequest setAccount(Account account);
+    CreateSamlResponseRequest setAccount(Account account);
 
     /**
      * Returns the {@link RegisteredSamlServiceProvider} to be represented in this SAML response.
@@ -40,7 +40,7 @@ public interface SamlResponseRequest extends Resource {
      * @param serviceProvider the {@link RegisteredSamlServiceProvider} to be represented in this SAML response.
      * @return this instance for method chaining.
      */
-    SamlResponseRequest setServiceProvider(RegisteredSamlServiceProvider serviceProvider);
+    CreateSamlResponseRequest setServiceProvider(RegisteredSamlServiceProvider serviceProvider);
 
     /**
      * Returns the request ID to be represented in this SAML response, which should match the request ID
@@ -57,7 +57,7 @@ public interface SamlResponseRequest extends Resource {
      * @param requestId the request ID to be represented in this SAML response.
      * @return this instance for method chaining.
      */
-    SamlResponseRequest setRequestId(String requestId);
+    CreateSamlResponseRequest setRequestId(String requestId);
 
     /**
      * Returns the issue instant to be represented in this SAML response, which should match the issue instant
@@ -74,5 +74,5 @@ public interface SamlResponseRequest extends Resource {
      * @param authnIssueInstant the issue instant to be represented in this SAML response.
      * @return this instance for method chaining.
      */
-    SamlResponseRequest setAuthnIssueInstant(Date authnIssueInstant);
+    CreateSamlResponseRequest setAuthnIssueInstant(Date authnIssueInstant);
 }

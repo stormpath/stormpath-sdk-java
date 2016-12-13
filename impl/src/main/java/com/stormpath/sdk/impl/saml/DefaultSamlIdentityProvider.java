@@ -191,7 +191,7 @@ public class DefaultSamlIdentityProvider extends AbstractInstanceResource implem
     }
 
     @Override
-    public SamlResponse createSamlResponse(SamlResponseRequest samlResponseRequest) {
+    public SamlResponse createSamlResponse(CreateSamlResponseRequest samlResponseRequest) {
         String samlResponsesHref = getHref() + "/samlResponses";
         return getDataStore().create(samlResponsesHref, samlResponseRequest, SamlResponse.class);
     }
