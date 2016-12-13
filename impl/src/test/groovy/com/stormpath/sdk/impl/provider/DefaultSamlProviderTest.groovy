@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.provider
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.provider.saml.DefaultSamlProvider
+import com.stormpath.sdk.impl.resource.BooleanProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import org.testng.annotations.Test
 
@@ -38,12 +39,13 @@ class DefaultSamlProviderTest {
 
         def propertyDescriptors = provider.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 9)
+        assertEquals(propertyDescriptors.size(), 10)
 
         assertTrue(propertyDescriptors.get("ssoLoginUrl") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("ssoLogoutUrl") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("requestSignatureAlgorithm") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("encodedX509SigningCert") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("forceAuthn") instanceof BooleanProperty)
     }
 
     @Test
@@ -74,10 +76,12 @@ class DefaultSamlProviderTest {
         provider.setSsoLoginUrl("new login url")
         provider.setSsoLogoutUrl("new logout url")
         provider.setRequestSignatureAlgorithm("new signing algorithm")
+        provider.setForceAuthn(true)
 
         assertEquals(provider.getEncodedX509SigningCert(), "new signing cert")
         assertEquals(provider.getSsoLoginUrl(), "new login url")
         assertEquals(provider.getSsoLogoutUrl(), "new logout url")
         assertEquals(provider.getRequestSignatureAlgorithm(), "new signing algorithm")
+        assertEquals(provider.getForceAuthn(), true)
     }
 }

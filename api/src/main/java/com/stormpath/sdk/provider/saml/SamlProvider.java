@@ -101,6 +101,18 @@ public interface SamlProvider extends Provider {
     void setAttributeStatementMappingRules(AttributeStatementMappingRules attributeStatementMappingRules);
 
     /**
+     * Returns the boolean value for the forceAuthn attribute of the SamlProvider.
+     *
+     * @return Returns the boolean value for the forceAuthn attribute of the SamlProvider.
+     */
+    boolean getForceAuthn();
+
+    /**
+     * Sets the boolean value for the forceAuthn attribute of the SamlProvider.
+     */
+    void setForceAuthn(boolean forceAuthn);
+
+    /**
      * Returns the (read-only) Service Provider metadata that can be used to register and/or configure an
      * application with a SAML Identity Provider.
      * <p>This metadata is almost always accessed as an XML document and
