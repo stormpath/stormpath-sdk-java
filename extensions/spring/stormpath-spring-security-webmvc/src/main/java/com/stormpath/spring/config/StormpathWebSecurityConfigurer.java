@@ -37,17 +37,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -58,7 +56,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Configuration
 @EnableStormpathWebSecurity
-public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<StormpathWebSecurityConfigurer, HttpSecurity> {
 
     private static final Logger log = LoggerFactory.getLogger(StormpathWebSecurityConfigurer.class);
 

@@ -1,1 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration = com.stormpath.spring.boot.autoconfigure.StormpathSpringSecurityAutoConfiguration
+org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer = com.stormpath.spring.config.StormpathWebSecurityConfigurer
