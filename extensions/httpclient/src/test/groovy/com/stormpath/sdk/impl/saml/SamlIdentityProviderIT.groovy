@@ -15,8 +15,15 @@
  */
 package com.stormpath.sdk.impl.saml
 
+import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig
+import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.http.HttpRequest
+import com.stormpath.sdk.http.HttpRequestBuilder
+import com.stormpath.sdk.http.HttpRequests
+import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.util.Base64
 import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.saml.*
@@ -25,15 +32,20 @@ import org.joda.time.format.ISODateTimeFormat
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 
+import javax.xml.bind.DatatypeConverter
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotEquals
 import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
+
 /**
  * @since 1.3.0
  */
-class SamlIdentityProviderIT extends AbstractSamlIT{
+class SamlIdentityProviderIT extends AbstractSamlIT {
 
     @AfterMethod
     public void cleanUp() {
@@ -132,7 +144,8 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         def webConfigHref = application.webConfig.href
         def webConfig = client.getResource(webConfigHref, ApplicationWebConfig)
         def domainName = webConfig.domainName
-        assertEquals(ssoLoginEndpointHref, "http://" + domainName + "/saml/sso")
+        URI baseUri = new URI(((InternalDataStore) client.getDataStore()).getBaseUrl())
+        assertEquals(ssoLoginEndpointHref, baseUri.getScheme() + "://" + domainName + "/saml/sso")
     }
 
     @Test
@@ -357,10 +370,10 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         registration.delete()
 
         Throwable e = null;
-        try{
+        try {
             client.getResource(registration.href, SamlServiceProviderRegistration)
         }
-        catch(ResourceException re){
+        catch (ResourceException re) {
             e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
@@ -391,7 +404,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         assertNotNull(registeredSamlServiceProviders.getProperties().items)
 
         def serviceProviderItems = registeredSamlServiceProviders.getProperties().items
-        assertEquals(serviceProviderItems.size,0)
+        assertEquals(serviceProviderItems.size, 0)
     }
 
     @Test
@@ -474,7 +487,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         def identityProviderHref = samlPolicy.getIdentityProvider().href
         assertNotNull(identityProviderHref)
 
-        def identityProvider =  client.getResource(identityProviderHref, SamlIdentityProvider)
+        def identityProvider = client.getResource(identityProviderHref, SamlIdentityProvider)
         assertEquals(identityProvider.href, identityProviderHref)
 
         def registration = client.instantiate(SamlServiceProviderRegistration)
@@ -529,4 +542,93 @@ class SamlIdentityProviderIT extends AbstractSamlIT{
         registrationList = identityProvider.getSamlServiceProviderRegistrations(SamlServiceProviderRegistrations.where(SamlServiceProviderRegistrations.defaultRelayState().eq("aNotNice*")))
         assertEquals(registrationList.size, 0)
     }
+
+    @Test
+    void testAuthnVerification() {
+        def identityProvider = getNewSamlIdentityProviderForNewApplication()
+
+        String cannedX509Cert = '''-----BEGIN CERTIFICATE-----
+MIIDBjCCAe4CCQDkkfBwuV3jqTANBgkqhkiG9w0BAQUFADBFMQswCQYDVQQGEwJV
+UzETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0
+cyBQdHkgTHRkMB4XDTE1MTAxNDIyMDUzOFoXDTE2MTAxMzIyMDUzOFowRTELMAkG
+A1UEBhMCVVMxEzARBgNVBAgTClNvbWUtU3RhdGUxITAfBgNVBAoTGEludGVybmV0
+IFdpZGdpdHMgUHR5IEx0ZDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+ALuZBSfp4ecigQGFL6zawVi9asVstXHy3cpj3pPXjDx5Xj4QlbBL7KbZhVd4B+j3
+Paacetpn8N0g06sYe1fIeddZE7PZeD2vxTLglriOCB8exH9ZAcYNHIGy3pMFdXHY
+lS7xXYWb+BNLVU7ka3tJnceDjhviAjICzQJs0JXDVQUeYxB80a+WtqJP+ZMbAxvA
+QbPzkcvK8CMctRSRqKkpC4gWSxUAJOqEmyvQVQpaLGrI2zFroD2Bgt0cZzBHN5tG
+wC2qgacDv16qyY+90rYgX/WveA+MSd8QKGLcpPlEzzVJp7Z5Boc3T8wIR29jaDtR
+cK4bWQ2EGLJiJ+Vql5qaOmsCAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAmCND/4tB
++yVsIZBAQgul/rK1Qj26FlyO0i0Rmm2OhGRhrd9JPQoZ+xCtBixopNICKG7kvUeQ
+Sk8Bku6rQ3VquxKtqAjNFeiLykd9Dn2HUOGpNlRcpzFXHtX+L1f34lMaT54qgWAh
+PgWkzh8xo5HT4M83DaG+HT6BkaVAQwIlJ26S/g3zJ00TrWRP2E6jlhR5KHLN+8eE
+D7/ENlqO5ThU5uX07/Bf+S0q5NK0NPuy0nO2w064kHdIX5/O64ktT1/MgWBV6yV7
+mg1osHToeo4WXGz2Yo6+VFMM3IKRqMDbkR7N4cNKd1KvEKrMaRE7vC14H/G5NSOh
+yl85oFHAdkguTA==
+-----END CERTIFICATE-----
+'''
+
+        def serviceProvider = client.instantiate(RegisteredSamlServiceProvider)
+        serviceProvider
+                .setName("testName")
+                .setAssertionConsumerServiceUrl("http://localhost:9191/v1/directories/58RbxGTCdqH9L1ddRxBquy/saml/sso/post")
+                .setEntityId("http://localhost:9191/v1/directories/58RbxGTCdqH9L1ddRxBquy")
+                .setEncodedX509SigningCert(cannedX509Cert)
+
+
+        def registeredSamlServiceProvider = client.currentTenant.createRegisterdSamlServiceProvider(serviceProvider)
+
+        def registration = client.instantiate(SamlServiceProviderRegistration)
+        registration.setDefaultRelayState("aNiceDefaultRelayState")
+        registration.setServiceProvider(registeredSamlServiceProvider)
+        registration.setIdentityProvider(identityProvider)
+        createAndGetAndAssertNewRegistration(registration)
+
+        String cannedRelayState = "eyJ0aWQiOiI3QXZCMWJqZXJRWTRVM0JzQWtvOEYyIiwic3R0IjoiYXNzZXJ0aW9uIiwiYWxnIjoiSFMyNTYifQ.eyJpcnQiOiIyMmJhYjc5OS01OTM2LTQ2ZjktOTMwNy1mYjM2ZGIxOTBkMmYiLCJhcGlfa2lkIjoiMVNFNUxIODBVU080MEVYTVQ1SVEyVVRXSCIsImNiX3VyaSI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTE5MS91aTIvdmlld3Mvc2FtbC10ZXN0LWNhbGxiYWNrLmh0bWwiLCJhc2giOiJodHRwOi8vbG9jYWxob3N0OjkxOTEvdjEvZGlyZWN0b3JpZXMvNThSYnhHVENkcUg5TDFkZFJ4QnF1eSIsImFwcF9ocmVmIjoiaHR0cDovL2xvY2FsaG9zdDo5MTkxL3YxL2FwcGxpY2F0aW9ucy83RFVXNHlzNU5mM0oyd09NV29SRUZvIiwianRpIjoic3A2UEJLVm5ZZW4xS3ZYN1F0UThQS0RjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MTkxL3YxL2FwcGxpY2F0aW9ucy83RFVXNHlzNU5mM0oyd09NV29SRUZvL3NhbWwvc3NvL2lkcFJlZGlyZWN0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo5MTkxL3YxL2RpcmVjdG9yaWVzLzU4UmJ4R1RDZHFIOUwxZGRSeEJxdXkvc2FtbC9zc28vcG9zdCJ9.fG4Ffp2Udzr2xfEzNrVGzbjc02asVf2UkuzpOLMphHo"
+
+        AuthnVerificationRequest authnVerificationRequest = client.instantiate(AuthnVerificationRequest.class);
+        authnVerificationRequest.setSamlRequest("pJJBc9owEIXv/RUe3W0hd0hBg50xMGkYaOOAk2l7U+RNUEaWjFZ2SX59HQNNcmguvUq77715307O95UOWnCorEkIiwYkACNtqcxDQm6Ki3BEztNPExSVjmueNX5r1rBrAH2QIYLz3d7MGmwqcBtwrZJws14lZOt9zSnVVgq9tej5mI0ZbRktlQPprVOAdDha3+2/FrNydzlesbJc76e75om+mFFES+tukQTzzkwZ4fuER91nENo2GD6Cj0RdYyRVhJ1qVQu/jZT9q0GCC+sk9METci80AgkW84RgfZZPl7fmJxi2bH98ufbXo3w5l90v5gJRtfA6j9jAwqAXxickHrCzkMUh+1zEjA+HnMVRPBr8IkHurLfS6qkyhwIbZ7gVqJAbUQFyL/km+7bicTTgd4ch5JdFkYf51aYgwe0JRPwCokNjkB+q/1irPhqT9ECK94ndW4WPBcSJJUn/g9yEvnVPT1fzvbNbzHOrlXwKMq3t75kD4bt+vWugJ1QJ/++ALGL9iyrD+36UQyWUzsrSASKh6dH3/X2mfwAAAP//")
+                .setRelayState(cannedRelayState)
+                .setQueryString("SAMLRequest=pJJBc9owEIXv/RUe3W0hd0hBg50xMGkYaOOAk2l7U+RNUEaWjFZ2SX59HQNNcmguvUq77715307O95UOWnCorEkIiwYkACNtqcxDQm6Ki3BEztNPExSVjmueNX5r1rBrAH2QIYLz3d7MGmwqcBtwrZJws14lZOt9zSnVVgq9tej5mI0ZbRktlQPprVOAdDha3+2/FrNydzlesbJc76e75om+mFFES+tukQTzzkwZ4fuER91nENo2GD6Cj0RdYyRVhJ1qVQu/jZT9q0GCC+sk9METci80AgkW84RgfZZPl7fmJxi2bH98ufbXo3w5l90v5gJRtfA6j9jAwqAXxickHrCzkMUh+1zEjA+HnMVRPBr8IkHurLfS6qkyhwIbZ7gVqJAbUQFyL/km+7bicTTgd4ch5JdFkYf51aYgwe0JRPwCokNjkB+q/1irPhqT9ECK94ndW4WPBcSJJUn/g9yEvnVPT1fzvbNbzHOrlXwKMq3t75kD4bt+vWugJ1QJ/++ALGL9iyrD+36UQyWUzsrSASKh6dH3/X2mfwAAAP//&RelayState=eyJ0aWQiOiI3QXZCMWJqZXJRWTRVM0JzQWtvOEYyIiwic3R0IjoiYXNzZXJ0aW9uIiwiYWxnIjoiSFMyNTYifQ.eyJpcnQiOiIyMmJhYjc5OS01OTM2LTQ2ZjktOTMwNy1mYjM2ZGIxOTBkMmYiLCJhcGlfa2lkIjoiMVNFNUxIODBVU080MEVYTVQ1SVEyVVRXSCIsImNiX3VyaSI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTE5MS91aTIvdmlld3Mvc2FtbC10ZXN0LWNhbGxiYWNrLmh0bWwiLCJhc2giOiJodHRwOi8vbG9jYWxob3N0OjkxOTEvdjEvZGlyZWN0b3JpZXMvNThSYnhHVENkcUg5TDFkZFJ4QnF1eSIsImFwcF9ocmVmIjoiaHR0cDovL2xvY2FsaG9zdDo5MTkxL3YxL2FwcGxpY2F0aW9ucy83RFVXNHlzNU5mM0oyd09NV29SRUZvIiwianRpIjoic3A2UEJLVm5ZZW4xS3ZYN1F0UThQS0RjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MTkxL3YxL2FwcGxpY2F0aW9ucy83RFVXNHlzNU5mM0oyd09NV29SRUZvL3NhbWwvc3NvL2lkcFJlZGlyZWN0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo5MTkxL3YxL2RpcmVjdG9yaWVzLzU4UmJ4R1RDZHFIOUwxZGRSeEJxdXkvc2FtbC9zc28vcG9zdCJ9.fG4Ffp2Udzr2xfEzNrVGzbjc02asVf2UkuzpOLMphHo&SigAlg=http://www.w3.org/2001/04/xmldsig-more#rsa-sha256&Signature=bv/bFoVCuOlrB8OyrkNMjpDh9s6g2+zppZGeSOd3lSOPzfdJIv7/8/e1S3I+0jDHGSFceFYj1q7HtFMyKxh2VNAeBnt1FjZ3SwbifZzoV5TwFSThTXv2wWiEYPbw9HETv3ol3xthDfFwNy+7mc862XEUwh8vmoilCHdxOJXXTzvuGF0dpF6a4QzHZT4og4GBd9uBTl1u4IKejGzP0CpoBlDrBS0TVuyvJz2kc5CC5NM0Q2LK4WMb3J4HCxZ8SbLBL9O65YQOAzNJwmLRQGhgfeS63a5x0eMtZJAOzAjAaoFOaCSAwsUmQtd5tlGmejSsKQOTeBYe8JMRkSjZ6XnHmw==")
+
+        AuthnVerification authnVerification = identityProvider.createAuthnVerification(authnVerificationRequest)
+        assertEquals(authnVerification.relayState, cannedRelayState)
+        assertEquals(authnVerification.serviceProvider.href, registeredSamlServiceProvider.href)
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"))
+        Date cannedDate = dateFormat.parse("2016-12-13T21:55:12.280Z")
+        assertEquals(authnVerification.authnIssueInstant, cannedDate)
+    }
+
+    @Test
+    void testSamlResponse() {
+        def identityProvider = getNewSamlIdentityProviderForNewApplication()
+
+        Account account = client.getAccounts().iterator().next()
+
+        def serviceProvider = client.instantiate(RegisteredSamlServiceProvider)
+        serviceProvider
+                .setName("testName")
+                .setAssertionConsumerServiceUrl("https://some.sp.com/saml/sso/post")
+                .setEntityId(uniquify("urn:entity:id"))
+                .setEncodedX509SigningCert(validX509Cert)
+        def registeredSamlServiceProvider = client.currentTenant.createRegisterdSamlServiceProvider(serviceProvider)
+
+        String requestId = "blargle"
+
+        CreateSamlResponseRequest createSamlResponseRequest = client.instantiate(CreateSamlResponseRequest.class)
+        createSamlResponseRequest.setAccount(account)
+                createSamlResponseRequest.setAuthnIssueInstant(new Date())
+        createSamlResponseRequest.setRequestId(requestId)
+                .setServiceProvider(registeredSamlServiceProvider)
+
+        SamlResponse samlResponse = identityProvider.createSamlResponse(createSamlResponseRequest)
+        String base64EncodedXml = samlResponse.getValue()
+
+        String xml = new String(DatatypeConverter.parseBase64Binary(base64EncodedXml))
+
+        assertTrue(xml.contains(account.email))
+        assertTrue(xml.contains("InResponseTo=\"" + requestId + "\""))
+    }
+
 }
