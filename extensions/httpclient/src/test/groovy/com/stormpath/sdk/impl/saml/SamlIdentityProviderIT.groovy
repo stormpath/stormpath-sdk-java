@@ -33,6 +33,7 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 
 import javax.xml.bind.DatatypeConverter
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 import static org.testng.Assert.assertEquals
@@ -593,7 +594,9 @@ yl85oFHAdkguTA==
         AuthnVerification authnVerification = identityProvider.createAuthnVerification(authnVerificationRequest)
         assertEquals(authnVerification.relayState, cannedRelayState)
         assertEquals(authnVerification.serviceProvider.href, registeredSamlServiceProvider.href)
-        Date cannedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse("2016-12-13T13:55:12.280Z")
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"))
+        Date cannedDate = dateFormat.parse("2016-12-13T21:55:12.280Z")
         assertEquals(authnVerification.authnIssueInstant, cannedDate)
     }
 
@@ -626,15 +629,6 @@ yl85oFHAdkguTA==
 
         assertTrue(xml.contains(account.email))
         assertTrue(xml.contains("InResponseTo=\"" + requestId + "\""))
-    }
-
-    def static String createBasicAuthzHeader(String id, String secret) {
-
-        String cred = id + ":" + secret
-
-        byte[] bytes = cred.getBytes("UTF-8")
-
-        "Basic " + Base64.encodeBase64String(bytes)
     }
 
 }
