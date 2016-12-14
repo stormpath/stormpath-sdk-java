@@ -106,6 +106,7 @@ import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.DefaultExpandsResolver;
+import com.stormpath.sdk.servlet.mvc.DefaultProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
 import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
@@ -120,6 +121,7 @@ import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.MeController;
+import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.SamlController;
@@ -223,8 +225,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     private static final Logger log = LoggerFactory.getLogger(AbstractStormpathWebMvcConfiguration.class);
 
     private static final String PRODUCES_SUPPORTED_TYPES_MSG = "stormpath.web.produces property value must " +
-        "specify either " + MediaType.APPLICATION_JSON_VALUE + " or " + MediaType.TEXT_HTML_VALUE + " or both.  " +
-        "Other media types for this property are not currently supported.";
+            "specify either " + MediaType.APPLICATION_JSON_VALUE + " or " + MediaType.TEXT_HTML_VALUE + " or both.  " +
+            "Other media types for this property are not currently supported.";
 
     // =================== Authentication Components ==========================
 
@@ -278,7 +280,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.enabled'] ?: true }")
     protected boolean stormpathFilterEnabled;
 
-    @Value("#{ @environment['stormpath.web.stormpathFilter.order'] ?: T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE }")
+    @Value("#{ @environment['stormpath.web.stormpathFilter.order'] ?: 10}") //Spring Security uses order 0, we want to be behind it, so we set it to 10 in case there is need for addional filters in-between
     protected int stormpathFilterOrder;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
@@ -492,19 +494,19 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         }
 
         AccessibleResourceHandlerRegistry registry =
-            new AccessibleResourceHandlerRegistry(applicationContext, servletContext);
+                new AccessibleResourceHandlerRegistry(applicationContext, servletContext);
         registry.setOrder(staticResourceHandlerMappingOrder);
 
         if (cssEnabled) {
             registry.addResourceHandler("/assets/css/*stormpath.css")
-                //reference the actual files in the stormpath-sdk-servlet .jar:
-                .addResourceLocations("classpath:/META-INF/resources/assets/css/");
+                    //reference the actual files in the stormpath-sdk-servlet .jar:
+                    .addResourceLocations("classpath:/META-INF/resources/assets/css/");
         }
 
         if (jsEnabled) {
             registry.addResourceHandler("/assets/js/*stormpath.js")
-                //reference the actual files in the stormpath-sdk-servlet .jar:
-                .addResourceLocations("classpath:/META-INF/resources/assets/js/");
+                    //reference the actual files in the stormpath-sdk-servlet .jar:
+                    .addResourceLocations("classpath:/META-INF/resources/assets/js/");
         }
 
         return registry.toHandlerMapping();
@@ -590,11 +592,18 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new DefaultApplicationResolver();
     }
 
+    /**
+     * @since 1.0.3
+     */
+    public ProviderAccountRequestFactory stormpathAccountProviderRequestHandler() {
+        return new DefaultProviderAccountRequestFactory();
+    }
+
     public Resolver<Boolean> stormpathRegisterEnabledResolver() {
         return new RegisterEnabledResolver(
-            stormpathRegisterConfig().isEnabled(),
-            stormpathApplicationResolver(),
-            stormpathRegisterEnabledPredicate()
+                stormpathRegisterConfig().isEnabled(),
+                stormpathApplicationResolver(),
+                stormpathRegisterEnabledPredicate()
         );
     }
 
@@ -729,9 +738,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (cookieAuthenticationResultSaverEnabled) {
             return new CookieAuthenticationResultSaver(
-                stormpathAccessTokenCookieConfig(),
-                stormpathRefreshTokenCookieConfig(),
-                stormpathSecureResolver()
+                    stormpathAccessTokenCookieConfig(),
+                    stormpathRefreshTokenCookieConfig(),
+                    stormpathSecureResolver()
             );
         }
 
@@ -757,7 +766,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         if (Collections.isEmpty(savers)) {
             String msg = "No Saver<AuthenticationResult> instances have been enabled or configured.  This is " +
-                "required to save authentication result state.";
+                    "required to save authentication result state.";
             throw new IllegalStateException(msg);
         }
 
@@ -820,8 +829,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
         return new DefaultWrappedServletRequestFactory(
-            stormpathUsernamePasswordRequestFactory(), stormpathAuthenticationResultSaver(),
-            stormpathRequestEventPublisher(), requestUserPrincipalStrategy, requestRemoteUserStrategy
+                stormpathUsernamePasswordRequestFactory(), stormpathAuthenticationResultSaver(),
+                stormpathRequestEventPublisher(), requestUserPrincipalStrategy, requestRemoteUserStrategy
         );
     }
 
@@ -843,7 +852,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public HeaderAuthenticator stormpathAuthorizationHeaderAuthenticator() {
         return new AuthorizationHeaderAuthenticator(
-            stormpathHttpAuthenticationSchemes(), httpAuthenticationChallenge, stormpathRequestEventPublisher()
+                stormpathHttpAuthenticationSchemes(), httpAuthenticationChallenge, stormpathRequestEventPublisher()
         );
     }
 
@@ -853,11 +862,11 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Resolver<Account> stormpathCookieAccountResolver() {
         return new CookieAccountResolver(
-            stormpathAccessTokenCookieConfig(),
-            stormpathRefreshTokenCookieConfig(),
-            stormpathJwtAccountResolver(),
-            stormpathCookieAuthenticationResultSaver(),
-            stormpathAccessTokenResultFactory());
+                stormpathAccessTokenCookieConfig(),
+                stormpathRefreshTokenCookieConfig(),
+                stormpathJwtAccountResolver(),
+                stormpathCookieAuthenticationResultSaver(),
+                stormpathAccessTokenResultFactory());
     }
 
     public List<Resolver<Account>> stormpathAccountResolvers() {
@@ -1260,7 +1269,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public RequestAuthorizer stormpathAccessTokenRequestAuthorizer() {
         return new DefaultAccessTokenRequestAuthorizer(
-            stormpathSecureResolver(), stormpathOriginAccessTokenRequestAuthorizer()
+                stormpathSecureResolver(), stormpathOriginAccessTokenRequestAuthorizer()
         );
     }
 
@@ -1270,8 +1279,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer() {
         return new OriginAccessTokenRequestAuthorizer(
-            stormpathServerUriResolver(), stormpathLocalhostResolver(), stormpathAccessTokenAuthorizedOriginUris(),
-            stormpathProducedMediaTypes()
+                stormpathServerUriResolver(), stormpathLocalhostResolver(), stormpathAccessTokenAuthorizedOriginUris(),
+                stormpathProducedMediaTypes()
         );
     }
 

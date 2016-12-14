@@ -21,11 +21,14 @@ import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
-import com.stormpath.spring.filter.ContentNegotiationAuthenticationFilter;
+import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
 import com.stormpath.spring.filter.LoginHandlerFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
+import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -62,7 +66,25 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     OAuthAuthenticationSpringSecurityProcessingFilter oauthAuthenticationSpringSecurityProcessingFilter;
 
     @Autowired
+    SocialCallbackSpringSecurityProcessingFilter socialCallbackSpringSecurityProcessingFilter;
+
+    /**
+     * @since 1.3.0
+     */
+    @Autowired
+    ContentNegotiationSpringSecurityAuthenticationFilter contentNegotiationSpringSecurityAuthenticationFilter;
+
+    @Autowired
     SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
+
+    //Based on this http://docs.spring.io/spring-security/site/docs/4.1.2.RELEASE/reference/htmlsingle/#filter-ordering
+    //We are introducing a new filter in order to place the Stormpath Account in context
+    //This is required when a user is logged in (cookie in browser) and then the Web App is restarted. In that case
+    //Spring security will deny access at some point and redirect you to login. Stormpath will see your cookie, will do an
+    //automatic login and will forward you to the original URL but Spring Security will not have its security context set
+    //by Stormpath and therefore it will redirect you back to login -> Consequence: redirection loop! -> This Filter fixes that :^)
+    @Autowired
+    StormpathSecurityContextPersistenceFilter stormpathSecurityContextPersistenceFilter;
 
     @Autowired
     AuthenticationEntryPoint stormpathAuthenticationEntryPoint;
@@ -93,6 +115,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Autowired(required = false) //required = false when stormpath.web.enabled = false
     @Qualifier("stormpathAuthenticationResultSaver")
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
+
+    /**
+     * @since 1.0.3
+     */
+    @Autowired
+    ProviderAccountRequestFactory stormpathProviderAccountRequestFactory; //provided by stormpath-spring-webmvc
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
     protected String produces;
@@ -240,17 +268,22 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         context.getAutowireCapableBeanFactory().autowireBean(this);
         http.servletApi().rolePrefix(""); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/325
 
-        // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
-        // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
-        http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
-
         if (loginEnabled) {
+            // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
+            // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
+            http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
+
+            http.addFilterBefore(socialCallbackSpringSecurityProcessingFilter, UsernamePasswordAuthenticationFilter.class);
+
             // This filter replaces http.formLogin() so that we can properly handle content negotiation
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
-            http.addFilterBefore(setupContentNegotiationAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            http.addFilterBefore(contentNegotiationSpringSecurityAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-            http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationAuthenticationFilter.class);
+            //http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationSpringSecurityAuthenticationFilter.class); //todo: need this?
+
+            //Fix for redirection loop when Cookie is present but WebApp is restarted and '/' is locked down to authenticated users (Bare Bones example)
+            http.addFilterBefore(stormpathSecurityContextPersistenceFilter, UsernamePasswordAuthenticationFilter.class);
         }
 
         if (idSiteEnabled && loginEnabled) {
@@ -369,26 +402,13 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         }
     }
 
-    // This sets up the Content Negotiation aware filter and replaces the calls to http.formLogin()
-    // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
-    private ContentNegotiationAuthenticationFilter setupContentNegotiationAuthenticationFilter() {
-        ContentNegotiationAuthenticationFilter filter = new ContentNegotiationAuthenticationFilter();
-
-        filter.setSupportedMediaTypes(MediaType.parseMediaTypes(produces));
-        filter.setAuthenticationManager(stormpathAuthenticationManager);
-        filter.setUsernameParameter("login");
-        filter.setPasswordParameter("password");
-        filter.setAuthenticationSuccessHandler(successHandler);
-        filter.setAuthenticationFailureHandler(failureHandler);
-
-        return filter;
-    }
-
     // Creates the pre login handler filter with the user define handler
+    //todo: can this be removed
     private LoginHandlerFilter preLoginHandlerFilter() {
         return new LoginHandlerFilter(loginPreHandler, loginUri);
     }
 
+    //todo: can this be removed
     private LoginHandlerFilter postLoginHandlerFilter() {
         return new LoginHandlerFilter(loginPostHandler, loginUri);
     }

@@ -24,17 +24,23 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
+import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
+import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
+import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
 import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -70,6 +76,12 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Qualifier("stormpathRequestEventPublisher")
     private Publisher<RequestEvent> stormpathRequestEventPublisher; //provided by stormpath-spring-webmvc
 
+    /**
+     * @since 1.0.3
+     */
+    @Autowired
+    ProviderAccountRequestFactory stormpathProviderAccountRequestFactory; //provided by stormpath-spring-webmvc
+
     @Value("#{ @environment['stormpath.web.login.uri'] ?: '/login' }")
     protected String loginUri;
 
@@ -93,6 +105,10 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
     protected String produces;
+
+    @Autowired
+    @Qualifier("stormpathAuthenticationManager")
+    AuthenticationManager stormpathAuthenticationManager; // provided by stormpath-spring-security
 
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
@@ -165,6 +181,37 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     public OAuthAuthenticationSpringSecurityProcessingFilter oAuthAuthenticationProcessingFilter() {
         OAuthAuthenticationSpringSecurityProcessingFilter filter = new OAuthAuthenticationSpringSecurityProcessingFilter();
         filter.setEnabled(accessTokenEnabled);
+        return filter;
+    }
+
+    public StormpathSecurityContextPersistenceFilter stormpathSecurityContextPersistenceFilter() {
+        StormpathSecurityContextPersistenceFilter filter = new StormpathSecurityContextPersistenceFilter();
+        return filter;
+    }
+
+    public SocialCallbackSpringSecurityProcessingFilter socialCallbackSpringSecurityProcessingFilter() {
+        SocialCallbackSpringSecurityProcessingFilter filter = new SocialCallbackSpringSecurityProcessingFilter();
+        filter.setEnabled(true);
+        return filter;
+    }
+
+    // This sets up the Content Negotiation aware filter and replaces the calls to http.formLogin()
+    // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
+    public ContentNegotiationSpringSecurityAuthenticationFilter contentNegotiationSpringSecurityAuthenticationFilter() {
+        ContentNegotiationSpringSecurityAuthenticationFilter filter = new ContentNegotiationSpringSecurityAuthenticationFilter();
+
+        filter.setSupportedMediaTypes(MediaType.parseMediaTypes(produces));
+        filter.setAuthenticationManager(stormpathAuthenticationManager);
+        filter.setUsernameParameter("login");
+        filter.setPasswordParameter("password");
+        filter.setAuthenticationSuccessHandler(stormpathAuthenticationSuccessHandler());
+        filter.setAuthenticationFailureHandler(stormpathAuthenticationFailureHandler());
+
+        /**
+         * @since 1.3.0
+         */
+        filter.setProviderAccountRequestFactory(stormpathProviderAccountRequestFactory);
+
         return filter;
     }
 
