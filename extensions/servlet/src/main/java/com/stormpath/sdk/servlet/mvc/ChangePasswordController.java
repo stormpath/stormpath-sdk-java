@@ -27,9 +27,11 @@ import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
+import org.apache.http.HttpStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -212,7 +214,7 @@ public class ChangePasswordController extends FormController {
         String sptoken = form.getFieldValue("sptoken");
 
         if (isJsonPreferred(request, response)) {
-            Map<String, Object> model = new HashMap<String, Object>();
+            Map<String, Object> model = new HashMap<>();
             try {
                 Account account = application.resetPassword(sptoken, password);
                 if (autoLogin) {
@@ -237,12 +239,19 @@ public class ChangePasswordController extends FormController {
             if (autoLogin) {
                 final AuthenticationResult result = new TransientAuthenticationResult(account);
                 this.authenticationResultSaver.set(request, response, result);
-                next = loginNextUri;
+                next = this.loginNextUri;
             } else {
                 next = this.nextUri;
             }
-        } catch (Exception e) {
-            next = errorUri;
+        } catch (ResourceException e) {
+            // resolves https://github.com/stormpath/stormpath-sdk-java/issues/1138
+            // 404 is invalid, expired or used sptoken
+            if (e.getCode() == HttpStatus.SC_NOT_FOUND) {
+                next = this.errorUri;
+            } else {
+                ErrorModel errorModel = errorModelFactory.toError(request, e);
+                next = getUri() + "?sptoken=" + sptoken + "&error=" + URLEncoder.encode(errorModel.getMessage(), "UTF-8");
+            }
         }
 
         return new DefaultViewModel(next).setRedirect(true);
