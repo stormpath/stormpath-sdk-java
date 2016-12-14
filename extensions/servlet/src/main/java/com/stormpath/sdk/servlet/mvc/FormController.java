@@ -144,6 +144,7 @@ public abstract class FormController extends AbstractController {
                 error = (ErrorModel) session.getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
             } else {
                 //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/1138
+                //TODO This breaks i18n. Fix when Stormpath backend returns specific password policy failure codes.
                 error = ErrorModel.builder()
                     .setStatus(HttpStatus.SC_BAD_REQUEST).setMessage(request.getParameter("error")).build();
             }
