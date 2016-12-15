@@ -62,8 +62,8 @@ public class StormpathMockMvcConfigurer extends MockMvcConfigurerAdapter {
                             + " implementing Filter is present or inject the Filter to be used.");
         }
 
-        builder.addFilters(this.stormpathFilter);
         builder.addFilters(this.springSecurityFilter);
+        builder.addFilters(this.stormpathFilter); //Let's put Stormpath behind Spring Security
         context.getServletContext().setAttribute(StormpathFilter.class.getName(), this.stormpathFilter.getClass().getName());
         context.getServletContext().setAttribute(BeanIds.SPRING_SECURITY_FILTER_CHAIN, this.springSecurityFilter);
 
