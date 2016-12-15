@@ -3,9 +3,13 @@ package com.stormpath.spring.model
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
+ * <a href="https://www.guerrillamail.com/">Guerilla Email</a> is a disposable email API service that we use in some ITs
+ * in order to retrieve emails in order to, for example, obtain a password reset token.
+ *
  * @since 1.2.3
  */
 public class GuerillaEmail {
+
     private String alias
     private String email
     private long timestamp
