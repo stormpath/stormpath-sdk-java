@@ -117,7 +117,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
 
     /**
-     * @since 1.0.3
+     * @since 1.3.0
      */
     @Autowired
     ProviderAccountRequestFactory stormpathProviderAccountRequestFactory; //provided by stormpath-spring-webmvc

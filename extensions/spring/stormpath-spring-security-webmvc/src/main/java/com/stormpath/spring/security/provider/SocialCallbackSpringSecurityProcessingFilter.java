@@ -54,7 +54,7 @@ import java.io.IOException;
  * uses it to populate the Spring Security context with an {@link ProviderAuthenticationToken ProviderAuthenticationToken}.
  * <p>
  *
- * @since 1.0.3
+ * @since 1.3.0
  */
 public class SocialCallbackSpringSecurityProcessingFilter extends HttpFilter implements InitializingBean {
 

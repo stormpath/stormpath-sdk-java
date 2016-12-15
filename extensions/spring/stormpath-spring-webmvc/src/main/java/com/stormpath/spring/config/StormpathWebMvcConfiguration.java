@@ -123,7 +123,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     /**
-     * @since 1.0.3
+     * @since 1.3.0
      */
     @Bean
     @Override

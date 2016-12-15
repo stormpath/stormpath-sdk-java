@@ -593,7 +593,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     /**
-     * @since 1.0.3
+     * @since 1.3.0
      */
     public ProviderAccountRequestFactory stormpathAccountProviderRequestHandler() {
         return new DefaultProviderAccountRequestFactory();

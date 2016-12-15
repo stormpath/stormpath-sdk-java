@@ -32,7 +32,7 @@ import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED
 // conformance to stormpath-framework-spec as enforced by
 // stormpath-framework-tck
 /**
- * @since 1.0.3
+ * @since 1.3.0
  */
 public class DefaultProviderAccountRequestFactory implements ProviderAccountRequestFactory {
 
