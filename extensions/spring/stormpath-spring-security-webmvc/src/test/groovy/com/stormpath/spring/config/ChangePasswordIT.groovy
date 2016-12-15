@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertNotEquals
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
 
@@ -39,8 +40,12 @@ class ChangePasswordIT extends AbstractClientIT {
             .build()
     }
 
+    // Addresses https://github.com/stormpath/stormpath-sdk-java/issues/1138
+    // This test ensures that errors are properly rendered when the password policy is violated and that
+    // the errors that come back are different from each other.
+    // TODO This breaks i18n. Fix when Stormpath backend returns specific password policy failure codes.
     @Test
-    void testChange() {
+    void testChangePasswordErrorMessagesAreDescribingTheRealError() {
 
         // create dummy email
         def guerillaEmail = getGuerrillaEmail()
@@ -56,6 +61,7 @@ class ChangePasswordIT extends AbstractClientIT {
 
         // retrieve email
         Document email = retrieveEmail(guerillaEmail)
+        assertNotNull email
 
         // extract sptoken
         Elements hrefs = email.getElementsByTag("a")
@@ -67,15 +73,15 @@ class ChangePasswordIT extends AbstractClientIT {
         assertNotNull href
         def sptoken = href.substring(href.indexOf("sptoken=") + "sptoken=".length())
 
+        def compareError = "error_to_compare"
         // change password test
         // default policy is: min=8, max=100, lowercase=1, uppercase=1, numeric=1
         [
             "aaa", // too short
             ("a" * 101), // too long
-            "AAAAAAAA", // no lowercase
-            "aaaaaaaa", // no uppercase
-            "Aaaaaaaa", // no numbers
-
+            "aaaaaaaa1", // no uppercase
+            "AAAAAAAA1", // no lowercase
+            "Aaaaaaaaa" // no numbers
         ].each { password ->
             def result = mvc
                 .perform(post("/change")
@@ -86,7 +92,11 @@ class ChangePasswordIT extends AbstractClientIT {
                 .andReturn()
 
             // we don't want to test for specific error strings as they may change
-            assertTrue result.response.getHeader("location").contains("error=")
+            def locationWithError = result.response.getHeader("location")
+            assertTrue locationWithError.contains("error=")
+            // but we can test for errors being different from previous ones
+            assertNotEquals locationWithError, compareError
+            compareError = locationWithError
         }
 
         def result = mvc

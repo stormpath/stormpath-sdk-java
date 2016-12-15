@@ -68,6 +68,8 @@ abstract class AbstractClientIT extends AbstractTestNGSpringContextTests {
         this.resourcesToDelete.add(d)
     }
 
+    // Guerilla Email is disposable email API service
+    // https://www.guerrillamail.com/
     protected GuerillaEmail getGuerrillaEmail() throws IOException {
         String json = get(GUERILLA_MAIL_BASE + "?f=get_email_address").asString()
 
