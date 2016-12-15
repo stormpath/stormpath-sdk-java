@@ -27,10 +27,6 @@
     <name>Stormpath :: Spring :: Boot :: Spring Security :: Web MVC Starter</name>
     <description>Spring Boot WebMVC Starter for Stormpath with Spring Security</description>
 
-    <properties>
-        <tomcat.version>8.5.0</tomcat.version>
-    </properties>
-
     <dependencies>
 
         <dependency>
@@ -57,24 +53,6 @@
             <groupId>com.stormpath.sdk</groupId>
             <artifactId>stormpath-sdk-httpclient</artifactId>
             <scope>runtime</scope>
-        </dependency>
-
-        <!--
-            We need to force Tomcat 7 for the ITs to run in Java 6.
-            Otherwise Tomcat 8.0.15 is used and it throws:
-            javax/servlet/ServletContext : Unsupported major.minor version 51.0
-        -->
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <version>${tomcat.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-el</artifactId>
-            <version>${tomcat.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.stormpath.spring</groupId>
