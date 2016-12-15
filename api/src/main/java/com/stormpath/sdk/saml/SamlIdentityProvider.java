@@ -195,4 +195,23 @@ public interface SamlIdentityProvider extends Resource, Saveable, Deletable, Aud
      * @return a paginated list of the samlIdentityProvider's samlServiceProviderRegistrations that match the specified query criteria.
      */
     SamlServiceProviderRegistrationList getSamlServiceProviderRegistrations(SamlServiceProviderRegistrationCriteria criteria);
+
+    /**
+     * Given an {@link AuthnVerificationRequest} wrapping an incoming SAML AuthnRequest, verifies that the request targets a
+     * {@link RegisteredSamlServiceProvider} that is registered with this identity provider, and validates the signature of
+     * the request if one is provided.
+     *
+     * @param request the request to be verified.
+     * @return an {@link AuthnVerification} containing the state to be passed along during the SAML flow.
+     */
+    AuthnVerification createAuthnVerification(AuthnVerificationRequest request);
+
+    /**
+     * Given a {@link CreateSamlResponseRequest} for a given {@link com.stormpath.sdk.account.Account} and {@link RegisteredSamlServiceProvider},
+     * creates a {@link SamlResponse} wrapping the XML of the SAML response to be returned to the service provider.
+     *
+     * @param samlResponseRequest a {@link CreateSamlResponseRequest} wrapping the values needed to prepare the SAML response.
+     * @return a {@link SamlResponse} wrapping the XML of the SAML response to be returned to the service provider.
+     */
+    SamlResponse createSamlResponse(CreateSamlResponseRequest samlResponseRequest);
 }
