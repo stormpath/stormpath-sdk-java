@@ -48,7 +48,7 @@ import java.util.Map;
 import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED_OBJECT;
 
 /**
- * @since 1.0.3
+ * @since 1.3.0
  */
 public class GithubAccessTokenResolver implements Resolver<String> {
 

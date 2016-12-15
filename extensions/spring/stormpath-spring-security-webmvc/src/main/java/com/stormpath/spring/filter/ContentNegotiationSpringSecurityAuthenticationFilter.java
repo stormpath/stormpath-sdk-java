@@ -120,7 +120,7 @@ public class ContentNegotiationSpringSecurityAuthenticationFilter extends Userna
     }
 
     /**
-     * @since 1.0.3
+     * @since 1.3.0
      */
     public void setProviderAccountRequestFactory(ProviderAccountRequestFactory providerAccountRequestFactory) {
         this.providerAccountRequestFactory = providerAccountRequestFactory;

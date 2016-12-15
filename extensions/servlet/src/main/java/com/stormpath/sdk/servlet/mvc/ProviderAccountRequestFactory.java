@@ -26,7 +26,7 @@ import java.util.Map;
 // conformance to stormpath-framework-spec as enforced by
 // stormpath-framework-tck
 /**
- * @since 1.0.3
+ * @since 1.3.0
  */
 public interface ProviderAccountRequestFactory {
 

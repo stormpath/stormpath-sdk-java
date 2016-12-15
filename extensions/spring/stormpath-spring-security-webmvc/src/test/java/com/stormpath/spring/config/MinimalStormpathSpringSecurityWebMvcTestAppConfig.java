@@ -38,19 +38,19 @@ public class MinimalStormpathSpringSecurityWebMvcTestAppConfig  extends WebSecur
         http.apply(stormpath());
     }
 
-    /** @since 1.0.3 */
+    /** @since 1.3.0 */
     @Bean
     public ApplicationListener<AuthenticationSuccessEvent> authenticationSuccessEventListener() {
         return new CustomAuthenticationSuccessEventListener();
     }
 
-    /** @since 1.0.3 */
+    /** @since 1.3.0 */
     @Bean
     public AuthenticationEventPublisher authenticationEventPublisher() {
         return new DefaultAuthenticationEventPublisher();
     }
 
-    /** @since 1.0.3 */
+    /** @since 1.3.0 */
     static class CustomAuthenticationSuccessEventListener implements ApplicationListener<AuthenticationSuccessEvent> {
 
         static boolean eventWasTriggered = false;
