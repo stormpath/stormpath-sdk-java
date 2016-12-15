@@ -183,4 +183,16 @@ public class DefaultSamlIdentityProvider extends AbstractInstanceResource implem
         String href = getSamlServiceProviderRegistrations().getHref();
         return getDataStore().create(href, samlServiceProviderRegistration, request.getSamlServiceProviderRegistrationOptions());
     }
+
+    @Override
+    public AuthnVerification createAuthnVerification(AuthnVerificationRequest request) {
+        String authnVerificationsHref = getHref() + "/authnVerifications";
+        return getDataStore().create(authnVerificationsHref, request, AuthnVerification.class);
+    }
+
+    @Override
+    public SamlResponse createSamlResponse(CreateSamlResponseRequest samlResponseRequest) {
+        String samlResponsesHref = getHref() + "/samlResponses";
+        return getDataStore().create(samlResponsesHref, samlResponseRequest, SamlResponse.class);
+    }
 }

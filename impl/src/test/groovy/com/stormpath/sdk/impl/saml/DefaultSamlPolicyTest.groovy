@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.saml
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
+import com.stormpath.sdk.saml.SamlIdentityProvider
 import com.stormpath.sdk.saml.SamlPolicy
 import com.stormpath.sdk.saml.SamlServiceProvider
 import org.testng.annotations.Test
@@ -41,6 +42,7 @@ class DefaultSamlPolicyTest {
         assertEquals(propertyDescriptors.size(), 4)
 
         assertTrue(propertyDescriptors.get("serviceProvider") instanceof ResourceReference && propertyDescriptors.get("serviceProvider").getType().equals(SamlServiceProvider.class))
+        assertTrue(propertyDescriptors.get("identityProvider") instanceof ResourceReference && propertyDescriptors.get("identityProvider").getType().equals(SamlIdentityProvider.class))
         assertTrue(propertyDescriptors.get("createdAt") instanceof DateProperty)
         assertTrue(propertyDescriptors.get("modifiedAt") instanceof DateProperty)
     }

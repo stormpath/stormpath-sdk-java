@@ -39,6 +39,7 @@ import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
+import com.stormpath.sdk.impl.resource.SetProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.impl.resource.ResourceReference;
@@ -50,7 +51,6 @@ import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 import io.jsonwebtoken.Claims;
@@ -162,9 +162,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                         AbstractResource.isMaterialized(result.getData()) &&
 
                         //@since 1.0.RC7: Let's not cache Access Tokens
-                        !AccessToken.class.isAssignableFrom(clazz) &&
-
-                        !ProviderData.class.isAssignableFrom(clazz);
+                        !AccessToken.class.isAssignableFrom(clazz);
     }
 
     /**
@@ -305,11 +303,19 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
                 //find the type of objects this collection contains:
                 Property property = getPropertyDescriptor(clazz, name);
-                Assert.isTrue(property instanceof ArrayProperty,
-                        "It is expected that only ArrayProperty properties represent collection items.");
 
-                ArrayProperty itemsProperty = ArrayProperty.class.cast(property);
-                Class itemType = itemsProperty.getType();
+                boolean isCollection = property instanceof SetProperty || property instanceof ArrayProperty;
+
+                Assert.isTrue(isCollection, "It is expected that only ArrayProperty or SetProperty properties represent collection items.");
+
+                Property itemsProperty;
+                Class itemType;
+                if(property instanceof SetProperty){
+                    itemsProperty = SetProperty.class.cast(property);
+                }else {
+                    itemsProperty = ArrayProperty.class.cast(property);
+                }
+                itemType = itemsProperty.getType();
 
                 for (Object o : c) {
                     Object element = o;
