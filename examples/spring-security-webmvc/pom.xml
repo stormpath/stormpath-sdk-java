@@ -189,32 +189,44 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.eclipse.jetty</groupId>
-                        <artifactId>jetty-maven-plugin</artifactId>
-                        <version>9.4.0.v20161208</version>
-
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                        <version>1.4.18</version>
                         <configuration>
-                            <scanIntervalSeconds>30</scanIntervalSeconds>
-
-                            <stopPort>8081</stopPort>
-                            <stopKey>STOP</stopKey>
-                            <daemon>true</daemon>
-                            <webApp>
-                                <contextPath>/</contextPath>
-                            </webApp>
+                            <skip>${skipITs}</skip>
+                            <container>
+                                <containerId>tomcat8x</containerId>
+                                <zipUrlInstaller>
+                                    <url>
+                                        http://repo1.maven.org/maven2/org/apache/tomcat/tomcat/8.5.9/tomcat-8.5.9.zip
+                                    </url>
+                                </zipUrlInstaller>
+                            </container>
+                            <deployables>
+                                <deployable>
+                                    <groupId>com.stormpath.spring</groupId>
+                                    <artifactId>stormpath-sdk-examples-spring-security-webmvc</artifactId>
+                                    <properties>
+                                        <context>/</context>
+                                    </properties>
+                                </deployable>
+                            </deployables>
+                            <configuration>
+                                <properties>
+                                    <cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
+                                </properties>
+                            </configuration>
                         </configuration>
                         <executions>
                             <execution>
-                                <id>start-jetty</id>
+                                <id>start-server</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <!-- stop any previous instance to free up the port -->
-                                    <goal>stop</goal>
                                     <goal>start</goal>
                                 </goals>
                             </execution>
                             <execution>
-                                <id>stop-jetty</id>
+                                <id>stop-server</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>stop</goal>
