@@ -542,4 +542,20 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     public GrantTypeValidator stormpathGrantTypeStatusValidator(){
         return super.stormpathGrantTypeStatusValidator();
     }
+
+//    /**
+//     * @since 1.3.0
+//     */
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        return super.corsConfigurationSource();
+//    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean(name = "stormpathCorsFilter")
+    public Filter newCorsFilter() {
+        return super.newCorsFilter();
+    }
 }

@@ -24,7 +24,6 @@ import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
-import com.stormpath.spring.filter.LoginHandlerFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
@@ -42,15 +41,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -218,6 +218,13 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
     protected String meUri;
 
+    @Value("#{ @environment['stormpath.web.cors.enabled'] ?: true }")
+    protected boolean corsEnabled;
+
+    @Autowired(required = false)
+    @Qualifier("stormpathCorsFilter")
+    protected Filter corsFilter;
+
     @Autowired(required = false)
     @Qualifier("loginPreHandler")
     protected WebHandler loginPreHandler;
@@ -225,6 +232,11 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Autowired(required = false)
     @Qualifier("loginPostHandler")
     protected WebHandler loginPostHandler;
+
+//    @Autowired(required = false)
+//    @Qualifier("corsConfigurationSource")
+//    protected CorsConfigurationSource corsConfigurationSource;
+
 
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
@@ -268,6 +280,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         context.getAutowireCapableBeanFactory().autowireBean(this);
         http.servletApi().rolePrefix(""); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/325
 
+        //http.cors();
+
+
         if (loginEnabled) {
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
@@ -280,10 +295,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
             http.addFilterBefore(contentNegotiationSpringSecurityAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-            //http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationSpringSecurityAuthenticationFilter.class); //todo: need this?
-
             //Fix for redirection loop when Cookie is present but WebApp is restarted and '/' is locked down to authenticated users (Bare Bones example)
             http.addFilterBefore(stormpathSecurityContextPersistenceFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+
+        if (corsEnabled) {
+            http.addFilterBefore(corsFilter, ChannelProcessingFilter.class);
         }
 
         if (idSiteEnabled && loginEnabled) {
@@ -400,17 +417,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 });
             }
         }
-    }
-
-    // Creates the pre login handler filter with the user define handler
-    //todo: can this be removed
-    private LoginHandlerFilter preLoginHandlerFilter() {
-        return new LoginHandlerFilter(loginPreHandler, loginUri);
-    }
-
-    //todo: can this be removed
-    private LoginHandlerFilter postLoginHandlerFilter() {
-        return new LoginHandlerFilter(loginPostHandler, loginUri);
     }
 
 }
