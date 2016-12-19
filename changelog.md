@@ -1,5 +1,17 @@
 ## Change Log ##
 
+### 1.2.3 ##
+
+This release fixes a bug whereby new passwords that violate the password policy were showing the wrong error on the forgot password flow.
+
+See [1.2.3 closed bugs](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.3+is%3Aclosed)
+
+### 1.2.2 ##
+
+This release fixes two bugs. Both are fixes to avoid RuntimeException when resolving external provider of an application.  
+
+See [1.2.2 closed bugs](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.2+is%3Aclosed)
+
 ### 1.2.1 ##
 
 This release fixes four bugs. We are adding one more supported grant_type to the AccessTokenController, also enhancing the signature validation of access/refresh tokens and improving error handing when required fields are missing in the token endpoint.  

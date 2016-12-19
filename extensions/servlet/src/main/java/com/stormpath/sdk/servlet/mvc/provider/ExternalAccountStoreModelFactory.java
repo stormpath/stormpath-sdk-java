@@ -22,8 +22,10 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappings;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
+import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.provider.GoogleProvider;
 import com.stormpath.sdk.provider.OAuthProvider;
 import com.stormpath.sdk.provider.Provider;
@@ -77,7 +79,7 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         return authorizeBaseUri;
     }
 
-    private class AccountStoreModelVisitor extends AccountStoreVisitorAdapter {
+    private class AccountStoreModelVisitor implements AccountStoreVisitor {
 
         private final List<AccountStoreModel> accountStores;
         private final String authorizeBaseUri;
@@ -85,6 +87,11 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         public AccountStoreModelVisitor(List<AccountStoreModel> accountStores, String authorizeBaseUri) {
             this.accountStores = accountStores;
             this.authorizeBaseUri = authorizeBaseUri;
+        }
+
+        @Override
+        public void visit(Group group) {
+            //Do nothing... groups cannot be external
         }
 
         //Only directories can support provider-based workflows:
@@ -108,6 +115,11 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
                 AccountStoreModel accountStoreModel = new DefaultAccountStoreModel(directory, providerModel, authorizeBaseUri);
                 accountStores.add(accountStoreModel);
             }
+        }
+
+        @Override
+        public void visit(Organization organization) {
+            //Do nothing... organizations cannot be external
         }
 
         public List<AccountStoreModel> getAccountStores() {
