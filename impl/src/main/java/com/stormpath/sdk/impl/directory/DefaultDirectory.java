@@ -251,7 +251,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
                 throw new IllegalStateException("provider resource does not contain its required href property.");
             }
 
-            Provider provider = getDataStore().getResource(href, Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
+            Provider provider = getDataStore().getResource(href, Provider.class, "providerType", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP);
             setProperty(PROVIDER, provider);
             return provider;
         }

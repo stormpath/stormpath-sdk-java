@@ -46,4 +46,8 @@ public class DefaultGithubProvider extends AbstractOAuthProvider<GithubProvider>
         return IdentityProviderType.GITHUB.getNameKey();
     }
 
+    @Override
+    public String getProviderType() {
+        return IdentityProviderType.GITHUB.getNameKey();
+    }
 }

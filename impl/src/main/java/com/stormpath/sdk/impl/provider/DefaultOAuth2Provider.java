@@ -100,5 +100,8 @@ public class DefaultOAuth2Provider extends AbstractOAuthProvider<OAuth2Provider>
     }
 
 
-
+    @Override
+    public String getProviderType() {
+        return IdentityProviderType.OAUTH2.getNameKey();
+    }
 }
