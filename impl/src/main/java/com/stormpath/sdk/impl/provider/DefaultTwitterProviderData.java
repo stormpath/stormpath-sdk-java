@@ -22,6 +22,7 @@ public class DefaultTwitterProviderData extends AbstractProviderData<TwitterProv
 
     public DefaultTwitterProviderData(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
+        this.setProperty(ACCESS_TOKEN_SECRET, properties.get(ACCESS_TOKEN_SECRET.getName()));
     }
 
     @Override
