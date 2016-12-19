@@ -222,21 +222,12 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     protected boolean corsEnabled;
 
     @Autowired(required = false)
-    @Qualifier("stormpathCorsFilter")
-    protected Filter corsFilter;
-
-    @Autowired(required = false)
     @Qualifier("loginPreHandler")
     protected WebHandler loginPreHandler;
 
     @Autowired(required = false)
     @Qualifier("loginPostHandler")
     protected WebHandler loginPostHandler;
-
-//    @Autowired(required = false)
-//    @Qualifier("corsConfigurationSource")
-//    protected CorsConfigurationSource corsConfigurationSource;
-
 
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
@@ -280,9 +271,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         context.getAutowireCapableBeanFactory().autowireBean(this);
         http.servletApi().rolePrefix(""); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/325
 
-        //http.cors();
-
-
         if (loginEnabled) {
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
@@ -300,7 +288,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         }
 
         if (corsEnabled) {
-            http.addFilterBefore(corsFilter, ChannelProcessingFilter.class);
+            http.cors(); // Let's add Spring Security's built-in support for CORs
         }
 
         if (idSiteEnabled && loginEnabled) {

@@ -87,7 +87,6 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -693,21 +692,4 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathGrantTypeStatusValidator();
     }
 
-//    /**
-//     * @since 1.3.0
-//     */
-//    @Bean
-//    @ConditionalOnMissingBean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        return super.corsConfigurationSource();
-//    }
-
-    /**
-     * @since 1.3.0
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    public Filter newCorsFilter() {
-        return super.newCorsFilter();
-    }
 }

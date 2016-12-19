@@ -1574,17 +1574,5 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return java.util.Collections.emptyList();
     }
 
-//    /**
-//     * @since 1.3.0
-//     */
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-//        configuration.setAllowedMethods(Arrays.asList("GET","POST", "OPTIONS", "DELETE"));
-//        configuration.setAllowedHeaders(Arrays.asList("Content-Type","Accept","X-Requested-With","remember-me"));
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 }
 
