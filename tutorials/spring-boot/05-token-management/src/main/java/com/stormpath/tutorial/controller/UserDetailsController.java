@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletRequest;
  * @since 1.0.RC8.3
  */
 @RestController
-public class MeController {
+public class UserDetailsController {
 
-    @RequestMapping(value="/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/userdetails", produces = MediaType.APPLICATION_JSON_VALUE)
     public AccountInfo info(HttpServletRequest req) {
         // must be logged in to get here per Spring Security config
         Account account = AccountResolver.INSTANCE.getAccount(req);

@@ -67,7 +67,7 @@ import static org.testng.Assert.*
  */
 @ContextConfiguration(classes = [MinimalStormpathSpringSecurityWebMvcTestAppConfig.class, TwoAppTenantStormpathTestConfiguration.class])
 @WebAppConfiguration
-class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNGSpringContextTests {
+class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClientIT {
 
     private static final Logger log = LoggerFactory.getLogger(MinimalStormpathSpringSecurityWebMvcConfigurationIT)
 
@@ -79,12 +79,6 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
     @Autowired
     CacheManager stormpathCacheManager;
-
-    @Autowired
-    Client client;
-
-    @Autowired
-    Application application;
 
     @Autowired
     Filter stormpathFilter
@@ -112,10 +106,6 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
     @Autowired
     RequestEventPublisher requestEventPublisher
-
-    //State shared by these internal tests
-    def password = "Pass123!" + UUID.randomUUID()
-    Account account
 
     @Test
     void testRequiredBeans() {
@@ -241,50 +231,6 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
         // verify authentication object was not changed, meaning backend was not contacted
         Assert.isTrue(SecurityContextHolder.getContext().getAuthentication().equals(authentication))
-    }
-
-    ///Supporting properties and methods
-
-    List<Deletable> resourcesToDelete;
-
-    private Account createTempAccount(String password) {
-        Account account = client.instantiate(Account.class)
-        String username = "foo-account-deleteme-" + UUID.randomUUID();
-        account.setEmail(username + "@testmail.stormpath.com")
-        account.setUsername(username)
-        account.setPassword(password)
-        account.setGivenName(username)
-        account.setSurname(username)
-        application.createAccount(account)
-        deleteOnTeardown(account)
-        return account
-    }
-
-    protected Directory createTempDir() {
-        Directory dir = client.instantiate(Directory.class)
-        String name = "foo-dir-deleteme-" + UUID.randomUUID();
-        dir.setName(name);
-        client.createDirectory(dir);
-        deleteOnTeardown(dir)
-        return dir
-    }
-
-    protected void deleteOnTeardown(Deletable d) {
-        this.resourcesToDelete.add(d)
-    }
-
-    @BeforeClass
-    public void setUp() {
-        resourcesToDelete = []
-        def dir = createTempDir()
-        application.setDefaultAccountStore(dir)
-        account = createTempAccount(password)
-    }
-
-    @AfterClass
-    public void tearDown() {
-        def reversed = resourcesToDelete.reverse() //delete in opposite order (cleaner - children deleted before parents)
-        reversed.collect { it.delete() }
     }
 
     /**

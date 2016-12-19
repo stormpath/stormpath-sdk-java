@@ -45,9 +45,9 @@ public class HelloController {
         return "home";
     }
 
-    @RequestMapping("/me")
-    String me() {
-        return "me";
+    @RequestMapping("/userdetails")
+    String userDetails() {
+        return "userdetails";
     }
 
     @RequestMapping("/restricted")

@@ -27,9 +27,13 @@ import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +44,8 @@ import java.util.Map;
  * @since 1.0.RC4
  */
 public class ChangePasswordController extends FormController {
+
+    private static final Logger log = LoggerFactory.getLogger(ChangePasswordController.class);
 
     private String forgotPasswordUri;
     private String loginUri;
@@ -212,7 +218,7 @@ public class ChangePasswordController extends FormController {
         String sptoken = form.getFieldValue("sptoken");
 
         if (isJsonPreferred(request, response)) {
-            Map<String, Object> model = new HashMap<String, Object>();
+            Map<String, Object> model = new HashMap<>();
             try {
                 Account account = application.resetPassword(sptoken, password);
                 if (autoLogin) {
@@ -237,11 +243,22 @@ public class ChangePasswordController extends FormController {
             if (autoLogin) {
                 final AuthenticationResult result = new TransientAuthenticationResult(account);
                 this.authenticationResultSaver.set(request, response, result);
-                next = loginNextUri;
+                next = this.loginNextUri;
             } else {
                 next = this.nextUri;
             }
+        } catch (ResourceException e) {
+            // 404 is invalid, expired or used sptoken
+            if (e.getCode() == HttpStatus.SC_NOT_FOUND) {
+                next = this.errorUri;
+            } else {
+                // resolves https://github.com/stormpath/stormpath-sdk-java/issues/1138
+                // TODO This breaks i18n. Fix when Stormpath backend returns specific password policy failure codes.
+                ErrorModel errorModel = errorModelFactory.toError(request, e);
+                next = getUri() + "?sptoken=" + sptoken + "&error=" + URLEncoder.encode(errorModel.getMessage(), "UTF-8");
+            }
         } catch (Exception e) {
+            log.error("Caught exception: {}. Redirecting to: {}", e.getMessage(), errorUri, e);
             next = errorUri;
         }
 
