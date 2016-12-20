@@ -116,10 +116,10 @@
                 <configuration>
                     <skip>${skipITs}</skip>
                     <container>
-                        <containerId>tomcat7x</containerId>
+                        <containerId>tomcat8x</containerId>
                         <zipUrlInstaller>
                             <url>
-                                http://repo1.maven.org/maven2/org/apache/tomcat/tomcat/7.0.69/tomcat-7.0.69.zip
+                                http://repo1.maven.org/maven2/org/apache/tomcat/tomcat/8.5.9/tomcat-8.5.9.zip
                             </url>
                         </zipUrlInstaller>
                     </container>

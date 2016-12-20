@@ -17,27 +17,22 @@ package com.stormpath.spring.config
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.api.ApiKey
-import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
-import com.stormpath.sdk.client.Client
-import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.impl.http.MediaType
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequests
-import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
+import com.stormpath.sdk.servlet.http.MediaType
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
-import org.apache.http.entity.ContentType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,12 +48,10 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
@@ -76,7 +69,7 @@ import static org.testng.Assert.*
  */
 @ContextConfiguration(classes = [MinimalStormpathSpringSecurityWebMvcTestAppConfig.class, TwoAppTenantStormpathTestConfiguration.class])
 @WebAppConfiguration
-class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNGSpringContextTests {
+class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClientIT {
 
     private static final Logger log = LoggerFactory.getLogger(MinimalStormpathSpringSecurityWebMvcConfigurationIT)
 
@@ -88,12 +81,6 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
     @Autowired
     CacheManager stormpathCacheManager;
-
-    @Autowired
-    Client client;
-
-    @Autowired
-    Application application;
 
     @Autowired
     Filter stormpathFilter
@@ -139,9 +126,13 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
 
     private MockMvc mvc;
 
-    //State shared by these internal tests
-    def password = "Pass123!" + UUID.randomUUID()
-    Account account
+    @BeforeClass
+    public void setUp() {
+        mvc = MockMvcBuilders.webAppContextSetup(context)
+                .addFilter(springSecurityFilterChain, "/*") //Spring security in front of Stormpath
+                .addFilter(stormpathFilter, "/*")
+                .build();
+    }
 
     @Test
     void testRequiredBeans() {
@@ -278,55 +269,6 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractTestNG
         mvc.perform(post("/login").accept(MediaType.TEXT_HTML.toString()).contentType(ContentType.TEXT_HTML.toString()).with(csrf()).param("login", account.getEmail()).param("password", password)).andReturn()
         assertTrue MinimalStormpathSpringSecurityWebMvcTestAppConfig.CustomAuthenticationSuccessEventListener.eventWasTriggered
         SecurityContextHolder.clearContext()
-    }
-
-    ///Supporting properties and methods
-
-    List<Deletable> resourcesToDelete;
-
-    private Account createTempAccount(String password) {
-        Account account = client.instantiate(Account.class)
-        String username = "foo-account-deleteme-" + UUID.randomUUID();
-        account.setEmail(username + "@testmail.stormpath.com")
-        account.setUsername(username)
-        account.setPassword(password)
-        account.setGivenName(username)
-        account.setSurname(username)
-        application.createAccount(account)
-        deleteOnTeardown(account)
-        return account
-    }
-
-    protected Directory createTempDir() {
-        Directory dir = client.instantiate(Directory.class)
-        String name = "foo-dir-deleteme-" + UUID.randomUUID();
-        dir.setName(name);
-        client.createDirectory(dir);
-        deleteOnTeardown(dir)
-        return dir
-    }
-
-    protected void deleteOnTeardown(Deletable d) {
-        this.resourcesToDelete.add(d)
-    }
-
-    @BeforeClass
-    public void setUp() {
-        resourcesToDelete = []
-        def dir = createTempDir()
-        application.setDefaultAccountStore(dir)
-        account = createTempAccount(password)
-
-        mvc = MockMvcBuilders.webAppContextSetup(context)
-                .addFilter(springSecurityFilterChain, "/*")
-                .addFilter(stormpathFilter, "/*")
-                .build();
-    }
-
-    @AfterClass
-    public void tearDown() {
-        def reversed = resourcesToDelete.reverse() //delete in opposite order (cleaner - children deleted before parents)
-        reversed.collect { it.delete() }
     }
 
     /**
