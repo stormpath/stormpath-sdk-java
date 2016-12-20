@@ -44,7 +44,10 @@ import org.testng.annotations.Test
 import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
+
 /**
  *
  * @since 0.8.1

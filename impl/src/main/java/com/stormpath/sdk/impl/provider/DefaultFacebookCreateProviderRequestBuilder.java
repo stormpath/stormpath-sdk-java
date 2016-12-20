@@ -35,7 +35,7 @@ public class DefaultFacebookCreateProviderRequestBuilder extends AbstractCreateP
         DefaultFacebookProvider provider = new DefaultFacebookProvider(null, map);
         provider.setClientId(super.clientId);
         provider.setClientSecret(super.clientSecret);
-        if(super.userInfoMappingRules != null) {
+        if (super.userInfoMappingRules != null) {
             provider.setUserInfoMappingRules(super.userInfoMappingRules);
         }
 
