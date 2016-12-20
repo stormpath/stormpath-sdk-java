@@ -30,6 +30,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * @since 1.0.RC5
@@ -120,6 +121,14 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     @Override
     public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
         return super.stormpathAuthenticationEntryPoint();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        return super.corsConfigurationSource();
     }
 
 }

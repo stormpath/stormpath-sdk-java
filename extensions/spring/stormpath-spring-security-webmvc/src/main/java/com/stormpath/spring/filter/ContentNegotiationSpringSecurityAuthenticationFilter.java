@@ -82,7 +82,7 @@ public class ContentNegotiationSpringSecurityAuthenticationFilter extends Userna
         // a browser would not do this, but this guards against command line tomfoolery.
         if (!MediaType.APPLICATION_JSON.equals(mediaType) ||
                 request.getHeader("accept").contains(MediaType.APPLICATION_FORM_URLENCODED_VALUE) ||
-                request.getContentType().contains(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+                (request.getContentType() != null && request.getContentType().contains(MediaType.APPLICATION_FORM_URLENCODED_VALUE))) {
             return super.attemptAuthentication(request, response);
         }
 

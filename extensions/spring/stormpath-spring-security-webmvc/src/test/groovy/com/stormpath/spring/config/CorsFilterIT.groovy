@@ -70,7 +70,7 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
         mvc.perform(options(new URI("/me"))
                 .header("Origin", "http://localhost:3000")
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().is(HttpServletResponse.SC_OK)); //200
+            .andExpect(status().is(HttpServletResponse.SC_UNAUTHORIZED)); //me requires the request to be authenticated when Spring Security is in place, so 401 here
     }
 
     @Test
@@ -126,7 +126,7 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
         mvc.perform(options(new URI("/me"))
                 .header("Access-Control-Request-Method", "PUT") //this header will be just overlooked since CORS Filter will not care about this request because Origin header is not present
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(HttpServletResponse.SC_OK)); //200
+                .andExpect(status().is(HttpServletResponse.SC_UNAUTHORIZED)) //me requires the request to be authenticated when Spring Security is in place, so 401 here
     }
 
     @Test

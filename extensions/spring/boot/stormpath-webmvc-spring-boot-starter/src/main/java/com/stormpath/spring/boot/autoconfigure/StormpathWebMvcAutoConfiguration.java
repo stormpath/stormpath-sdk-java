@@ -691,4 +691,5 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     public GrantTypeValidator stormpathGrantTypeStatusValidator() {
         return super.stormpathGrantTypeStatusValidator();
     }
+
 }

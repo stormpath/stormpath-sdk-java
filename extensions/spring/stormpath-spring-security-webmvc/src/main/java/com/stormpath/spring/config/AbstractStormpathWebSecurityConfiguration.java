@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
@@ -50,6 +51,12 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.NullRequestCache;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 
 /**
@@ -109,6 +116,18 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Autowired
     @Qualifier("stormpathAuthenticationManager")
     AuthenticationManager stormpathAuthenticationManager; // provided by stormpath-spring-security
+
+    @Value("#{ @environment['stormpath.web.cors.enabled'] ?: true }")
+    protected boolean corsEnabled;
+
+    @Value("#{ @environment['stormpath.web.cors.allowed.originUris'] }")
+    protected String corsAllowedOrigins;
+
+    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] ?: 'Content-Type,Accept,X-Requested-With,remember-me' }")
+    protected String corsAllowedHeaders;
+
+    @Value("#{ @environment['stormpath.web.cors.allowed.methods'] ?: 'POST,GET,OPTIONS,DELETE' }")
+    protected String corsAllowedMethods;
 
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
@@ -222,4 +241,20 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
         return new StormpathAuthenticationEntryPoint(loginUri, produces, meUri, application.getName());
     }
+
+    /**
+     * To be used by Spring Security's built-in CORS support.
+     *
+     * @since 1.3.0
+     */
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Strings.split(corsAllowedOrigins) != null ? Arrays.asList(Strings.split(corsAllowedOrigins)) : Collections.<String>emptyList());
+        configuration.setAllowedHeaders(Strings.split(corsAllowedHeaders) != null ? Arrays.asList(Strings.split(corsAllowedHeaders)) : Collections.<String>emptyList());
+        configuration.setAllowedMethods(Strings.split(corsAllowedMethods) != null ? Arrays.asList(Strings.split(corsAllowedMethods)) : Collections.<String>emptyList());
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 }

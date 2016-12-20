@@ -39,6 +39,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.Filter;
@@ -156,6 +157,15 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnMissingBean(name="stormpathAuthenticationEntryPoint")
     public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
         return super.stormpathAuthenticationEntryPoint();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public CorsConfigurationSource corsConfigurationSource() {
+        return super.corsConfigurationSource();
     }
 
 }

@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.servlet.event;
 
+import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.servlet.account.event.RegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.account.event.VerifiedAccountRequestEvent;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;

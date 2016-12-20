@@ -24,7 +24,6 @@ import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
-import com.stormpath.spring.filter.LoginHandlerFilter;
 import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
@@ -216,6 +215,9 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
     @Value("#{ @environment['stormpath.web.me.uri'] ?: '/me' }")
     protected String meUri;
 
+    @Value("#{ @environment['stormpath.web.cors.enabled'] ?: true }")
+    protected boolean corsEnabled;
+
     @Autowired(required = false)
     @Qualifier("loginPreHandler")
     protected WebHandler loginPreHandler;
@@ -278,10 +280,12 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
             http.addFilterBefore(contentNegotiationSpringSecurityAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-            //http.addFilterBefore(preLoginHandlerFilter(), ContentNegotiationSpringSecurityAuthenticationFilter.class); //todo: need this?
-
             //Fix for redirection loop when Cookie is present but WebApp is restarted and '/' is locked down to authenticated users (Bare Bones example)
             http.addFilterBefore(stormpathSecurityContextPersistenceFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+
+        if (corsEnabled) {
+            http.cors(); // Let's add Spring Security's built-in support for CORs
         }
 
         if (idSiteEnabled && loginEnabled) {
@@ -398,17 +402,6 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
                 });
             }
         }
-    }
-
-    // Creates the pre login handler filter with the user define handler
-    //todo: can this be removed
-    private LoginHandlerFilter preLoginHandlerFilter() {
-        return new LoginHandlerFilter(loginPreHandler, loginUri);
-    }
-
-    //todo: can this be removed
-    private LoginHandlerFilter postLoginHandlerFilter() {
-        return new LoginHandlerFilter(loginPostHandler, loginUri);
     }
 
 }
