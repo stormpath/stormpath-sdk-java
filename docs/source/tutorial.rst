@@ -432,7 +432,7 @@
   For more on ``HttpSecurity`` with Spring Security, see `its HttpSecurity documentation <http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-httpsecurity>`_.
 
   We've added a new method to our ``HelloController``. It does not call out any other authorizaton requirements. As such,
-  anyone logged in will be able to access ``/me``. Furthermore, anyone NOT logged in trying to access ``/me`` will automatically
+  anyone logged in will be able to access ``/userdetails``. Furthermore, anyone NOT logged in trying to access ``/userdetails`` will automatically
   be redirected to the ``/login`` view.
 
   .. code-block:: java
@@ -442,15 +442,15 @@
       public class HelloController {
 
           ...
-          @RequestMapping("/me")
-          String me() {
-              return "me";
+          @RequestMapping("/userdetails")
+          String userDetails() {
+              return "userdetails";
           }
           ...
       }
 
-  Try it out. Launch the application as before, and then browse to: ``http://localhost:${port}/me``. You will be redirected to the ``/login``
-  and then after you login to a valid Stormpath Account, you will automatically be brought back to ``/me``. That's the Stormpath magic at work!
+  Try it out. Launch the application as before, and then browse to: ``http://localhost:${port}/userdetails``. You will be redirected to the ``/login``
+  and then after you login to a valid Stormpath Account, you will automatically be brought back to ``/userdetails``. That's the Stormpath magic at work!
 
   Now, we'll look at fine grained controls using Spring Security permissions connected to Stormpath custom data.
 
@@ -534,13 +534,13 @@
 
   This part of the tutorial exercises the Token Magement features using Spring Security Spring Boot WebMVC.
 
-  There's a simple `@RestController` called `MeController` that returns information about the authenticated account.
+  There's a simple `@RestController` called `UserDetailsController` that returns information about the authenticated account.
 
   .. code-block:: java
 
       @RestController
-      public class MeController {
-          @RequestMapping(value="/me", produces = MediaType.APPLICATION_JSON_VALUE)
+      public class UserDetailsController {
+          @RequestMapping(value="/userdetails", produces = MediaType.APPLICATION_JSON_VALUE)
           public AccountInfo info(HttpServletRequest req) {
               // must be logged in to get here per Spring Security config
               Account account = AccountResolver.INSTANCE.getAccount(req);
@@ -549,7 +549,7 @@
           }
       }
 
-  In order to hit the `/me` endpoint, we'll first, we'll get an `access_token` and a `refresh_token` by hitting the
+  In order to hit the `/userdetails` endpoint, we'll first, we'll get an `access_token` and a `refresh_token` by hitting the
   `/oauth/token` endpoint:
 
   .. code-block:: bash
@@ -577,14 +577,14 @@
 
   The response includes the tokens as well as information on their type (`Bearer` in this case) and when it expires.
 
-  We can now use the `access_token` to hit the `/me` endpoint:
+  We can now use the `access_token` to hit the `/userdetails` endpoint:
 
 
   .. code-block:: bash
 
       curl \
         -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa1FBNjRTdEdUQjFhVEhlNGdPIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQxNzQ3LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.-3NNpi7-DTvl2VNCfHHFNwWVikmeCyNPy6KEu--XYjk" \
-        http://localhost:${port}/me
+        http://localhost:${port}/userdetails
 
   You will get a response like this:
 
@@ -644,7 +644,7 @@
 
       curl \
         -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q" \
-        http://localhost:${port}/me
+        http://localhost:${port}/userdetails
 
   Here's the response:
 

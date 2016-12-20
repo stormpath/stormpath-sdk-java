@@ -30,11 +30,13 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -130,17 +132,23 @@ public abstract class FormController extends AbstractController {
     @SuppressWarnings("unchecked")
     protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response) {
         List<ErrorModel> errors = null;
-        // session null check fixes https://github.com/stormpath/stormpath-sdk-java/issues/908
-        if (request.getParameter("error") != null && request.getSession(false) != null) {
-            //The login page is being re-rendered after an unsuccessful authentication attempt from Spring Security
-            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
-            //See StormpathAuthenticationFailureHandler
+        if (request.getParameter("error") != null) {
             errors = new ArrayList<>();
-            ErrorModel error =
-                (ErrorModel) request.getSession(false).getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
-            if (error != null) {
-                errors.add(error);
+            ErrorModel error = null;
+            HttpSession session = request.getSession(false);
+            // session null check fixes https://github.com/stormpath/stormpath-sdk-java/issues/908
+            if (session != null && session.getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY) != null) {
+                //The login page is being re-rendered after an unsuccessful authentication attempt from Spring Security
+                //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+                //See StormpathAuthenticationFailureHandler
+                error = (ErrorModel) session.getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
+            } else {
+                //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/1138
+                //TODO This breaks i18n. Fix when Stormpath backend returns specific password policy failure codes.
+                error = ErrorModel.builder()
+                    .setStatus(HttpStatus.SC_BAD_REQUEST).setMessage(request.getParameter("error")).build();
             }
+            errors.add(error);
         }
         return createModel(request, response, null, errors);
     }
@@ -339,7 +347,7 @@ public abstract class FormController extends AbstractController {
             return accountRequest;
         }
 
-        log.warn("Provider data not found in request.");
+        log.debug("Provider data not found in request.");
         return null;
     }
 }
