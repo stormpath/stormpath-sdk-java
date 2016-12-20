@@ -105,4 +105,19 @@ public class DefaultTenantOptions extends DefaultOptions<TenantOptions> implemen
     public TenantOptions withOrganizations(int limit, int offset) {
         return expand(DefaultTenant.GROUPS, limit, offset);
     }
+
+    @Override
+    public TenantOptions withRegisteredSamlServiceProviders() {
+        return expand(DefaultTenant.REGISTERED_SAML_SERVICE_PROVIDERS);
+    }
+
+    @Override
+    public TenantOptions withRegisteredSamlServiceProviders(int limit) {
+        return expand(DefaultTenant.REGISTERED_SAML_SERVICE_PROVIDERS, limit);
+    }
+
+    @Override
+    public TenantOptions withRegisteredSamlServiceProviders(int limit, int offset) {
+        return expand(DefaultTenant.REGISTERED_SAML_SERVICE_PROVIDERS, limit, offset);
+    }
 }

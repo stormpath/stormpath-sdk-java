@@ -30,7 +30,7 @@ import java.util.*;
  */
 public class DefaultAttributeStatementMappingRules extends AbstractInstanceResource implements AttributeStatementMappingRules {
 
-    private static final SetProperty<AttributeStatementMappingRule> ITEMS = new SetProperty<AttributeStatementMappingRule>("items", AttributeStatementMappingRule.class);
+    private static final SetProperty<AttributeStatementMappingRule> ITEMS = new SetProperty<>("items", AttributeStatementMappingRule.class);
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ITEMS);
 
@@ -160,5 +160,10 @@ public class DefaultAttributeStatementMappingRules extends AbstractInstanceResou
             setItems(items);
         }
         return items;
+    }
+
+    @Override
+    public void delete() {
+        getDataStore().delete(this);
     }
 }
