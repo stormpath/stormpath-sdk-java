@@ -1,5 +1,5 @@
 /*
-* Copyright 2015 Stormpath, Inc.
+* Copyright 2016 Stormpath, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class DefaultUserInfoMappingRulesBuilder implements UserInfoMappingRulesB
     @Override
     public UserInfoMappingRulesBuilder addUserInfoMappingRule(UserInfoMappingRule userInfoMappingRule) {
 
-        if(this.userInfoMappingRules == null) {
+        if (this.userInfoMappingRules == null) {
             this.userInfoMappingRules = new ArrayList<>();
         } else {
             Assert.isTrue(!userInfoMappingRules.contains(userInfoMappingRule));

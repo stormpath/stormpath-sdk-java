@@ -23,7 +23,10 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.provider.social.UserInfoMappingRule;
 import com.stormpath.sdk.provider.social.UserInfoMappingRules;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * @since 1.3.0
