@@ -35,7 +35,7 @@ public class DefaultGithubCreateProviderRequestBuilder extends AbstractCreatePro
         DefaultGithubProvider provider = new DefaultGithubProvider(null, map);
         provider.setClientId(super.clientId);
         provider.setClientSecret(super.clientSecret);
-        if(super.userInfoMappingRules != null) {
+        if (super.userInfoMappingRules != null) {
             provider.setUserInfoMappingRules(super.userInfoMappingRules);
         }
         return new DefaultCreateProviderRequest(provider);

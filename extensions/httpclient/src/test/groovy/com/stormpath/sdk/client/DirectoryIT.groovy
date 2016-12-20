@@ -17,7 +17,10 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.directory.*
+import com.stormpath.sdk.directory.Directories
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryOptions
+import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.impl.provider.AbstractOAuthProvider
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.impl.resource.AbstractResource

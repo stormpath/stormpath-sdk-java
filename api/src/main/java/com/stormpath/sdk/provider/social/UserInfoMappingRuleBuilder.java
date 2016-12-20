@@ -1,5 +1,5 @@
 /*
-* Copyright 2015 Stormpath, Inc.
+* Copyright 2016 Stormpath, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -33,18 +33,18 @@ import java.util.Set;
 public interface UserInfoMappingRuleBuilder {
 
     /**
-     * Sets the SAML Attribute name, that when encountered, should have its value applied as Account field values.
-     * When this name is encountered when processing a SAML Attribute Statement, its associated value will be set as the
+     * Sets the UserInfo attribute name, that when encountered, should have its value applied as Account field values.
+     * When this name is encountered when processing UserInfo from a Social Provider, its associated value will be set as the
      * value for all Stormpath Account field names specified in the
      * {@link UserInfoMappingRule#getAccountAttributes() accountAttributes} collection.
      *
-     * @param name the SAML Attribute name that when encountered, should have its value applied as Account field values.
+     * @param name the UserInfo attribute name that when encountered, should have its value applied as Account field values.
      */
     UserInfoMappingRuleBuilder setName(String name);
 
     /**
      * Sets the Stormpath account fields that should be updated when encountering {@link UserInfoMappingRule#getName() named}
-     * field from the userInfo provided by the social provider.  If discovered, that SAML Attribute value will be set on
+     * field from the userInfo provided by the social provider.  If discovered, that UserInfo attribute value will be set on
      * all of the Stormpath account fields named in this collection.
      *
      * @param accountAttributes the account fields that should be updated when there's a match with a field name in userInfo
@@ -54,7 +54,7 @@ public interface UserInfoMappingRuleBuilder {
 
     /**
      * Sets the Stormpath account fields that should be updated when encountering {@link UserInfoMappingRule#getName() named}
-     * field from the userInfo provided by the social provider.  If discovered, that SAML Attribute value will be set on
+     * field from the userInfo provided by the social provider.  If discovered, that UserInfo attribute value will be set on
      * all of the Stormpath account fields named in this collection.
      *
      * @param accountAttributes the account fields that should be updated when there's a match with a field name in userInfo
