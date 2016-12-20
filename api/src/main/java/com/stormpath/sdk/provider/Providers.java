@@ -89,6 +89,7 @@ public final class Providers {
      * Returns a new {@link TwitterRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
      *
      * @return a new {@link TwitterRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     * @since 1.3.0
      */
     public static final TwitterRequestFactory TWITTER = (TwitterRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultTwitterRequestFactory");
 
