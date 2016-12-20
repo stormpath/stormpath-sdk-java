@@ -229,7 +229,7 @@ public final class Phones {
      * Phones.where(<b>Phones.createdAt()</b>.matches("[,2014-04-05T12:00:00]");
      * </pre>
      * The above example invokes the returned factory's <code>matches("[,2014-04-05T12:00:00]"))</code> method.  This
-     * produces a name-specific {@link Criterion} which is added to the criteria query (via the
+     * produces a createdAt-specific {@link Criterion} which is added to the criteria query (via the
      * {@link #where(Criterion) where} method).
      * <pre>
      * For example, the following code is equivalent:
@@ -254,7 +254,7 @@ public final class Phones {
      * Phones.where(<b>Phones.modifiedAt()</b>.matches("[,2014-04-05T12:00:00]");
      * </pre>
      * The above example invokes the returned factory's <code>matches("[,2014-04-05T12:00:00]"))</code> method.  This
-     * produces a name-specific {@link Criterion} which is added to the criteria query (via the
+     * produces a modifiedAt-specific {@link Criterion} which is added to the criteria query (via the
      * {@link #where(Criterion) where} method).
      * <pre>
      * For example, the following code is equivalent:
@@ -279,12 +279,12 @@ public final class Phones {
     }
 
     /**
-     * Creates a new {@link com.stormpath.sdk.phone.CreatePhoneRequestBuilder CreatePhoneRequestBuilder}
+     * Creates a new {@link com.stormpath.sdk.phone.CreatePhoneRequestBuilder createPhoneRequestBuilder}
      * instance reflecting the specified {@link com.stormpath.sdk.phone.Phone} instance. The builder can be used to customize any
      * creation request options as necessary.
      *
      * @param phone the phone to create a new record for within Stormpath
-     * @return a new {@link com.stormpath.sdk.phone.CreatePhoneRequestBuilder CreatePhoneRequestBuilder}
+     * @return a new {@link com.stormpath.sdk.phone.CreatePhoneRequestBuilder createPhoneRequestBuilder}
      *         instance reflecting the specified {@link com.stormpath.sdk.phone.Phone} instance.
      ** @see com.stormpath.sdk.account.Account#createPhone(CreatePhoneRequest)
      *

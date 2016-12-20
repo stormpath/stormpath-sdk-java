@@ -136,4 +136,35 @@ public interface TenantOptions<T> extends Options {
      * @since 1.0.RC5
      */
     T withOrganizations(int limit, int offset);
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getRegisterdSamlServiceProviders() registeredSamlServiceProviders} are also retrieved in the same request.
+     * <p/>
+     * If you wish to control pagination parameters (offset and limit) for the returned groups, see the
+     * {@link #withRegisteredSamlServiceProviders(int) withRegisteredSamlServiceProviders(limit)} or
+     * {@link #withRegisteredSamlServiceProviders(int, int) withRegisteredSamlServiceProviders(limit,offset)} methods.
+     *
+     * @return this instance for method chaining.
+     * @since 1.3.0
+     */
+    T withRegisteredSamlServiceProviders();
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getRegisterdSamlServiceProviders() registeredSamlServiceProviders} are also retrieved in the same request.
+     *
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @return this instance for method chaining.
+     * @since 1.3.0
+     */
+    T withRegisteredSamlServiceProviders(int limit);
+
+    /**
+     * Ensures that when retrieving a Tenant, the associated {@link Tenant#getRegisterdSamlServiceProviders() registeredSamlServiceProviders} are also retrieved in the same request.
+     *
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @param offset the zero-based starting index in the entire collection of the first item to return. Default is 0
+     * @return this instance for method chaining.
+     * @since 1.3.0
+     */
+    T withRegisteredSamlServiceProviders(int limit, int offset);
 }

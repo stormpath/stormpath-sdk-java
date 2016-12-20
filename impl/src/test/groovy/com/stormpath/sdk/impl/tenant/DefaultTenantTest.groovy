@@ -68,7 +68,7 @@ class DefaultTenantTest {
 
         def propertyDescriptors = defaultTenant.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 9)
+        assertEquals(propertyDescriptors.size(), 10)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("key") instanceof StringProperty)
@@ -79,6 +79,7 @@ class DefaultTenantTest {
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference && propertyDescriptors.get("accounts").getType().equals(AccountList))
         assertTrue(propertyDescriptors.get("organizations") instanceof CollectionReference && propertyDescriptors.get("organizations").getType().equals(OrganizationList))
         assertTrue(propertyDescriptors.get("phones") instanceof CollectionReference && propertyDescriptors.get("phones").getType().equals(PhoneList))
+        assertTrue(propertyDescriptors.get("registeredSamlServiceProviders") instanceof CollectionReference)
     }
 
     @Test
