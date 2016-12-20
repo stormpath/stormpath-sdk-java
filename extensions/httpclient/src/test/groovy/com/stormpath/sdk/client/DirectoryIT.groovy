@@ -17,7 +17,10 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
-import com.stormpath.sdk.directory.*
+import com.stormpath.sdk.directory.Directories
+import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.directory.DirectoryOptions
+import com.stormpath.sdk.directory.PasswordPolicy
 import com.stormpath.sdk.impl.provider.AbstractOAuthProvider
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.impl.resource.AbstractResource
@@ -26,7 +29,11 @@ import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
-import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.provider.FacebookProvider
+import com.stormpath.sdk.provider.GithubProvider
+import com.stormpath.sdk.provider.GoogleProvider
+import com.stormpath.sdk.provider.LinkedInProvider
+import com.stormpath.sdk.provider.Providers
 import com.stormpath.sdk.provider.saml.SamlProvider
 import com.stormpath.sdk.provider.social.SocialUserInfoMappingRules
 import com.stormpath.sdk.provider.social.UserInfoMappingRule
@@ -40,7 +47,9 @@ import org.testng.annotations.Test
 import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.fail
 
 /**
  *

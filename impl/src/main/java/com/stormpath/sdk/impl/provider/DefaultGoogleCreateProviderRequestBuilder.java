@@ -48,7 +48,7 @@ public class DefaultGoogleCreateProviderRequestBuilder extends AbstractCreatePro
         provider.setClientId(super.clientId);
         provider.setClientSecret(super.clientSecret);
         provider.setRedirectUri(this.redirectUri);
-        if(super.userInfoMappingRules != null) {
+        if (super.userInfoMappingRules != null) {
             provider.setUserInfoMappingRules(super.userInfoMappingRules);
         }
         return new DefaultCreateProviderRequest(provider);
