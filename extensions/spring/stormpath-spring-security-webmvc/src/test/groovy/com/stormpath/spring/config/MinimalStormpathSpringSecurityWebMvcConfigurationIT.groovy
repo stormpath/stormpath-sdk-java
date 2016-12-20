@@ -33,6 +33,7 @@ import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
 import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
+import org.apache.http.entity.ContentType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -128,6 +129,9 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
 
     @BeforeClass
     public void setUp() {
+
+        super.setUp()
+
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .addFilter(springSecurityFilterChain, "/*") //Spring security in front of Stormpath
                 .addFilter(stormpathFilter, "/*")
