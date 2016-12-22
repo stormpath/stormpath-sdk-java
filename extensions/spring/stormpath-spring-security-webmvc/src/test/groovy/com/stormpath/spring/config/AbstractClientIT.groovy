@@ -86,7 +86,7 @@ abstract class AbstractClientIT extends AbstractTestNGSpringContextTests {
         String emailId = null
         int count = 0
 
-        while (emailId == null && count++ < 30) {
+        while (emailId == null && count++ < 150) {
             for (JsonNode emailNode : emailList) {
                 String mailSubject = emailNode.get("mail_subject").asText()
                 String localEmailId = emailNode.get("mail_id").asText()
@@ -96,7 +96,7 @@ abstract class AbstractClientIT extends AbstractTestNGSpringContextTests {
                 }
             }
             if (emailId == null) { // try retrieving email again
-                Thread.sleep(500)
+                Thread.sleep(100)
                 json = get(GUERILLA_MAIL_BASE + "?f=get_email_list&offset=0&sid_token=" + guerillaEmail.getToken()).asString()
                 rootNode = mapper.readTree(json)
                 emailList = rootNode.path("list")
