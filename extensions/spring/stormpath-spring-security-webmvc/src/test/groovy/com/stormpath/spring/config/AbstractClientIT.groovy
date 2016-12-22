@@ -88,9 +88,9 @@ abstract class AbstractClientIT extends AbstractTestNGSpringContextTests {
 
         while (emailId == null && count++ < 30) {
             for (JsonNode emailNode : emailList) {
-                String mailFrom = emailNode.get("mail_from").asText()
+                String mailSubject = emailNode.get("mail_subject").asText()
                 String localEmailId = emailNode.get("mail_id").asText()
-                if (mailFrom.contains("stormpath.com")) {
+                if (mailSubject.toLowerCase().contains("reset your password")) {
                     emailId = localEmailId
                     break
                 }
