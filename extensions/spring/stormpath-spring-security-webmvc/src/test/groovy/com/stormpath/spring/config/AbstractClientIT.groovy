@@ -88,15 +88,15 @@ abstract class AbstractClientIT extends AbstractTestNGSpringContextTests {
 
         while (emailId == null && count++ < 150) {
             for (JsonNode emailNode : emailList) {
-                String mailSubject = emailNode.get("mail_subject").asText()
-                String localEmailId = emailNode.get("mail_id").asText()
-                if (mailSubject.toLowerCase().contains("reset your password")) {
+                String mailSubject = (emailNode.get("mail_subject") != null) ? emailNode.get("mail_subject").asText() : null
+                String localEmailId = (emailNode.get("mail_id") != null) ? emailNode.get("mail_id").asText() : null
+                if (mailSubject != null && mailSubject.toLowerCase().contains("reset your password")) {
                     emailId = localEmailId
                     break
                 }
             }
             if (emailId == null) { // try retrieving email again
-                Thread.sleep(100)
+                Thread.sleep(200)
                 json = get(GUERILLA_MAIL_BASE + "?f=get_email_list&offset=0&sid_token=" + guerillaEmail.getToken()).asString()
                 rootNode = mapper.readTree(json)
                 emailList = rootNode.path("list")
