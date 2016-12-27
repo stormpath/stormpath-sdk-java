@@ -24,11 +24,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.testng.annotations.Test
 
-import static org.easymock.EasyMock.*
+import static org.easymock.EasyMock.createStrictMock
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.easymock.EasyMock.verify
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.core.IsInstanceOf.instanceOf
-import static org.testng.Assert.*
-import static org.testng.AssertJUnit.assertArrayEquals
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
 
 class UsernamePasswordAuthenticationTokenFactoryTest {
 
@@ -59,10 +63,10 @@ class UsernamePasswordAuthenticationTokenFactoryTest {
         def token = authenticationTokenFactory.createAuthenticationToken("foo", "bar", gas, account)
         assertNotNull token
         assertThat token, instanceOf(UsernamePasswordAuthenticationToken.class)
-        assertEquals acctHref, ((UserDetails)token.principal).getUsername()
-        assertEquals "bar", token.getCredentials()
-        assertArrayEquals gas.toArray(), token.getAuthorities().toArray()
-        assertEquals gas.size(), token.getAuthorities().size()
+        assertEquals(((UserDetails)token.principal).getUsername(), acctHref)
+        assertEquals token.getCredentials(), "bar"
+        assertEquals token.getAuthorities().toArray(), gas.toArray()
+        assertEquals token.getAuthorities().size(), gas.size()
         assertTrue(((UserDetails)token.principal).enabled)
         assertTrue(((UserDetails)token.principal).accountNonLocked)
         assertTrue(((UserDetails)token.principal).accountNonExpired)

@@ -39,8 +39,8 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeTest
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.assertTrue
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
 
 abstract class ClientIT {
 

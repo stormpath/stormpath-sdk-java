@@ -15,10 +15,10 @@
 */
 package com.stormpath.sdk.impl.oauth
 
-import org.testng.annotations.Test;
+import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
-import static org.testng.AssertJUnit.fail
+import static org.testng.Assert.fail
 
 /**
  * Test for OAuthGrantRequestAuthenticationResultBuilder class
