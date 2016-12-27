@@ -123,29 +123,24 @@ Spring Security
 ^^^^^^^^^^^^^^^
 
 The |project| assumes Spring Security will be used to secure your ${apptype} by default.  To ensure this
-works correctly, you will need a Spring Security configuration class and apply the ``stormpath()`` hook:
+works correctly, you will need a Spring Security configuration class:
 
 .. code-block:: java
     :emphasize-lines: 7
-
-    import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
     @Configuration
     public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.apply(stormpath());
         }
     }
 
-Without this, you will see a browser popup prompting for authentication, which is the default basic authentication behavior for Spring Security.
-
-Also, by default, all paths are locked down with Spring Security. Stormpath's Spring Security integration follows this idiomatic behavior.
+By default, all paths are locked down with Spring Security. Stormpath's Spring Security integration follows this idiomatic behavior.
 
 Disabling Spring Security
 """""""""""""""""""""""""
 
-If you do not want to use Spring Security, do not add the ``SpringSecurityWebAppConfig`` class shown above (or just comment out the ``http.apply(stormpath())`` line if you do not want to remove the class).  Also set the following two config properties:
+If you do not want to use our Spring Security integration, set the following two config properties:
 
 .. code-block:: yaml
 

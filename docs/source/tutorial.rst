@@ -211,23 +211,18 @@
       :linenos:
       :emphasize-lines: 8
 
-      import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
-
       @Configuration
       public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
           @Override
           protected void doConfigure(HttpSecurity http) throws Exception {
               http
-                  .apply(stormpath()).and()
                   .authorizeRequests()
                   .antMatchers("/").permitAll();
           }
       }
 
-  Why have this configuration? Spring Security expects things to be, well - secured. If there is not a class that extends
-  ``WebSecurityConfigurerAdapter`` in the application, Spring Security will protect *every* pathway and will provide a default
-  basic authentication popup to your browser. In order to easily hook into the Stormpath Spring Security integration, simply
-  ``apply`` stormpath! The call to ``stormpath()`` sets up all of the default views and hooks the Stormpath ``AuthenticationManager``
+  In order to easily hook into the Stormpath Spring Security integration, simply add a ``WebSecurityConfigurerAdapter`` in the application.
+  Doing that just sets up all of the default views and hooks the Stormpath ``AuthenticationManager``
   into your application.
 
   Based on the ``SpringSecurityWebAppConfig`` above, we will permit access to the homepage. Any other paths will fall back
