@@ -15,44 +15,24 @@
 */
 package com.stormpath.sdk.impl.saml;
 
+import com.stormpath.sdk.impl.provider.AbstractMappingRuleBuilder;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.provider.MappingRule;
 import com.stormpath.sdk.saml.AttributeStatementMappingRuleBuilder;
-import com.stormpath.sdk.saml.AttributeStatementMappingRule;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
  * @since 1.0.RC8
  */
-public class DefaultAttributeStatementMappingRuleBuilder implements AttributeStatementMappingRuleBuilder {
+public class DefaultAttributeStatementMappingRuleBuilder extends AbstractMappingRuleBuilder implements AttributeStatementMappingRuleBuilder {
 
-    private String name;
-    private Set<String> accountAttributes;
     private String nameFormat;
-
-    public AttributeStatementMappingRuleBuilder setName(String name){
-        Assert.hasText(name, "name argument cannot be null or empty.");
-        this.name = name;
-        return this;
-    }
 
     @Override
     public AttributeStatementMappingRuleBuilder setNameFormat(String nameFormat) {
         Assert.hasText(nameFormat, "nameFormat argument cannot be null or empty.");
         this.nameFormat = nameFormat;
-        return this;
-    }
-
-    public AttributeStatementMappingRuleBuilder setAccountAttributes(String... accountAttributes){
-        Assert.notEmpty(accountAttributes, "accountAttributes cannot be null or empty.");
-
-        Set<String> names = new LinkedHashSet<String>(accountAttributes.length);
-        for (String attrName : accountAttributes) {
-            Assert.hasText("individual accountAttributes cannot be null or empty.");
-            names.add(attrName);
-        }
-        this.accountAttributes = names;
         return this;
     }
 
@@ -63,7 +43,7 @@ public class DefaultAttributeStatementMappingRuleBuilder implements AttributeSta
         return this;
     }
 
-    public AttributeStatementMappingRule build(){
+    public MappingRule build(){
         Assert.hasText(name, "name argument cannot be null or empty.");
         Assert.notEmpty(accountAttributes, "accountAttributes cannot be null or empty.");
 

@@ -52,7 +52,7 @@ public interface Phone extends Resource, Saveable, Deletable, Auditable {
 
     /**
      * Sets the phone's name.
-     * @param name he phone's name.
+     * @param name the phone's name.
      *
      * @return this instance for method chaining.
      */
@@ -67,7 +67,7 @@ public interface Phone extends Resource, Saveable, Deletable, Auditable {
 
     /**
      * Sets the phone's description.
-     * @param description he phone's description.
+     * @param description the phone's description.
      *
      * @return this instance for method chaining.
      */

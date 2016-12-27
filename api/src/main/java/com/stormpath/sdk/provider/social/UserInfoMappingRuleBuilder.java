@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.provider.social;
 
-import java.util.Set;
+import com.stormpath.sdk.provider.MappingRuleBuilder;
 
 /**
  * A Builder to construct {@link UserInfoMappingRule} resources.
@@ -30,42 +30,6 @@ import java.util.Set;
  *
  * @since 1.3.0
  */
-public interface UserInfoMappingRuleBuilder {
+public interface UserInfoMappingRuleBuilder extends MappingRuleBuilder {
 
-    /**
-     * Sets the UserInfo attribute name, that when encountered, should have its value applied as Account field values.
-     * When this name is encountered when processing UserInfo from a Social Provider, its associated value will be set as the
-     * value for all Stormpath Account field names specified in the
-     * {@link UserInfoMappingRule#getAccountAttributes() accountAttributes} collection.
-     *
-     * @param name the UserInfo attribute name that when encountered, should have its value applied as Account field values.
-     */
-    UserInfoMappingRuleBuilder setName(String name);
-
-    /**
-     * Sets the Stormpath account fields that should be updated when encountering {@link UserInfoMappingRule#getName() named}
-     * field from the userInfo provided by the social provider.  If discovered, that UserInfo attribute value will be set on
-     * all of the Stormpath account fields named in this collection.
-     *
-     * @param accountAttributes the account fields that should be updated when there's a match with a field name in userInfo
-     * provided by the social provider.
-     */
-    UserInfoMappingRuleBuilder setAccountAttributes(String... accountAttributes);
-
-    /**
-     * Sets the Stormpath account fields that should be updated when encountering {@link UserInfoMappingRule#getName() named}
-     * field from the userInfo provided by the social provider.  If discovered, that UserInfo attribute value will be set on
-     * all of the Stormpath account fields named in this collection.
-     *
-     * @param accountAttributes the account fields that should be updated when there's a match with a field name in userInfo
-     * provided by the social provider.
-     */
-    UserInfoMappingRuleBuilder setAccountAttributes(Set<String> accountAttributes);
-
-    /**
-     * Builds a new {@link UserInfoMappingRule} based on the current state of this builder.
-     *
-     * @return a new {@link UserInfoMappingRule} to be included in the {@link UserInfoMappingRules} for a Social Provider.
-     */
-    UserInfoMappingRule build();
 }

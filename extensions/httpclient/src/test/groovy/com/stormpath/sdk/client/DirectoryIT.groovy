@@ -17,6 +17,7 @@ package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.directory.AccountCreationPolicy
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryOptions
@@ -43,7 +44,14 @@ import org.testng.annotations.Test
 import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotEquals
+import static org.testng.Assert.assertNotSame
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.fail
 
 /**
  *
