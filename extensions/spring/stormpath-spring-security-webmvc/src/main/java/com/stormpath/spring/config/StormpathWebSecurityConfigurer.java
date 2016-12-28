@@ -18,15 +18,17 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
+import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
-import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
-import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+//import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+//import com.stormpath.spring.filter.StormpathWrapperFilter;
+import com.stormpath.spring.filter.StormpathWrapperFilter;
 import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +43,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -63,9 +64,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     private static final Logger log = LoggerFactory.getLogger(StormpathWebSecurityConfigurer.class);
 
     @Autowired
-    OAuthAuthenticationSpringSecurityProcessingFilter oauthAuthenticationSpringSecurityProcessingFilter;
-
-    @Autowired
     SocialCallbackSpringSecurityProcessingFilter socialCallbackSpringSecurityProcessingFilter;
 
     /**
@@ -75,7 +73,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     ContentNegotiationSpringSecurityAuthenticationFilter contentNegotiationSpringSecurityAuthenticationFilter;
 
     @Autowired
-    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
+    AccountResolverFilter springSecurityResolvedAccountFilter;
 
     //Based on this http://docs.spring.io/spring-security/site/docs/4.1.2.RELEASE/reference/htmlsingle/#filter-ordering
     //We are introducing a new filter in order to place the Stormpath Account in context
@@ -229,6 +227,9 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Qualifier("loginPostHandler")
     protected WebHandler loginPostHandler;
 
+    @Autowired
+    protected StormpathWrapperFilter stormpathWrapperFilter;
+
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
      * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
@@ -272,9 +273,15 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         http.servletApi().rolePrefix(""); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/325
 
         if (loginEnabled) {
+
+            http.addFilterBefore(stormpathWrapperFilter, SecurityContextPersistenceFilter.class);
+
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
-            http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
+            http.addFilterBefore(springSecurityResolvedAccountFilter, LogoutFilter.class);
+
+            //Fix for redirection loop when Cookie is present but WebApp is restarted and '/' is locked down to authenticated users (Bare Bones example)
+            http.addFilterBefore(stormpathSecurityContextPersistenceFilter, UsernamePasswordAuthenticationFilter.class);
 
             http.addFilterBefore(socialCallbackSpringSecurityProcessingFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -282,9 +289,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682
             http.addFilterBefore(contentNegotiationSpringSecurityAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-            //Fix for redirection loop when Cookie is present but WebApp is restarted and '/' is locked down to authenticated users (Bare Bones example)
-            http.addFilterBefore(stormpathSecurityContextPersistenceFilter, UsernamePasswordAuthenticationFilter.class);
         }
 
         if (corsEnabled) {
@@ -358,11 +362,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
             if (accessTokenEnabled) {
-                if (!callbackEnabled && !idSiteEnabled && !loginEnabled) {
-                    oauthAuthenticationSpringSecurityProcessingFilter.setStateless(true);
-                }
-                http.authorizeRequests().antMatchers(accessTokenUri).permitAll();
-                http.addFilterBefore(oauthAuthenticationSpringSecurityProcessingFilter, AnonymousAuthenticationFilter.class);
                 http.authorizeRequests().antMatchers(accessTokenUri).permitAll();
             }
 
@@ -398,8 +397,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
                             return !MediaType.APPLICATION_JSON.equals(mediaType);
                         } catch (UnresolvedMediaTypeException e) {
                             log.error("Couldn't resolve media type: {}", e.getMessage(), e);
-                            // default to requiring CSRF
-                            return true;
+                            return csrfTokenEnabled;
                         }
                     }
                 });

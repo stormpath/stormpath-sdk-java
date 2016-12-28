@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.config;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
@@ -25,15 +26,16 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.http.MediaType;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
-import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
-import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.filter.StormpathWrapperFilter;
 import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import com.stormpath.spring.security.provider.SpringSecurityIdSiteResultListener;
 import com.stormpath.spring.security.provider.SpringSecuritySamlResultListener;
@@ -57,6 +59,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -129,6 +132,15 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.cors.allowed.methods'] ?: 'POST,GET,OPTIONS,DELETE' }")
     protected String corsAllowedMethods;
 
+    @Value("#{ @environment['stormpath.web.stormpathFilter.enabled'] ?: true }")
+    protected boolean stormpathFilterEnabled;
+
+    @Autowired
+    List<Resolver<Account>> stormpathAccountResolvers;
+
+    @Value("#{ @environment['stormpath.web.oauth2.uri'] ?: '/oauth/token' }")
+    protected String accessTokenUri;
+
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
     }
@@ -197,12 +209,6 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     }
 
-    public OAuthAuthenticationSpringSecurityProcessingFilter oAuthAuthenticationProcessingFilter() {
-        OAuthAuthenticationSpringSecurityProcessingFilter filter = new OAuthAuthenticationSpringSecurityProcessingFilter();
-        filter.setEnabled(accessTokenEnabled);
-        return filter;
-    }
-
     public StormpathSecurityContextPersistenceFilter stormpathSecurityContextPersistenceFilter() {
         StormpathSecurityContextPersistenceFilter filter = new StormpathSecurityContextPersistenceFilter();
         return filter;
@@ -234,9 +240,17 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         return filter;
     }
 
-    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
-        return new SpringSecurityResolvedAccountFilter();
+    /**
+     * @since 1.3.0
+     */
+    public AccountResolverFilter springSecuritResolvedAccountFilter() {
+        AccountResolverFilter accountResolverFilter = new AccountResolverFilter();
+        accountResolverFilter.setEnabled(stormpathFilterEnabled);
+        accountResolverFilter.setResolvers(stormpathAccountResolvers);
+        accountResolverFilter.setOauthEndpointUri(accessTokenUri);
+        return accountResolverFilter;
     }
+
 
     public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
         return new StormpathAuthenticationEntryPoint(loginUri, produces, meUri, application.getName());
@@ -255,6 +269,16 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    /**
+     * This filter adds Client and Application as attributes to every request in order for subsequent Filters to have access to them.
+     * For example, a filter trying to validate an access token will need to have access to the Application (see AuthorizationHeaderAccountResolver)
+     *
+     * @since 1.3.0
+     */
+    public StormpathWrapperFilter stormpathWrapperFilter() {
+        return new StormpathWrapperFilter();
     }
 
 }
