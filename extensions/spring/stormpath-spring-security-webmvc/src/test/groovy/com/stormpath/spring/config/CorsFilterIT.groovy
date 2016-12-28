@@ -106,7 +106,7 @@ class CorsFilterIT extends AbstractTestNGSpringContextTests {
     void testAccessControlRequestMethodRequestFailsForPUT() {
         mvc.perform(options(new URI("/me"))
                     .header("Origin", "http://localhost:3000")
-                    .header("Access-Control-Request-Method", "HEAD") //HEAD is not allowed
+                    .header("Access-Control-Request-Method", "PUT") //HEAD is not allowed
                     .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpServletResponse.SC_FORBIDDEN)); //403
 
