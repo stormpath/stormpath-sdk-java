@@ -26,8 +26,6 @@ import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
-//import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
-//import com.stormpath.spring.filter.StormpathWrapperFilter;
 import com.stormpath.spring.filter.StormpathWrapperFilter;
 import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.slf4j.Logger;

@@ -1024,7 +1024,7 @@
       "name": "stormpath.web.cors.allowed.methods",
       "type": "java.lang.String",
       "description": "Comma separated list of allowed methods for a CORS request.",
-      "defaultValue": "POST,GET,OPTIONS,DELETE"
+      "defaultValue": "POST,GET,OPTIONS,DELETE,PUT"
     }
   ]
 }

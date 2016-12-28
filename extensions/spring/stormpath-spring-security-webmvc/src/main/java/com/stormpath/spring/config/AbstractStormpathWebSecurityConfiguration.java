@@ -131,7 +131,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.cors.allowed.headers'] ?: 'Content-Type,Accept,X-Requested-With,remember-me' }")
     protected String corsAllowedHeaders;
 
-    @Value("#{ @environment['stormpath.web.cors.allowed.methods'] ?: 'POST,GET,OPTIONS,DELETE' }")
+    @Value("#{ @environment['stormpath.web.cors.allowed.methods'] ?: 'POST,GET,OPTIONS,DELETE,PUT' }")
     protected String corsAllowedMethods;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.enabled'] ?: true }")
