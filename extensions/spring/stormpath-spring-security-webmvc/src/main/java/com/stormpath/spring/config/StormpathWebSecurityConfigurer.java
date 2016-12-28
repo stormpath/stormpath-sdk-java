@@ -84,6 +84,15 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Autowired
     StormpathSecurityContextPersistenceFilter stormpathSecurityContextPersistenceFilter;
 
+    /**
+     * This filter adds Client and Application as attributes to every request in order for subsequent Filters to have access to them.
+     * For example, a filter trying to validate an access token will need to have access to the Application (see AuthorizationHeaderAccountResolver)
+     *
+     * @since 1.3.0
+     */
+    @Autowired
+    protected StormpathWrapperFilter stormpathWrapperFilter;
+
     @Autowired
     AuthenticationEntryPoint stormpathAuthenticationEntryPoint;
 
@@ -226,9 +235,6 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
     @Autowired(required = false)
     @Qualifier("loginPostHandler")
     protected WebHandler loginPostHandler;
-
-    @Autowired
-    protected StormpathWrapperFilter stormpathWrapperFilter;
 
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using

@@ -20,10 +20,7 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
-//import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
-//import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
-//import com.stormpath.spring.filter.StormpathWrapperFilter;
 import com.stormpath.spring.filter.StormpathWrapperFilter;
 import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.springframework.context.annotation.Bean;
@@ -34,8 +31,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.cors.CorsConfigurationSource;
-
-import javax.servlet.Filter;
 
 /**
  * @since 1.0.RC5

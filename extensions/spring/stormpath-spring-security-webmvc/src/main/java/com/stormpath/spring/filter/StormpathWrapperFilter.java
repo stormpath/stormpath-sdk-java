@@ -19,73 +19,50 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.impl.http.HttpHeadersHolder;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
 import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This filter adds Client and Application as attributes to every request in order for subsequent Filters to have access to them.
+ * For example, a filter trying to validate an access token will need to have access to the Application (see AuthorizationHeaderAccountResolver)
+ *
+ * @since 1.3.0
+ */
 public class StormpathWrapperFilter extends HttpFilter {
 
-//    private Set<String> clientRequestAttributeNames;
-//    private Set<String> applicationRequestAttributeNames;
-    @Autowired
-    @Qualifier("stormpathWrappedServletRequestFactory")
-    private WrappedServletRequestFactory factory;
-
-    @Autowired
     protected Client client;
 
-    @Autowired
     protected Application application;
 
-    @Value("#{ @environment['stormpath.web.request.client.attributeNames'] ?: 'client' }")
-    protected String clientRequestAttributeNames;
+    protected Set<String> clientRequestAttributeNameList;
 
-    @Value("#{ @environment['stormpath.web.request.application.attributeNames'] ?: 'application' }")
-    protected String applicationRequestAttributeNames;
+    protected Set<String> applicationRequestAttributeNameList;
 
-    private List<String> clientRequestAttributeNamesList;
-
-    private List<String> applicationRequestAttributeNameList;
+    protected WrappedServletRequestFactory wrappedServletRequestFactory;
 
     public StormpathWrapperFilter() {
-        this.clientRequestAttributeNamesList = Strings.split(clientRequestAttributeNames) != null ? Arrays.asList(Strings.split(clientRequestAttributeNames)) : Collections.<String>emptyList();
-        this.applicationRequestAttributeNameList = Strings.split(applicationRequestAttributeNames) != null ? Arrays.asList(Strings.split(applicationRequestAttributeNames)) : Collections.<String>emptyList();
     }
 
-//    public void setFilterChainResolver(FilterChainResolver filterChainResolver) {
-//        Assert.notNull(filterChainResolver, "FilterChainResolver cannot be null.");
-//        //this.filterChainResolver = filterChainResolver;
-//    }
+    public void setClientRequestAttributeNames(Set<String> clientRequestAttributeNames) {
+        this.clientRequestAttributeNameList =
+                clientRequestAttributeNames != null ? clientRequestAttributeNames : new LinkedHashSet<String>();
+    }
 
-//    public void setClientRequestAttributeNames(Set<String> clientRequestAttributeNames) {
-//        this.clientRequestAttributeNames =
-//                clientRequestAttributeNames != null ? clientRequestAttributeNames : new LinkedHashSet<>();
-//    }
-//
-//    public void setApplicationRequestAttributeNames(Set<String> applicationRequestAttributeNames) {
-//        this.applicationRequestAttributeNames =
-//                applicationRequestAttributeNames != null ? applicationRequestAttributeNames : new LinkedHashSet<String>();
-//    }
-//
-//    public void setWrappedServletRequestFactory(WrappedServletRequestFactory factory) {
-//        Assert.notNull(factory, "WrappedServletRequestFactory cannot be null.");
-//        this.factory = factory;
-//    }
+    public void setApplicationRequestAttributeNames(Set<String> applicationRequestAttributeNames) {
+        this.applicationRequestAttributeNameList =
+                applicationRequestAttributeNames != null ? applicationRequestAttributeNames : new LinkedHashSet<String>();
+    }
 
     public void setClient(Client client) {
         this.client = client;
@@ -96,33 +73,13 @@ public class StormpathWrapperFilter extends HttpFilter {
     }
 
     @Override
-    protected void onInit() throws ServletException {
-        //Assert.notNull(filterChainResolver, "FilterChainResolver cannot be null.");
-        Assert.notNull(clientRequestAttributeNames, "clientRequestAttributeNames cannot be null.");
-        Assert.notNull(applicationRequestAttributeNames, "applicationRequestAttributeNames cannot be null.");
-        Assert.notNull(factory, "WrappedServletRequestFactory cannot be null.");
-        Assert.notNull(client, "Client instance cannot be null.");
-        Assert.notNull(application, "Application instance cannot be null.");
-    }
-
-//    protected FilterChainResolver getFilterChainResolver() {
-//        return this.filterChainResolver;
-//    }
-
-    @Override
     public void filter(HttpServletRequest request, HttpServletResponse response, final FilterChain chain)
             throws Exception {
-
-//        FilterChainResolver resolver = getFilterChainResolver();
-//        Assert.notNull(resolver, "Filter has not yet been configured. Explicitly call setFilterChainResolver or " +
-//                "init(FilterConfig).");
 
         setRequestAttributes(request);
 
         //wrap:
         request = wrapRequest(request, response);
-
-        //FilterChain target = resolver.getChain(request, response, chain);
 
         //continue:
         chain.doFilter(request, response);
@@ -148,13 +105,18 @@ public class StormpathWrapperFilter extends HttpFilter {
         HttpHeadersHolder.set(headersMap);
     }
 
+    public void setWrappedServletRequestFactory(WrappedServletRequestFactory factory) {
+        Assert.notNull(factory, "WrappedServletRequestFactory cannot be null.");
+        this.wrappedServletRequestFactory = factory;
+    }
+
     protected void setClientRequestAttributes(HttpServletRequest request) {
         String name = Client.class.getName();
         //value must always be set:
         request.setAttribute(name, client);
 
         //user customized values:
-        for (String aName : applicationRequestAttributeNameList) {
+        for (String aName : clientRequestAttributeNameList) {
             request.setAttribute(aName, client);
         }
     }
@@ -171,7 +133,7 @@ public class StormpathWrapperFilter extends HttpFilter {
     }
 
     protected HttpServletRequest wrapRequest(HttpServletRequest request, HttpServletResponse response) {
-        return this.factory.wrapHttpServletRequest(request, response);
+        return this.wrappedServletRequestFactory.wrapHttpServletRequest(request, response);
     }
 
 }

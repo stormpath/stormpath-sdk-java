@@ -20,12 +20,14 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.csrf.DisabledCsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
+import com.stormpath.sdk.servlet.filter.WrappedServletRequestFactory;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.http.MediaType;
 import com.stormpath.sdk.servlet.http.Resolver;
@@ -59,8 +61,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
-
 
 /**
  * @since 1.0.RC5
@@ -140,6 +142,17 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
 
     @Value("#{ @environment['stormpath.web.oauth2.uri'] ?: '/oauth/token' }")
     protected String accessTokenUri;
+
+    @Value("#{ @environment['stormpath.web.request.client.attributeNames'] ?: 'client' }")
+    protected String clientRequestAttributeNames;
+
+    @Value("#{ @environment['stormpath.web.request.application.attributeNames'] ?: 'application' }")
+    protected String applicationRequestAttributeNames;
+
+    @Autowired
+    @Qualifier("stormpathWrappedServletRequestFactory")
+    private WrappedServletRequestFactory wrappedServletRequestFactory;
+
 
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
@@ -278,7 +291,15 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
      * @since 1.3.0
      */
     public StormpathWrapperFilter stormpathWrapperFilter() {
-        return new StormpathWrapperFilter();
+        Assert.notNull(clientRequestAttributeNames, "clientRequestAttributeNames cannot be null.");
+        Assert.notNull(applicationRequestAttributeNames, "applicationRequestAttributeNames cannot be null.");
+        StormpathWrapperFilter filter = new StormpathWrapperFilter();
+        filter.setClientRequestAttributeNames(Strings.split(clientRequestAttributeNames) != null ? new LinkedHashSet<>(Arrays.asList(Strings.split(clientRequestAttributeNames))) : Collections.<String>emptySet());
+        filter.setApplicationRequestAttributeNames(Strings.split(applicationRequestAttributeNames) != null ? new LinkedHashSet<>(Arrays.asList(Strings.split(applicationRequestAttributeNames))) : Collections.<String>emptySet());
+        filter.setClient(client);
+        filter.setApplication(application);
+        filter.setWrappedServletRequestFactory(wrappedServletRequestFactory);
+        return filter;
     }
 
 }
