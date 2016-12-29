@@ -1,30 +1,32 @@
 package com.stormpath.sdk.impl.provider
 
-import com.stormpath.sdk.provider.OAuth2ProviderAccountRequestBuilder
+import com.stormpath.sdk.provider.GenericOAuth2ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.ProviderAccountRequest
 import com.stormpath.sdk.provider.ProviderAccountRequestBuilder
 import com.stormpath.sdk.provider.Providers
 import org.testng.annotations.Test
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
+
 /**
  * @since 1.3.0
  */
-class DefaultOAuth2AccountRequestBuilderTest {
+class DefaultGenericOAuth2AccountRequestBuilderTest {
 
     @Test
     void testWithAccessToken() {
         def providerRequest = Providers.OAUTH2;
         def requestBuilder = providerRequest.account();
-        assertTrue(requestBuilder instanceof OAuth2ProviderAccountRequestBuilder)
+        assertTrue(requestBuilder instanceof GenericOAuth2ProviderAccountRequestBuilder)
         assertTrue(ProviderAccountRequestBuilder.isInstance(requestBuilder))
         def request = requestBuilder.setProviderId("instagram").
                 setAccessToken("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build();
         assertTrue(request instanceof ProviderAccountRequest)
         assertEquals(request.getProviderData().getProviderId(), "instagram")
         def providerData = request.getProviderData()
-        assertTrue(providerData instanceof DefaultOAuth2ProviderData)
-        providerData = (DefaultOAuth2ProviderData) providerData
+        assertTrue(providerData instanceof DefaultGenericOAuth2ProviderData)
+        providerData = (DefaultGenericOAuth2ProviderData) providerData
         assertEquals(providerData.getAccessToken(), "CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD")
     }
 
@@ -32,14 +34,14 @@ class DefaultOAuth2AccountRequestBuilderTest {
     void testWithAuthorizationCode() {
         def providerRequest = Providers.OAUTH2;
         def requestBuilder = providerRequest.account();
-        assertTrue(requestBuilder instanceof OAuth2ProviderAccountRequestBuilder)
+        assertTrue(requestBuilder instanceof GenericOAuth2ProviderAccountRequestBuilder)
         assertTrue(ProviderAccountRequestBuilder.isInstance(requestBuilder))
         def request = requestBuilder.setProviderId("amazon").setCode("CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD").build();
         assertTrue(request instanceof ProviderAccountRequest)
         assertEquals(request.getProviderData().getProviderId(), "amazon")
         def providerData = request.getProviderData()
-        assertTrue(providerData instanceof DefaultOAuth2ProviderData)
-        providerData = (DefaultOAuth2ProviderData) providerData
+        assertTrue(providerData instanceof DefaultGenericOAuth2ProviderData)
+        providerData = (DefaultGenericOAuth2ProviderData) providerData
         assertEquals(providerData.getProperty('code'), "CAAHUbqIB55EH1MmLxJJLGRPXVknFt0aA36spMcFQXIzTdsHUZD")
     }
 

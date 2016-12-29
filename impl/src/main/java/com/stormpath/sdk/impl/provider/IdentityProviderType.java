@@ -61,7 +61,7 @@ public enum IdentityProviderType {
     /**
      * @since 1.3.0
      */
-    OAUTH2("oauth2", OAuth2Provider.class, OAuth2ProviderData.class),
+    OAUTH2("oauth2", GenericOAuth2Provider.class, GenericOAuth2ProviderData.class),
 
     /**
      * @since 1.2.2

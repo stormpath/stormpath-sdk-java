@@ -11,14 +11,14 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.3.0
  */
-public class OAuth2ProviderCallbackController extends AbstractSocialCallbackController {
+public class GenericOAuth2ProviderCallbackController extends AbstractSocialCallbackController {
 
     @Override
     protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
         String providerId = ServletUtils.getCleanParam(request, "providerId");
         String code = ServletUtils.getCleanParam(request, "code");
 
-        if(StringUtils.hasText(code)) {
+        if (StringUtils.hasText(code)) {
             return Providers.OAUTH2.account().setProviderId(providerId).setCode(code).build();
         } else {
             String accessToken = ServletUtils.getCleanParam(request, "accessToken");

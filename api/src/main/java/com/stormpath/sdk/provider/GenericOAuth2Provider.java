@@ -5,9 +5,9 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.3.0
  */
-public interface OAuth2Provider extends OAuthProvider {
+public interface GenericOAuth2Provider extends OAuthProvider {
 
-    OAuth2Provider setProviderId(String providerId);
+    GenericOAuth2Provider setProviderId(String providerId);
 
     String getAuthorizationEndpoint();
 

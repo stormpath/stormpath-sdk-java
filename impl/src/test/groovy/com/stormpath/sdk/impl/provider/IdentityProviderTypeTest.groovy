@@ -76,8 +76,8 @@ class IdentityProviderTypeTest {
 
         item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("oauth2");
         assertEquals(item.getNameKey(), "oauth2")
-        assertEquals(item.getProviderClass(), OAuth2Provider.class)
-        assertEquals(item.getProviderDataClass(), OAuth2ProviderData.class)
+        assertEquals(item.getProviderClass(), GenericOAuth2Provider.class)
+        assertEquals(item.getProviderDataClass(), GenericOAuth2ProviderData.class)
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.size(), PROVIDER_COUNT)
         assertNotNull(IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP.get("stormpath"))

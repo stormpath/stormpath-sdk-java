@@ -5,7 +5,7 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.3.0
  */
-public interface OAuth2ProviderData extends ProviderData {
+public interface GenericOAuth2ProviderData extends ProviderData {
 
     /**
      * Getter for the OAuth2 provider's access token.
@@ -14,6 +14,6 @@ public interface OAuth2ProviderData extends ProviderData {
      */
     String getAccessToken();
 
-    OAuth2ProviderData setProviderId(String providerId);
+    GenericOAuth2ProviderData setProviderId(String providerId);
 
 }

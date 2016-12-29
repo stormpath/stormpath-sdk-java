@@ -94,11 +94,11 @@ public final class Providers {
     public static final TwitterRequestFactory TWITTER = (TwitterRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultTwitterRequestFactory");
 
     /**
-     * Returns a new {@link OAuth2ProviderRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     * Returns a new {@link GenericOAuth2ProviderRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
      *
-     * @return a new {@link OAuth2ProviderRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     * @return a new {@link GenericOAuth2ProviderRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
      */
-    public static final OAuth2ProviderRequestFactory OAUTH2 = (OAuth2ProviderRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultOAuth2ProviderRequestFactory");
+    public static final GenericOAuth2ProviderRequestFactory OAUTH2 = (GenericOAuth2ProviderRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGenericOAuth2ProviderRequestFactory");
 
 }
 

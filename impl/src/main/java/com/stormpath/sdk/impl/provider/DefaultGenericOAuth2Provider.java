@@ -5,14 +5,14 @@ import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.AccessTokenType;
-import com.stormpath.sdk.provider.OAuth2Provider;
+import com.stormpath.sdk.provider.GenericOAuth2Provider;
 
 import java.util.Map;
 
 /**
  * @since 1.3.0
  */
-public class DefaultOAuth2Provider extends AbstractOAuthProvider<OAuth2Provider> implements OAuth2Provider {
+public class DefaultGenericOAuth2Provider extends AbstractOAuthProvider<GenericOAuth2Provider> implements GenericOAuth2Provider {
 
     private static final StringProperty AUTHORIZAION_ENDPOINT = new StringProperty("authorizationEndpoint");
     private static final StringProperty TOKEN_ENDPOINT = new StringProperty("tokenEndpoint");
@@ -23,16 +23,16 @@ public class DefaultOAuth2Provider extends AbstractOAuthProvider<OAuth2Provider>
             MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE, USER_INFO_MAPPING_RULES, AUTHORIZAION_ENDPOINT,
             TOKEN_ENDPOINT, RESOURCE_ENDPOINT, ACCESS_TOKEN_TYPE);
 
-    public DefaultOAuth2Provider(InternalDataStore dataStore) {
+    public DefaultGenericOAuth2Provider(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultOAuth2Provider(InternalDataStore dataStore, String providerId) {
+    public DefaultGenericOAuth2Provider(InternalDataStore dataStore, String providerId) {
         super(dataStore);
         setProviderId(providerId);
     }
 
-    public DefaultOAuth2Provider(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultGenericOAuth2Provider(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
         if (properties.containsKey(PROVIDER_ID.getName())) {
             setProviderId((String) properties.get(PROVIDER_ID.getName()));
@@ -73,28 +73,28 @@ public class DefaultOAuth2Provider extends AbstractOAuthProvider<OAuth2Provider>
         return AccessTokenType.fromNameKey(value);
     }
 
-    public OAuth2Provider setProviderId(String providerId) {
+    public GenericOAuth2Provider setProviderId(String providerId) {
         setProperty(PROVIDER_ID, providerId);
         return this;
     }
 
 
-    public OAuth2Provider setAuthorizationEndpoint(String authorizationEndpoint) {
+    public GenericOAuth2Provider setAuthorizationEndpoint(String authorizationEndpoint) {
         setProperty(AUTHORIZAION_ENDPOINT, authorizationEndpoint);
         return this;
     }
 
-    public OAuth2Provider setTokenEndpoint(String tokenEndpoint) {
+    public GenericOAuth2Provider setTokenEndpoint(String tokenEndpoint) {
         setProperty(TOKEN_ENDPOINT, tokenEndpoint);
         return this;
     }
 
-    public OAuth2Provider setResourceEndpoint(String resourceEndpoint) {
+    public GenericOAuth2Provider setResourceEndpoint(String resourceEndpoint) {
         setProperty(RESOURCE_ENDPOINT, resourceEndpoint);
         return this;
     }
 
-    public OAuth2Provider setAccessTokenType(AccessTokenType accessTokenType) {
+    public GenericOAuth2Provider setAccessTokenType(AccessTokenType accessTokenType) {
         setProperty(ACCESS_TOKEN_TYPE, accessTokenType);
         return this;
     }

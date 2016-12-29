@@ -5,7 +5,7 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.3.0
  */
-public interface OAuth2CreateProviderRequestBuilder extends CreateProviderRequestBuilder<OAuth2CreateProviderRequestBuilder> {
+public interface GenericOAuth2CreateProviderRequestBuilder extends CreateProviderRequestBuilder<GenericOAuth2CreateProviderRequestBuilder> {
 
     /**
      * Setter for the authorizationEndpoint for the OAuth2 provider.
@@ -13,7 +13,7 @@ public interface OAuth2CreateProviderRequestBuilder extends CreateProviderReques
      * @param authorizationEndpoint the authorizationEndpoint for the OAuth2 provider.
      * @return the builder instance for method chaining.
      */
-    OAuth2CreateProviderRequestBuilder setAuthorizationEndpoint(String authorizationEndpoint);
+    GenericOAuth2CreateProviderRequestBuilder setAuthorizationEndpoint(String authorizationEndpoint);
 
     /**
      * Setter for the tokenEndpoint for the OAuth2 provider.
@@ -21,7 +21,7 @@ public interface OAuth2CreateProviderRequestBuilder extends CreateProviderReques
      * @param tokenEndpoint the tokenEndpoint for the OAuth2 provider.
      * @return the builder instance for method chaining.
      */
-    OAuth2CreateProviderRequestBuilder setTokenEndpoint(String tokenEndpoint);
+    GenericOAuth2CreateProviderRequestBuilder setTokenEndpoint(String tokenEndpoint);
 
     /**
      * Setter for the resourceEndpoint for the OAuth2 provider.
@@ -29,7 +29,7 @@ public interface OAuth2CreateProviderRequestBuilder extends CreateProviderReques
      * @param resourceEndpoint the resourceEndpoint for the OAuth2 provider.
      * @return the builder instance for method chaining.
      */
-    OAuth2CreateProviderRequestBuilder setResourceEndpoint(String resourceEndpoint);
+    GenericOAuth2CreateProviderRequestBuilder setResourceEndpoint(String resourceEndpoint);
 
     /**
      * Setter for the accessTokenType for the OAuth2 provider.
@@ -37,7 +37,7 @@ public interface OAuth2CreateProviderRequestBuilder extends CreateProviderReques
      * @param accessTokenType the accessTokenType for the OAuth2 provider.
      * @return the builder instance for method chaining.
      */
-    OAuth2CreateProviderRequestBuilder setAccessTokenType(AccessTokenType accessTokenType);
+    GenericOAuth2CreateProviderRequestBuilder setAccessTokenType(AccessTokenType accessTokenType);
 
     /**
      * Setter for the provider id of the OAuth2 provider(e.g. "amazon").
@@ -45,7 +45,7 @@ public interface OAuth2CreateProviderRequestBuilder extends CreateProviderReques
      * @param providerId the provider id of the OAuth2 provider.
      * @return the builder instance for method chaining.
      */
-    OAuth2CreateProviderRequestBuilder setClientId(String providerId);
+    GenericOAuth2CreateProviderRequestBuilder setClientId(String providerId);
 
-    OAuth2CreateProviderRequestBuilder setProviderId(String providerId);
+    GenericOAuth2CreateProviderRequestBuilder setProviderId(String providerId);
 }

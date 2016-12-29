@@ -5,7 +5,7 @@ package com.stormpath.sdk.provider;
  *
  * @since 1.3.0
  */
-public interface OAuth2ProviderAccountRequestBuilder extends ProviderAccountRequestBuilder<OAuth2ProviderAccountRequestBuilder> {
+public interface GenericOAuth2ProviderAccountRequestBuilder extends ProviderAccountRequestBuilder<GenericOAuth2ProviderAccountRequestBuilder> {
 
     /**
      * Setter for the provider id of the OAuth2 Provider (as provided when creating the provider directory).
@@ -13,5 +13,5 @@ public interface OAuth2ProviderAccountRequestBuilder extends ProviderAccountRequ
      * @param providerId the provider id of the OAuth2 Provider
      * @return the builder instance for method chaining.
      */
-    OAuth2ProviderAccountRequestBuilder setProviderId(String providerId);
+    GenericOAuth2ProviderAccountRequestBuilder setProviderId(String providerId);
 }

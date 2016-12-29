@@ -6,7 +6,7 @@ import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.ListProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.provider.AccessTokenType
-import com.stormpath.sdk.provider.OAuth2Provider
+import com.stormpath.sdk.provider.GenericOAuth2Provider
 import com.stormpath.sdk.provider.Provider
 import org.testng.annotations.Test
 
@@ -14,12 +14,12 @@ import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
-class DefaultOAuth2ProviderTest {
+class DefaultGenericOAuth2ProviderTest {
 
     @Test
     void testGetPropertyDescriptors() {
 
-        def provider = new DefaultOAuth2Provider(createStrictMock(InternalDataStore), "amazon")
+        def provider = new DefaultGenericOAuth2Provider(createStrictMock(InternalDataStore), "amazon")
 
         def propertyDescriptors = provider.getPropertyDescriptors()
 
@@ -36,7 +36,7 @@ class DefaultOAuth2ProviderTest {
         assertEquals(propertyDescriptors.size(), 11)
 
         assertTrue(Provider.isInstance(provider))
-        assertTrue(OAuth2Provider.isInstance(provider))
+        assertTrue(GenericOAuth2Provider.isInstance(provider))
     }
 
     @Test
@@ -57,7 +57,7 @@ class DefaultOAuth2ProviderTest {
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def provider = new DefaultOAuth2Provider(internalDataStore, properties)
+        def provider = new DefaultGenericOAuth2Provider(internalDataStore, properties)
 
         assertEquals(provider.getHref(), "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider")
         assertEquals(provider.getProviderId(), "imgur")
@@ -77,11 +77,11 @@ class DefaultOAuth2ProviderTest {
     void testConstructor() {
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def providerData = new DefaultOAuth2Provider(internalDataStore, "amazon")
+        def providerData = new DefaultGenericOAuth2Provider(internalDataStore, "amazon")
 
         assertEquals(providerData.getProviderId(), "amazon")
 
-        providerData = new DefaultOAuth2Provider(internalDataStore)
+        providerData = new DefaultGenericOAuth2Provider(internalDataStore)
         providerData.setProviderId("instagram")
 
         assertEquals(providerData.getProviderId(), "instagram")
