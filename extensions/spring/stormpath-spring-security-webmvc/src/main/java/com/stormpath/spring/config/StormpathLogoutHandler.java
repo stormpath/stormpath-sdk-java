@@ -106,7 +106,10 @@ public class StormpathLogoutHandler implements LogoutHandler {
         }
 
         //This logout handler is invoked twice when IDSite is enabled. In the second time the account is not in the request any longer, it has all been cleared in the first round
-        if (account != null) {
+        if (account != null || !idSiteEnabled) {
+            //This code will be executed when:
+            //1. the account is not null, or
+            //2. IdSite is disabled
             LogoutRequestEvent e = createLogoutEvent(request, response, account);
             stormpathRequestEventPublisher.publish(e);
         }

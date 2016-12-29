@@ -30,5 +30,7 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // Starting with Spring Security 4.2 we do not need to explicitly apply the Stormpath configuration in Spring Boot
+        // any more (note that it is still required in regular Spring)
     }
 }

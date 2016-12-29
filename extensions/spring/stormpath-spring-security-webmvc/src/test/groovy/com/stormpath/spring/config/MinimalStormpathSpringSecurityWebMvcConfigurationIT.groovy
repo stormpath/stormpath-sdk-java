@@ -28,9 +28,9 @@ import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
+import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter
 import com.stormpath.sdk.servlet.http.MediaType
-import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
-import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
+import com.stormpath.spring.filter.StormpathWrapperFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider
 import org.apache.http.entity.ContentType
@@ -65,6 +65,7 @@ import static org.easymock.EasyMock.*
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.testng.Assert.*
+
 /**
  * @since 1.0.RC5
  */
@@ -87,10 +88,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
     Filter stormpathFilter
 
     @Autowired
-    OAuthAuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter
-
-    @Autowired
-    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter
+    AccountResolverFilter springSecurityResolvedAccountFilter
 
     @Autowired
     StormpathAuthenticationProvider stormpathAuthenticationProvider
@@ -125,6 +123,9 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
     @Autowired
     protected Filter stormpathFilter;
 
+    @Autowired
+    StormpathWrapperFilter stormpathWrapperFilter;
+
     private MockMvc mvc;
 
     @BeforeClass
@@ -146,8 +147,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
         assertNotNull application
         assertNotNull stormpathFilter
         assertNotNull springSecurityResolvedAccountFilter
-        assertNotNull oauth2AuthenticationSpringSecurityProcessingFilter
-        assertNotNull oauth2AuthenticationSpringSecurityProcessingFilter.authenticationProvider
+        assertNotNull stormpathWrapperFilter;
         assertNotNull authenticationManager
         assertNotNull stormpathWildcardPermissionEvaluator
         assertNotNull stormpathMethodSecurityExpressionHandler
@@ -255,7 +255,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
 
         replay account, authentication, servletRequest, userDetails
 
-        ((SpringSecurityResolvedAccountFilter)springSecurityResolvedAccountFilter).filter(servletRequest, servletResponse, filterChain)
+        ((AccountResolverFilter)springSecurityResolvedAccountFilter).filter(servletRequest, servletResponse, filterChain)
 
         verify account, authentication, servletRequest, userDetails
 

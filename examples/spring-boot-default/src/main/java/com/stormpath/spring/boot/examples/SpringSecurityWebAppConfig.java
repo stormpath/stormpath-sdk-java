@@ -32,6 +32,8 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // Access to all paths is restricted by default.
         // We want to restrict access to one path and leave all other paths open.
+        // Starting with Spring Security 4.2 we do not need to explicitly apply the Stormpath configuration in Spring Boot
+        // any more (note that it is still required in regular Spring)
         http
             .authorizeRequests()
             .antMatchers("/restricted").fullyAuthenticated()

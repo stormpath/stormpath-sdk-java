@@ -18,13 +18,13 @@ package com.stormpath.spring.boot.autoconfigure;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
 import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
-import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
-import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.filter.StormpathWrapperFilter;
 import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -117,13 +117,6 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="oAuthAuthenticationProcessingFilter")
-    @Override
-    public OAuthAuthenticationSpringSecurityProcessingFilter oAuthAuthenticationProcessingFilter() {
-        return super.oAuthAuthenticationProcessingFilter();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name="stormpathSecurityContextPersistenceFilter")
     @Override
     public StormpathSecurityContextPersistenceFilter stormpathSecurityContextPersistenceFilter() {
@@ -148,12 +141,6 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="springSecurityResolvedAccountFilter")
-    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
-        return super.springSecurityResolvedAccountFilter();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(name="stormpathAuthenticationEntryPoint")
     public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
         return super.stormpathAuthenticationEntryPoint();
@@ -166,6 +153,24 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnMissingBean
     public CorsConfigurationSource corsConfigurationSource() {
         return super.corsConfigurationSource();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public AccountResolverFilter springSecuritResolvedAccountFilter() {
+        return super.springSecuritResolvedAccountFilter();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public StormpathWrapperFilter stormpathWrapperFilter() {
+        return super.stormpathWrapperFilter();
     }
 
 }

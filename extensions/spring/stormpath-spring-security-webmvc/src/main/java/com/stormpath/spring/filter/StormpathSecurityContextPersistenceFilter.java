@@ -16,9 +16,8 @@
 package com.stormpath.spring.filter;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.filter.HttpFilter;
-import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * A pre-authentication filter for OAuth2 protected resources. Extracts an access token token from the incoming request and
- * uses it to populate the Spring Security context with an {@link ProviderAuthenticationToken ProviderAuthenticationToken}.
- * <p>
+ * If an account is available in the request but not in Spring Security's Context then this filter will add it there.
  * Most of this code was taken from <a href="https://github.com/spring-projects/spring-security-oauth/blob/master/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/provider/authentication/OAuth2AuthenticationProcessingFilter.java">spring-security-oauth</a>.</p>
  *
  * @since 1.0.RC8.3
@@ -48,10 +45,7 @@ public class StormpathSecurityContextPersistenceFilter extends HttpFilter implem
     private final static Logger logger = LoggerFactory.getLogger(StormpathSecurityContextPersistenceFilter.class);
 
     @Autowired
-    private Resolver<Account> stormpathCookieAccountResolver;
-
-    @Autowired
-    private Client client;
+    AccountResolver accountResolver;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -71,11 +65,9 @@ public class StormpathSecurityContextPersistenceFilter extends HttpFilter implem
     public void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         if (!isAuthenticated()) {
-            request.setAttribute(Client.class.getName(), client);
-            Account account = stormpathCookieAccountResolver.get(request, response);
-            request.removeAttribute(Client.class.getName());
+            Account account = accountResolver.getAccount(request);
 
-            if (account != null) {
+            if (accountResolver.getAccount(request) != null ) {
                 SecurityContextHolder.clearContext();
                 Authentication authentication = new ProviderAuthenticationToken(account);
                 authentication = authenticationManager.authenticate(authentication);

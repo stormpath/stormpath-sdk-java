@@ -138,7 +138,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
         //since 1.0.RC3 RC: emailVerification boolean hack. See: https://github.com/stormpath/stormpath-sdk-java/issues/60
         boolean emailVerification = EmailVerificationToken.class.isAssignableFrom(request.getResourceClass()) &&
-                Account.class.isAssignableFrom(clazz);
+                                    Account.class.isAssignableFrom(clazz);
 
         //since 1.0.RC4 : fix for https://github.com/stormpath/stormpath-sdk-java/issues/140 where Account remains disabled after
         //successful verification due to an outdated `Account` state in the cache.
@@ -152,17 +152,17 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
         return
 
-                //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
-                !PasswordResetToken.class.isAssignableFrom(clazz) &&
+            //since 1.0.RC4: uncaching boolean hack. PasswordResetToken. See: https://github.com/stormpath/stormpath-sdk-java/issues/132
+            !PasswordResetToken.class.isAssignableFrom(clazz) &&
 
-                        //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
-                        !ProviderAccountResult.class.isAssignableFrom(clazz) &&
+            //@since 1.0.RC3: ProviderAccountResult is both a Resource and has an href property, but it must not be cached
+            !ProviderAccountResult.class.isAssignableFrom(clazz) &&
 
-                        //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
-                        AbstractResource.isMaterialized(result.getData()) &&
+            //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
+            AbstractResource.isMaterialized(result.getData()) &&
 
-                        //@since 1.0.RC7: Let's not cache Access Tokens
-                        !AccessToken.class.isAssignableFrom(clazz);
+            //@since 1.0.RC7: Let's not cache Access Tokens
+            !AccessToken.class.isAssignableFrom(clazz);
     }
 
     /**
@@ -189,7 +189,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
     private void cacheNestedCustomData(String directoryEntityHref, Map<String, Object> props) {
 
         Map<String, Object> customData =
-                (Map<String, Object>) props.get(AbstractExtendableInstanceResource.CUSTOM_DATA.getName());
+            (Map<String, Object>) props.get(AbstractExtendableInstanceResource.CUSTOM_DATA.getName());
 
         if (customData != null) {
             customData.remove(AbstractResource.HREF_PROP_NAME); //we remove it here for ordering reasons (see below)
@@ -228,7 +228,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         if (isDirectlyCacheable(clazz, data)) {
             Assert.notNull(href, "Resource data must contain an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
             Assert.isTrue(data.size() > 1, "Resource data must be materialized to be cached (need more than just an '" +
-                    AbstractResource.HREF_PROP_NAME + "' attribute).");
+                                           AbstractResource.HREF_PROP_NAME + "' attribute).");
         }
 
         //create a map to reflect the resource's canonical representation - this is what will be cached:
@@ -246,7 +246,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             Object value = entry.getValue();
 
             boolean isDefaultModelMap =
-                    ModeledEmailTemplate.class.isAssignableFrom(clazz) && name.equals("defaultModel");
+                ModeledEmailTemplate.class.isAssignableFrom(clazz) && name.equals("defaultModel");
 
             boolean isTokenDataMap = (AccessToken.class.isAssignableFrom(clazz) || RefreshToken.class.isAssignableFrom(clazz)) && name.equals("expandedJwt");
 
@@ -265,9 +265,9 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                 Map<String, ?> nested = (Map<String, ?>) value;
 
                 Assert.notEmpty(nested, "Resource references are expected to be complex objects with at least an '" +
-                        AbstractResource.HREF_PROP_NAME + "' property.");
+                                        AbstractResource.HREF_PROP_NAME + "' property.");
                 Assert.notNull(nested.get(AbstractResource.HREF_PROP_NAME),
-                        "Resource references must have an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
+                               "Resource references must have an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
 
                 if (AbstractResource.isMaterialized(nested)) {
                     //If there is more than one attribute (more than just 'href') it is not just a simple reference
@@ -278,7 +278,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                     //find the type of object this attribute name represents:
                     Property property = getPropertyDescriptor(clazz, name);
                     Assert.isTrue(property instanceof ResourceReference,
-                            "It is expected that only ResourceReference properties are complex objects.");
+                                  "It is expected that only ResourceReference properties are complex objects.");
 
                     //cache this materialized reference:
                     //we pass 'null' in as the querystring param because the querystring is only valid for
@@ -399,7 +399,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             return returnValue;
         } catch (Exception e) {
             throw new IllegalStateException(
-                    "Unable to access PROPERTY_DESCRIPTORS static field on implementation class " + clazz.getName(), e);
+                "Unable to access PROPERTY_DESCRIPTORS static field on implementation class " + clazz.getName(), e);
         }
     }
 
@@ -412,8 +412,8 @@ public class WriteCacheFilter extends AbstractCacheFilter {
 
         return AbstractResource.isMaterialized(data) &&
 
-                (!CollectionResource.class.isAssignableFrom(clazz) ||
-                        (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
+               (!CollectionResource.class.isAssignableFrom(clazz) ||
+                (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
     }
 
     /**

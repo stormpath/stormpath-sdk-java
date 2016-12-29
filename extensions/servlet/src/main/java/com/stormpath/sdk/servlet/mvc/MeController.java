@@ -104,7 +104,7 @@ public class MeController extends AbstractController {
             }
             if (isJsonPreferred(request, response)) {
                 Application application = applicationResolver.getApplication(request.getServletContext());
-                String bearerRealm = String.format("Bearer realm=\\\"%s\\\"", application.getName());
+                String bearerRealm = String.format("Bearer realm=\"%s\"", application.getName());
                 response.addHeader("WWW-Authenticate", bearerRealm);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
