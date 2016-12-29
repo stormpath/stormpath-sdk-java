@@ -166,18 +166,6 @@ public abstract class AbstractController implements Controller {
         this.applicationResolver = applicationResolver;
     }
 
-    // Refactor of Provider requests for
-    // https://github.com/stormpath/stormpath-sdk-java/issues/915
-    // and to provide uniform responses across all integrations for
-    // conformance to stormpath-framework-spec as enforced by
-    // stormpath-framework-tck
-    /**
-     * @since 1.3.0
-     */
-    public void setProviderAccountRequestFactory(ProviderAccountRequestFactory providerAccountRequestFactory) {
-        this.providerAccountRequestFactory = providerAccountRequestFactory;
-    }
-
     public void init() throws Exception {
         Assert.hasText(this.uri, "uri cannot be null or empty.");
         Assert.hasText(this.nextUri, "nextUri property cannot be null or empty.");

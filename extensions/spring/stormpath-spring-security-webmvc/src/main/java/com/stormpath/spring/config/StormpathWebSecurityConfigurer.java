@@ -277,14 +277,13 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         http.servletApi().rolePrefix(""); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/325
 
         if (loginEnabled) {
-
             http.addFilterBefore(stormpathWrapperFilter, SecurityContextPersistenceFilter.class);
 
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
             // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
             http.addFilterBefore(springSecurityResolvedAccountFilter, LogoutFilter.class);
 
-            //Fix for redirection loop when Cookie is present but WebApp is restarted and '/' is locked down to authenticated users (Bare Bones example)
+            // Fix for redirection loop when Cookie is present but WebApp is restarted and '/' is locked down to authenticated users (Bare Bones example)
             http.addFilterBefore(stormpathSecurityContextPersistenceFilter, UsernamePasswordAuthenticationFilter.class);
 
             http.addFilterBefore(socialCallbackSpringSecurityProcessingFilter, UsernamePasswordAuthenticationFilter.class);

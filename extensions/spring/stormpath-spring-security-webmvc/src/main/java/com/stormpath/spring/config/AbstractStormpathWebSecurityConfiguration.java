@@ -301,5 +301,4 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         filter.setWrappedServletRequestFactory(wrappedServletRequestFactory);
         return filter;
     }
-
 }
