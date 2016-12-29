@@ -30,11 +30,7 @@ import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
-import com.stormpath.sdk.provider.FacebookProvider
-import com.stormpath.sdk.provider.GithubProvider
-import com.stormpath.sdk.provider.GoogleProvider
-import com.stormpath.sdk.provider.LinkedInProvider
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.provider.*
 import com.stormpath.sdk.provider.saml.SamlProvider
 import com.stormpath.sdk.provider.social.SocialUserInfoMappingRules
 import com.stormpath.sdk.provider.social.UserInfoMappingRule
@@ -425,6 +421,26 @@ class DirectoryIT extends ClientIT {
         deleteOnTeardown(dir)
         assertNotNull dir.href
         assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<FacebookProvider>) dir.provider)
+
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateTwitterDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateTwitterDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.TWITTER.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<TwitterProvider>) dir.provider)
 
     }
 
