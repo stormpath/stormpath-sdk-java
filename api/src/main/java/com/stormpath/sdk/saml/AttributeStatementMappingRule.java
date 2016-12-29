@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.saml;
 
-import java.util.Set;
+import com.stormpath.sdk.provider.MappingRule;
 
 /**
  * A rule that indicates how a SAML Attribute Statement should populate one or more Stormpath Account field values.  By
@@ -40,18 +40,7 @@ import java.util.Set;
  *
  * @since 1.0.RC8
  */
-public interface AttributeStatementMappingRule {
-
-    /**
-     * Returns the SAML Attribute name, that when encountered, should have its value applied as Account field values.
-     * When this name is encountered when processing a SAML Attribute Statement, its associated value will be set as the
-     * value for all Stormpath Account field names specified in the
-     * {@link #getAccountAttributes() accountAttributes} collection.
-     *
-     * @return SAML Attribute name, that when encountered, should have its value set on the
-     * {@link #getAccountAttributes() specified} Account fields.
-     */
-    String getName();
+public interface AttributeStatementMappingRule extends MappingRule {
 
     /**
      * Returns the format for the SAML Attribute identified by {@link #getName() getName()}.
@@ -60,13 +49,4 @@ public interface AttributeStatementMappingRule {
      */
     String getNameFormat();
 
-    /**
-     * Returns the Stormpath account fields that should be updated when encountering {@link #getName() named}
-     * SAML Attribute name.  If discovered, that SAML Attribute value will be set on all of the Stormpath account
-     * fields named in this collection.
-     *
-     * @return the Stormpath account fields that should be updated when encountering {@link #getName() named}
-     * SAML Attribute name.
-     */
-    Set<String> getAccountAttributes();
 }

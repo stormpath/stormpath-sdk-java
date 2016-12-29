@@ -19,7 +19,6 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.provider.FacebookProvider;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,8 +26,7 @@ import java.util.Map;
  */
 public class DefaultFacebookProvider extends AbstractOAuthProvider<FacebookProvider> implements FacebookProvider {
 
-
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE, USER_INFO_MAPPING_RULES);
 
     public DefaultFacebookProvider(InternalDataStore dataStore) {
         super(dataStore);
