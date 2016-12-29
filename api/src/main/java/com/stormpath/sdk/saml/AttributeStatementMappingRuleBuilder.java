@@ -15,7 +15,7 @@
 */
 package com.stormpath.sdk.saml;
 
-import java.util.Set;
+import com.stormpath.sdk.provider.MappingRuleBuilder;
 
 /**
  * A Builder to construct {@link AttributeStatementMappingRule} resources.
@@ -30,17 +30,7 @@ import java.util.Set;
  *
  * @since 1.0.RC8
  */
-public interface AttributeStatementMappingRuleBuilder {
-
-    /**
-     * Sets the SAML Attribute name, that when encountered, should have its value applied as Account field values.
-     * When this name is encountered when processing a SAML Attribute Statement, its associated value will be set as the
-     * value for all Stormpath Account field names specified in the
-     * {@link AttributeStatementMappingRule#getAccountAttributes() accountAttributes} collection.
-     *
-     * @param name the SAML Attribute name that when encountered, should have its value applied as Account field values.
-     */
-    AttributeStatementMappingRuleBuilder setName(String name);
+public interface AttributeStatementMappingRuleBuilder extends MappingRuleBuilder {
 
     /**
      * Sets the format for the SAML Attribute specified by {@link com.stormpath.sdk.saml.AttributeStatementMappingRule#getName() getName()}.
@@ -55,28 +45,4 @@ public interface AttributeStatementMappingRuleBuilder {
      */
     AttributeStatementMappingRuleBuilder setNameFormat(String nameFormat);
 
-    /**
-     * Sets the Stormpath account fields that should be updated when encountering {@link AttributeStatementMappingRule#getName() named}
-     * SAML Attribute name.  If discovered, that SAML Attribute value will be set on all of the Stormpath account
-     * fields named in this collection.
-     *
-     * @param accountAttributes the account fields that should be updated when there's a match with SAML Attribute name.
-     */
-    AttributeStatementMappingRuleBuilder setAccountAttributes(String... accountAttributes);
-
-    /**
-     * Sets the Stormpath account fields that should be updated when encountering {@link AttributeStatementMappingRule#getName() named}
-     * SAML Attribute name.  If discovered, that SAML Attribute value will be set on all of the Stormpath account
-     * fields named in this collection.
-     *
-     * @param accountAttributes the account fields that should be updated when there's a match with SAML Attribute name.
-     */
-    AttributeStatementMappingRuleBuilder setAccountAttributes(Set<String> accountAttributes);
-
-    /**
-     * Builds a new {@link AttributeStatementMappingRule} based on the current state of this builder.
-     *
-     * @return a new {@link AttributeStatementMappingRule} to be included in the {@link AttributeStatementMappingRules} for a Saml Provider.
-     */
-    AttributeStatementMappingRule build();
 }

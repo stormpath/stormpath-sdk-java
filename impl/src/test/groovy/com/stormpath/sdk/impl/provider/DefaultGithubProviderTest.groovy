@@ -46,7 +46,7 @@ class DefaultGithubProviderTest {
         assertTrue(propertyDescriptors.get("clientSecret") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("scope") instanceof ListProperty)
 
-        assertEquals(propertyDescriptors.size(), 6)
+        assertEquals(propertyDescriptors.size(), 7)
 
         assertTrue(Provider.isInstance(provider))
         assertTrue(GithubProvider.isInstance(provider))

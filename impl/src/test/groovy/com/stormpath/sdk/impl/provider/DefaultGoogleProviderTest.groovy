@@ -55,7 +55,7 @@ class DefaultGoogleProviderTest {
         assertEquals(propertyDescriptors.get("accessType").getType(), GoogleProviderAccessType)
         assertTrue(propertyDescriptors.get("display") instanceof EnumProperty)
         assertEquals(propertyDescriptors.get("display").getType(), GoogleProviderDisplay)
-        assertEquals(propertyDescriptors.size(), 10)
+        assertEquals(propertyDescriptors.size(), 11)
 
         assertTrue(Provider.isInstance(provider))
         assertTrue(GoogleProvider.isInstance(provider))

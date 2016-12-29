@@ -23,9 +23,9 @@ package com.stormpath.sdk.provider;
 public interface LinkedInProviderData extends ProviderData {
 
     /**
-     * Getter for the LinkedIn authorization code.
+     * Getter for the LinkedIn access token.
      *
-     * @return the LinkedIn authorization code.
+     * @return the LinkedIn access token.
      */
     String getAccessToken();
 
