@@ -18,19 +18,23 @@
 
     <parent>
         <groupId>com.stormpath.sdk</groupId>
-        <artifactId>stormpath-sdk-root</artifactId>
+        <artifactId>stormpath-sdk-tutorials</artifactId>
         <version>1.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>stormpath-sdk-tutorials</artifactId>
-    <name>Stormpath Java SDK :: Tutorials</name>
+    <artifactId>stormpath-sdk-tutorials-spring</artifactId>
+    <name>Stormpath Java SDK :: Tutorials :: Spring Security WebMVC</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>spring-boot</module>
-        <module>spring</module>
+        <module>00-the-basics</module>
+        <!--<module>01-some-access-controls</module>-->
+        <!--<module>02-spring-security-ftw</module>-->
+        <!--<module>03-spring-security-refined</module>-->
+        <!--<module>04-a-finer-grain-of-control</module>-->
+        <!--<module>05-token-management</module>-->
     </modules>
     
     <build>
