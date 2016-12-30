@@ -91,6 +91,9 @@ public class DefaultGoogleProvider extends AbstractOAuthProvider<GoogleProvider>
         return GoogleProviderAccessType.valueOf(value.toUpperCase());
     }
 
+    /**
+     * @since 1.3.0
+     */
     @Override
     public String getProviderType() {
         return IdentityProviderType.GOOGLE.getNameKey();

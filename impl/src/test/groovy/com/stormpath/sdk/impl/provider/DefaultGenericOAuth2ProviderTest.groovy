@@ -14,6 +14,9 @@ import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
 
+/**
+ * @since 1.3.0
+ */
 class DefaultGenericOAuth2ProviderTest {
 
     @Test

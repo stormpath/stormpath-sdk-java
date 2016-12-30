@@ -49,5 +49,4 @@ public interface Provider extends Resource, Auditable {
      * @return the Stormpath ID of the Provider.
      */
     String getProviderId();
-
 }
