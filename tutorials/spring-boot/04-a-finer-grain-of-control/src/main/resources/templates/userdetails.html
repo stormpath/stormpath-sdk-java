@@ -39,6 +39,20 @@
                         </tr>
                     </table>
 
+                    <h2>You have these permissions:</h2>
+                    <table class="table table-bordered  ">
+                        <tr>
+                            <th>Source</th>
+                            <th>Spring Security Permissions</th>
+                        </tr>
+                        <tr th:each="permission: ${springSecurityPermissions}">
+                            <td th:text="${permission.key}"/>
+                            <td>
+                                <span th:each="value: ${permission.value}" th:inline="text">[[${value}]]<br/></span>
+                            </td>
+                        </tr>
+                    </table>
+
                     <a href="/" class="btn btn-primary">Go Home</a>
                 </div>
             </div>
