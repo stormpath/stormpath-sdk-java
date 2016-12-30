@@ -26,10 +26,10 @@
     </parent>
 
     <groupId>com.stormpath.spring</groupId>
-    <artifactId>stormpath-sdk-tutorials-spring-security-webmvc-the-basics</artifactId>
+    <artifactId>stormpath-sdk-tutorials-spring-security-webmvc-some-access-controls</artifactId>
     <version>1.3.0-SNAPSHOT</version>
 
-    <name>Stormpath Java SDK :: Tutorials :: Spring Security WebMVC :: The Basics</name>
+    <name>Stormpath Java SDK :: Tutorials :: Spring Security WebMVC :: Some Access Controls</name>
     <description>A simple Spring Security Web MVC application with out-of-the-box login and self-service screens!</description>
     <packaging>war</packaging>
 
