@@ -31,7 +31,7 @@
     <modules>
         <module>00-the-basics</module>
         <module>01-some-access-controls</module>
-        <!--<module>02-spring-security-ftw</module>-->
+        <module>02-spring-security-ftw</module>
         <!--<module>03-spring-security-refined</module>-->
         <!--<module>04-a-finer-grain-of-control</module>-->
         <!--<module>05-token-management</module>-->
