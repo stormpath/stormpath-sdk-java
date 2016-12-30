@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
+/**
+ * @since 1.3.0
+ */
 @Configuration
 @ComponentScan
 @PropertySource("classpath:application.properties")
