@@ -51,4 +51,11 @@ public interface OAuthProvider extends Provider {
      * @since 1.3.0
      */
     UserInfoMappingRules getUserInfoMappingRules();
+
+    /**
+     * Returns the Type of the Provider (e.g. "facebook" or "google", "oauth2").
+     * @return the Type of the Provider.
+     * @since 1.3.0
+     */
+    String getProviderType();
 }

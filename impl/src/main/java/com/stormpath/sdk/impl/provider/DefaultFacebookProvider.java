@@ -46,5 +46,11 @@ public class DefaultFacebookProvider extends AbstractOAuthProvider<FacebookProvi
         return IdentityProviderType.FACEBOOK.getNameKey();
     }
 
-
+    /**
+     * @since 1.3.0
+     */
+    @Override
+    public String getProviderType() {
+        return IdentityProviderType.FACEBOOK.getNameKey();
+    }
 }

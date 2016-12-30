@@ -444,6 +444,30 @@ class DirectoryIT extends ClientIT {
 
     }
 
+    /**
+     * @since 1.3.0
+     */
+    @Test(enabled = false) //TODO : enable this when the generic OAuth2 changes are there in prod (api.stormpath.com)
+    void testCreateGenericOAuth2DirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateGenericOAuth2DirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.OAUTH2.builder().setProviderId("imgur")
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .setAccessTokenType(AccessTokenType.BEARER)
+                .setAuthorizationEndpoint("https://api.imgur.com/oauth2/authorize")
+                .setTokenEndpoint("https://api.imgur.com/oauth2/token")
+                .setResourceEndpoint("https://api.imgur.com/oauth2/token")
+                .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<TwitterProvider>) dir.provider)
+
+    }
+
     void assertUserInfoMappingRuleWasCreatedAndUpdate(AbstractOAuthProvider provider) {
 
         UserInfoMappingRules rules = provider.getUserInfoMappingRules()

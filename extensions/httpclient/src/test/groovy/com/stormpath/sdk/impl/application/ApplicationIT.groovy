@@ -679,7 +679,8 @@ class ApplicationIT extends ClientIT {
         } catch (com.stormpath.sdk.resource.ResourceException e) {
             assertEquals(e.getStatus(), 400)
             assertEquals(e.getCode(), 7200)
-            assertTrue(e.getDeveloperMessage().contains("Stormpath was not able to complete the request to Google: this can be caused by either a bad Google Directory configuration, or the provided Account credentials are not valid."))
+            assertTrue(e.getDeveloperMessage().contains("Stormpath was not able to complete the request to"))
+            assertTrue(e.getDeveloperMessage().contains("Google") || e.getDeveloperMessage().contains("google"))
         }
     }
 
