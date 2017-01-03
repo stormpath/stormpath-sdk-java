@@ -46,7 +46,7 @@ class DefaultLinkedInProviderTest {
         assertTrue(propertyDescriptors.get("clientSecret") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("redirectUri") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("scope") instanceof ListProperty)
-        assertEquals(propertyDescriptors.size(), 7)
+        assertEquals(propertyDescriptors.size(), 8)
 
         assertTrue(Provider.isInstance(provider))
         assertTrue(LinkedInProvider.isInstance(provider))

@@ -89,6 +89,7 @@
         <module>examples</module>
         <module>tutorials</module>
         <module>clover</module>
+        <module>bom</module>
     </modules>
 
     <properties>

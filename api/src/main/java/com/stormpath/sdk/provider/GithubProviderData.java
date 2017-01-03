@@ -23,9 +23,9 @@ package com.stormpath.sdk.provider;
 public interface GithubProviderData extends ProviderData {
 
     /**
-     * Getter for the Github authorization code.
+     * Getter for the Github access token.
      *
-     * @return the Github authorization code.
+     * @return the Github access token.
      */
     String getAccessToken();
 

@@ -84,5 +84,14 @@ public final class Providers {
      * @since 1.0.RC8
      */
     public static final SamlRequestFactory SAML = (SamlRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.saml.DefaultSamlRequestFactory");
+
+    /**
+     * Returns a new {@link TwitterRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     *
+     * @return a new {@link TwitterRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     * @since 1.3.0
+     */
+    public static final TwitterRequestFactory TWITTER = (TwitterRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultTwitterRequestFactory");
+
 }
 
