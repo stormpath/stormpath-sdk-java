@@ -34,7 +34,7 @@
         <module>02-spring-security-ftw</module>
         <module>03-spring-security-refined</module>
         <module>04-a-finer-grain-of-control</module>
-        <!--<module>05-token-management</module>-->
+        <module>05-token-management</module>
     </modules>
     
     <build>
