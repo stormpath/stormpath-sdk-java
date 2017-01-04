@@ -19,6 +19,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
@@ -81,6 +82,10 @@ public abstract class CallbackController extends AbstractController {
     }
 
     public abstract void doInit();
+
+    public String getAuthenticationSuccessNextUri(HttpServletRequest request) {
+        return loginNextUri;
+    }
 
     @Override
     public boolean isNotAllowedIfAuthenticated() {

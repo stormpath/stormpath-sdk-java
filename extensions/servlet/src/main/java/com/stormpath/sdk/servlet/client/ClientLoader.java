@@ -141,7 +141,7 @@ public class ClientLoader {
 
         if (servletContext.getAttribute(CLIENT_ATTRIBUTE_KEY) != null) {
             String msg = "There is already a Stormpath client instance associated with the current ServletContext.  " +
-                         "Check if you have multiple ClientLoader* definitions in your web.xml or annotation config!";
+                    "Check if you have multiple ClientLoader* definitions in your web.xml or annotation config!";
             throw new IllegalStateException(msg);
         }
 
@@ -153,7 +153,7 @@ public class ClientLoader {
         try {
 
             Client client = doCreateClient(servletContext);
-            servletContext.setAttribute(CLIENT_ATTRIBUTE_KEY,client);
+            servletContext.setAttribute(CLIENT_ATTRIBUTE_KEY, client);
 
             log.debug("Published Client as ServletContext attribute with name [{}]", CLIENT_ATTRIBUTE_KEY);
 
@@ -216,10 +216,10 @@ public class ClientLoader {
         Class<?> clazz = determineClientFactoryClass(sc);
         if (!ServletContextClientFactory.class.isAssignableFrom(clazz)) {
             throw new IllegalStateException("Custom ServletContextClientFactory class [" + clazz.getName() +
-                                             "] is not of required type [" + ServletContextClientFactory.class.getName() + "]");
+                    "] is not of required type [" + ServletContextClientFactory.class.getName() + "]");
         }
 
-        ServletContextClientFactory factory = (ServletContextClientFactory)Classes.newInstance(clazz);
+        ServletContextClientFactory factory = (ServletContextClientFactory) Classes.newInstance(clazz);
 
         return factory.createClient(sc);
     }

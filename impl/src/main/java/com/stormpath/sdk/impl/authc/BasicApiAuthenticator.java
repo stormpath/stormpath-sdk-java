@@ -27,11 +27,15 @@ import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
 import com.stormpath.sdk.lang.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 1.0.RC
  */
 public class BasicApiAuthenticator {
+
+    private static final Logger log = LoggerFactory.getLogger(BasicApiAuthenticator.class);
 
     private final InternalDataStore dataStore;
 
@@ -52,7 +56,24 @@ public class BasicApiAuthenticator {
     public ApiAuthenticationResult authenticate(Application application, String id, String secret) {
         Assert.notNull(application, "application  cannot be null.");
 
-        ApiKey apiKey = application.getApiKey(id, new DefaultApiKeyOptions().withAccount());
+        //Workaround for https://github.com/stormpath/stormpath-sdk-java/issues/440
+        ApiKey apiKey = null;
+        for (int i = 0; i < 3; i++) {
+            try {
+                apiKey = application.getApiKey(id, new DefaultApiKeyOptions().withAccount());
+                break;
+            } catch (Exception e) {
+                log.error("Couldn't get Application ApiKey for " + application.getHref(), e);
+                if (i == 2) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
+        }
 
         if (apiKey == null || !apiKey.getSecret().equals(secret)) {
             throw ApiAuthenticationExceptionFactory.newApiAuthenticationException(IncorrectCredentialsException.class);

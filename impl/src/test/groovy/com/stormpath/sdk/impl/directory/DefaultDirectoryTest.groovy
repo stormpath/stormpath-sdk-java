@@ -35,17 +35,18 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroupList
 import com.stormpath.sdk.impl.organization.DefaultOrganizationAccountStoreMappingList
 import com.stormpath.sdk.impl.organization.DefaultOrganizationList
-import com.stormpath.sdk.impl.provider.DefaultProvider
+import com.stormpath.sdk.impl.provider.saml.DefaultStormpathProvider
 import com.stormpath.sdk.impl.provider.IdentityProviderType
 import com.stormpath.sdk.impl.resource.CollectionReference
 import com.stormpath.sdk.impl.resource.ResourceReference
-import com.stormpath.sdk.impl.resource.StatusProperty
+import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList
 import com.stormpath.sdk.organization.OrganizationCriteria
 import com.stormpath.sdk.organization.OrganizationList
 import com.stormpath.sdk.provider.Provider
+import com.stormpath.sdk.schema.Schema
 import com.stormpath.sdk.tenant.Tenant
 import org.easymock.EasyMock
 import org.testng.annotations.Test
@@ -64,11 +65,11 @@ class DefaultDirectoryTest {
 
         def propertyDescriptors = defaultDirectory.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 12)
+        assertEquals(propertyDescriptors.size(), 13)
 
         assertTrue(propertyDescriptors.get("name") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("description") instanceof StringProperty)
-        assertTrue(propertyDescriptors.get("status") instanceof StatusProperty)
+        assertTrue(propertyDescriptors.get("status") instanceof EnumProperty)
         assertTrue(propertyDescriptors.get("tenant") instanceof ResourceReference)
         assertTrue(propertyDescriptors.get("accounts") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("groups") instanceof CollectionReference)
@@ -83,6 +84,8 @@ class DefaultDirectoryTest {
         assertTrue(propertyDescriptors.get("organizations") instanceof CollectionReference && propertyDescriptors.get("organizations").getType().equals(OrganizationList))
         //@since 1.0.RC7.7
         assertTrue(propertyDescriptors.get("organizationMappings") instanceof CollectionReference && propertyDescriptors.get("organizationMappings").getType().equals(OrganizationAccountStoreMappingList))
+        //@since 1.0.4
+        assertTrue(propertyDescriptors.get("accountSchema") instanceof ResourceReference && propertyDescriptors.get("accountSchema").getType().equals(Schema))
     }
 
 
@@ -161,8 +164,8 @@ class DefaultDirectoryTest {
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).
                 andReturn(new DefaultTenant(internalDataStore, properties.tenant))
 
-        expect(internalDataStore.getResource(properties.provider.href, Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP))
-                .andReturn(new DefaultProvider(internalDataStore, properties.provider))
+        expect(internalDataStore.getResource(properties.provider.href, Provider.class, "providerType", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP))
+                .andReturn(new DefaultStormpathProvider(internalDataStore, properties.provider))
 
         expect(internalDataStore.instantiate(PasswordPolicy, properties.passwordPolicy)).
                 andReturn(new DefaultPasswordPolicy(internalDataStore, properties.passwordPolicy))
@@ -255,9 +258,9 @@ class DefaultDirectoryTest {
         assertTrue(resource instanceof DefaultTenant && resource.getHref().equals(properties.tenant.href))
 
         resource = defaultDirectory.getProvider()
-        assertTrue(resource instanceof DefaultProvider && resource.getHref().equals(properties.provider.href))
+        assertTrue(resource instanceof DefaultStormpathProvider && resource.getHref().equals(properties.provider.href))
         resource = defaultDirectory.getProvider() //Second invocation must not internally call internalDataStore.getResource(...) as it is already fully available in the internal properties
-        assertTrue(resource instanceof DefaultProvider && resource.getHref().equals(properties.provider.href))
+        assertTrue(resource instanceof DefaultStormpathProvider && resource.getHref().equals(properties.provider.href))
 
         resource = defaultDirectory.getPasswordPolicy()
         assertTrue(resource instanceof DefaultPasswordPolicy && resource.getHref().equals(properties.passwordPolicy.href))

@@ -28,7 +28,7 @@
                 <h1 th:text="${errors.status}"></h1>
             </div>
             <p class="lead text-muted" th:text="${errors.message}">Unauthorized</p>
-            <a href="/" class="btn btn-primary">Go Home</a>
+            <a th:href="@{/}" class="btn btn-primary">Go Home</a>
         </div>
     </div>
 </div>

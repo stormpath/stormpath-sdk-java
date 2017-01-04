@@ -15,11 +15,12 @@
  */
 package com.stormpath.sdk.impl.http.authc;
 
-import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.support.RequestAuthenticationException;
 import com.stormpath.sdk.impl.util.RequestUtils;
 import com.stormpath.sdk.impl.util.StringInputStream;
+import com.stormpath.sdk.lang.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String HOST_HEADER = "Host";
-    public static final String STORMAPTH_DATE_HEADER = "X-Stormpath-Date";
+    public static final String STORMPATH_DATE_HEADER = "X-Stormpath-Date";
     public static final String ID_TERMINATOR = "sauthc1_request";
     public static final String ALGORITHM = "HMAC-SHA-256";
     public static final String AUTHENTICATION_SCHEME = "SAuthc1";
@@ -63,14 +64,21 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
     private static final Logger log = LoggerFactory.getLogger(SAuthc1RequestAuthenticator.class);
 
-    @Override
-    public void authenticate(Request request, ApiKey apiKey) throws RequestAuthenticationException {
-        Date date = new Date();
-        String nonce = UUID.randomUUID().toString();
-        authenticate(request, apiKey, date, nonce);
+    private final ApiKeyCredentials apiKeyCredentials;
+
+    public SAuthc1RequestAuthenticator(ApiKeyCredentials apiKeyCredentials) {
+        Assert.notNull(apiKeyCredentials, "apiKeyCredentials must not be null.");
+        this.apiKeyCredentials = apiKeyCredentials;
     }
 
-    public void authenticate(final Request request, final ApiKey apiKey, final Date date, final String nonce) {
+    @Override
+    public void authenticate(Request request) throws RequestAuthenticationException {
+        Date date = new Date();
+        String nonce = UUID.randomUUID().toString();
+        authenticate(request, date, nonce);
+    }
+
+    public void authenticate(final Request request, final Date date, final String nonce) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         dateFormat.setTimeZone(new SimpleTimeZone(0, TIME_ZONE));
 
@@ -90,7 +98,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
         String timestamp = timestampFormat.format(date);
         String dateStamp = dateFormat.format(date);
 
-        request.getHeaders().set(STORMAPTH_DATE_HEADER, timestamp);
+        request.getHeaders().set(STORMPATH_DATE_HEADER, timestamp);
 
         String method = request.getMethod().toString();
         String canonicalResourcePath = canonicalizeResourcePath(uri.getPath());
@@ -109,7 +117,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
 
         log.debug("{} Canonical Request: {}", AUTHENTICATION_SCHEME, canonicalRequest);
 
-        String id = apiKey.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
+        String id = apiKeyCredentials.getId() + "/" + dateStamp + "/" + nonce + "/" + ID_TERMINATOR;
 
         String canonicalRequestHashHex = toHex(hash(canonicalRequest));
 
@@ -122,7 +130,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
         log.debug("{} String to Sign: {}", AUTHENTICATION_SCHEME, stringToSign);
 
         // SAuthc1 uses a series of derived keys, formed by hashing different pieces of data
-        byte[] kSecret = toUtf8Bytes(AUTHENTICATION_SCHEME + apiKey.getSecret());
+        byte[] kSecret = toUtf8Bytes(AUTHENTICATION_SCHEME + apiKeyCredentials.getSecret());
         byte[] kDate = sign(dateStamp, kSecret, MacAlgorithm.HmacSHA256);
         byte[] kNonce = sign(nonce, kDate, MacAlgorithm.HmacSHA256);
         byte[] kSigning = sign(ID_TERMINATOR, kNonce, MacAlgorithm.HmacSHA256);
@@ -136,7 +144,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
                         createNameValuePair(SAUTHC1_SIGNED_HEADERS, signedHeadersString) + ", " +
                         createNameValuePair(SAUTHC1_SIGNATURE, signatureHex);
 
-        log.debug("{}: {}", AUTHORIZATION_HEADER,  authorizationHeader);
+        log.debug("{}: {}", AUTHORIZATION_HEADER, authorizationHeader);
 
         request.getHeaders().set(AUTHORIZATION_HEADER, authorizationHeader);
     }
@@ -275,7 +283,7 @@ public class SAuthc1RequestAuthenticator implements RequestAuthenticator {
             List<String> values = request.getHeaders().get(header);
             boolean first = true;
             if (values != null) {
-                for(String value : values) {
+                for (String value : values) {
                     if (!first) {
                         buffer.append(",");
                     }

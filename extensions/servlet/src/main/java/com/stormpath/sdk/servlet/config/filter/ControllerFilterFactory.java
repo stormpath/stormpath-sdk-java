@@ -29,27 +29,27 @@ public abstract class ControllerFilterFactory<T extends AbstractController> exte
     @Override
     protected final ControllerFilter createInstance(ServletContext servletContext, Config config) throws Exception {
 
-        T c = newController();
-        c.setAccountResolver(config.getAccountResolver());
-        c.setContentNegotiationResolver(config.getContentNegotiationResolver());
-        c.setEventPublisher(config.getRequestEventPublisher());
-        c.setLocaleResolver(config.getLocaleResolver());
-        c.setMessageSource(config.getMessageSource());
-        c.setProduces(config.getProducedMediaTypes());
-        c.setApplicationResolver(config.getApplicationResolver());
+        T controller = newController();
+        controller.setAccountResolver(config.getAccountResolver());
+        controller.setContentNegotiationResolver(config.getContentNegotiationResolver());
+        controller.setEventPublisher(config.getRequestEventPublisher());
+        controller.setLocaleResolver(config.getLocaleResolver());
+        controller.setMessageSource(config.getMessageSource());
+        controller.setProduces(config.getProducedMediaTypes());
+        controller.setApplicationResolver(config.getApplicationResolver());
 
-        configure(c, config);
+        configure(controller, config);
 
-        c.init();
+        controller.init();
 
         ControllerFilter filter = new ControllerFilter();
         filter.setProducedMediaTypes(config.getProducedMediaTypes());
-        filter.setController(c);
+        filter.setController(controller);
 
         return filter;
     }
 
     protected abstract T newController();
 
-    protected abstract void configure(T c, Config config) throws Exception;
+    protected abstract void configure(T controller, Config config) throws Exception;
 }

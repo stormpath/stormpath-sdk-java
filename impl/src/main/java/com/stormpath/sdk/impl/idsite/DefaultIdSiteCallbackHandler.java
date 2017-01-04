@@ -28,6 +28,7 @@ import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.NonceStore;
 import com.stormpath.sdk.idsite.RegistrationResult;
+import com.stormpath.sdk.idsite.IdSiteResultStatus;
 import com.stormpath.sdk.impl.account.DefaultAccountResult;
 import com.stormpath.sdk.impl.account.DefaultAuthenticationResult;
 import com.stormpath.sdk.impl.account.DefaultLogoutResult;
@@ -35,7 +36,6 @@ import com.stormpath.sdk.impl.account.DefaultRegistrationResult;
 import com.stormpath.sdk.impl.authc.HttpServletRequestWrapper;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.error.DefaultErrorBuilder;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.jwt.JwtSignatureValidator;
 import com.stormpath.sdk.impl.jwt.JwtWrapper;
@@ -158,6 +158,7 @@ public class DefaultIdSiteCallbackHandler implements IdSiteCallbackHandler {
         }
 
         AccountResult accountResult = new DefaultAccountResult(dataStore, properties);
+        accountResult.setStatus(resultStatus);
 
         //@since 1.0.RC7.3
         if(this.resultListeners.size() > 0) {

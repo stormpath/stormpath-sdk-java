@@ -27,6 +27,7 @@ import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.provider.ProviderAccountAccess;
 import com.stormpath.sdk.impl.resource.CollectionProperties;
+import com.stormpath.sdk.impl.util.BaseUrlResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.resource.CollectionResource;
@@ -40,12 +41,15 @@ import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.OFFSET;
 
 public class ReadCacheFilter extends AbstractCacheFilter {
 
-    private final String baseUrl;
+    private BaseUrlResolver baseUrlResolver;
 
-    public ReadCacheFilter(String baseUrl, CacheResolver cacheResolver, boolean collectionCachingEnabled) {
+    /**
+     * @since 1.2.0
+     */
+    public ReadCacheFilter(BaseUrlResolver baseUrlResolver, CacheResolver cacheResolver, boolean collectionCachingEnabled) {
         super(cacheResolver, collectionCachingEnabled);
-        Assert.hasText(baseUrl, "baseUrl cannot be null or empty.");
-        this.baseUrl = baseUrl;
+        Assert.notNull(baseUrlResolver, "baseUrlResolver cannot be null.");
+        this.baseUrlResolver = baseUrlResolver;
     }
 
     @Override
@@ -73,7 +77,7 @@ public class ReadCacheFilter extends AbstractCacheFilter {
 
         if (isApiKeyCollectionQuery(request)) {
 
-            String cacheHref = baseUrl + "/apiKeys/" + query.get(ID.getName());
+            String cacheHref = baseUrlResolver.getBaseUrl() + "/apiKeys/" + query.get(ID.getName());
             Class<ApiKey> cacheClass = ApiKey.class;
 
             Map<String, ?> apiKeyData = getCachedValue(cacheHref, cacheClass);

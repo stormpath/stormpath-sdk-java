@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.directory.CustomData;
+import com.stormpath.sdk.impl.authc.BasicLoginAttempt;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.lang.Assert;
@@ -24,11 +26,17 @@ import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderData;
 import com.stormpath.sdk.resource.Resource;
-import com.stormpath.sdk.saml.AttributeStatementMappingRule;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+/**
+ * @since 1.1.0
+ */
 public class DefaultResourceConverter implements ResourceConverter {
 
     private final ReferenceFactory referenceFactory;
@@ -54,7 +62,7 @@ public class DefaultResourceConverter implements ResourceConverter {
             propNames = resource.getPropertyNames();
         }
 
-        LinkedHashMap<String, Object> props = new LinkedHashMap<String, Object>(propNames.size());
+        LinkedHashMap<String, Object> props = new LinkedHashMap<>(propNames.size());
 
         for (String propName : propNames) {
             Object value = resource.getProperty(propName);
@@ -81,7 +89,7 @@ public class DefaultResourceConverter implements ResourceConverter {
                 Set<String> updatedPropertyNames = abstractResource.getUpdatedPropertyNames();
 
                 LinkedHashMap<String, Object> properties =
-                    new LinkedHashMap<String, Object>(Collections.size(updatedPropertyNames));
+                    new LinkedHashMap<>(Collections.size(updatedPropertyNames));
 
                 for (String updatedCustomPropertyName : updatedPropertyNames) {
                     Object object = abstractResource.getProperty(updatedCustomPropertyName);
@@ -100,18 +108,31 @@ public class DefaultResourceConverter implements ResourceConverter {
         if (value instanceof Map) {
             //Since defaultModel is a map, the DataStore thinks it is a Resource. This causes the code to crash later one as Resources
             //do need to have an href property
-            if (resource instanceof ModeledEmailTemplate && propName.equals("defaultModel")) {
+            if ((resource instanceof ModeledEmailTemplate && propName.equals("defaultModel")) ||
+                    //Check for accountStore in BasicLoginAttempt cause we change it to map to accommodate the organization name key use case
+                    //see https://github.com/stormpath/stormpath-sdk-java/issues/284
+                    resource instanceof BasicLoginAttempt && propName.equals("accountStore")) {
                 return value;
             } else {
                 //if the property is a reference, don't write the entire object - just the href will do:
                 //TODO need to change this to write the entire object because this code defeats the purpose of entity expansion
                 //     when this code gets called (returning the reference instead of the whole object that is returned from Stormpath)
-                return this.referenceFactory.createReference(propName, (Map) value);
+                if(AbstractResource.hasHref((Map) value)) {
+                    return this.referenceFactory.createReference(propName, (Map) value);
+                }
+                else{
+                    return this.referenceFactory.createUnmaterializedReference(propName, (Map) value);
+                }
             }
         }
 
         if (value instanceof Resource) {
-            return this.referenceFactory.createReference(propName, (Resource) value);
+            if(((Resource)value).getHref() != null) {
+                return this.referenceFactory.createReference(propName, (Resource) value);
+            }
+            else{
+                return this.referenceFactory.createUnmaterializedReference(propName, (Resource) value);
+            }
         }
 
         return value;

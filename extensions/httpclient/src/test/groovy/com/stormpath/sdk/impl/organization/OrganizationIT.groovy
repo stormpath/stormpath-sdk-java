@@ -15,6 +15,9 @@
  */
 package com.stormpath.sdk.impl.organization
 
+import com.stormpath.sdk.account.AccountLinkingPolicy
+import com.stormpath.sdk.account.AccountLinkingStatus
+import com.stormpath.sdk.account.AutomaticProvisioningStatus
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
@@ -27,6 +30,7 @@ import com.stormpath.sdk.organization.Organizations
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
@@ -59,7 +63,7 @@ class OrganizationIT extends ClientIT {
         tenant.getOrganizations()
 
         // get organizations with criteria
-        orgList = tenant.getOrganizations(Organizations.where(Organizations.name().containsIgnoreCase("JSDK_OrganizationIT_testCreateOrganization")))
+        orgList = tenant.getOrganizations(Organizations.where(Organizations.name().containsIgnoreCase(org.getName())))
         assertTrue orgList.iterator().hasNext()
         def retrieved = orgList.iterator().next()
         assertEquals org.href, retrieved.href
@@ -99,6 +103,66 @@ class OrganizationIT extends ClientIT {
 
         deleteOnTeardown(retrievedOrg.getDefaultAccountStore() as Directory)
         deleteOnTeardown(retrievedOrg)
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testFilterOrganizations(){
+
+        def tenant = client.currentTenant
+
+        def org1 = client.instantiate(Organization)
+        org1.setName(uniquify("JSDK_OrganizationIT_testFilterOrganizations_01"))
+                .setNameKey(uniquify("test"))
+                .setDescription('testFilterOrganizations_01')
+                .setStatus(OrganizationStatus.ENABLED)
+
+        def retrievedOrg1 = client.createOrganization(Organizations.newCreateRequestFor(org1).createDirectory().build())
+        assertNotNull(retrievedOrg1)
+
+        def org2 = client.instantiate(Organization)
+        org2.setName(uniquify("JSDK_OrganizationIT_FilterOrganizations_02"))
+                .setNameKey(uniquify("test"))
+                .setDescription('testFilterOrganizations_02')
+                .setStatus(OrganizationStatus.ENABLED)
+
+        def retrievedOrg2 = client.createOrganization(Organizations.newCreateRequestFor(org2).createDirectory().build())
+        assertNotNull(retrievedOrg2)
+
+        deleteOnTeardown(retrievedOrg1.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(retrievedOrg1)
+
+        deleteOnTeardown(retrievedOrg2.getDefaultAccountStore() as Directory)
+        deleteOnTeardown(retrievedOrg2)
+
+        //verify that the filter search works with a combination of criteria
+        def foundOrgs2 = tenant.getOrganizations(Organizations.where(Organizations.filter('FilterOrganizations')).and(Organizations.description().endsWithIgnoreCase('02')))
+        def foundOrg2 = foundOrgs2.iterator().next()
+        assertEquals(foundOrg2.href, retrievedOrg2.href)
+
+        //verify that the filter search works
+        def allOrgs = tenant.getOrganizations(Organizations.where(Organizations.filter('FilterOrganizations')))
+        assertEquals(allOrgs.size(), 2)
+
+        //verify that the filter search returns an empty collection if there is no match
+        def emptyCollection = tenant.getOrganizations(Organizations.where(Organizations.filter('not_found')))
+        assertTrue(emptyCollection.size() == 0)
+
+        //verify that a non matching criteria added to a matching criteria is working as a final non matching criteria
+        //ie. there are no properties matching 'not_found' but there are 1 account matching 'description=02'
+        def emptyCollection2 = tenant.getOrganizations(Organizations.where(Organizations.filter('not_found')).and(Organizations.description().endsWithIgnoreCase('02')))
+        assertTrue(emptyCollection2.size() == 0)
+
+        //verify that the filter search match with substrings
+        def allOrgs2 = tenant.getOrganizations(Organizations.where(Organizations.filter("FilterOrganizations")))
+        assertEquals(allOrgs2.size(), 2)
+
+        //test delete:
+        for (def org : allOrgs){
+            org.delete()
+        }
     }
 
     @Test
@@ -154,7 +218,7 @@ class OrganizationIT extends ClientIT {
     }
 
     @Test
-    void testAddAccountDirWithInvalidDir(){
+    void testAddAccountDirWithInvalidDir() {
         Organization organization = client.instantiate(Organization)
         organization.name = uniquify("Java SDK: OrganizationIT.testAddAccountDirWithInvalidDir")
         organization.setNameKey(uniquify("test"))
@@ -163,6 +227,127 @@ class OrganizationIT extends ClientIT {
 
         def accountStoreMapping = organization.addAccountStore("non-existent Dir")
         assertNull accountStoreMapping
+    }
+
+    /* @since 1.1.0 */
+    @Test
+    void testRetrieveAndUpdateAccountLinkingPolicy() {
+        def org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test"))
+                .setStatus(OrganizationStatus.ENABLED)
+
+        org = client.createOrganization(org)
+        assertNotNull org.href
+        deleteOnTeardown(org)
+
+        AccountLinkingPolicy accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name() as String, 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertNotNull accountLinkingPolicy.getAutomaticProvisioning()
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name() as String, 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED)
+        accountLinkingPolicy.setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED)
+        accountLinkingPolicy.setMatchingProperty("email")
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNotNull accountLinkingPolicy.getMatchingProperty()
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'email'
+    }
+
+    /* @since 1.1.0 */
+    @Test
+    void testRetrieveAndUpdateAccountLinkingPolicyPartially() {
+        def org = client.instantiate(Organization)
+        org.setName(uniquify("JSDK_OrganizationIT_testCreateOrganization"))
+                .setDescription("Organization Description")
+                .setNameKey(uniquify("test"))
+                .setStatus(OrganizationStatus.ENABLED)
+
+        org = client.createOrganization(org)
+        assertNotNull org.href
+        deleteOnTeardown(org)
+
+        AccountLinkingPolicy accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name() as String, 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertNotNull accountLinkingPolicy.getAutomaticProvisioning()
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name() as String, 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setStatus(AccountLinkingStatus.ENABLED).save() // partially update status
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'DISABLED'
+        assertFalse(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setAutomaticProvisioning(AutomaticProvisioningStatus.ENABLED).save() // partially update automatic provisioning
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+
+        assertNull accountLinkingPolicy.getMatchingProperty()
+
+        accountLinkingPolicy.setMatchingProperty("email") // partially update matchingProperty
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNotNull accountLinkingPolicy.getMatchingProperty()
+        assertEquals accountLinkingPolicy.getMatchingProperty(), 'email'
+
+        accountLinkingPolicy.setMatchingProperty(null) // set matchingProperty to null
+        accountLinkingPolicy.save()
+
+        accountLinkingPolicy = org.getAccountLinkingPolicy()
+        assertNotNull accountLinkingPolicy
+        assertNotNull accountLinkingPolicy.getStatus()
+        assertEquals accountLinkingPolicy.getStatus().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAccountLinkingEnabled())
+
+        assertEquals accountLinkingPolicy.getAutomaticProvisioning().name(), 'ENABLED'
+        assertTrue(org.getAccountLinkingPolicy().isAutomaticProvisioningEnabled())
+        assertNull accountLinkingPolicy.getMatchingProperty()
     }
 
     private assertAccountStoreMappingListSize(OrganizationAccountStoreMappingList accountStoreMappings, int expectedSize) {

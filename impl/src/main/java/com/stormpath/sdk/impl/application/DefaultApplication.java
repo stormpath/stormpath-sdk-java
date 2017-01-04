@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.application;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountLinkingPolicy;
 import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
@@ -32,6 +33,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -60,16 +62,18 @@ import com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.query.DefaultEqualsExpressionFactory;
 import com.stormpath.sdk.impl.query.Expandable;
 import com.stormpath.sdk.impl.query.Expansion;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.ListProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
-import com.stormpath.sdk.impl.resource.StatusProperty;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.impl.saml.DefaultSamlCallbackHandler;
 import com.stormpath.sdk.impl.saml.DefaultSamlIdpUrlBuilder;
@@ -82,6 +86,8 @@ import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthPolicy;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthTokenRevocator;
 import com.stormpath.sdk.organization.Organization;
 import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.organization.OrganizationList;
@@ -165,8 +171,8 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     // SIMPLE PROPERTIES:
     static final StringProperty                    NAME        = new StringProperty("name");
     static final StringProperty                    DESCRIPTION = new StringProperty("description");
-    static final StatusProperty<ApplicationStatus> STATUS      =
-        new StatusProperty<ApplicationStatus>(ApplicationStatus.class);
+    static final EnumProperty<ApplicationStatus> STATUS      =
+        new EnumProperty<ApplicationStatus>(ApplicationStatus.class);
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Tenant>              TENANT                        =
@@ -179,6 +185,10 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
             new ResourceReference<OAuthPolicy>("oAuthPolicy", OAuthPolicy.class);
     static final ResourceReference<SamlPolicy> SAML_POLICY =
             new ResourceReference<SamlPolicy>("samlPolicy", SamlPolicy.class);
+    static final ResourceReference<AccountLinkingPolicy> ACCOUNT_LINKING_POLICY =
+            new ResourceReference<AccountLinkingPolicy>("accountLinkingPolicy", AccountLinkingPolicy.class);
+    static final ResourceReference<ApplicationWebConfig> WEB_CONFIGURATION =
+            new ResourceReference<>("webConfig", ApplicationWebConfig.class);
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<AccountList, Account>                         ACCOUNTS               =
@@ -199,9 +209,12 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     public static final String AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME = "authorizedCallbackUris";
 
+    public static final String AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME = "authorizedOriginUris";
+
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
         NAME, DESCRIPTION, STATUS, TENANT, DEFAULT_ACCOUNT_STORE_MAPPING, DEFAULT_GROUP_STORE_MAPPING, ACCOUNTS, GROUPS,
-        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY, AUTHORIZED_CALLBACK_URIS, SAML_POLICY);
+        ACCOUNT_STORE_MAPPINGS, PASSWORD_RESET_TOKENS, CUSTOM_DATA, OAUTH_POLICY, AUTHORIZED_CALLBACK_URIS, SAML_POLICY,
+            ACCOUNT_LINKING_POLICY, WEB_CONFIGURATION);
 
     public DefaultApplication(InternalDataStore dataStore) {
         super(dataStore);
@@ -240,16 +253,12 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     @Override
     public ApplicationStatus getStatus() {
-        String value = getStringProperty(STATUS.getName());
-        if (value == null) {
-            return null;
-        }
-        return ApplicationStatus.valueOf(value.toUpperCase());
+        return getEnumProperty(STATUS);
     }
 
     @Override
     public Application setStatus(ApplicationStatus status) {
-        setProperty(STATUS, status.name());
+        setProperty(STATUS, status);
         return this;
     }
 
@@ -326,6 +335,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return getResourceProperty(SAML_POLICY);
     }
 
+    @Override
+    public ApplicationWebConfig getWebConfig() {
+        return getResourceProperty(WEB_CONFIGURATION);
+    }
+
     // @since 1.0.RC8
     public List<String> getAuthorizedCallbackUris() {
         return new ArrayList<String>(getListProperty(AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME));
@@ -348,6 +362,27 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         List<String> authorizedCallbackUris = this.getAuthorizedCallbackUris();
         authorizedCallbackUris.add(authorizedCallbackUri);
         setProperty(AUTHORIZED_CALLBACK_URIS_PROPERTY_NAME, authorizedCallbackUris);
+        save();
+        return this;
+    }
+
+    @Override
+    public List<String> getAuthorizedOriginUris() {
+        return new ArrayList<String>(getListProperty(AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME));
+    }
+
+    @Override
+    public Application setAuthorizedOriginUris(List<String> authorizedOriginUris) {
+        setProperty(AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME, authorizedOriginUris);
+        save();
+        return this;
+    }
+
+    @Override
+    public Application addAuthorizedOriginUri(String authorizedOriginUri) {
+        List<String> authorizedOriginUris = this.getAuthorizedOriginUris();
+        authorizedOriginUris.add(authorizedOriginUri);
+        setProperty(AUTHORIZED_ORIGIN_URIS_PROPERTY_NAME, authorizedOriginUris);
         save();
         return this;
     }
@@ -841,6 +876,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return new DefaultOAuthClientCredentialsGrantRequestAuthenticator(this, getDataStore());
     }
 
+    /* @since 1.1.0 */
+    public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
+        return new DefaultOAuthStormpathSocialGrantRequestAuthenticator(this, getDataStore());
+    }
+
     /* @since 1.0.RC7 */
     public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
         return new DefaultOAuthPasswordGrantRequestAuthenticator(this, getDataStore());
@@ -857,7 +897,17 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /* @since 1.0.RC8.2 */
-    public IdSiteAuthenticator createIdSiteAuthenticator(){
+    public IdSiteAuthenticator createIdSiteAuthenticator() {
         return new DefaultIdSiteAuthenticator(this, getDataStore());
+    }
+
+    public OAuthTokenRevocator createOAuhtTokenRevocator() {
+        return new DefaultOAuthTokenRevocator(this, getDataStore());
+    }
+
+    /* @since 1.1.0 */
+    @Override
+    public AccountLinkingPolicy getAccountLinkingPolicy() {
+        return getResourceProperty(ACCOUNT_LINKING_POLICY);
     }
 }

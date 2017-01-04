@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.stormpath.sdk.client
+
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.directory.AccountCreationPolicy
@@ -21,6 +22,7 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryOptions
 import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.impl.provider.AbstractOAuthProvider
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.lang.Duration
@@ -28,16 +30,29 @@ import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.provider.saml.SamlProvider
+import com.stormpath.sdk.provider.social.SocialUserInfoMappingRules
+import com.stormpath.sdk.provider.social.UserInfoMappingRule
+import com.stormpath.sdk.provider.social.UserInfoMappingRules
 import com.stormpath.sdk.saml.AttributeStatementMappingRule
 import com.stormpath.sdk.saml.AttributeStatementMappingRules
 import com.stormpath.sdk.saml.SamlAttributeStatementMappingRules
+import com.stormpath.sdk.schema.Schema
 import org.testng.annotations.Test
 
 import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
-import static org.testng.Assert.*
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotEquals
+import static org.testng.Assert.assertNotSame
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.fail
+
 /**
  *
  * @since 0.8.1
@@ -58,7 +73,6 @@ class DirectoryIT extends ClientIT {
         assertNotNull dir.href
     }
 
-
     /**
      * Asserts fix for <a href="https://github.com/stormpath/stormpath-sdk-java/issues/12">Issue #12</a>
      */
@@ -70,13 +84,13 @@ class DirectoryIT extends ClientIT {
         dir = client.currentTenant.createDirectory(dir)
         deleteOnTeardown(dir)
 
-        def email = 'johndeleteme@nowhere.com'
+        def email = 'johndeleteme@testmail.stormpath.com'
 
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
-            .setSurname('DELETEME')
-            .setEmail(email)
-            .setPassword('Changeme1!')
+                .setSurname('DELETEME')
+                .setEmail(email)
+                .setPassword('Changeme1!')
 
         dir.createAccount(account)
 
@@ -93,7 +107,6 @@ class DirectoryIT extends ClientIT {
         assertFalse list.iterator().hasNext() //no results
     }
 
-
     /**
      * Asserts <a href="https://github.com/stormpath/stormpath-sdk-java/issues/58">Issue 58</a>.
      * @since 1.0.RC
@@ -108,6 +121,55 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
+     * @since 1.2.0
+     */
+    @Test
+    void testFilterDirectories() {
+        def tenant = client.currentTenant
+
+        Directory dir1 = client.instantiate(Directory)
+        dir1.name = uniquify("Java SDK: DirectoryIT.testFilterDirectories01")
+        dir1.description = 'testFilterDirectories01'
+        dir1 = client.createDirectory(dir1);
+        deleteOnTeardown(dir1)
+        assertNotNull dir1.href
+
+        Directory dir2 = client.instantiate(Directory)
+        dir2.name = uniquify("Java SDK: DirectoryIT.testFilterDirectories02")
+        dir2.description = 'testFilterDirectories02'
+        dir2 = client.createDirectory(dir2);
+        deleteOnTeardown(dir2)
+        assertNotNull dir2.href
+
+        //verify that the filter search works with a combination of criteria
+        def foundDirs2 = tenant.getDirectories(Directories.where(Directories.filter('testFilterDirectories02')).and(Directories.description().endsWithIgnoreCase('02')))
+        def foundDir2 = foundDirs2.iterator().next()
+        assertEquals(foundDir2.href, dir2.href)
+
+        //verify that the filter search works
+        def allDirs = tenant.getDirectories(Directories.where(Directories.filter('testFilterDirectories')))
+        assertEquals(allDirs.size(), 2)
+
+        //verify that the filter search returns an empty collection if there is no match
+        def emptyCollection = tenant.getDirectories(Directories.where(Directories.filter('not_found')))
+        assertTrue(emptyCollection.size() == 0)
+
+        //verify that a non matching criteria added to a matching criteria is working as a final non matching criteria
+        //ie. there are no properties matching 'not_found' but there are 1 account matching 'description=02'
+        def emptyCollection2 = tenant.getDirectories(Directories.where(Directories.filter('not_found')).and(Directories.description().endsWithIgnoreCase('02')))
+        assertTrue(emptyCollection2.size() == 0)
+
+        //verify that the filter search match with substrings
+        def allOrgs2 = tenant.getDirectories(Directories.where(Directories.filter("FilterDirectories")))
+        assertEquals(allOrgs2.size(), 2)
+
+        //test delete:
+        for (def dir : allDirs){
+            dir.delete()
+        }
+    }
+
+    /**
      * @since 1.0.RC
      */
     @Test
@@ -117,11 +179,11 @@ class DirectoryIT extends ClientIT {
 
         def request = Directories.newCreateRequestFor(dir)
                 .forProvider(Providers.GOOGLE.builder()
-                    .setClientId("616598318417021")
-                    .setClientSecret("c0ad961d45fdc0310c1c7d67c8f1d800")
-                    .setRedirectUri("http://localhost")
-                    .build()
-                ).build()
+                .setClientId("616598318417021")
+                .setClientSecret("c0ad961d45fdc0310c1c7d67c8f1d800")
+                .setRedirectUri("http://localhost")
+                .build()
+        ).build()
         dir = client.createDirectory(request);
         deleteOnTeardown(dir)
         assertNotNull dir.href
@@ -158,12 +220,12 @@ class DirectoryIT extends ClientIT {
 
         def request = Directories.newCreateRequestFor(dir)
                 .forProvider(
-                    Providers.SAML.builder()
-                    .setEncodedX509SigningCert(validX509Cert)
-                    .setRequestSignatureAlgorithm("RSA-SHA256")
-                    .setSsoLoginUrl("https://idp.whatever.com/saml2/sso/login")
-                    .setSsoLogoutUrl("https://idp.whatever.com/saml2/sso/logout")
-                    .build())
+                Providers.SAML.builder()
+                        .setEncodedX509SigningCert(validX509Cert)
+                        .setRequestSignatureAlgorithm("RSA-SHA256")
+                        .setSsoLoginUrl("https://idp.whatever.com/saml2/sso/login")
+                        .setSsoLogoutUrl("https://idp.whatever.com/saml2/sso/logout")
+                        .build())
                 .build()
         dir = client.createDirectory(request);
         deleteOnTeardown(dir)
@@ -238,12 +300,32 @@ class DirectoryIT extends ClientIT {
         deleteOnTeardown(dir)
         assertNotNull dir.href
 
-        def provider = dir.provider
+        SamlProvider provider = dir.provider
         assertNotNull provider.href
         assertNotNull provider.serviceProviderMetadata.href
         assertEquals provider.providerId, "saml"
         assertEquals provider.ssoLoginUrl, "https://idp.whatever.com/saml2/sso/login"
         assertEquals provider.ssoLogoutUrl, "https://idp.whatever.com/saml2/sso/logout"
+
+        // TODO : fix to be able to update SAML attributeStatementMappingRules for the provider
+        /*AttributeStatementMappingRules rules = provider.attributeStatementMappingRules
+        assertNotNull rules
+        assertNotNull rules.items
+        assertEquals rules.items.size() , 2
+        UserInfoMappingRule userInfoMappingRule =
+                SocialUserInfoMappingRules.ruleBuilder().setName("locale").setAccountAttributes("customData.locale").build()
+        List<UserInfoMappingRule> mappingRules = new ArrayList<>();
+        mappingRules.add(userInfoMappingRule)
+        rules.setItems(SamlAttributeStatementMappingRules.rulesBuilder().addAttributeStatementMappingRule(
+                SamlAttributeStatementMappingRules.ruleBuilder().setName("name3")
+                .setNameFormat("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified")
+                .setAccountAttributes("customData.name3", "customData.otherName3")
+                .build()
+        ).build())
+        def updatedRules = provider.attributeStatementMappingRules
+        assertNotNull updatedRules
+        assertNotNull updatedRules.items
+        assertEquals updatedRules.items.size() , 1*/
     }
 
     /**
@@ -266,6 +348,169 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateLinkedInDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateLinkedInDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.LINKEDIN.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43").setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<LinkedInProvider>) dir.provider)
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateGoogleDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateGoogleDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.GOOGLE.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43").setRedirectUri("https://myApp.com").
+                setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<GoogleProvider>) dir.provider)
+    }
+
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateGithubDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateGithubDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.GITHUB.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43").
+                setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<GithubProvider>) dir.provider)
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateFacebookDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateFacebookDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.FACEBOOK.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<FacebookProvider>) dir.provider)
+
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateTwitterDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateTwitterDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.TWITTER.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<TwitterProvider>) dir.provider)
+
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test(enabled = false) //TODO : enable this when the generic OAuth2 changes are there in prod (api.stormpath.com)
+    void testCreateGenericOAuth2DirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateGenericOAuth2DirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.OAUTH2.builder().setProviderId("imgur")
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .setAccessTokenType(AccessTokenType.BEARER)
+                .setAuthorizationEndpoint("https://api.imgur.com/oauth2/authorize")
+                .setTokenEndpoint("https://api.imgur.com/oauth2/token")
+                .setResourceEndpoint("https://api.imgur.com/oauth2/token")
+                .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<TwitterProvider>) dir.provider)
+
+    }
+
+    void assertUserInfoMappingRuleWasCreatedAndUpdate(AbstractOAuthProvider provider) {
+
+        UserInfoMappingRules rules = provider.getUserInfoMappingRules()
+        assertNotNull rules
+        assertNotNull rules.items
+        assertEquals rules.items.size() , 2
+        UserInfoMappingRule userInfoMappingRule =
+                SocialUserInfoMappingRules.ruleBuilder().setName("locale").setAccountAttributes("customData.locale").build()
+        List<UserInfoMappingRule> mappingRules = new ArrayList<>();
+        mappingRules.add(userInfoMappingRule)
+        rules.setItems(mappingRules)
+        rules.save()
+        def updatedRules = provider.userInfoMappingRules
+        assertNotNull updatedRules
+        assertNotNull updatedRules.items
+        assertEquals updatedRules.items.size() , 1
+
+    }
+
+    UserInfoMappingRules buildSampleUserInfoMappingRules() {
+
+        Set<String> accountAttributesId = new HashSet<>();
+        accountAttributesId.add("customData.id")
+
+        Set<String> accountAttributesName = new HashSet<>();
+        accountAttributesName.add("customData.fullName")
+
+        UserInfoMappingRule userInfoMappingRuleForId =
+                SocialUserInfoMappingRules.ruleBuilder().setName("id").setAccountAttributes(accountAttributesId).build();
+
+        UserInfoMappingRule userInfoMappingRuleForName =
+                SocialUserInfoMappingRules.ruleBuilder().setName("name").setAccountAttributes(accountAttributesName).build();
+
+        UserInfoMappingRules userInfoMappingRules =
+                SocialUserInfoMappingRules.rulesBuilder().
+                        addUserInfoMappingRule(userInfoMappingRuleForId).addUserInfoMappingRule(userInfoMappingRuleForName).build();
+
+        userInfoMappingRules
+
+    }
+
+
+    /**
      * @since 1.0.RC
      */
     @Test
@@ -277,7 +522,8 @@ class DirectoryIT extends ClientIT {
     /**
      * @since 1.0.RC
      */
-    @Test(enabled = false) //ignoring because of sporadic Travis failures
+    @Test(enabled = false)
+    //ignoring because of sporadic Travis failures
     void testGetDirectoriesWithMapViaTenantActions() {
         def map = new HashMap<String, Object>()
         def dirList = client.getDirectories(map)
@@ -357,7 +603,7 @@ class DirectoryIT extends ClientIT {
         Account account01 = client.instantiate(Account)
         account01 = account01.setGivenName(uniquify('John01'))
                 .setSurname('DELETEME')
-                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+                .setEmail(uniquify("john01deleteme") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account01)
@@ -367,7 +613,7 @@ class DirectoryIT extends ClientIT {
         def account02 = client.instantiate(Account)
         account02 = account02.setGivenName(uniquify('John02'))
                 .setSurname('DELETEME')
-                .setEmail(uniquify("john01deleteme") + "@stormpath.com")
+                .setEmail(uniquify("john01deleteme") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account02)
@@ -393,11 +639,12 @@ class DirectoryIT extends ClientIT {
             assertEquals(acrlist.currentPage.size, 2)
 
             assertNotNull(account.getHref())
-            if(count == 0) {
+            if (count == 0) {
                 firstAccount = account
                 firstPage = acrlist.currentPage
             } else {
-                assertNotEquals(account.getHref(), firstAccount.getHref()) //let's check that the items are actually moving
+                assertNotEquals(account.getHref(), firstAccount.getHref())
+                //let's check that the items are actually moving
                 assertNotSame(acrlist.currentPage, firstPage) //let's check that pages are actually moving
             }
 
@@ -415,7 +662,7 @@ class DirectoryIT extends ClientIT {
      * @since 1.0.RC4.5
      */
     @Test
-    void testAccountCreationPolicy(){
+    void testAccountCreationPolicy() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testAccountCreationPolicy")
         dir = client.createDirectory(dir);
@@ -445,7 +692,7 @@ class DirectoryIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testDirectoryExpansionWithoutCache(){
+    void testDirectoryExpansionWithoutCache() {
 
         Client client = buildClient(false);
 
@@ -469,7 +716,7 @@ class DirectoryIT extends ClientIT {
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
                 .setSurname('Doe')
-                .setEmail('johndoe@email.com')
+                .setEmail('johndoe@testmail.stormpath.com')
                 .setPassword('Changeme1!')
         dir.createAccount(account)
 
@@ -486,7 +733,7 @@ class DirectoryIT extends ClientIT {
      * @since 1.0.RC4.6
      */
     @Test
-    void testDirectoryExpansionWithCache(){
+    void testDirectoryExpansionWithCache() {
 
         Client client = buildCountingClient()
 
@@ -510,7 +757,7 @@ class DirectoryIT extends ClientIT {
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
                 .setSurname('Doe')
-                .setEmail('johndoe@email.com')
+                .setEmail('johndoe@testmail.stormpath.com')
                 .setPassword('Changeme1!')
         dir.createAccount(account)
 
@@ -633,7 +880,7 @@ class DirectoryIT extends ClientIT {
         Account account = client.instantiate(Account)
         account = account.setGivenName('John')
                 .setSurname(uniquify("testGetAccountsWithDateCriteria"))
-                .setEmail('johntestme@nowhere.com')
+                .setEmail('johntestme@testmail.stormpath.com')
                 .setPassword('Changeme1!')
 
         dir.createAccount(account)
@@ -732,7 +979,7 @@ class DirectoryIT extends ClientIT {
         Account account01 = client.instantiate(Account)
         account01 = account01.setGivenName(uniquify('John'))
                 .setSurname('Doe')
-                .setEmail(uniquify("johndoe") + "@stormpath.com")
+                .setEmail(uniquify("johndoe") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account01)
@@ -741,7 +988,7 @@ class DirectoryIT extends ClientIT {
         Account account02 = client.instantiate(Account)
         account02 = account02.setGivenName(uniquify('John'))
                 .setSurname('Doe 2')
-                .setEmail(uniquify("johndoe2") + "@stormpath.com")
+                .setEmail(uniquify("johndoe2") + "@testmail.stormpath.com")
                 .setPassword('Changeme1!')
 
         dir.createAccount(account02)
@@ -800,4 +1047,164 @@ class DirectoryIT extends ClientIT {
         assertEquals orgList.size, 1
         assertEquals orgList.iterator().next().href, org2.href
     }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testGetAccountSchema() {
+
+        Directory directory = client.instantiate(Directory)
+        directory.setName(uniquify("JSDK.DirectoryIT.testGetAccountSchema"))
+        directory = client.createDirectory(directory);
+        assertNotNull directory.href
+        deleteOnTeardown(directory)
+
+        def accountSchema = directory.getAccountSchema()
+        assertNotNull accountSchema
+        assertNotNull accountSchema.getHref()
+
+        def accountSchema1 = client.getResource(accountSchema.getHref(), Schema)
+
+        assertFalse(accountSchema.equals(accountSchema1))  //not expanded -> must be different
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testGetDirectoryWithExpandedAccountSchema() {
+
+        Directory directory = client.instantiate(Directory)
+        directory.setName(uniquify("JSDK.DirectoryIT.testGetDirectoryWithExpandedAccountSchema"))
+        directory = client.createDirectory(directory);
+        assertNotNull directory.href
+        deleteOnTeardown(directory)
+
+        def dirOptions = Directories.options().withAccountSchema()
+
+        directory = client.getResource(directory.getHref(), Directory, dirOptions)
+
+        //accountSchema must be expanded
+        def accountSchema = directory.getAccountSchema()
+        assertNotNull accountSchema
+        assertNotNull accountSchema.getHref()
+        //Let's check the schema is really materialized (ie. was properly expanded)
+        assertTrue accountSchema.toString().contains("modifiedAt")
+        assertTrue accountSchema.toString().contains("createdAt")
+        assertTrue accountSchema.toString().contains("/fields")
+
+        def accountSchema1 = client.getResource(accountSchema.getHref(), Schema)
+
+        assertEquals(accountSchema, accountSchema1)  //expanded -> must be equals
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    public void testCreateAccountWithDefaultAccountSchema() {
+
+        def app = createTempApp()
+        def username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        def account = client.instantiate(Account)
+                .setPassword("Changeme1!")
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+            fail("Account requires email according to the account schema.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.stormpathError.code, 2000)
+        }
+
+        account = client.instantiate(Account)
+                .setEmail(username + "@testmail.stormpath.com")
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+            fail("Account requires username according to the account schema.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.stormpathError.code, 2000)
+        }
+
+        //By default the email and password are the solely required fields
+        account = client.instantiate(Account)
+                .setPassword("Changeme1!")
+                .setEmail(username + "@testmail.stormpath.com")
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(account)
+
+        assertNull(account.getGivenName())
+        assertNull(account.getSurname())
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testCreateAccountWithGivenNameSchemaFieldRequired() {
+        def app = createTempApp()
+
+        Directory directory = app.getDefaultAccountStore() as Directory
+        directory.accountSchema.fields.each { field ->
+            if ("givenName" == field.name) {
+                field.required = true
+                field.save()
+            }
+        }
+
+        def username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        def account = client.instantiate(Account)
+                .setUsername(username)
+                .setPassword("Changeme1!")
+                .setEmail(username + "@testmail.stormpath.com")
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+            fail("Account requires givenName according to the account schema.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.stormpathError.code, 2000)
+        }
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    void testRequiredFieldTrueAndFalseResultsInDifferentResults() {
+        def app = createTempApp()
+
+        Directory directory = app.getDefaultAccountStore() as Directory
+        directory.accountSchema.fields.each { field ->
+            if ("surname" == field.name) {
+                field.required = true
+                field.save()
+            }
+        }
+
+        def username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        def account = client.instantiate(Account)
+                .setUsername(username)
+                .setPassword("Changeme1!")
+                .setEmail(username + "@testmail.stormpath.com")
+        try {
+            app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+            fail("Account requires surname according to the account schema.")
+        } catch (com.stormpath.sdk.resource.ResourceException e) {
+            assertEquals(e.stormpathError.code, 2000)
+        }
+
+        //Let's now set surname to false and try if we can add the account without the surname one more tiem
+        directory.accountSchema.fields.each { field ->
+            if ("surname" == field.name) {
+                field.required = false
+                field.save()
+            }
+        }
+
+        account = app.createAccount(Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(false).build())
+
+        deleteOnTeardown(account)
+
+        assertNull(account.getGivenName())
+        assertNull(account.getSurname())
+    }
+
 }

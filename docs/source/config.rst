@@ -7,20 +7,32 @@ Configuration
    :local:
    :depth: 2
 
+#if( $sczuul )
+
+Zuul Config
+-----------
+
+.. include:: config-zuul.rst.inc
+
+No Stormpath Config?
+--------------------
+
+#else
+
 No Config?
 ----------
 
-Refreshingly, the Stormpath Java Servlet Plugin doesn't require any configuration at all as long as the following conditions
-apply:
+#end
 
-#. You added the stormpath-servlet-plugin .jar and its transitive dependencies to your web application's ``/WEB-INF/lib`` directory.  This happens automatically if you use a Maven-compatible build tool like Maven or Gradle to :ref:`specify the stormpath-servlet-plugin dependency <servlet-plugin-jar>` in your project build configuration.
+Refreshingly, the |project| doesn't require any configuration at all if the following conditions apply:
 
-#. Your web application can read the ``$HOME/.stormpath/apiKey.properties`` file :ref:`mentioned in the Quickstart <get-api-key>`.
+#. You added the ``${maven.project.artifactId}-${maven.project.version}.jar`` and its transitive dependencies to your ${apptype}'s classpath.  This happens automatically if you use a Maven-compatible build tool like Maven or Gradle to :ref:`specify the Stormpath dependency <dependency-jar>` in your project build configuration.
+#. Your ${apptype} can read the ``$HOME/.stormpath/apiKey.properties`` file :ref:`mentioned in the Quickstart <get-api-key>`.
+#. You have only one ``Application`` record registered within Stormpath.
 
-#. You have only one Application registered with Stormpath.
+If all of these conditions cannot be met, then you will have to specify some minimal configuration (but not much!) as described below.
 
-If all of these conditions cannot be met, then you will have to specify some minimal configuration (but not much!) as
-described below.
+#if( $servlet )
 
 web.xml
 -------
@@ -31,23 +43,23 @@ However, some applications might experience a filter chain conflict that causes 
 
 At application startup, the Stormpath Java Servlet Plugin automatically enables a ``StormpathFilter`` to handle various request flows.  If your web application uses frameworks that make heavy use of servlet filters, like Spring MVC or Apache Shiro, these existing filters might cause an ordering conflict with the ``StormpathFilter``.
 
-If you are experiencing problems after adding the stormpath-servlet-plugin .jar to your web app's classpath, you'll need to explicitly specify where the ``StormpathFilter`` should reside in your application's filter chain.  Luckily the fix is really easy:
+If you are experiencing problems after adding ``${maven.project.artifactId}-${maven.project.version}.jar`` to your web app's classpath, you'll need to explicitly specify where the ``StormpathFilter`` should reside in your application's filter chain.  Luckily the fix is really easy:
 
 Simply specify the following XML chunk in ``/WEB-INF/web.xml`` relative to other filter mappings that are already enabled in your application:
 
-  .. code-block:: xml
+.. code-block:: xml
 
-      <filter-mapping>
-          <filter-name>StormpathFilter</filter-name>
-          <url-pattern>/*</url-pattern>
-      </filter-mapping>
+    <filter-mapping>
+        <filter-name>StormpathFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 It is often easiest to specifying this at or near the top of your other filter mappings.  The ``StormpathFilter`` will ignore all filtered requests that do not match recognized URL rules, allowing other frameworks to filter requests as necessary.
 
 stormpath.properties
 --------------------
 
-If you need to customize behavior, the Stormpath Java Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a  convenient overrides mechanism using various property definition locations.
+If you need to customize behavior, the Stormpath Java Servlet Plugin uses a very simple ``.properties`` based configuration format and supports a convenient override mechanism using various property definition locations.
 
 All stormpath configuration properties are prefixed with ``stormpath.`` and take the following form (for example)
 
@@ -71,16 +83,16 @@ Configuration property values are read from the following locations, *in order*.
    :local:
    :depth: 2
 
-If you're just starting out, we recommend that your configuration be specified in ``/WEB-INF/stormpath.properties`` and you use Environment Variables to specify password or secret values (e.g. for production environments).
+If you're just starting out, we recommend that your configuration be specified in ``/WEB-INF/stormpath.properties`` and you use environment variables to specify password or secret values (e.g. for production environments).
 
 Defining properties in these locations is covered more in detail next.
 
-1. Plugin default.stormpath.properties
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1. Plugin web.stormpath.properties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This file resides in the stormpath-servlet-plugin-|version|.jar at:
 
- ``/META-INF/com/stormpath/sdk/servlet/default.stormpath.properties``
+ ``/com/stormpath/sdk/servlet/config/web.stormpath.properties``
 
 It includes all of the plugin's default configuration and is not modifiable.  The default values within can be overridden by specifying properties in locations read later during the startup process.
 
@@ -95,7 +107,7 @@ If a ``stormpath.properties`` file exists at the root of your web application's 
 3. /WEB-INF/stormpath.properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If a file ``/WEB-INF/stormpath.properties`` exists in your web application, properties will be read from this file and override any indentically-named properties discovered in previous locations.
+If a file ``/WEB-INF/stormpath.properties`` exists in your web application, properties will be read from this file and override any identically-named properties discovered in previous locations.
 
 .. TIP::
    This is the recommended primary configuration location for most web applications.
@@ -105,12 +117,14 @@ If a file ``/WEB-INF/stormpath.properties`` exists in your web application, prop
 
 If you define ``stormpath.*`` servlet context parameters in your web application's ``/WEB-INF/web.xml`` file, they will override any identically-named properties discovered in previous locations.  For example:
 
-
 .. code-block:: xml
 
     <context-param>
-        <param-name>stormpath.foo.bar</param-name>
-        <param-value>myValue</param-value>
+        <param-name>stormpath.properties</param-name>
+        <param-value><![CDATA[
+            stormpath.foo.bar = myValue
+            stormpath.other.prop = another value
+        ]]></param-value>
     </context-param>
 
 5. Environment Variables
@@ -142,7 +156,7 @@ If you define ``stormpath.*`` system properties (using ``-D`` flags when startin
 
 ``-Dstormpath.foo.bar=myValue``
 
-.. _stormpath.properties security considerations:
+.. _property security considerations:
 
 Security Considerations: Passwords and secret values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -153,28 +167,91 @@ Because Stormpath API Keys are always assigned to an individual person, they sho
 
 Also, it should also be noted that, while JVM System Properties are not usually visible to other developers, using System Properties for secrets and passwords can also be seen as a security risk: system property values are visible to anyone performing a process listing on a production machine (e.g. ``ps aux | grep java``).
 
-If you cannot rely on accessing the default ``$HOME/.stormpath/apiKey.properties`` file, Environment Variables or a different private local file (with restricted read permissions) is usually a safer alternative when defining passwords or secret values than shared files or JVM System Properties.
+If you cannot rely on accessing the default ``$HOME/.stormpath/apiKey.properties`` file, environment variables or a different private local file (with restricted read permissions) is usually a safer alternative when defining passwords or secret values than shared files or JVM System Properties.
 
-SDK Client
-----------
+#else
 
-The Stormpath Java Servlet Plugin depends on a Stormpath SDK ``Client`` instance to communicate with Stormpath for most functionality.  You may configure the client via ``stormpath.*`` properties as necessary.
+Property Overrides
+------------------
+
+Wherever possible, sane default configuration values are used to automatically configure Stormpath beans loaded by Spring.
+
+If you wish to override any of these defaults, you can do so by overriding properties in your ${apptype}'s Spring Boot `application.properties`_ locations.  In most cases, setting a configuration property will be all that is necessary - most of all of the default Stormpath bean implementations are highly configurable with property values.  If you need even finer control, you may wish to re-define a Stormpath bean entirely to provide your own implementation as discussed in the next section below.
+
+All Stormpath configuration properties are prefixed with ``stormpath.`` and take the following form (for example):
+
+.. code-block:: properties
+
+    stormpath.some.property.name = aValue
+    stormpath.another.property.name = anotherValue
+
+Simply just re-define the relevant ``stormpath.``\* property in one of your ${apptype}'s Spring Boot `application.properties`_ locations and your value will be used instead of the default.
+
+.. _property security considerations:
+
+Security Considerations: Passwords and secret values
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is **strongly** recommended that you do not specify the ``stormpath.client.apiKey.secret`` property - or any other password or secret property - in shared properties files. These files are usually committed to version control (like git) and shared with other developers.
+
+Because Stormpath API Keys are always assigned to an individual person, they should never be shared with or visible to anyone else, not even other co-workers or even Stormpath employees.  Anyone that has your API Key id and secret can alter the data in your Stormpath tenant.
+
+Also, it should also be noted that, while JVM system properties are not usually visible to other developers, using system properties for secrets and passwords can also be seen as a security risk: system property values are visible to anyone performing a process listing on a production machine (e.g. ``ps aux | grep java``).
+
+If you cannot rely on accessing the default ``$HOME/.stormpath/apiKey.properties`` file, environment variables or a different private local file (with restricted read permissions) is usually a safer alternative when defining passwords or secret values than shared files or JVM system properties.
+
+
+Bean Overrides
+--------------
+
+If property overrides are not sufficient or you need even finer control, you may wish to re-define a Stormpath bean entirely and provide your own custom implementation.
+
+To do so, you just need to re-define that bean in your own Spring Boot Java configuration.  Often certain bean names must be retained, so if you re-define a bean, try to use the same name and your bean will be used instead of the default.
+
+For example, assume a bean named ``stormpathJwtFactory`` existed.  To use your own implementation instead of the Stormpath default, just redefine the bean in your project's Java Config.  For example:
+
+.. code-block:: java
+
+    @Bean
+    public JwtFactory stormpathJwtFactory() {
+        return new MyJwtFactory();
+    }
+
+A ``MyJwtFactory`` instance will be used instead of the default.
+
+#end
+
+Stormpath Client
+----------------
+
+The |project| depends on a Stormpath ``Client`` instance to communicate with Stormpath for most functionality.  You may configure the client via ``stormpath.*`` properties as necessary.
 
 API Key
 ~~~~~~~
 
 The API Key used by the SDK Client will be acquired from the following locations.  Locations inspected later override previously discovered values.
 
+#if( $servlet )
+
 * ``$HOME/.stormpath/apiKey.properties`` file
 * Any ``stormpath.client.apiKey.id`` value discovered from inspected :ref:`property locations <stormpath.properties locations>`
-* Any ``stormpath.client.apiKey.secret`` value discovered from inspected :ref:`property locations <stormpath.properties locations>` **\***
+* Any ``stormpath.client.apiKey.secret`` value discovered from inspected :ref:`property locations <stormpath.properties locations>`
 
-**\*** While ``stormpath.client.apiKey.secret`` can be configured as a property in a file, please be aware of the :ref:`security considerations <stormpath.properties locations>` of files shared with other people.
+#else
+
+* ``$HOME/.stormpath/apiKey.properties`` file
+* Any ``stormpath.client.apiKey.id`` value discovered from Spring property placeholder locations
+* Any ``stormpath.client.apiKey.secret`` value discovered from Spring property placeholder locations
+
+#end
+
+.. caution::
+   While ``stormpath.client.apiKey.secret`` can be configured as a property in a file, please be aware of the :ref:`security considerations <property security considerations>` of files shared with other people.
 
 HTTP Proxy
 ~~~~~~~~~~
 
-If your application requires communication to Stormpath go through an HTTP Proxy, you can set the following configuration properties as needed:
+If your ${apptype} requires communication to Stormpath go through an HTTP Proxy, you can set the following configuration properties as needed:
 
 * ``stormpath.client.proxy.host``: Proxy server hostname or IP address, e.g. ``proxy.mycompany.com`` or ``10.0.2.88``.
 * ``stormpath.client.proxy.port``: Proxy server port, for example ``8888``.
@@ -183,25 +260,44 @@ If your application requires communication to Stormpath go through an HTTP Proxy
 
  .. code-block:: bash
 
-    export STORMPATH_PROXY_PASSWORD=your_proxy_server_password
+    export STORMPATH_CLIENT_PROXY_PASSWORD=your_proxy_server_password
 
 Authentication Scheme
 ~~~~~~~~~~~~~~~~~~~~~
 
 The Stormpath SDK Client communicates with Stormpath using a very secure `cryptographic digest`_-based authentication scheme.
 
-If you deploy your app on Google App Engine however, you might experience some problems.  You can change the scheme to use ``basic`` authentication by setting the following configuration property and value:
+If you deploy your ${apptype} on Google App Engine however, you might experience some problems.  You can change the scheme to use ``basic`` authentication by setting the following configuration property and value:
 
 .. code-block:: properties
 
    stormpath.client.authenticationScheme = basic
 
-If your application is not deployed on Google App Engine, we recommend that you *do not* set this property.
+If your ${apptype} is not deployed on Google App Engine, we recommend that you *do not* set this property.
+
+#if( !$servlet )
+
+Caching
+~~~~~~~
+
+The client caches resources from the Stormpath API server by default in an in-memory, in-process cache to enhance performance.
+
+.. caution::
+
+    If your ${apptype} is deployed across multiple JVMs (e.g. clustered or striped) the default caching mechanism could cause problems because each ${apptype} instance would have its *own* cache.  This could cause data consistency problems across the ${apptype} instances.
+
+You can either disable the cache entirely or configure your own coherent or cluster-friendly Spring ``CacheManager`` and that would be used for the Stormpath Client's needs automatically.
+
+Please see the :ref:`Caching <caching>` chapter for more information.
+
+#end
 
 Usage
 ~~~~~
 
-After application startup, you may access the ``Client`` instance if desired using the ``ClientResolver`` and referencing the web application's ``ServletContext``:
+#if( $servlet )
+
+After ${apptype} startup, you may access the Stormpath ``Client`` instance if desired using the ``ClientResolver`` and referencing the web application's ``ServletContext``:
 
 .. code-block:: java
 
@@ -210,14 +306,25 @@ After application startup, you may access the ``Client`` instance if desired usi
 
    Client client = ClientResolver.INSTANCE.getClient(servletContext);
 
+#else
+
+You may access the Stormpath ``Client`` instance via normal Spring autowiring.  For example:
+
+.. code-block:: java
+
+   @Autowired
+   private Client client;
+
+#end
+
 You can also :ref:`access the client via a ServletRequest <request sdk client>`.
 
 Stormpath Application
 ---------------------
 
-The Stormpath Java Servlet Plugin requires that your web application correspond to a registered ``Application`` record within Stormpath.
+The |project| requires that your ${apptype} correspond to a registered ``Application`` record within Stormpath.
 
-If you only have one registered application with Stormpath, the plugin will automatically query Stormpath at startup, find the ``Application`` and use it, and no configuration is necessary.
+If you only have one registered application with Stormpath, |project| will automatically query Stormpath at startup, find the ``Application`` and use it, and no configuration is necessary.
 
 However, if you have more than one application registered with Stormpath, you must configure the ``href`` of the specific application to access by setting the following configuration property:
 
@@ -225,18 +332,20 @@ However, if you have more than one application registered with Stormpath, you mu
 
    stormpath.application.href = your_application_href_here
 
-You can find your application's href in the `Stormpath Admin Console`_:
+You can find your ${apptype}'s href in the `Stormpath Admin Console`_:
 
-#. Click on the ``Applications`` tab and find your application in the list.  Click on the Application's name:
+#. Click on the ``Applications`` tab and find your ${apptype} in the list.  Click on the Application's name:
 
    .. image:: /_static/console-applications-ann.png
 
-#. On the resulting *Application Details* page, the **REST URL** property value is your application's ``href``:
+#. On the resulting *Application Details* page, the **REST URL** property value is your ${apptype}'s ``href``:
 
    .. image:: /_static/console-application-href.png
 
 Usage
 ~~~~~
+
+#if( $servlet )
 
 After application startup, you may access the ``Application`` instance if desired (for example, searching your application's user accounts, creating groups, etc) using the ``ApplicationResolver`` and referencing the web application's ``ServletContext``:
 
@@ -247,8 +356,20 @@ After application startup, you may access the ``Application`` instance if desire
 
    Application myApp = ApplicationResolver.INSTANCE.getApplication(servletContext);
 
+#else
+
+You may access the ``Application`` instance within your ${apptype} if desired (for example, searching your application's user accounts, creating groups, etc) using normal Spring autowiring:
+
+.. code-block:: java
+
+   @Autowired
+   private Application application;
+
+#end
+
 You can also :ref:`access the application via a ServletRequest <request application>`.
 
+#if( $servlet )
 
 .. _filters:
 
@@ -318,7 +439,7 @@ This configuration line indicates that any request to the `/admin` path or any o
 Therefore, the comma-delimited list of filter names defines a *filter chain* that should execute for that specific URI path.  You can define as many URI filter chains as you wish based on your applications needs.
 
 .. TIP::
-   Because URI patterns are relative to your web application's `context path`_, you can deploy your application to ``http://localhost:8080/myapp`` and then later deploy it to ``https://myapp.com`` without changing your URI configuration.
+   Because URI patterns are relative to your web application's `context path`_, you can deploy your application to ``http://localhost:${port}/myapp`` and then later deploy it to ``https://myapp.com`` without changing your URI configuration.
 
 .. _uri evaluation priority:
 
@@ -340,7 +461,10 @@ URI Evaluation Priority
 
    Always remember to define your filter chains based on a *FIRST MATCH WINS* policy.
 
+#end
+
 .. _Ant-style path expression: https://ant.apache.org/manual/dirtasks.html#patterns
 .. _context path: http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServletRequest.html#getContextPath()
 .. _cryptographic digest: http://en.wikipedia.org/wiki/Cryptographic_hash_function
 .. _Stormpath Admin Console: https://api.stormpath.com
+.. _application.properties: http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html

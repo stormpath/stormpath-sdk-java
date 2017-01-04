@@ -25,25 +25,25 @@ import com.stormpath.sdk.servlet.mvc.LogoutController;
 public abstract class CallbackControllerFilterFactory<T extends CallbackController> extends ControllerFilterFactory<T> {
 
     @Override
-    protected void configure(T c, Config config) throws Exception {
-        c.setEventPublisher(config.getRequestEventPublisher());
+    protected void configure(T controller, Config config) throws Exception {
+        controller.setEventPublisher(config.getRequestEventPublisher());
 
-        c.setLoginNextUri(getConfig().getLoginConfig().getNextUri());
-        c.setAuthenticationResultSaver(getConfig().getAuthenticationResultSaver());
-        c.setEventPublisher(config.getRequestEventPublisher());
-        c.setProduces(config.getProducedMediaTypes());
-
-        LogoutController controller = new LogoutController();
-        controller.setNextUri(config.getLogoutConfig().getNextUri());
-        controller.setInvalidateHttpSession(config.isLogoutInvalidateHttpSession());
+        controller.setLoginNextUri(getConfig().getLoginConfig().getNextUri());
+        controller.setAuthenticationResultSaver(getConfig().getAuthenticationResultSaver());
+        controller.setEventPublisher(config.getRequestEventPublisher());
         controller.setProduces(config.getProducedMediaTypes());
-        controller.init();
 
-        c.setLogoutController(controller);
+        LogoutController logoutController = new LogoutController();
+        logoutController.setNextUri(config.getLogoutConfig().getNextUri());
+        logoutController.setInvalidateHttpSession(config.isLogoutInvalidateHttpSession());
+        logoutController.setProduces(config.getProducedMediaTypes());
+        logoutController.init();
+
+        controller.setLogoutController(logoutController);
 
         //Let's give the chance to sub-classes of this factory to configure this controller as well
-        doConfigure(c, config);
+        doConfigure(controller, config);
     }
 
-    public abstract void doConfigure(T c, Config config);
+    public abstract void doConfigure(T controller, Config config);
 }

@@ -27,6 +27,7 @@ import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.BasicAuthenticationScheme;
 import com.stormpath.sdk.servlet.mvc.AccessTokenController;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 
 /**
  * @since 1.0.0
@@ -50,7 +51,7 @@ public class AccessTokenFilterFactory extends ControllerFilterFactory<AccessToke
     }
 
     @Override
-    protected void configure(AccessTokenController c, Config config) throws Exception {
+    protected void configure(AccessTokenController controller, Config config) throws Exception {
 
         AccessTokenAuthenticationRequestFactory accessTokenAuthenticationRequestFactory =
             config.getInstance(ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY);
@@ -64,14 +65,16 @@ public class AccessTokenFilterFactory extends ControllerFilterFactory<AccessToke
         Saver<AuthenticationResult> accountSaver = config.getInstance(ACCOUNT_SAVER);
         Publisher<RequestEvent> eventPublisher = config.getInstance(EVENT_PUBLISHER);
         BasicAuthenticationScheme basicAuthenticationScheme = config.getInstance(BASIC_AUTHENTICATION_REQUEST_FACTORY);
+        GrantTypeValidator grantTypeValidator = config.getGrantTypeStatusValidator();
 
-        c.setEventPublisher(eventPublisher);
-        c.setAccessTokenAuthenticationRequestFactory(accessTokenAuthenticationRequestFactory);
-        c.setAccessTokenResultFactory(accessTokenResultFactory);
-        c.setRefreshTokenAuthenticationRequestFactory(refreshTokenAuthenticationRequestFactory);
-        c.setRefreshTokenResultFactory(refreshTokenResultFactory);
-        c.setAccountSaver(accountSaver);
-        c.setRequestAuthorizer(requestAuthorizer);
-        c.setBasicAuthenticationScheme(basicAuthenticationScheme);
+        controller.setEventPublisher(eventPublisher);
+        controller.setAccessTokenAuthenticationRequestFactory(accessTokenAuthenticationRequestFactory);
+        controller.setAccessTokenResultFactory(accessTokenResultFactory);
+        controller.setRefreshTokenAuthenticationRequestFactory(refreshTokenAuthenticationRequestFactory);
+        controller.setRefreshTokenResultFactory(refreshTokenResultFactory);
+        controller.setAccountSaver(accountSaver);
+        controller.setRequestAuthorizer(requestAuthorizer);
+        controller.setBasicAuthenticationScheme(basicAuthenticationScheme);
+        controller.setGrantTypeValidator(grantTypeValidator);
     }
 }

@@ -30,16 +30,16 @@ import com.stormpath.sdk.servlet.form.DefaultField;
 import com.stormpath.sdk.servlet.form.DefaultForm;
 import com.stormpath.sdk.servlet.form.Field;
 import com.stormpath.sdk.servlet.form.Form;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.stormpath.sdk.servlet.mvc.View.STORMPATH_JSON_VIEW_NAME;
 
 import static com.stormpath.sdk.servlet.mvc.JacksonFieldValueResolver.MARSHALLED_OBJECT;
 
@@ -133,14 +133,22 @@ public abstract class FormController extends AbstractController {
     protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response) {
         List<ErrorModel> errors = null;
         if (request.getParameter("error") != null) {
-            //The login page is being re-rendered after an unsuccessful authentication attempt from Spring Security
-            //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
-            //See StormpathAuthenticationFailureHandler
             errors = new ArrayList<>();
-            ErrorModel error = (ErrorModel) request.getSession(false).getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
-            if (error != null) {
-                errors.add(error);
+            ErrorModel error = null;
+            HttpSession session = request.getSession(false);
+            // session null check fixes https://github.com/stormpath/stormpath-sdk-java/issues/908
+            if (session != null && session.getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY) != null) {
+                //The login page is being re-rendered after an unsuccessful authentication attempt from Spring Security
+                //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
+                //See StormpathAuthenticationFailureHandler
+                error = (ErrorModel) session.getAttribute(SPRING_SECURITY_AUTHENTICATION_FAILED_KEY);
+            } else {
+                //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/1138
+                //TODO This breaks i18n. Fix when Stormpath backend returns specific password policy failure codes.
+                error = ErrorModel.builder()
+                    .setStatus(HttpStatus.SC_BAD_REQUEST).setMessage(request.getParameter("error")).build();
             }
+            errors.add(error);
         }
         return createModel(request, response, null, errors);
     }
@@ -197,9 +205,10 @@ public abstract class FormController extends AbstractController {
                 } else {
                     clone.setValue(val);
                 }
+
                 // #645: Allow unresolved i18n keys to pass through for labels and placeholders
-                ((DefaultField) clone).setLabel(i18n(request, clone.getLabel(), clone.getLabel()));
-                ((DefaultField) clone).setPlaceholder(i18n(request, clone.getPlaceholder(), clone.getPlaceholder()));
+                ((DefaultField) clone).setLabel(i18nWithDefault(request, clone.getLabel(), clone.getLabel()));
+                ((DefaultField) clone).setPlaceholder(i18nWithDefault(request, clone.getPlaceholder(), clone.getPlaceholder()));
 
                 fields.add(clone);
             }
@@ -277,7 +286,7 @@ public abstract class FormController extends AbstractController {
         //ensure required fields are present:
         List<Field> fields = form.getFields();
         for (Field field : fields) {
-            if (field.isRequired() || field.isEnabled()) {
+            if (field.isRequired() && field.isEnabled()) {
                 String value = form.getFieldValue(field.getName());
                 if (value == null) {
                     String key = "stormpath.web." + getControllerKey() + ".form.fields." + field.getName() + ".required";
@@ -338,7 +347,7 @@ public abstract class FormController extends AbstractController {
             return accountRequest;
         }
 
-        log.warn("Provider data not found in request.");
+        log.debug("Provider data not found in request.");
         return null;
     }
 }

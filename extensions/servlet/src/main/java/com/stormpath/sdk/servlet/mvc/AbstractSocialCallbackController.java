@@ -19,12 +19,14 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.http.Saver;
+import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,7 +74,22 @@ public abstract class AbstractSocialCallbackController extends AbstractControlle
         authenticationResultSaver.set(request, response, authcResult);
 
         eventPublisher.publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
+        String redirectUri = getRedirectUri(request);
 
-        return new DefaultViewModel(nextUri).setRedirect(true);
+        return new DefaultViewModel(redirectUri).setRedirect(true);
+    }
+
+    private String getRedirectUri(HttpServletRequest request) {
+        //Fixes #849 we send in the state the original path the user requested based on the next query param, so we can redirect back
+        String redirectUri = nextUri;
+        String next = ServletUtils.getCleanParam(request, "state");
+        if (shouldGetRedirectUriFromState(next)) {
+            redirectUri = next;
+        }
+        return redirectUri;
+    }
+
+    protected boolean shouldGetRedirectUriFromState(String state) {
+        return Strings.hasText(state);
     }
 }

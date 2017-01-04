@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package com.stormpath.sdk.client
 
+import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.api.ApiKeys
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.Caches
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.impl.api.ApiKeyResolver
+import com.stormpath.sdk.impl.api.DefaultApiKeyResolver
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.client.DefaultClientBuilder
 import com.stormpath.sdk.impl.client.RequestCountingClient
+import com.stormpath.sdk.impl.util.BaseUrlResolver
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver
 import com.stormpath.sdk.resource.Deletable
+import com.stormpath.sdk.resource.ResourceException
+import com.stormpath.sdk.resource.Saveable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.testng.annotations.AfterTest
@@ -32,6 +39,8 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeTest
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
 
 abstract class ClientIT {
 
@@ -102,8 +111,11 @@ abstract class ClientIT {
     protected RequestCountingClient buildCountingClient() {
 
         ApiKey apiKey = ApiKeys.builder().build();
+        ApiKeyCredentials apiKeyCredentials = new ApiKeyCredentials(apiKey);
+        ApiKeyResolver apiKeyResolver = new DefaultApiKeyResolver(apiKey)
+        BaseUrlResolver baseUrlResolver = new DefaultBaseUrlResolver(baseUrl)
 
-        return new RequestCountingClient(apiKey, baseUrl, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
+        return new RequestCountingClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newCacheManager().build(), AuthenticationScheme.SAUTHC1, 20000);
     }
 
     //Creates a new Application with an auto-created directory
@@ -118,5 +130,65 @@ abstract class ClientIT {
         deleteOnTeardown(app.getDefaultAccountStore() as Directory)
         deleteOnTeardown(app)
         return app
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    protected Account createTestAccount(def application) {
+
+        //create a test account:
+        def acct = client.instantiate(Account)
+        def password = 'Changeme1!'
+        acct.username = uniquify('Stormpath-SDK-Test-App-Acct1')
+        acct.password = password
+        acct.email = acct.username + '@testmail.stormpath.com'
+        acct.givenName = 'Joe'
+        acct.surname = 'Smith'
+        acct = application.createAccount(Accounts.newCreateRequestFor(acct).setRegistrationWorkflowEnabled(false).build())
+        deleteOnTeardown(acct)
+
+        return acct
+    }
+
+    //@since 1.1.0
+    Account createTempAccountInDir(Directory directory) {
+
+        Account account = client.instantiate(Account)
+        account = account.setGivenName('John')
+                .setSurname('DELETEME')
+                .setEmail(uniquify('randomEmail')+'@testmail.stormpath.com.com')
+                .setPassword('Changeme1!')
+
+        account = directory.createAccount(account)
+        deleteOnTeardown(account)
+
+        return account
+    }
+
+    protected void getDeletedResourceError(String href, Class resourceClass){
+        Throwable e = null;
+        try {
+            client.getResource(href, resourceClass)
+        } catch (ResourceException re) {
+            e = re
+            assertEquals(re.status, 404)
+            assertEquals(re.getCode(), 404)
+        }
+
+        assertTrue(e instanceof ResourceException)
+    }
+
+    protected void updatedSaveableError(Saveable input, int expectedErrorCode){
+        Throwable e = null;
+        try {
+            input.save()
+        } catch (ResourceException re) {
+            e = re
+            assertEquals(re.status, 400)
+            assertEquals(re.getCode(), expectedErrorCode)
+        }
+
+        assertTrue(e instanceof ResourceException)
     }
 }

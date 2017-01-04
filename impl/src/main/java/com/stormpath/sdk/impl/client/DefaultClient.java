@@ -26,6 +26,8 @@ import com.stormpath.sdk.application.CreateApplicationRequest;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.directory.CreateDirectoryRequest;
 import com.stormpath.sdk.directory.Directory;
@@ -36,12 +38,17 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.DefaultDataStore;
 import com.stormpath.sdk.impl.http.RequestExecutor;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.tenant.DefaultTenantResolver;
+import com.stormpath.sdk.impl.tenant.TenantResolver;
+import com.stormpath.sdk.impl.util.BaseUrlResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.saml.*;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 
@@ -63,42 +70,72 @@ public class DefaultClient implements Client {
 
     private final DataStore dataStore;
 
-    private String currentTenantHref;
+    private TenantResolver tenantResolver;
 
     /**
      * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
      * JavaDoc for a usage example.
      *
-     * @param apiKey               the Stormpath account API Key that will be used to authenticate the client with
+     * @param clientCredentials    the Stormpath account credentials that will be used to authenticate the client with
      *                             Stormpath's API server
-     * @param baseUrl              the Stormpath base URL
+     * @param apiKeyResolver       Stormpath API Key resolver
+     * @param baseUrlResolver      Stormpath base URL resolver
      * @param proxy                the HTTP proxy to be used when communicating with the Stormpath API server (can be
      *                             null)
      * @param cacheManager         the {@link com.stormpath.sdk.cache.CacheManager} that should be used to cache
      *                             Stormpath REST resources (can be null)
      * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API
      *                             server (can be null)
+     * @since 1.2.0
      */
-    public DefaultClient(ApiKey apiKey, String baseUrl, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, int connectionTimeout) {
-        Assert.notNull(apiKey, "apiKey argument cannot be null.");
+    public DefaultClient(ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, BaseUrlResolver baseUrlResolver, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
+        Assert.notNull(clientCredentials, "clientCredentials argument cannot be null.");
+        Assert.notNull(apiKeyResolver, "apiKeyResolver argument cannot be null.");
+        Assert.notNull(baseUrlResolver, "baseUrlResolver argument cannot be null.");
         Assert.isTrue(connectionTimeout >= 0, "connectionTimeout cannot be a negative number.");
-        RequestExecutor requestExecutor = createRequestExecutor(apiKey, proxy, authenticationScheme, connectionTimeout);
-        this.dataStore = createDataStore(requestExecutor, baseUrl, apiKey, cacheManager);
+        RequestExecutor requestExecutor = createRequestExecutor(clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory, connectionTimeout);
+        this.dataStore = createDataStore(requestExecutor, baseUrlResolver, clientCredentials, apiKeyResolver, cacheManager);
+        this.tenantResolver = new DefaultTenantResolver(dataStore);
     }
 
-    protected DataStore createDataStore(RequestExecutor requestExecutor, String baseUrl, ApiKey apiKey, CacheManager cacheManager) {
-        return new DefaultDataStore(requestExecutor, baseUrl, apiKey, cacheManager);
+    /**
+     * Instantiates a new Client instance that will communicate with the Stormpath REST API.  See the class-level
+     * JavaDoc for a usage example.
+     *
+     * @param clientCredentials    the Stormpath account credentials that will be used to authenticate the client with
+     *                             Stormpath's API server
+     * @param apiKeyResolver       Stormpath API Key resolver
+     * @param baseUrlResolver      Stormpath base URL resolver
+     * @param proxy                the HTTP proxy to be used when communicating with the Stormpath API server (can be
+     *                             null)
+     * @param cacheManager         the {@link com.stormpath.sdk.cache.CacheManager} that should be used to cache
+     *                             Stormpath REST resources (can be null)
+     * @param authenticationScheme the HTTP authentication scheme to be used when communicating with the Stormpath API
+     *                             server (can be null)
+     * @param tenantResolver       resolver which returns current tenant details
+     * @since 1.2.0
+     */
+    public DefaultClient(ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, BaseUrlResolver baseUrlResolver, Proxy proxy, CacheManager cacheManager, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout, TenantResolver tenantResolver) {
+        Assert.notNull(clientCredentials, "clientCredentials argument cannot be null.");
+        Assert.notNull(apiKeyResolver, "apiKeyResolver argument cannot be null.");
+        Assert.notNull(baseUrlResolver, "baseUrlResolver argument cannot be null.");
+        Assert.isTrue(connectionTimeout >= 0, "connectionTimeout cannot be a negative number.");
+        Assert.notNull(tenantResolver, "tenantResolver argument cannot be null.");
+        RequestExecutor requestExecutor = createRequestExecutor(clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory, connectionTimeout);
+        this.dataStore = createDataStore(requestExecutor, baseUrlResolver, clientCredentials, apiKeyResolver, cacheManager);
+        this.tenantResolver = tenantResolver;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    protected DataStore createDataStore(RequestExecutor requestExecutor, BaseUrlResolver baseUrlResolver, ClientCredentials clientCredentials, ApiKeyResolver apiKeyResolver, CacheManager cacheManager) {
+        return new DefaultDataStore(requestExecutor, baseUrlResolver, clientCredentials, apiKeyResolver, cacheManager);
     }
 
     @Override
     public Tenant getCurrentTenant() {
-        String href = currentTenantHref;
-        if (href == null) {
-            href = "/tenants/current";
-        }
-        Tenant current = this.dataStore.getResource(href, Tenant.class);
-        this.currentTenantHref = current.getHref();
-        return current;
+        return this.tenantResolver.getCurrentTenant();
     }
 
     @Override
@@ -117,7 +154,7 @@ public class DefaultClient implements Client {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private RequestExecutor createRequestExecutor(ApiKey apiKey, Proxy proxy, AuthenticationScheme authenticationScheme, int connectionTimeout) {
+    private RequestExecutor createRequestExecutor(ClientCredentials clientCredentials, Proxy proxy, AuthenticationScheme authenticationScheme, RequestAuthenticatorFactory requestAuthenticatorFactory, int connectionTimeout) {
 
         String className = "com.stormpath.sdk.impl.http.httpclient.HttpClientRequestExecutor";
 
@@ -134,9 +171,9 @@ public class DefaultClient implements Client {
             throw new RuntimeException(msg);
         }
 
-        Constructor<RequestExecutor> ctor = Classes.getConstructor(requestExecutorClass, ApiKey.class, Proxy.class, AuthenticationScheme.class, Integer.class);
+        Constructor<RequestExecutor> ctor = Classes.getConstructor(requestExecutorClass, ClientCredentials.class, Proxy.class, AuthenticationScheme.class, RequestAuthenticatorFactory.class, Integer.class);
 
-        return Classes.instantiate(ctor, apiKey, proxy, authenticationScheme, connectionTimeout);
+        return Classes.instantiate(ctor, clientCredentials, proxy, authenticationScheme, requestAuthenticatorFactory, connectionTimeout);
     }
 
     // ========================================================================
@@ -413,13 +450,36 @@ public class DefaultClient implements Client {
      */
     @Override
     public Tenant getCurrentTenant(TenantOptions tenantOptions) {
-        String href = currentTenantHref;
-        if (href == null) {
-            href = "/tenants/current";
-        }
+        return this.tenantResolver.getCurrentTenant(tenantOptions);
+    }
 
-        Tenant current = this.dataStore.getResource(href, Tenant.class, tenantOptions);
-        this.currentTenantHref = current.getHref();
-        return current;
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.3.0
+     */
+    @Override
+    public RegisteredSamlServiceProvider createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider registeredSamlServiceProvider) throws ResourceException {
+        return getCurrentTenant().createRegisterdSamlServiceProvider(registeredSamlServiceProvider);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.3.0
+     */
+    @Override
+    public RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders() {
+        return getCurrentTenant().getRegisterdSamlServiceProviders();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.3.0
+     */
+    @Override
+    public RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria) {
+        return getCurrentTenant().getRegisterdSamlServiceProviders(criteria);
     }
 }

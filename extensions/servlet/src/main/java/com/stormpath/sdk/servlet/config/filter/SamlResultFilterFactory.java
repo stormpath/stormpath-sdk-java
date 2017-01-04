@@ -29,7 +29,7 @@ public class SamlResultFilterFactory extends CallbackControllerFilterFactory<Sam
     }
 
     @Override
-    public void doConfigure(SamlResultController c, Config config) {
+    public void doConfigure(SamlResultController controller, Config config) {
     }
 
 }

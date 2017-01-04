@@ -26,10 +26,13 @@ import javax.servlet.ServletContext;
 public class SecureResolverFactory extends ConfigSingletonFactory<Resolver<Boolean>> {
 
     public static final String LOCALHOST_RESOLVER = "stormpath.web.localhost.resolver";
+    public static final String X_FORWARDED_PROTO_RESOLVER = "stormpath.web.xforwardedproto.resolver";
 
     @Override
     protected Resolver<Boolean> createInstance(ServletContext servletContext) throws Exception {
         Resolver<Boolean> localhostResolver = getConfig().getInstance(LOCALHOST_RESOLVER);
-        return new SecureRequiredExceptForLocalhostResolver(localhostResolver);
+        Resolver<Boolean> xForwardedProtoResolver = getConfig().getInstance(X_FORWARDED_PROTO_RESOLVER);
+        Resolver<Boolean> secureRequiredExceptForLocalhostResolver = new SecureRequiredExceptForLocalhostResolver(localhostResolver);
+        return new IsRequestSecureResolver(secureRequiredExceptForLocalhostResolver, xForwardedProtoResolver);
     }
 }

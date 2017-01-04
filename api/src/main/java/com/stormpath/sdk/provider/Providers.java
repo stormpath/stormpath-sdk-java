@@ -83,6 +83,23 @@ public final class Providers {
      * @return a new {@link com.stormpath.sdk.provider.saml.SamlRequestFactory} instance, used to construct Saml requests, like Saml Directory creation.
      * @since 1.0.RC8
      */
-    public static final SamlRequestFactory SAML = (SamlRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultSamlRequestFactory");
+    public static final SamlRequestFactory SAML = (SamlRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.saml.DefaultSamlRequestFactory");
+
+    /**
+     * Returns a new {@link TwitterRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     *
+     * @return a new {@link TwitterRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     * @since 1.3.0
+     */
+    public static final TwitterRequestFactory TWITTER = (TwitterRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultTwitterRequestFactory");
+
+    /**
+     * Returns a new {@link GenericOAuth2ProviderRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     *
+     * @return a new {@link GenericOAuth2ProviderRequestFactory} instance, used to construct Twitter requests, like Twitter Account creation and retrieval.
+     * @since 1.3.0
+     */
+    public static final GenericOAuth2ProviderRequestFactory OAUTH2 = (GenericOAuth2ProviderRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGenericOAuth2ProviderRequestFactory");
+
 }
 

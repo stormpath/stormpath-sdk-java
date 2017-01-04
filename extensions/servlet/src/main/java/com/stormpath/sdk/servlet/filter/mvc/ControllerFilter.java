@@ -117,6 +117,13 @@ public class ControllerFilter extends HttpFilter {
             return;
         }
 
+        View view = this.viewResolver.getView(vm, request);
+
+        if (view == null) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String viewName = vm.getViewName();
         Assert.hasText(viewName, "ViewModel must contain a viewName.");
 
@@ -139,16 +146,6 @@ public class ControllerFilter extends HttpFilter {
 
         log.debug("Rendering view '{}' for request URI [{}]", vm.getViewName(), request.getRequestURI());
         View view = this.viewResolver.getView(vm, request);
-
-        if (view == null) {
-            // since the filter method above asserts that view name is always non-null/empty, that implies we always
-            // need a corresponding view instance.  If we don't find one, that's a config error:
-            log.warn("Unable to find view instance for named view '{}' for request URI [{}]",
-                vm.getViewName(), request.getRequestURI());
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-
         view.render(request, response, vm);
     }
 }

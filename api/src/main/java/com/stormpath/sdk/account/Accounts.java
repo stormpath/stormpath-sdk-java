@@ -282,7 +282,7 @@ public final class Accounts {
      * For example, the following code is equivalent:
      * <pre>
      * AccountCriteria criteria = Accounts.criteria();
-     * DateExpressionFactory createdAt = Accounts.modifiedAt();
+     * DateExpressionFactory modifiedAt = Accounts.modifiedAt();
      * Criterion modifiedAtMatches = modifiedAt.matches("[,2014-04-05T12:00:00]");
      * criteria.add(modifiedAtMatches);
      * </pre>
@@ -293,6 +293,56 @@ public final class Accounts {
      */
     public static DateExpressionFactory modifiedAt(){
         return newDateExpressionFactory("modifiedAt");
+    }
+
+
+    /**
+     * Creates a new {@link DateExpressionFactory} instance reflecting the Account {@link Account#getPasswordModifiedAt() passwordModifiedAt}
+     * property, to be used to construct a modifiedAt Criterion when building an {@link AccountCriteria} query.  For example:
+     * <pre>
+     * Accounts.where(<b>Accounts.passwordModifiedAt()</b>.matches("[,2014-04-05T12:00:00]");
+     * </pre>
+     * The above example invokes the returned factory's <code>matches("[,2014-04-05T12:00:00]"))</code> method.  This
+     * produces a name-specific {@link Criterion} which is added to the criteria query (via the
+     * {@link #where(Criterion) where} method).
+     * <pre>
+     * For example, the following code is equivalent:
+     * <pre>
+     * AccountCriteria criteria = Accounts.criteria();
+     * DateExpressionFactory passwordModifiedAt = Accounts.passwordModifiedAt();
+     * Criterion modifiedAtMatches = passwordModifiedAt.matches("[,2014-04-05T12:00:00]");
+     * criteria.add(passwordModifiedAt);
+     * </pre>
+     *
+     * @return a new {@link Account#getModifiedAt() modifiedAt}-specific {@link DateExpressionFactory} instance, to be
+     *         used to construct a criterion when building an {@link AccountCriteria} query.
+     * @since 1.2.0
+     */
+    public static DateExpressionFactory passwordModifiedAt(){
+        return newDateExpressionFactory("passwordModifiedAt");
+    }
+
+    /**
+     * This operation will ask the backend to do a case-insensitive matching query on all viewable attributes in all the resources in the Collection.
+     *
+     * So the following query:
+     *
+     * application.getAccounts(Accounts.where(Accounts.filter("Joe"));
+     *
+     * Returns all Accounts where:
+     *
+     * Each Account exists inside an AccountStore belonging to the Application `application`
+     * The Account’s givenName equals or contains “joe” (case insensitive) OR
+     * The Account’s middlename equals or contains “joe” (case insensitive) OR
+     * The Account’s email equals or contains “joe” (case insensitive) OR
+     * And so on
+     *
+     * @param value The value to search for
+     * @return A Criterion representing the filter query
+     * @since 1.2.0
+     */
+    public static Criterion filter(String value){
+        return newStringExpressionFactory("q").eqIgnoreCase(value);
     }
 
     /**

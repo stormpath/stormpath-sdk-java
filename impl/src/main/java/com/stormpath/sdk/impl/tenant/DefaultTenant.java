@@ -45,8 +45,15 @@ import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.organization.*;
+import com.stormpath.sdk.phone.Phone;
+import com.stormpath.sdk.phone.PhoneList;
 import com.stormpath.sdk.query.Criteria;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList;
+import com.stormpath.sdk.saml.RegisteredSamlServiceProvider;
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationList;
+import com.stormpath.sdk.saml.SamlServiceProviderRegistration;
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviderCriteria;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 
@@ -64,18 +71,22 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
 
     // COLLECTION RESOURCE REFERENCES:
     static final CollectionReference<ApplicationList, Application> APPLICATIONS =
-            new CollectionReference<ApplicationList, Application>("applications", ApplicationList.class, Application.class);
+            new CollectionReference<>("applications", ApplicationList.class, Application.class);
     static final CollectionReference<DirectoryList, Directory> DIRECTORIES =
-            new CollectionReference<DirectoryList, Directory>("directories", DirectoryList.class, Directory.class);
+            new CollectionReference<>("directories", DirectoryList.class, Directory.class);
     static final CollectionReference<AccountList, Account> ACCOUNTS =
-            new CollectionReference<AccountList, Account>("accounts", AccountList.class, Account.class);
+            new CollectionReference<>("accounts", AccountList.class, Account.class);
     static final CollectionReference<GroupList, Group> GROUPS =
-            new CollectionReference<GroupList, Group>("groups", GroupList.class, Group.class);
+            new CollectionReference<>("groups", GroupList.class, Group.class);
     static final CollectionReference<OrganizationList, Organization> ORGANIZATIONS =
-            new CollectionReference<OrganizationList, Organization>("organizations", OrganizationList.class, Organization.class);
+            new CollectionReference<>("organizations", OrganizationList.class, Organization.class);
+    static final CollectionReference<PhoneList, Phone> PHONES =
+            new CollectionReference<>("phones", PhoneList.class, Phone.class);
+    static final CollectionReference<RegisteredSamlServiceProviderList, RegisteredSamlServiceProvider> REGISTERED_SAML_SERVICE_PROVIDERS =
+            new CollectionReference<>("registeredSamlServiceProviders", RegisteredSamlServiceProviderList.class, RegisteredSamlServiceProvider.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS, ORGANIZATIONS);
+            NAME, KEY, APPLICATIONS, DIRECTORIES, CUSTOM_DATA, ACCOUNTS, GROUPS, ORGANIZATIONS,PHONES, REGISTERED_SAML_SERVICE_PROVIDERS);
 
     public DefaultTenant(InternalDataStore dataStore) {
         super(dataStore);
@@ -331,5 +342,22 @@ public class DefaultTenant extends AbstractExtendableInstanceResource implements
         applyCustomDataUpdatesIfNecessary();
         getDataStore().save(this, responseOptions);
         return this;
+    }
+
+    @Override
+    public RegisteredSamlServiceProvider createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider registeredSamlServiceProvider) {
+        Assert.notNull(registeredSamlServiceProvider, "RegisteredSamlServiceProvider instance cannot be null.");
+        return getDataStore().create("/" + REGISTERED_SAML_SERVICE_PROVIDERS.getName(), registeredSamlServiceProvider);
+    }
+
+    @Override
+    public RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders() {
+        return getResourceProperty(REGISTERED_SAML_SERVICE_PROVIDERS);
+    }
+
+    @Override
+    public RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria) {
+        RegisteredSamlServiceProviderList proxy = getRegisterdSamlServiceProviders(); //just a proxy - does not execute a query until iteration occurs
+        return getDataStore().getResource(proxy.getHref(), RegisteredSamlServiceProviderList.class, (Criteria<RegisteredSamlServiceProviderCriteria>) criteria);
     }
 }

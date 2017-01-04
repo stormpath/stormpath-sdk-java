@@ -25,16 +25,27 @@ import com.stormpath.sdk.provider.ProviderData;
 public class DefaultProviderAccountRequest implements ProviderAccountRequest {
 
     ProviderData providerData;
+    private String redirectUri;
 
-    protected DefaultProviderAccountRequest(ProviderData providerData) {
+    public DefaultProviderAccountRequest(ProviderData providerData) {
+        this(providerData, null);
+    }
+
+    public DefaultProviderAccountRequest(ProviderData providerData, String redirectUri) {
         Assert.notNull(providerData, "providerData cannot be null.");
         Assert.hasText(providerData.getProviderId(), "providerId within ProviderData instance must be specified.");
         this.providerData = providerData;
+        this.redirectUri = redirectUri;
     }
 
     @Override
     public ProviderData getProviderData() {
         return this.providerData;
+    }
+
+    @Override
+    public String getRedirectUri() {
+        return redirectUri;
     }
 
 }

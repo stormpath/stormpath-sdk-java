@@ -1,5 +1,125 @@
 ## Change Log ##
 
+### 1.2.3 ##
+
+This release fixes a bug whereby new passwords that violate the password policy were showing the wrong error on the forgot password flow.
+
+See [1.2.3 closed bugs](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.3+is%3Aclosed)
+
+### 1.2.2 ##
+
+This release fixes two bugs. Both are fixes to avoid RuntimeException when resolving external provider of an application.  
+
+See [1.2.2 closed bugs](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.2+is%3Aclosed)
+
+### 1.2.1 ##
+
+This release fixes four bugs. We are adding one more supported grant_type to the AccessTokenController, also enhancing the signature validation of access/refresh tokens and improving error handing when required fields are missing in the token endpoint.  
+
+See [1.2.1 closed bugs](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.1+is%3Aclosed)
+
+### 1.2.0 ##
+
+This release has a number of feature additions and bug fixes. Of note:
+
+* Support for [Account Linking](https://docs.stormpath.com/java/product-guide/latest/accnt_mgmt.html#account-linking)
+* Support for [Application WebConfig](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/application/webconfig/package-summary.html) - critical to interacting with the soon-to-be released Stormpath Client API
+* Support for OAuth2 [revocation](https://tools.ietf.org/html/rfc7009) in the SDK as well as in all integrations exposed at the `/oauth/revoke` endpoont
+* Support for Cross Origin Resource Sharing ([CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)) entirely by configuration in all integrations using these properties:
+    * stormpath.web.cors.enabled
+    * stormpath.web.cors.allowed.originUris
+    * stormpath.web.cors.allowed.headers
+    * stormpath.web.cors.allowed.methods
+* Idiomatic support for the `passwordModifiedAt` field in the [Account](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/account/Account.html) interface in in search criteria on [Accounts](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/account/Accounts.html#passwordModifiedAt--)
+
+See [1.2.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.0+is%3Aclosed) for a complete list of changes.
+
+### 1.1.5 ##
+
+This release fixes two bugs. The first is a fix for the LinkedIn Social login integration. Login with LinkedIn was failing under certain conditions. The second is a fix for enabling the confirmPassword form field.
+
+See [1.1.5 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.5+is%3Aclosed) for a complete list of changes.
+
+### 1.1.4 ##
+
+This release has a bug fix for custom registration fields.
+
+See [1.1.4 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.4+is%3Aclosed) for a complete list of changes.
+
+### 1.1.3 ##
+
+This release has a bug fix for Spring Security that was causing unnecessary API calls.
+
+See [1.1.3 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.3+is%3Aclosed) for a complete list of changes.
+
+### 1.1.2 ##
+
+This release includes a fix for the `next` parameter when deployed at a non-root context and a change in the JSON structure of the /me endpoint (now returns `groups.items` instead of `groups`).
+
+See [1.1.2 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.2+is%3Aclosed) for a complete list of changes.
+
+### 1.1.1 ##
+
+See [1.1.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.1+is%3Aclosed) for a complete list of changes.
+
+### 1.1.0 ##
+
+This release includes support for multi-factor authentication, Spring Cloud Zuul, a `stormpath_social` grant type for OAuth, and improved
+documentation. 
+
+See [1.1.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.0+is%3Aclosed) for a complete list of changes.
+
+### 1.0.3 ##
+
+Notes:
+
+- Please see the [1.0.3](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.3+is%3Aclosed) issues list for more information
+
+### 1.0.2 ##
+
+Notes:
+
+- Please see the [1.0.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.2+is%3Aclosed) issues list for more information
+
+### 1.0.1 ##
+
+Notes:
+
+- Please see the [1.0.1](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.1+is%3Aclosed) issues list for more information
+
+### 1.0.0 ##
+
+This release includes updates in the Core SDK and Servlet, Spring, Spring Boot and Spring Security integrations.
+
+Specifically, the following major updates are included in this release:
+* SPA (Single Page Application) support across all integrations
+* Content Negotiation rules across all integrations to determine whether to return JSON or HTML responses
+* Social login and registration support for Google, Facebook, Linkedin and Github across all integrations
+* SAML Service Provider support across all integrations
+* Support for OAuth2 client_credentials grant type across all integrations
+* Support for Stormpath’s SSO service - ID Site - in the Servlet integration (ID Site is already supported in the other integrations)
+* Support for Pre and Post login and register handlers across all integrations
+* Support for custom fields on the Registration view across all integrations (non-standard fields are stored as Custom Data)
+* Added /me endpoint to return profile information for authenticated users across all integrations
+
+Additionally, the following dependency and code updates are included in this release:
+* removed support for JDK 6
+* removed all code and docs for previously deprecated interfaces
+* upgraded all external dependencies to latest versions, including Spring Boot 1.4.0
+* Significant Spring Security performance improvements
+* Internationalization (i18n) support / improvements
+* A number of default properties have been added, changed or removed in conformance with the [sdk spec](https://github.com/stormpath/stormpath-sdk-spec) and the [framework spec](https://github.com/stormpath/stormpath-framework-spec). Details can be found in the [Changes and Additions Guide](https://github.com/stormpath/stormpath-sdk-java/wiki/1.0-Configuration-Changes-&-Additions-Guide).
+
+Notes:
+
+- Please see the [1.0.0](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.0+is%3Aclosed) issues list for more information
+
+### 1.0.RC9.2 ##
+
+Notes:
+
+- Please see the [1.0.RC9.2](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.0.RC9.2+is%3Aclosed) issues list for more information
+
 ### 1.0.RC9.1 ##
 
 Notes:

@@ -16,8 +16,10 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeyBuilder;
-import com.stormpath.sdk.api.ApiKeys;
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
+import com.stormpath.sdk.impl.api.DefaultApiKeyResolver;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentialsProvider;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.cache.CacheManagerBuilder;
@@ -26,16 +28,17 @@ import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Proxy;
-import com.stormpath.sdk.impl.config.ClientConfiguration;
-import com.stormpath.sdk.impl.config.JSONPropertiesSource;
-import com.stormpath.sdk.impl.config.OptionalPropertiesSource;
-import com.stormpath.sdk.impl.config.PropertiesSource;
-import com.stormpath.sdk.impl.config.ResourcePropertiesSource;
-import com.stormpath.sdk.impl.config.YAMLPropertiesSource;
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
+import com.stormpath.sdk.impl.authc.credentials.DefaultClientCredentialsProviderChain;
+import com.stormpath.sdk.impl.config.*;
 import com.stormpath.sdk.impl.io.ClasspathResource;
 import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.io.Resource;
 import com.stormpath.sdk.impl.io.ResourceFactory;
+import com.stormpath.sdk.impl.tenant.TenantResolver;
+import com.stormpath.sdk.impl.util.BaseUrlResolver;
+import com.stormpath.sdk.impl.util.DefaultBaseUrlResolver;
 import com.stormpath.sdk.lang.Assert;
 import io.jsonwebtoken.lang.Classes;
 import org.slf4j.Logger;
@@ -52,16 +55,16 @@ import java.util.concurrent.TimeUnit;
  * <p>The default {@link ClientBuilder} implementation. This looks for configuration files
  * in the following locations and order of precedence (last one wins).</p>
  * <ul>
- *     <li>classpath:com/stormpath/sdk/config/stormpath.properties</li>
- *     <li>classpath:stormpath.properties</li>
- *     <li>classpath:stormpath.json</li>
- *     <li>classpath:stormpath.yaml</li>
- *     <li>~/.stormpath/stormpath.properties</li>
- *     <li>~/.stormpath/stormpath.json</li>
- *     <li>~/.stormpath/stormpath.yaml</li>
- *     <li>~/stormpath.properties</li>
- *     <li>~/stormpath.json</li>
- *     <li>~/stormpath.yaml</li>
+ * <li>classpath:com/stormpath/sdk/config/stormpath.properties</li>
+ * <li>classpath:stormpath.properties</li>
+ * <li>classpath:stormpath.json</li>
+ * <li>classpath:stormpath.yaml</li>
+ * <li>~/.stormpath/stormpath.properties</li>
+ * <li>~/.stormpath/stormpath.json</li>
+ * <li>~/.stormpath/stormpath.yaml</li>
+ * <li>~/stormpath.properties</li>
+ * <li>~/stormpath.json</li>
+ * <li>~/stormpath.yaml</li>
  * </ul>
  *
  * @since 1.0.alpha
@@ -70,9 +73,10 @@ public class DefaultClientBuilder implements ClientBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultClientBuilder.class);
 
-    private ApiKey               apiKey;
-    private Proxy                proxy;
-    private CacheManager         cacheManager;
+    private ApiKey apiKey;
+    private Proxy proxy;
+    private CacheManager cacheManager;
+    private ClientCredentials clientCredentials;
 
     private static final String USER_HOME = System.getProperty("user.home") + File.separatorChar;
     private static final String STORMPATH_PROPERTIES = "stormpath.properties";
@@ -171,7 +175,7 @@ public class DefaultClientBuilder implements ClientBuilder {
         }
 
         if (props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME) != null) {
-            clientConfig.setConnectionTimeout(Integer.valueOf(props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME)) * 1000);
+            clientConfig.setConnectionTimeout(Integer.valueOf(props.get(DEFAULT_CLIENT_CONNECTION_TIMEOUT_PROPERTY_NAME)));
         }
 
         if (props.get(DEFAULT_CLIENT_AUTHENTICATION_SCHEME_PROPERTY_NAME) != null) {
@@ -231,31 +235,47 @@ public class DefaultClientBuilder implements ClientBuilder {
         return this;
     }
 
+    public ClientBuilder setRequestAuthenticatorFactory(RequestAuthenticatorFactory factory) {
+        Assert.notNull(factory, "factory argument cannot be null");
+        this.clientConfig.setRequestAuthenticatorFactory(factory);
+        return this;
+    }
+
+    public ClientBuilder setClientCredentials(ClientCredentials clientCredentials) {
+        Assert.isInstanceOf(ClientCredentials.class, clientCredentials);
+        this.clientCredentials = clientCredentials;
+        return this;
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    public ClientBuilder setApiKeyResolver(ApiKeyResolver apiKeyResolver) {
+        Assert.notNull(apiKeyResolver, "apiKeyResolver must not be null.");
+        this.clientConfig.setApiKeyResolver(apiKeyResolver);
+        return this;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public ClientBuilder setBaseUrlResolver(BaseUrlResolver baseUrlResolver) {
+        Assert.notNull(baseUrlResolver, "baseUrlResolver must not be null");
+        this.clientConfig.setBaseUrlResolver(baseUrlResolver);
+        return this;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public ClientBuilder setTenantResolver(TenantResolver tenantResolver) {
+        Assert.notNull(tenantResolver, "tenantResolver must not be null.");
+        this.clientConfig.setTenantResolver(tenantResolver);
+        return this;
+    }
+
     @Override
     public Client build() {
-        if (this.apiKey == null) {
-            log.debug("No API Key configured. Attempting to acquire an API Key found from well-known locations ($HOME/.stormpath/apiKey.properties < environment variables < system properties)...");
-            this.apiKey = ApiKeys.builder().build();
-
-            // use client.apiKey.file, client.apiKey.id, and client.apiKey.secret if they're set
-            if (this.clientConfig.getApiKeyFile() != null || this.clientConfig.getApiKeyId() != null || this.clientConfig.getApiKeySecret() != null) {
-                ApiKeyBuilder apiKeyBuilder = ApiKeys.builder();
-                if (this.clientConfig.getApiKeyFile() != null) {
-                    apiKeyBuilder.setFileLocation(this.clientConfig.getApiKeyFile());
-                }
-                if (this.clientConfig.getApiKeyId() != null) {
-                    apiKeyBuilder.setId(this.clientConfig.getApiKeyId());
-                }
-                if (this.clientConfig.getApiKeySecret() != null) {
-                    apiKeyBuilder.setSecret(this.clientConfig.getApiKeySecret());
-                }
-                this.apiKey = apiKeyBuilder.build();
-            }
-        }
-
-        Assert.state(this.apiKey != null,
-                "No ApiKey has been set. It is required to properly build the Client. See 'setApiKey(ApiKey)'.");
-
         if (!this.clientConfig.isCacheManagerEnabled()) {
             log.debug("CacheManager disabled. Defaulting to DisabledCacheManager");
             this.cacheManager = Caches.newDisabledCacheManager();
@@ -283,8 +303,39 @@ public class DefaultClientBuilder implements ClientBuilder {
                     this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
-        return new DefaultClient(this.apiKey, this.clientConfig.getBaseUrl(), this.proxy, this.cacheManager,
-                this.clientConfig.getAuthenticationScheme(), this.clientConfig.getConnectionTimeout());
+        ClientCredentials clientCredentials;
+
+        if (this.clientCredentials != null) {
+            clientCredentials = this.clientCredentials;
+        } else if (this.apiKey != null) {
+            clientCredentials = new ApiKeyCredentials(this.apiKey);
+        } else {
+            ClientCredentialsProvider clientCredentialsProvider = new DefaultClientCredentialsProviderChain(clientConfig);
+            clientCredentials = clientCredentialsProvider.getClientCredentials();
+        }
+
+        ApiKeyResolver apiKeyResolver = this.clientConfig.getApiKeyResolver();
+
+        if (apiKeyResolver == null) {
+            Assert.isInstanceOf(ApiKeyCredentials.class, clientCredentials, "An ApiKeyResolver must be configured for ClientCredentials other than ApiKeyCredentials.");
+            apiKeyResolver = new DefaultApiKeyResolver(((ApiKeyCredentials) clientCredentials).getApiKey());
+        }
+
+        BaseUrlResolver baseUrlResolver = this.clientConfig.getBaseUrlResolver();
+
+        if (baseUrlResolver == null) {
+            Assert.notNull(this.clientConfig.getBaseUrl(), "Stormpath base url must not be null.");
+            baseUrlResolver = new DefaultBaseUrlResolver(this.clientConfig.getBaseUrl());
+        }
+
+        if (this.clientConfig.getTenantResolver() != null) {
+            return new DefaultClient(clientCredentials, apiKeyResolver, baseUrlResolver, this.proxy, this.cacheManager,
+                    this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout(), this.clientConfig.getTenantResolver());
+        }
+
+
+        return new DefaultClient(clientCredentials, apiKeyResolver, baseUrlResolver, this.proxy, this.cacheManager,
+                this.clientConfig.getAuthenticationScheme(), this.clientConfig.getRequestAuthenticatorFactory(), this.clientConfig.getConnectionTimeout());
     }
 
     @Override

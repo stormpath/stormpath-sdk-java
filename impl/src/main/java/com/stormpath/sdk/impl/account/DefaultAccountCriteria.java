@@ -111,4 +111,76 @@ public class DefaultAccountCriteria extends DefaultCriteria<AccountCriteria, Acc
         getOptions().withGroupMemberships(limit, offset);
         return this;
     }
+
+    @Override
+    public AccountCriteria withLinkedAccounts() {
+        getOptions().withLinkedAccounts();
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withLinkedAccounts(int limit) {
+        getOptions().withLinkedAccounts(limit);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withLinkedAccounts(int limit, int offset) {
+        getOptions().withLinkedAccounts(limit, offset);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withAccountLinks() {
+        getOptions().withAccountLinks();
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withAccountLinks(int limit) {
+        getOptions().withAccountLinks(limit);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withAccountLinks(int limit, int offset) {
+        getOptions().withAccountLinks(limit, offset);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withFactors() {
+        getOptions().withFactors();
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withFactors(int limit) {
+        getOptions().withFactors(limit);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withFactors(int limit, int offset) {
+        getOptions().withFactors(limit, offset);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withPhones() {
+        getOptions().withPhones();
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withPhones(int limit) {
+        getOptions().withPhones(limit);
+        return this;
+    }
+
+    @Override
+    public AccountCriteria withPhones(int limit, int offset) {
+        getOptions().withPhones(limit, offset);
+        return this;
+    }
 }

@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.mail.DefaultModeledEmailTemplateList
 import com.stormpath.sdk.impl.mail.DefaultUnmodeledEmailTemplateList
 import com.stormpath.sdk.impl.resource.CollectionReference
-import com.stormpath.sdk.impl.resource.StatusProperty
+import com.stormpath.sdk.impl.resource.EnumProperty
 import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.mail.ModeledEmailTemplateList
 import com.stormpath.sdk.mail.UnmodeledEmailTemplateList
@@ -41,9 +41,9 @@ class DefaultAccountCreationPolicyTest {
         def propertyDescriptors = accountCreationPolicy.getPropertyDescriptors()
 
         assertEquals(propertyDescriptors.size(), 6)
-        assertTrue(propertyDescriptors.get("verificationEmailStatus") instanceof StatusProperty<EmailStatus>)
-        assertTrue(propertyDescriptors.get("verificationSuccessEmailStatus") instanceof StatusProperty<EmailStatus>)
-        assertTrue(propertyDescriptors.get("welcomeEmailStatus") instanceof StatusProperty<EmailStatus>)
+        assertTrue(propertyDescriptors.get("verificationEmailStatus") instanceof EnumProperty<EmailStatus>)
+        assertTrue(propertyDescriptors.get("verificationSuccessEmailStatus") instanceof EnumProperty<EmailStatus>)
+        assertTrue(propertyDescriptors.get("welcomeEmailStatus") instanceof EnumProperty<EmailStatus>)
         assertTrue(propertyDescriptors.get("verificationEmailTemplates") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("verificationSuccessEmailTemplates") instanceof CollectionReference)
         assertTrue(propertyDescriptors.get("welcomeEmailTemplates") instanceof CollectionReference)

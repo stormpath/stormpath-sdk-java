@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.FacebookProviderData;
 
 import java.util.Map;
@@ -25,12 +24,10 @@ import java.util.Map;
 /**
  * @since 1.0.beta
  */
-public class DefaultFacebookProviderData extends AbstractProviderData implements FacebookProviderData {
+public class DefaultFacebookProviderData extends AbstractProviderData<FacebookProviderData> implements FacebookProviderData {
 
-    // SIMPLE PROPERTIES
-    static final StringProperty ACCESS_TOKEN = new StringProperty("accessToken");
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, ACCESS_TOKEN, CODE);
 
     public DefaultFacebookProviderData(InternalDataStore dataStore) {
         super(dataStore);
@@ -45,15 +42,6 @@ public class DefaultFacebookProviderData extends AbstractProviderData implements
         return PROPERTY_DESCRIPTORS;
     }
 
-    @Override
-    public String getAccessToken() {
-        return getString(ACCESS_TOKEN);
-    }
-
-    public FacebookProviderData setAccessToken(String accessToken) {
-        setProperty(ACCESS_TOKEN, accessToken);
-        return this;
-    }
 
     @Override
     protected String getConcreteProviderId() {

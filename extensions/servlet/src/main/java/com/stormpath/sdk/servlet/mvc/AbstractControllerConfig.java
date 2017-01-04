@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * @since 1.0.0
@@ -38,6 +37,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
     private List<Field> formFields;
     private List<String> defaultFieldNames = java.util.Collections.emptyList();
     private List<String> disabledFieldNames = java.util.Collections.emptyList();
+    private List<String> optionalFieldNames = java.util.Collections.emptyList();
 
     public AbstractControllerConfig(String controllerKey) {
         Assert.hasText(controllerKey, "controllerKey cannot be null or empty.");
@@ -50,6 +50,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
         Assert.notNull(this.formFields, "formFields cannot be null.  Use an empty list instead.");
         Assert.notNull(defaultFieldNames, "defaultFieldNames cannot be null.  Use an empty list instead.");
         Assert.notNull(disabledFieldNames, "disabledFieldNames cannot be null.  Use an empty list instead.");
+        Assert.notNull(disabledFieldNames, "optionalFieldNames cannot be null.  Use an empty list instead.");
     }
 
     @Override
@@ -73,6 +74,20 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
         this.disabledFieldNames = Collections.toList(disabledFieldNames);
     }
 
+    /**
+     * @since 1.2.0
+     */
+    public void setOptionalFieldNames(String... optionalFieldNames) {
+        this.optionalFieldNames = Collections.toList(optionalFieldNames);
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public List<String> getOptionalFieldNames() {
+        return this.optionalFieldNames;
+    }
+
     @Override
     public List<Field> getFormFields() {
         return this.formFields;
@@ -90,14 +105,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
 
         List<Field> fields = new ArrayList<>();
 
-        List<String> fieldNames = new ArrayList<>(getDefaultFieldNames());
-
-        //keep default order, and append any unordered ones to the end:
-        for (String discoveredFieldName : getFormFieldNames()) {
-            if (!fieldNames.contains(discoveredFieldName)) {
-                fieldNames.add(discoveredFieldName);
-            }
-        }
+        List<String> fieldNames = new ArrayList<>(getFormFieldNames());
 
         for (String fieldName : fieldNames) {
 
@@ -108,7 +116,7 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
                 .setType(getPropValue(name, "type", getFieldType(name)))
                 .setLabel(getPropValue(name, "label", getFieldPropertyKey(name, "label")))
                 .setPlaceholder(getPropValue(name, "placeholder", getFieldPropertyKey(name, "placeholder")))
-                .setRequired(getPropBooleanValue(name, "required", true))
+                .setRequired(getPropBooleanValue(name, "required", !getOptionalFieldNames().contains(name)))
                 .setEnabled(getPropBooleanValue(name, "enabled", !getDisabledFieldNames().contains(name)))
                 .setVisible(getPropBooleanValue(name, "visible", !"sptoken".equals(name)))
                 .build();
@@ -135,8 +143,6 @@ public abstract class AbstractControllerConfig implements ControllerConfig {
         fieldNames = new ArrayList<>(fieldNames);
 
         String fieldConfigPrefix = getFieldConfigPrefix();
-
-        Pattern pattern = Pattern.compile("^stormpath.web." + getControllerKey() + ".form.fields." + "(\\w+)");
 
         //Find any other fields that are not in the fieldOrder prop and add them to the end of the list as define in the spec
         Set<String> keys = propertyResolver.getKeys(getFieldConfigPrefix());

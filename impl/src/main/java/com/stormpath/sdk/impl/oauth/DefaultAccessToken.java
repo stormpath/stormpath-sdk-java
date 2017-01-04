@@ -15,12 +15,13 @@
 */
 package com.stormpath.sdk.impl.oauth;
 
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessToken;
+import com.stormpath.sdk.oauth.TokenTypeHint;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
 
 import java.util.Map;
 
@@ -45,9 +46,8 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
     private void ensureAccessToken() {
         if(isMaterialized()) {
             try {
-                JwsHeader header = Jwts.parser()
-                        .setSigningKey(getDataStore().getApiKey().getSecret().getBytes("UTF-8"))
-                        .parseClaimsJws(getString(JWT)).getHeader();
+
+                JwsHeader header = AbstractBaseOAuthToken.parseJws(getString(JWT), getDataStore()).getHeader();
 
                 String tokenType = (String) header.get("stt");
                 Assert.isTrue(tokenType.equals("access"));
@@ -60,5 +60,10 @@ public class DefaultAccessToken extends AbstractBaseOAuthToken implements Access
                 Assert.isTrue(href.contains("/accessTokens/"), "href does not belong to an access token.");
             }
         }
+    }
+
+    @Override
+    protected TokenTypeHint getTokenTypeHint() {
+        return TokenTypeHint.ACCESS_TOKEN;
     }
 }

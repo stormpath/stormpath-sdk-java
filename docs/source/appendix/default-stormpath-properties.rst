@@ -1,9 +1,8 @@
 .. _default.stormpath.properties:
 
-A: default.stormpath.properties
-===============================
+Default Stormpath Properties
+============================
 
-In stormpath-sdk-servlet-|version|.jar: ``/META-INF/com/stormpath/sdk/servlet/default.stormpath.properties``
+.. include:: spring-boot-core-properties.rst
 
-.. literalinclude:: ../../../extensions/servlet/src/main/resources/META-INF/com/stormpath/sdk/servlet/default.stormpath.properties
-   :language: properties
+.. include:: spring-boot-web-properties.rst

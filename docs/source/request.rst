@@ -3,13 +3,23 @@
 Request Context
 ===============
 
-The Stormpath Java Servlet Plugin ensures important Stormpath objects are available to you during a request:
+#if( $sczuul )
 
-* The Stormpath SDK ``Client`` instance, in case you want to communicate with Stormpath for any behavior that the plugin does not automate.
+.. tip::
+
+   This page covers request objects that are available during a request within the ${apptype} itself.  If you are
+   looking for information about the request data forwarded to the origin server(s), please see the
+   :ref:`Forwarded Request <forwarded request>` page instead.
+
+#end
+
+The |project| ensures important Stormpath objects are available to your ${apptype} code during a request:
+
+* The Stormpath SDK ``Client`` instance, in case you want to communicate with Stormpath for any behavior that the |project| does not automate.
 * The Stormpath ``Application`` instance that corresponds to your web application.
-* A Stormpath ``Account`` instance that represents the current authenticated user account making a request to your web application.
+* A Stormpath ``Account`` instance that represents the current authenticated user account making the request.
 
-The ``Client`` and ``Application`` will always be available.  The current user ``Account`` is only available if the user making the request has previously logged in.
+The ``Client`` and ``Application`` will always be available.  The current user ``Account`` is only available if the user making the request is authenticated.
 
 .. contents::
    :local:
@@ -120,7 +130,7 @@ The property value may be one of the following strings: ``username``, ``email``,
 * ``email``: returns ``account.getEmail()``
 * ``givenName``: returns ``account.getGivenName()``
 * ``href``: returns ``account.getHref()``
-* ``bypass``: disables the plugin behavior for this method and delegates to the Servlet Container implementation.
+* ``bypass``: disables the behavior for this method and delegates to the Servlet Container implementation.
 
 Again, if there is no Account associated with the request, ``getRemoteUser()`` will return ``null``.
 
@@ -144,7 +154,7 @@ The property value may be one of the following strings: ``account``, ``email``, 
 * ``username``: returns a ``com.stormpath.sdk.servlet.http.UsernamePrincipal`` matching ``account.getUsername()``.
 * ``givenname``: returns a ``com.stormpath.sdk.servlet.http.GivenNamePrincipal`` matching ``account.getGivenName()``.
 * ``href``: returns a ``com.stormpath.sdk.servlet.http.HrefPrincipal`` matching ``account.getHref()``.
-* ``bypass``: disables the plugin behavior for this method and delegates to the Servlet Container implementation.
+* ``bypass``: disables the behavior for this method and delegates to the Servlet Container implementation.
 
 Again, if there is no Account associated with the request, ``getUserPrincipal()`` will return ``null``.
 
@@ -153,7 +163,21 @@ Again, if there is no Account associated with the request, ``getUserPrincipal()`
 Stormpath Application
 ---------------------
 
-The Stormpath Java Servlet Plugin requires that your web application correspond to a registered ``Application`` record within Stormpath.  You can access this ``Application`` for your own needs (for example, searching your application's user accounts, creating groups, etc.) using either the ``ApplicationResolver`` or request attributes.
+The |project| requires that your ${apptype} correspond to a registered ``Application`` record within Stormpath.  You can access this ``Application`` for your own needs (for example, searching your application's user accounts, creating groups, etc.) using Spring autowiring, an ``ApplicationResolver`` or request attributes.
+
+#if( !$servlet )
+
+Spring autowiring
+^^^^^^^^^^^^^^^^^
+
+The ``Application`` instance is created at ${apptype} startup and is not request-specific, so the easiest thing to do is to obtain it by normal Spring autowiring:
+
+.. code-block:: java
+
+   @Autowired
+   private Application application;
+
+#end
 
 Application Resolver
 ^^^^^^^^^^^^^^^^^^^^
@@ -179,7 +203,7 @@ The ``Application`` will always be available under the request attribute key equ
 
 .. code-block:: java
 
-    Application myApp = (Application)servletRequest.getAttribute(Application.getClass().getName());
+    Application myApp = (Application) servletRequest.getAttribute(Application.getClass().getName());
 
 Custom Request Attribute Names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -188,7 +212,7 @@ The ``Application`` is also available via simpler unqualified attribute names fo
 
 .. code-block:: java
 
-    Application myApp = (Application)servletRequest.getAttribute("application");
+    Application myApp = (Application) servletRequest.getAttribute("application");
 
 If you want to change this name, or add other names, you can change the ``stormpath.web.request.application.attributeNames`` configuration property and set a comma-delimited list of names.  For example:
 
@@ -214,15 +238,33 @@ which is less readable and not very convenient.
 
 .. _request sdk client:
 
-Stormpath SDK Client
---------------------
+Stormpath Client
+----------------
 
-The Stormpath Java Servlet Plugin uses a Stormpath SDK ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using either the ``ClientResolver`` or request attributes.
+#if( $servlet )
+
+The |project| uses a Stormpath ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using either the ``ClientResolver`` or request attributes.
+
+#else
+
+The |project| uses a Stormpath ``Client`` for all communication to Stormpath. You can access this ``Client`` for your own needs using Spring autowiring, the ``ClientResolver`` or request attributes.
+
+Spring autowiring
+^^^^^^^^^^^^^^^^^
+
+The ``Client`` is created at ${apptype} startup and is not request-specific, so the easiest thing to do is to obtain it by normal Spring autowiring:
+
+.. code-block:: java
+
+   @Autowired
+   private Client client;
+
+#end
 
 Client Resolver
 ^^^^^^^^^^^^^^^
 
-A type-safe way to lookup the ``Client`` instance is to use the ``ClientResolver``:
+If you want to look up the Client using only the HttpServletRequest, you can do so in a type-safe way using the ``ClientResolver``:
 
 .. code-block:: java
 
@@ -243,7 +285,7 @@ The ``Client`` will always be available under the request attribute key equal to
 
 .. code-block:: java
 
-    Client client = (Client)servletRequest.getAttribute(Client.getClass().getName());
+    Client client = (Client) servletRequest.getAttribute(Client.getClass().getName());
 
 Custom Request Attribute Names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -252,7 +294,7 @@ The ``Client`` is also available via simpler unqualified attribute names for con
 
 .. code-block:: java
 
-    Client client = (Client)servletRequest.getAttribute("client");
+    Client client = (Client) servletRequest.getAttribute("client");
 
 If you want to change this name, or add other names, you can change the ``stormpath.web.request.client.attributeNames`` configuration property and set a comma-delimited list of names.  For example:
 

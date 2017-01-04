@@ -20,7 +20,7 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StatusProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.mail.EmailStatus;
 import com.stormpath.sdk.mail.ModeledEmailTemplate;
@@ -35,9 +35,9 @@ import java.util.Map;
  */
 public class DefaultAccountCreationPolicy extends AbstractInstanceResource implements AccountCreationPolicy {
 
-    static final StatusProperty<EmailStatus> ACCOUNT_VERIFICATION_EMAIL_STATUS = new StatusProperty<EmailStatus>("verificationEmailStatus", EmailStatus.class);
-    static final StatusProperty<EmailStatus> ACCOUNT_VERIFICATION_SUCCESS_EMAIL_STATUS = new StatusProperty<EmailStatus>("verificationSuccessEmailStatus", EmailStatus.class);
-    static final StatusProperty<EmailStatus> WELCOME_EMAIL_STATUS = new StatusProperty<EmailStatus>("welcomeEmailStatus", EmailStatus.class);
+    static final EnumProperty<EmailStatus> ACCOUNT_VERIFICATION_EMAIL_STATUS = new EnumProperty<EmailStatus>("verificationEmailStatus", EmailStatus.class);
+    static final EnumProperty<EmailStatus> ACCOUNT_VERIFICATION_SUCCESS_EMAIL_STATUS = new EnumProperty<EmailStatus>("verificationSuccessEmailStatus", EmailStatus.class);
+    static final EnumProperty<EmailStatus> WELCOME_EMAIL_STATUS = new EnumProperty<EmailStatus>("welcomeEmailStatus", EmailStatus.class);
 
     static final CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate> ACCOUNT_VERIFICATION_EMAIL_TEMPLATES =
             new CollectionReference<ModeledEmailTemplateList, ModeledEmailTemplate>("verificationEmailTemplates", ModeledEmailTemplateList.class, ModeledEmailTemplate.class);

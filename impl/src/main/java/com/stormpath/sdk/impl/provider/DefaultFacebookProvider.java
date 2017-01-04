@@ -17,7 +17,6 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.FacebookProvider;
 
 import java.util.Map;
@@ -25,13 +24,9 @@ import java.util.Map;
 /**
  * @since 1.0.beta
  */
-public class DefaultFacebookProvider extends AbstractProvider implements FacebookProvider {
+public class DefaultFacebookProvider extends AbstractOAuthProvider<FacebookProvider> implements FacebookProvider {
 
-    // SIMPLE PROPERTIES
-    static final StringProperty CLIENT_ID = new StringProperty("clientId");
-    static final StringProperty CLIENT_SECRET = new StringProperty("clientSecret");
-
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE, USER_INFO_MAPPING_RULES);
 
     public DefaultFacebookProvider(InternalDataStore dataStore) {
         super(dataStore);
@@ -47,28 +42,15 @@ public class DefaultFacebookProvider extends AbstractProvider implements Faceboo
     }
 
     @Override
-    public String getClientId() {
-        return getString(CLIENT_ID);
-    }
-
-    public FacebookProvider setClientId(String clientId) {
-        setProperty(CLIENT_ID, clientId);
-        return this;
-    }
-
-    @Override
-    public String getClientSecret() {
-        return getString(CLIENT_SECRET);
-    }
-
-    public FacebookProvider setClientSecret(String clientSecret) {
-        setProperty(CLIENT_SECRET, clientSecret);
-        return this;
-    }
-
-    @Override
     protected String getConcreteProviderId() {
         return IdentityProviderType.FACEBOOK.getNameKey();
     }
 
+    /**
+     * @since 1.3.0
+     */
+    @Override
+    public String getProviderType() {
+        return IdentityProviderType.FACEBOOK.getNameKey();
+    }
 }

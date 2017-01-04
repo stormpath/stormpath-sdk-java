@@ -15,8 +15,9 @@
  */
 package com.stormpath.sdk.impl.directory
 
-import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.directory.CustomData
+import com.stormpath.sdk.impl.api.ApiKeyResolver
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.http.RequestExecutor
@@ -218,7 +219,7 @@ class DefaultDataStoreDelegateTo extends DefaultDataStore {
     private CustomData customData;
 
     DefaultDataStoreDelegateTo(RequestExecutor requestExecutor, CustomData customData) {
-        super(requestExecutor, "https://api.stormpath.com/v1", (ApiKey)createNiceMock(ApiKey))
+        super(requestExecutor, "https://api.stormpath.com/v1", (ApiKeyCredentials)createNiceMock(ApiKeyCredentials), createNiceMock(ApiKeyResolver))
         this.customData = customData
     }
 

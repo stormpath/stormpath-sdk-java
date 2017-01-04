@@ -15,22 +15,26 @@
  */
 $('.btn-google').click(function (event) {
     event.preventDefault();
-    googleLogin($('.btn-google').attr('id'));
+    var $btn = $('.btn-google');
+    googleLogin($btn.attr('id'), $btn.data('scope'), $btn.data('hd'), $btn.data('display'), $btn.data('access_type'));
 });
 
 $('.btn-facebook').click(function (event) {
     event.preventDefault();
-    facebookLogin($('.btn-facebook').attr('id'));
+    var $btn = $('.btn-facebook');
+    facebookLogin($btn.attr('id'), $btn.data('scope'));
 });
 
 $('.btn-github').click(function (event) {
     event.preventDefault();
-    githubLogin($('.btn-github').attr('id'));
+    var $btn = $('.btn-github');
+    githubLogin($btn.attr('id'), $btn.data('scope'));
 });
 
 $('.btn-linkedin').click(function (event) {
     event.preventDefault();
-    linkedinLogin($('.btn-linkedin').attr('id'));
+    var $btn = $('.btn-linkedin');
+    linkedinLogin($btn.attr('id'), $btn.data('scope'));
 });
 
 $('.btn-saml').click(function (event) {
@@ -42,31 +46,58 @@ function baseUrl() {
     return $('#baseUrl').val();
 }
 
-function linkedinLogin(clientId) {
-    window.location.replace('https://www.linkedin.com/uas/oauth2/authorization' +
-        '?client_id=' + clientId +
-        '&response_type=code' +
-        '&scope=' + encodeURIComponent('r_emailaddress r_basicprofile') +
-        '&redirect_uri=' + encodeURIComponent(baseUrl() + '/callbacks/linkedin') +
-        '&state=${oauthStateToken}');
+function linkedinLogin(clientId, scope) {
+    scope = scope || 'r_emailaddress r_basicprofile';
+    window.location.replace(
+        buildUrl('https://www.linkedin.com/uas/oauth2/authorization',
+            {
+                client_id: clientId,
+                response_type: 'code',
+                scope: scope,
+                redirect_uri: baseUrl() + '/callbacks/linkedin',
+                state: 'oauthState' //linkedin requires state to be pass all the time.
+            }
+        )
+    );
 }
 
-function googleLogin(clientId) {
-    window.location.replace('https://accounts.google.com/o/oauth2/auth?response_type=code' +
-        '&client_id=' + clientId + '&scope=email' +
-        '&redirect_uri=' + encodeURIComponent(baseUrl() + '/callbacks/google'));
+function googleLogin(clientId, scope, hd, display, accessType) {
+    scope = scope || 'email';
+    var params = {
+        response_type: 'code',
+        client_id: clientId,
+        scope: scope,
+        redirect_uri: baseUrl() + '/callbacks/google'
+    };
+    if (hd) {
+        params.hd = hd;
+    }
+    if (display) {
+        params.display = display;
+    }
+    if (accessType) {
+        params.access_type = accessType;
+    }
+    window.location.replace(
+        buildUrl(
+            'https://accounts.google.com/o/oauth2/auth',
+            params
+        )
+    );
 }
 
-function githubLogin(clientId) {
-    window.location.replace('https://github.com/login/oauth/authorize?client_id=' + clientId);
+function githubLogin(clientId, scope) {
+    window.location.replace(buildUrl('https://github.com/login/oauth/authorize', {client_id: clientId, scope: scope}));
 }
 
 function samlLogin(href) {
-    window.location.replace(baseUrl() + '/saml?href=' + encodeURIComponent(href));
+    window.location.replace(buildUrl(baseUrl() + '/saml', {'href': href}));
 }
 
-function facebookLogin(appId) {
+function facebookLogin(appId, scope) {
     var FB = window.FB;
+    scope = scope || 'email';
+    scope = scope.replace(' ', ',');
     FB.init({
         appId: appId,
         cookie: true,
@@ -77,12 +108,12 @@ function facebookLogin(appId) {
         if (response.status === 'connected') {
             var queryStr = window.location.search.replace('?', '');
             if (queryStr) {
-                window.location.replace(baseUrl() + '/callbacks/facebook?queryStr&accessToken=' + FB.getAuthResponse()['accessToken']);
+                window.location.replace(buildUrl(baseUrl() + '/callbacks/facebook?queryStr', {accessToken: FB.getAuthResponse()['accessToken']}));
             } else {
-                window.location.replace(baseUrl() + '/callbacks/facebook?accessToken=' + FB.getAuthResponse()['accessToken']);
+                window.location.replace(buildUrl(baseUrl() + '/callbacks/facebook', {accessToken: FB.getAuthResponse()['accessToken']}));
             }
         }
-    }, {scope: 'email'});
+    }, {scope: scope});
 }
 
 (function (d, s, id) {
@@ -95,3 +126,21 @@ function facebookLogin(appId) {
     js.src = '//connect.facebook.net/en_US/sdk.js';
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+function getParameterByName(name) {
+    var match = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function buildUrl(url, params) {
+    var next = getParameterByName('next');
+
+    if (next) {
+        params.state = next;
+    }
+
+    if (url.includes('?')) {
+        return url + '&' + $.param(params);
+    }
+    return url + '?' + $.param(params);
+}

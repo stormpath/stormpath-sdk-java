@@ -17,13 +17,13 @@ package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.Property;
-import com.stormpath.sdk.provider.StormpathProvider;
+import com.stormpath.sdk.provider.saml.StormpathProvider;
 
 import java.util.Map;
 
 /**
- * This DefaultProvider represents Stormpath as a Provider. For example, the provider of a Stormpath-owned directory is
- * "stormpath".
+ * This DefaultProvider represents a {@link IdentityProviderType#DEFAULT} provider. For example, the provider of is
+ * "a-new-social-provider".
  *
  * @since 1.0.beta
  */
@@ -46,7 +46,7 @@ public final class DefaultProvider extends AbstractProvider implements Stormpath
 
     @Override
     protected String getConcreteProviderId() {
-        return IdentityProviderType.STORMPATH.getNameKey();
+        return getString(PROVIDER_ID);
     }
 
 }

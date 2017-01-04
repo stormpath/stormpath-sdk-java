@@ -20,6 +20,7 @@ import com.stormpath.tutorial.service.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +31,13 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class HelloController {
 
-    @Autowired
     private HelloService helloService;
+
+    @Autowired
+    public HelloController(HelloService helloService) {
+        Assert.notNull(helloService);
+        this.helloService = helloService;
+    }
 
     @RequestMapping("/")
     String home(HttpServletRequest req, Model model) {
@@ -39,9 +45,9 @@ public class HelloController {
         return "home";
     }
 
-    @RequestMapping("/me")
-    String me() {
-        return "me";
+    @RequestMapping("/userdetails")
+    String userDetails() {
+        return "userdetails";
     }
 
     @RequestMapping("/restricted")

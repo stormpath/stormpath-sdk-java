@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.provider
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.DateProperty
+import com.stormpath.sdk.impl.resource.ListProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.provider.LinkedInProvider
 import com.stormpath.sdk.provider.Provider
@@ -38,14 +39,15 @@ class DefaultLinkedInProviderTest {
 
         def propertyDescriptors = provider.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 6)
-
         assertTrue(propertyDescriptors.get("providerId") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("createdAt") instanceof DateProperty)
         assertTrue(propertyDescriptors.get("modifiedAt") instanceof DateProperty)
         assertTrue(propertyDescriptors.get("clientId") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("clientSecret") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("redirectUri") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("scope") instanceof ListProperty)
+        assertEquals(propertyDescriptors.size(), 8)
+
         assertTrue(Provider.isInstance(provider))
         assertTrue(LinkedInProvider.isInstance(provider))
     }
@@ -57,7 +59,8 @@ class DefaultLinkedInProviderTest {
                 createdAt: "2013-10-01T23:38:55.000Z",
                 modifiedAt: "2013-10-02T23:38:55.000Z",
                 clientId: "613598318417022",
-                clientSecret: "c1ad951d45fdd0010c1c7d67c8f1d800"
+                clientSecret: "c1ad951d45fdd0010c1c7d67c8f1d800",
+                "scope": ["foo", "bar"]
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
@@ -69,6 +72,7 @@ class DefaultLinkedInProviderTest {
         assertEquals(provider.getModifiedAt().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT")) , "2013-10-02T23:38:55.000Z")
         assertEquals(provider.getClientId(), "613598318417022")
         assertEquals(provider.getClientSecret(), "c1ad951d45fdd0010c1c7d67c8f1d800")
+        assertEquals(provider.getScope(), ["foo", "bar"])
 
         provider.setClientId("999999999999")
         assertEquals(provider.getClientId(), "999999999999")

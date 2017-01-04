@@ -240,11 +240,11 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         context.getAutowireCapableBeanFactory().autowireBean(this);
         http.servletApi().rolePrefix(""); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/325
 
-        if (loginEnabled) {
-            // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
-            // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
-            http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
+        // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
+        // fix https://github.com/stormpath/stormpath-sdk-java/issues/450
+        http.addFilterBefore(springSecurityResolvedAccountFilter, AnonymousAuthenticationFilter.class);
 
+        if (loginEnabled) {
             // This filter replaces http.formLogin() so that we can properly handle content negotiation
             // If it's an HTML request, it delegates to the default UsernamePasswordAuthenticationFilter behavior
             // refer to: https://github.com/stormpath/stormpath-sdk-java/issues/682

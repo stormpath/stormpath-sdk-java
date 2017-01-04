@@ -27,9 +27,18 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class LinkedinCallbackController extends AbstractSocialCallbackController {
 
+    private static final String FAKE_LINKEDIN_STATE = "oauthState";
+
     @Override
     protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
         String code = ServletUtils.getCleanParam(request, "code");
         return Providers.LINKEDIN.account().setCode(code).build();
+    }
+
+    protected boolean shouldGetRedirectUriFromState(String state) {
+        // LinkedIn flow _requires_ a state to be sent, so when the javascript that constructs the request cannot
+        // find a 'next' query parameter, it includes a placeholder state, which we need to ignore for the purposes
+        // of determining the redirectUri and just use this.nextUri instead.
+        return super.shouldGetRedirectUriFromState(state) && !state.equals(FAKE_LINKEDIN_STATE);
     }
 }

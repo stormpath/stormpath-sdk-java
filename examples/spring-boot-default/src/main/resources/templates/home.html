@@ -30,7 +30,7 @@
                         <h1 th:inline="text">Hello, [[${account.givenName}]]!</h1>
 
                         <form th:action="@{/logout}" method="post">
-                            <a href="/restricted" class="btn btn-primary">Restricted</a>
+                            <a th:href="@{/restricted}" class="btn btn-primary">Restricted</a>
                             <input type="submit" class="btn btn-danger" value="Logout"/>
                         </form>
                     </div>

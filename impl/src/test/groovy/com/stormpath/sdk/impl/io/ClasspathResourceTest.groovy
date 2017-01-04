@@ -2,7 +2,7 @@ package com.stormpath.sdk.impl.io
 
 import org.testng.annotations.Test
 
-import static org.testng.AssertJUnit.assertNotNull
+import static org.testng.Assert.assertNotNull
 
 /**
  * @since 1.0.RC9

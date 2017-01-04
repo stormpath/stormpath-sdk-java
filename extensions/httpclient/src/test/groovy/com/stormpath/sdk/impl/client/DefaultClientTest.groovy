@@ -31,6 +31,9 @@ import com.stormpath.sdk.directory.DirectoryCriteria
 import com.stormpath.sdk.directory.DirectoryList
 import com.stormpath.sdk.ds.DataStore
 import com.stormpath.sdk.http.HttpMethod
+import com.stormpath.sdk.impl.api.ApiKeyResolver
+import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials
 import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.ds.JacksonMapMarshaller
 import com.stormpath.sdk.impl.ds.ResourceFactory
@@ -38,7 +41,10 @@ import com.stormpath.sdk.impl.http.Request
 import com.stormpath.sdk.impl.http.RequestExecutor
 import com.stormpath.sdk.impl.http.Response
 import com.stormpath.sdk.impl.http.support.DefaultRequest
+import com.stormpath.sdk.impl.tenant.TenantResolver
+import com.stormpath.sdk.impl.util.BaseUrlResolver
 import com.stormpath.sdk.tenant.Tenant
+import com.stormpath.sdk.tenant.TenantOptions
 import org.apache.http.client.params.AllClientPNames
 import org.easymock.IArgumentMatcher
 import org.testng.annotations.Test
@@ -58,8 +64,9 @@ class DefaultClientTest {
     @Test
     void testConstructorOK() {
 
-        def apiKey = createStrictMock(ApiKey)
-        String baseUrl = "http://localhost:8080/v1"
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
         def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createStrictMock(CacheManager)
         def authcScheme = AuthenticationScheme.SAUTHC1
@@ -69,92 +76,81 @@ class DefaultClientTest {
         expect(proxy.getPort()).andReturn(777)
         expect(proxy.isAuthenticationRequired()).andReturn(false)
 
-        replay(apiKey, proxy, cacheManager)
+        replay(apiKeyCredentials, proxy, cacheManager)
 
-        Client client = new DefaultClient(apiKey, baseUrl, proxy, cacheManager, authcScheme, connectionTimeout)
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, proxy, cacheManager, authcScheme, null, connectionTimeout)
 
-        assertEquals(client.dataStore.requestExecutor.apiKey, apiKey)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), connectionTimeout)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), connectionTimeout)
+        assertEquals(client.dataStore.requestExecutor.requestAuthenticator.apiKeyCredentials, apiKeyCredentials)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), connectionTimeout * 1000)
+        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), connectionTimeout * 1000)
 
-        verify(apiKey, proxy, cacheManager)
+        verify(apiKeyCredentials, proxy, cacheManager)
     }
 
     @Test
     void testConstructorApiKeyNull() {
 
-        String baseUrl = "http://localhost:8080/v1"
         def proxy = createMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createMock(CacheManager)
         def authcScheme = AuthenticationScheme.SAUTHC1
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
 
         try {
-            new DefaultClient(null, baseUrl, proxy, cacheManager, authcScheme, 10000)
-            fail("Should have thrown due to null ApiKey")
+            new DefaultClient(null, null, baseUrlResolver, proxy, cacheManager, authcScheme, null, 10000)
+            fail("Should have thrown due to null clientCredentials")
         } catch (IllegalArgumentException ex) {
-            assertEquals(ex.getMessage(), "apiKey argument cannot be null.")
+            assertEquals(ex.getMessage(), "clientCredentials argument cannot be null.")
         }
     }
 
-/*    @Test
-    // commenting out this test since the data store implementation changed and Integration Tests are passing with the changes
-    void testGetCurrentTenant() {
+    /**
+     * @since 1.1.0
+     */
+    @Test
+    void testConstructorApiKeyResolverNull() {
 
-        def apiKey = createStrictMock(ApiKey)
-        String baseUrl = "http://localhost:8080/v1"
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
         def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
         def cacheManager = createStrictMock(CacheManager)
         def authcScheme = AuthenticationScheme.SAUTHC1
-        def cache = createStrictMock(Cache)
-        def map = createStrictMock(Map)
-        def set = createStrictMock(Set)
-        def iterator = createNiceMock(Iterator)
-        def currentTenantHref = "https://api.stormpath.com/v1/tenants/3cFOIsPgvKwsGjAeIiWV6d"
+        def clientCredentials = createStrictMock(ClientCredentials)
 
-        expect(proxy.getHost()).andReturn("192.168.2.110")
-        expect(proxy.getPort()).andReturn(777)
-        expect(proxy.isAuthenticationRequired()).andReturn(false)
-        expect(cacheManager.getCache("com.stormpath.sdk.tenant.Tenant")).andReturn(cache)
-        expect(cache.get("http://localhost:8080/v1/tenants/current")).andReturn(map)
-        expect(map.isEmpty()).andReturn(false).times(2)
-        expect(map.get("href")).andReturn(currentTenantHref).times(2)
-        expect(map.size()).andReturn(1)
-        expect(map.entrySet()).andReturn(set)
-        expect(set.iterator()).andReturn(iterator)
-
-        replay(apiKey, proxy, cacheManager, cache, map, set, iterator)
-
-        Client client = new DefaultClient(apiKey, baseUrl, proxy, cacheManager, authcScheme)
-        client.getCurrentTenant()
-
-        verify(apiKey, proxy, cacheManager, cache, map, set, iterator)
-    }*/
+        try {
+            new DefaultClient(clientCredentials, null, baseUrlResolver, proxy, cacheManager, authcScheme, null, 10000)
+            fail("Should have thrown due to null apiKeyResolver")
+        } catch (IllegalArgumentException ex) {
+            assertEquals(ex.getMessage(), "apiKeyResolver argument cannot be null.")
+        }
+    }
 
     @Test
     void testGetDataStore() {
 
-        def apiKey = createNiceMock(ApiKey)
-        String baseUrl = "http://localhost:8080/v1"
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
         def authcScheme = AuthenticationScheme.SAUTHC1
         def cacheManager = Caches.newDisabledCacheManager();
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, cacheManager , authcScheme, 20000)
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, cacheManager , authcScheme, null,  20000)
 
         assertNotNull(client.getDataStore())
-        assertEquals(client.getDataStore().baseUrl, baseUrl)
+        assertEquals(client.getDataStore().baseUrlResolver, baseUrlResolver)
     }
 
     //@since 1.0.RC3
     @Test
     void testDirtyPropertiesNotSharedAmongDifferentResourcesWithSameHref() {
-        def apiKey = createNiceMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
         def requestExecutor = createStrictMock(RequestExecutor)
         def resourceFactory = createStrictMock(ResourceFactory)
         def response = createStrictMock(Response)
 
         def properties = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
                 fullName: "Mel Ben Smuk",
-                email: 'my@email.com',
+                email: 'my@testmail.stormpath.com',
                 givenName: 'Given Name',
                 emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
                 directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
@@ -167,7 +163,7 @@ class DefaultClientTest {
 
         def propertiesAfterSave = [href: "https://api.stormpath.com/v1/accounts/iouertnw48ufsjnsDFSf",
                 fullName: "Mel Ben Smuk",
-                email: 'my@email.com',
+                email: 'my@testmail.stormpath.com',
                 givenName: 'My New Given Name',
                 emailVerificationToken: [href: "https://api.stormpath.com/v1/accounts/emailVerificationTokens/4VQxTP5I7Xio03QJTOwQy1"],
                 directory: [href: "https://api.stormpath.com/v1/directories/fwerh23948ru2euweouh"],
@@ -183,7 +179,7 @@ class DefaultClientTest {
         InputStream is02 = new ByteArrayInputStream(mapMarshaller.marshal(properties).getBytes());
         InputStream is01AfterSave = new ByteArrayInputStream(mapMarshaller.marshal(propertiesAfterSave).getBytes());
 
-        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", createNiceMock(ApiKey))
+        def dataStore = new DefaultDataStore(requestExecutor, "https://api.stormpath.com/v1", apiKeyCredentials, apiKeyResolver)
 
         //Server call for Resource01
         expect(requestExecutor.executeRequest((DefaultRequest) reportMatcher(new RequestMatcher(new DefaultRequest(HttpMethod.GET, properties.href))))).andReturn(response)
@@ -206,7 +202,7 @@ class DefaultClientTest {
         replay requestExecutor, response, resourceFactory
 
         //Let's start
-        def client = new DefaultClient(apiKey, "https://api.stormpath.com/v1/accounts/", null, Caches.newDisabledCacheManager(), null, 20000)
+        def client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newDisabledCacheManager(), null, null, 20000)
         setNewValue(client, "dataStore", dataStore)
         def account01 = client.getResource(properties.href, Account)
         def account02 = client.getResource(properties.href, Account)
@@ -264,9 +260,12 @@ class DefaultClientTest {
     @Test
     void testTenantActions() {
 
-        def apiKey = createStrictMock(ApiKey)
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+
         def dataStore = createStrictMock(DataStore)
-        String baseUrl = "http://localhost:8080/v1"
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
+        def tenantResolver = createStrictMock(TenantResolver)
 
         def tenant = createStrictMock(Tenant)
         def application = createStrictMock(Application)
@@ -283,68 +282,47 @@ class DefaultClientTest {
         def directoryCriteria = createStrictMock(DirectoryCriteria)
         def account = createStrictMock(Account)
 
-        def tenantHref = "https://api.stormpath.com/v1/tenants/jdhrgojeorigjj09etiij"
         def token = "ExAmPleEmAilVeRiFiCaTiOnTokEnHeRE"
 
         //createApplication(Application)
-        expect(dataStore.getResource("/tenants/current", Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
-        expect(tenant.createApplication(application)).andReturn(returnedApplication)
+        expect(tenant.createApplication(application)).andReturn(returnedApplication).times(1)
 
         //createApplication(CreateApplicationRequest)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.createApplication(createApplicationRequest)).andReturn(returnedApplication)
 
         //getApplications()
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getApplications()).andReturn(applicationList)
 
         //getApplications(Map<String, Object>)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getApplications(map)).andReturn(applicationList)
 
         //getApplications(ApplicationCriteria)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getApplications(applicationCriteria)).andReturn(applicationList)
 
         //createDirectory(Directory)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.createDirectory(directory)).andReturn(returnedDir)
 
         //createDirectory(CreateDirectoryRequest)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.createDirectory(createDirectoryRequest)).andReturn(returnedDir)
 
         //getDirectories()
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getDirectories()).andReturn(directoryList)
 
         //getDirectories(Map<String, Object>)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getDirectories(map)).andReturn(directoryList)
 
         //getDirectories(ApplicationCriteria)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.getDirectories(directoryCriteria)).andReturn(directoryList)
 
         //verifyAccountEmail(String)
-        expect(dataStore.getResource(tenantHref, Tenant)).andReturn(tenant)
-        expect(tenant.getHref()).andReturn(tenantHref)
         expect(tenant.verifyAccountEmail(token)).andReturn(account)
 
-        replay(apiKey, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
-                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
+        expect(tenantResolver.getCurrentTenant()).andReturn(tenant).times(11)
 
-        Client client = new DefaultClient(apiKey, baseUrl, null, Caches.newDisabledCacheManager(), null, 20000)
+        replay(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
+                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account, tenantResolver)
+
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newDisabledCacheManager(), null, null, 20000, tenantResolver)
         setNewValue(client, "dataStore", dataStore)
         assertSame(client.createApplication(application), returnedApplication)
         assertSame(client.createApplication(createApplicationRequest), returnedApplication)
@@ -358,10 +336,43 @@ class DefaultClientTest {
         assertSame(client.getDirectories(directoryCriteria), directoryList)
         assertSame(client.verifyAccountEmail(token), account)
 
-        verify(apiKey, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
-                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account)
+        verify(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
+                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account, tenantResolver)
     }
 
+    /**
+     * @since 1.2.0
+     */
+    @Test
+    public void testGetCurrentTenant(){
+        def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
+        def apiKeyResolver = createStrictMock(ApiKeyResolver)
+        def baseUrlResolver = createStrictMock(BaseUrlResolver)
+        def proxy = createStrictMock(com.stormpath.sdk.client.Proxy)
+        def cacheManager = createStrictMock(CacheManager)
+        def authcScheme = AuthenticationScheme.SAUTHC1
+        def connectionTimeout = 990011
+        def tenantResolver = createStrictMock(TenantResolver)
+
+        def tenant = createStrictMock(Tenant)
+        def tenantOptions = createStrictMock(TenantOptions)
+
+        expect(tenantResolver.getCurrentTenant()).andReturn(tenant)
+        expect(tenantResolver.getCurrentTenant(tenantOptions)).andReturn(tenant)
+
+        expect(proxy.getHost()).andReturn("192.168.2.110")
+        expect(proxy.getPort()).andReturn(777)
+        expect(proxy.isAuthenticationRequired()).andReturn(false)
+
+        replay(apiKeyCredentials, proxy, cacheManager, tenantResolver)
+
+        Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, proxy, cacheManager, authcScheme, null, connectionTimeout, tenantResolver)
+
+        assertEquals(client.getCurrentTenant(), tenant)
+        assertEquals(client.getCurrentTenant(tenantOptions), tenant)
+
+        verify(apiKeyCredentials, proxy, cacheManager, tenantResolver)
+    }
 
     /**
      * Allows to set a new value to a final property

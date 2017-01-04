@@ -16,6 +16,7 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.servlet.filter.account.InsecureCookieException;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +48,8 @@ public abstract class AbstractErrorModelFactory implements ErrorModelFactory {
             return translateResourceException(request, (ResourceException) e);
         } else if (e instanceof ValidationException) {
             errorMsg = e.getMessage();
+        } else if (e instanceof InsecureCookieException) {
+            errorMsg = getErrorMessage(request, e.getLocalizedMessage(), e.getMessage());
         }
         return ErrorModel.builder()
                 .setStatus(status)
@@ -61,7 +64,7 @@ public abstract class AbstractErrorModelFactory implements ErrorModelFactory {
     }
 
     protected String getErrorMessage(HttpServletRequest request, String key, String defaultMessage) {
-        if (key.isEmpty()){
+        if (key.isEmpty()) {
             return defaultMessage;
         }
         return messageSource.getMessage(key, defaultMessage, request.getLocale(), getMessageParams());

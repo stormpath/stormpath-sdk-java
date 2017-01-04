@@ -22,12 +22,4 @@ package com.stormpath.sdk.provider;
  */
 public interface GoogleAccountRequestBuilder extends ProviderAccountRequestBuilder<GoogleAccountRequestBuilder> {
 
-    /**
-     * Setter for the Google authorization code (it looks similar to "4/2Dz0r7r9oNBE9dFD-_JUb.suCu7uj8TEnp6UAPm0").
-     *
-     * @param code the Google authorization code.
-     * @return the Google authorization code.
-     */
-    GoogleAccountRequestBuilder setCode(String code);
-
 }

@@ -58,7 +58,7 @@ class DefaultWelcomeTemplateTest {
                 name: "Test Email",
                 description: "Test Description",
                 fromName: "John Doe",
-                fromEmailAddress: "john@email.com",
+                fromEmailAddress: "john@testmail.stormpath.com",
                 subject: "Your registration was successful",
                 textBody: "Thanks for signing up. This is a welcome email.",
                 htmlBody: "Thanks for signing up. This is a <p>welcome email</p>.",
@@ -69,7 +69,7 @@ class DefaultWelcomeTemplateTest {
         assertEquals(emailTemplate.getName(), "Test Email")
         assertEquals(emailTemplate.getDescription(), "Test Description")
         assertEquals(emailTemplate.getFromName(), "John Doe")
-        assertEquals(emailTemplate.getFromEmailAddress(), "john@email.com")
+        assertEquals(emailTemplate.getFromEmailAddress(), "john@testmail.stormpath.com")
         assertEquals(emailTemplate.getSubject(), "Your registration was successful")
         assertEquals(emailTemplate.getTextBody(), "Thanks for signing up. This is a welcome email.")
         assertEquals(emailTemplate.getHtmlBody(), "Thanks for signing up. This is a <p>welcome email</p>.")

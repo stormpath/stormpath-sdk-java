@@ -25,8 +25,14 @@ import org.testng.annotations.Test
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import static org.easymock.EasyMock.*
-import static org.testng.Assert.*
+import static org.easymock.EasyMock.createMock
+import static org.easymock.EasyMock.expect
+import static org.easymock.EasyMock.replay
+import static org.easymock.EasyMock.same
+import static org.easymock.EasyMock.verify
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNull
 
 /**
  * @since 1.0.0
@@ -188,7 +194,7 @@ class LoginControllerTest {
         Form form = createMock(Form)
 
         List<AccountStoreModel> accountStores = new ArrayList<AccountStoreModel>()
-        accountStores.add(new DefaultAccountStoreModel(null, new DefaultProviderModel('foo', 'saml')))
+        accountStores.add(new DefaultAccountStoreModel(null, new DefaultProviderModel('foo', 'saml'), null))
         expect(accountStoreModelFactory.getAccountStores(request)).andReturn(accountStores)
         expect(request.getAttribute(UserAgents.USER_AGENT_REQUEST_ATTRIBUTE_NAME)).andReturn new DefaultUserAgent(request)
         expect(request.getParameter("status")).andReturn null

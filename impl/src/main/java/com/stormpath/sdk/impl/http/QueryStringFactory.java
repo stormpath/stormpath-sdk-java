@@ -81,6 +81,7 @@ public class QueryStringFactory {
         }
 
         applyExpansions(qs, expansionList);
+        applyCustomAttributes(qs, criteria);
 
         return qs;
     }
@@ -109,6 +110,12 @@ public class QueryStringFactory {
         if (!Collections.isEmpty(expansions)) {
             String expand = Strings.collectionToCommaDelimitedString(expansions);
             qs.put("expand", expand);
+        }
+    }
+
+    private void applyCustomAttributes(QueryString qs, DefaultCriteria criteria) {
+        if(criteria.hasCustomAttributes()){
+            qs.putAll(criteria.getCustomAttributes());
         }
     }
 

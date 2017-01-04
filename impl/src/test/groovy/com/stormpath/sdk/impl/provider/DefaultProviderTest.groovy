@@ -50,14 +50,15 @@ class DefaultProviderTest {
 
         def properties = [href: "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider",
                 createdAt: "2013-10-01T23:38:55.000Z",
-                modifiedAt: "2013-10-02T23:38:55.000Z"
+                modifiedAt: "2013-10-02T23:38:55.000Z",
+                providerId: "my-social-thing"
         ]
 
         def internalDataStore = createStrictMock(InternalDataStore)
         def provider = new DefaultProvider(internalDataStore, properties)
 
         assertEquals(provider.getHref(), "https://api.stormpath.com/v1/directories/iouertnw48ufsjnsDFSf/provider")
-        assertEquals(provider.getProviderId(), "stormpath")
+        assertEquals(provider.getProviderId(), "my-social-thing")
         assertEquals(provider.getCreatedAt().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT")), "2013-10-01T23:38:55.000Z")
         assertEquals(provider.getModifiedAt().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("GMT")) , "2013-10-02T23:38:55.000Z")
     }

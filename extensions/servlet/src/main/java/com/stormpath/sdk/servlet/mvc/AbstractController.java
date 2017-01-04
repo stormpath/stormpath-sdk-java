@@ -195,7 +195,7 @@ public abstract class AbstractController implements Controller {
         return messageSource.getMessage(key, locale);
     }
 
-    protected String i18n(HttpServletRequest request, String key, String defaultMessage) {
+    protected String i18nWithDefault(HttpServletRequest request, String key, String defaultMessage) {
         Locale locale = localeResolver.get(request, null);
         return messageSource.getMessage(key, defaultMessage, locale);
     }
@@ -209,7 +209,7 @@ public abstract class AbstractController implements Controller {
         try {
             return MediaType.APPLICATION_JSON.equals(contentNegotiationResolver.getContentType(request, response, produces));
         } catch (UnresolvedMediaTypeException e) {
-            log.error("Couldn't resolve content type", e);
+            log.debug("isJsonPreferred: Couldn't resolve content type: {}", e.getMessage());
             return false;
         }
     }
@@ -218,7 +218,7 @@ public abstract class AbstractController implements Controller {
         try {
             return MediaType.TEXT_HTML.equals(contentNegotiationResolver.getContentType(request, response, produces));
         } catch (UnresolvedMediaTypeException e) {
-            log.error("Couldn't resolve content type", e);
+            log.debug("isHtmlPreferred: Couldn't resolve content type: {}", e.getMessage());
             return false;
         }
     }

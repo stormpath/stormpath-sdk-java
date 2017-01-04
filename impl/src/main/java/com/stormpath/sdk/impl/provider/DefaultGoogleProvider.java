@@ -16,23 +16,29 @@
 package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.EnumProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.provider.GoogleProvider;
+import com.stormpath.sdk.provider.GoogleProviderAccessType;
+import com.stormpath.sdk.provider.GoogleProviderDisplay;
 
 import java.util.Map;
 
 /**
  * @since 1.0.beta
  */
-public class DefaultGoogleProvider extends AbstractProvider implements GoogleProvider {
+public class DefaultGoogleProvider extends AbstractOAuthProvider<GoogleProvider> implements GoogleProvider {
 
     // SIMPLE PROPERTIES
-    static final StringProperty CLIENT_ID = new StringProperty("clientId");
-    static final StringProperty CLIENT_SECRET = new StringProperty("clientSecret");
-    static final StringProperty REDIRECT_URI = new StringProperty("redirectUri");
+    // REDIRECT_URI is here for backwards compatibility, but the recommended way to specify the redirectUri is
+    // to specify it as part of the com.stormpath.sdk.provider.ProviderAccountRequest
+    private static final StringProperty REDIRECT_URI = new StringProperty("redirectUri");
+    private static final StringProperty HD = new StringProperty("hd");
+    private static final EnumProperty<GoogleProviderAccessType> ACCESS_TYPE = new EnumProperty<>("accessType", GoogleProviderAccessType.class);
+    private static final EnumProperty<GoogleProviderDisplay> DISPLAY = new EnumProperty<>("display", GoogleProviderDisplay.class);
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID , CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE, REDIRECT_URI, HD, DISPLAY, ACCESS_TYPE, USER_INFO_MAPPING_RULES);
 
     public DefaultGoogleProvider(InternalDataStore dataStore) {
         super(dataStore);
@@ -45,26 +51,6 @@ public class DefaultGoogleProvider extends AbstractProvider implements GooglePro
     @Override
     public Map<String, Property> getPropertyDescriptors() {
         return PROPERTY_DESCRIPTORS;
-    }
-
-    @Override
-    public String getClientId() {
-        return getString(CLIENT_ID);
-    }
-
-    public GoogleProvider setClientId(String clientId) {
-        setProperty(CLIENT_ID, clientId);
-        return this;
-    }
-
-    @Override
-    public String getClientSecret() {
-        return getString(CLIENT_SECRET);
-    }
-
-    public GoogleProvider setClientSecret(String clientSecret) {
-        setProperty(CLIENT_SECRET, clientSecret);
-        return this;
     }
 
     @Override
@@ -82,4 +68,34 @@ public class DefaultGoogleProvider extends AbstractProvider implements GooglePro
         return IdentityProviderType.GOOGLE.getNameKey();
     }
 
+    @Override
+    public String getHd() {
+        return getString(HD);
+    }
+
+    @Override
+    public GoogleProviderDisplay getDisplay() {
+        String value = getStringProperty(DISPLAY.getName());
+        if (value == null) {
+            return null;
+        }
+        return GoogleProviderDisplay.valueOf(value.toUpperCase());
+    }
+
+    @Override
+    public GoogleProviderAccessType getAccessType() {
+        String value = getStringProperty(ACCESS_TYPE.getName());
+        if (value == null) {
+            return null;
+        }
+        return GoogleProviderAccessType.valueOf(value.toUpperCase());
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Override
+    public String getProviderType() {
+        return IdentityProviderType.GOOGLE.getNameKey();
+    }
 }

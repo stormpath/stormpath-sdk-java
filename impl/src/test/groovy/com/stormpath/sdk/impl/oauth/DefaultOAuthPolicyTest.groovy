@@ -58,6 +58,7 @@ class DefaultOAuthPolicyTest {
                 accessTokenTtl: "PT30M",
                 refreshTokenTtl: "P7D",
                 tokenEndpoint: "https://api.stormpath.com/v1/applications/35YM3OwioW9PVtfLOh6q1e/oauth/token",
+                revocationEndpoint: "https://api.stormpath.com/v1/applications/35YM3OwioW9PVtfLOh6q1e/oauth/revoke",
                 application: [href: "https://api.stormpath.com/v1/applications/35YM3OwioW9PVtfLOh6q1e"],
                 tenant: [href: "https://api.stormpath.com/v1/tenants/3Tj2L7gxX6NkXtiiLkh1WF"]
         ]
@@ -75,6 +76,7 @@ class DefaultOAuthPolicyTest {
         assertEquals(oauthPolicy.getAccessTokenTtl(), properties.accessTokenTtl)
         assertEquals(oauthPolicy.getRefreshTokenTtl(), properties.refreshTokenTtl)
         assertEquals(oauthPolicy.getTokenEndpoint(), properties.tokenEndpoint)
+        assertEquals(oauthPolicy.getRevocationEndpoint(), properties.revocationEndpoint)
 
         oauthPolicy = oauthPolicy.setAccessTokenTtl("P28D")
                 .setRefreshTokenTtl("P1D")

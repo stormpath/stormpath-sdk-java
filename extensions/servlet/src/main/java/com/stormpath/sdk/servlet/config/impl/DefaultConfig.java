@@ -23,7 +23,6 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.client.ClientResolver;
@@ -35,17 +34,13 @@ import com.stormpath.sdk.servlet.config.RegisterEnabledResolver;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
-import com.stormpath.sdk.servlet.filter.ServerUriResolver;
-import com.stormpath.sdk.servlet.http.Resolver;
-import com.stormpath.sdk.servlet.http.Saver;
-import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
-import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.filter.ChangePasswordConfig;
 import com.stormpath.sdk.servlet.filter.ChangePasswordServletControllerConfig;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.filter.FilterChainManager;
 import com.stormpath.sdk.servlet.filter.FilterChainResolver;
+import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.filter.ServletControllerConfig;
 import com.stormpath.sdk.servlet.http.InvalidMediaTypeException;
 import com.stormpath.sdk.servlet.http.MediaType;
@@ -55,17 +50,20 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.i18n.DefaultMessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageContext;
 import com.stormpath.sdk.servlet.i18n.MessageSource;
+import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.WebHandler;
+import com.stormpath.sdk.servlet.util.DefaultGrantTypeValidator;
+import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 import com.stormpath.sdk.servlet.util.ServletContextInitializable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -79,28 +77,16 @@ import java.util.regex.Pattern;
  */
 public class DefaultConfig implements Config {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultConfig.class);
-
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
     public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.password.validationStrategy";
-    public static final String ACCESS_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
-            "stormpath.web.oauth2.authenticationRequestFactory";
-    public static final String REFRESH_TOKEN_AUTHENTICATION_REQUEST_FACTORY =
-            "stormpath.web.refreshToken.authenticationRequestFactory";
 
-    public static final String ACCESS_TOKEN_RESULT_FACTORY = "stormpath.web.oauth2.resultFactory";
-    public static final String REFRESH_TOKEN_RESULT_FACTORY = "stormpath.web.refreshToken.resultFactory";
-    public static final String REQUEST_AUTHORIZER = "stormpath.web.oauth2.authorizer";
-    public static final String BASIC_AUTHENTICATION_REQUEST_FACTORY = "stormpath.web.http.authc.schemes.basic";
-    protected static final String UNAUTHENTICATED_HANDLER = "stormpath.web.authc.unauthenticatedHandler";
-    protected static final String UNAUTHORIZED_HANDLER = "stormpath.web.authz.unauthorizedHandler";
     protected static final String SERVER_URI_RESOLVER = "stormpath.web.oauth2.origin.authorizer.serverUriResolver";
     protected static final String IDSITE_ORGANIZATION_RESOLVER_FACTORY = "stormpath.web.idSite.OrganizationResolverFactory";
+    private static final String PROVIDER_ACCOUNT_REQUEST_RESOLVER = "";
 
     public static final String WEB_APPLICATION_DOMAIN = "stormpath.web.application.domain";
-
 
     public static final String PRODUCES_MEDIA_TYPES = "stormpath.web.produces";
 
@@ -108,9 +94,17 @@ public class DefaultConfig implements Config {
     public static final String ME_URL = "stormpath.web.me.uri";
 
     public static final String OAUTH_ENABLED = "stormpath.web.oauth2.enabled";
+    public static final String CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED = "stormpath.web.oauth2.client_credentials.enabled";
+    public static final String PASSWORD_GRANT_TYPE_ENABLED = "stormpath.web.oauth2.password.enabled";
     public static final String ID_SITE_ENABLED = "stormpath.web.idSite.enabled";
     public static final String CALLBACK_ENABLED = "stormpath.web.callback.enabled";
     public static final String CALLBACK_URI = "stormpath.web.callback.uri";
+    public static final String STORMPATH_ENABLED = "stormpath.enabled";
+    public static final String STORMPATH_WEB_ENABLED = "stormpath.web.enabled";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_ORIGINS = "stormpath.web.cors.allowed.originUris";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_HEADERS = "stormpath.web.cors.allowed.headers";
+    public static final String STORMPATH_WEB_CORS_ALLOWED_METHODS = "stormpath.web.cors.allowed.methods";
+    public static final String STORMPATH_WEB_CORS_ENABLED = "stormpath.web.cors.enabled";
 
     private final ServletContext servletContext;
     private final ConfigReader CFG;
@@ -125,8 +119,8 @@ public class DefaultConfig implements Config {
         Assert.notNull(servletContext, "servletContext argument cannot be null.");
         Assert.notNull(configProps, "Properties argument cannot be null.");
         this.servletContext = servletContext;
-        this.props = Collections.unmodifiableMap(configProps);
-        this.CFG = new ExpressionConfigReader(servletContext, this.props);
+        this.props = new HashMap<>(configProps);
+        this.CFG = new ExpressionConfigReader(servletContext, Collections.unmodifiableMap(this.props));
         this.SINGLETONS = new LinkedHashMap<>();
 
         this.ACCESS_TOKEN_COOKIE_CONFIG = new AccessTokenCookieConfig(CFG);
@@ -252,6 +246,20 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public boolean isStormpathEnabled() {
+        // get as String in case property not defined
+        String isEnabled = CFG.getString(STORMPATH_ENABLED);
+        return isEnabled == null || CFG.getBoolean(STORMPATH_ENABLED);
+    }
+
+    @Override
+    public boolean isStormpathWebEnabled() {
+        // get as String in case property not defined
+        String isWebEnabled = CFG.getString(STORMPATH_WEB_ENABLED);
+        return isWebEnabled == null || CFG.getBoolean(STORMPATH_WEB_ENABLED);
+    }
+
+    @Override
     public boolean isRegisterAutoLoginEnabled() {
         return CFG.getBoolean("stormpath.web.register.autoLogin");
     }
@@ -283,7 +291,7 @@ public class DefaultConfig implements Config {
 
     @Override
     public List<String> getMeExpandedProperties() {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
 
         Pattern pattern = Pattern.compile("^stormpath\\.web\\.me\\.expand\\.(\\w+)$");
 
@@ -401,7 +409,7 @@ public class DefaultConfig implements Config {
         Map<String, Class<T>> classes =
             new ImplementationClassResolver<T>(this, propertyNamePrefix, expectedType).findImplementationClasses();
 
-        Map<String, T> instances = new LinkedHashMap<String, T>(classes.size());
+        Map<String, T> instances = new LinkedHashMap<>(classes.size());
 
         for (Map.Entry<String, Class<T>> entry : classes.entrySet()) {
 
@@ -575,5 +583,66 @@ public class DefaultConfig implements Config {
     @Override
     public Resolver<IdSiteOrganizationContext> getIdSiteOrganizationResolver() {
         return this.getRuntimeInstance(IDSITE_ORGANIZATION_RESOLVER_FACTORY);
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public List<String> getAllowedCorsOrigins() {
+        String allowedOrigins = get(STORMPATH_WEB_CORS_ALLOWED_ORIGINS);
+
+        if(Strings.hasText(allowedOrigins)) {
+            return Arrays.asList(Strings.split(allowedOrigins));
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public List<String> getAllowedCorsHaders() {
+        String allowedHeaders = get(STORMPATH_WEB_CORS_ALLOWED_HEADERS);
+
+        if(Strings.hasText(allowedHeaders)) {
+            return Arrays.asList(Strings.split(allowedHeaders));
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public List<String> getAllowedCorsMethods() {
+        String allowedMethods = get(STORMPATH_WEB_CORS_ALLOWED_METHODS);
+
+        if(Strings.hasText(allowedMethods)) {
+            return Arrays.asList(Strings.split(allowedMethods));
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    @Override
+    public boolean isCorsEnabled() {
+        return CFG.getBoolean(STORMPATH_WEB_CORS_ENABLED);
+    }
+
+    @Override
+    public GrantTypeValidator getGrantTypeStatusValidator() {
+        boolean clientCredentialsEnabled = CFG.getString(CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED) == null || CFG.getBoolean(CLIENT_CREDENTIALS_GRANT_TYPE_ENABLED);
+        boolean passwordEnabled = CFG.getString(PASSWORD_GRANT_TYPE_ENABLED) == null || CFG.getBoolean(PASSWORD_GRANT_TYPE_ENABLED);
+
+        DefaultGrantTypeValidator validator = new DefaultGrantTypeValidator();
+        validator.setClientCredentialsGrantTypeEnabled(clientCredentialsEnabled);
+        validator.setPasswordGrantTypeEnabled(passwordEnabled);
+        return validator;
     }
 }

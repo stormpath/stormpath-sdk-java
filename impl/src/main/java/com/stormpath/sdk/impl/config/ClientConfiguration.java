@@ -1,7 +1,11 @@
 package com.stormpath.sdk.impl.config;
 
+import com.stormpath.sdk.impl.api.ApiKeyResolver;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticatorFactory;
 import com.stormpath.sdk.cache.CacheConfigurationBuilder;
 import com.stormpath.sdk.client.AuthenticationScheme;
+import com.stormpath.sdk.impl.tenant.TenantResolver;
+import com.stormpath.sdk.impl.util.BaseUrlResolver;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,6 +24,7 @@ public class ClientConfiguration {
     private String apiKeyFile;
     private String apiKeyId;
     private String apiKeySecret;
+    private ApiKeyResolver apiKeyResolver;
     private boolean cacheManagerEnabled;
     private long cacheManagerTtl;
     private long cacheManagerTti;
@@ -27,10 +32,13 @@ public class ClientConfiguration {
     private String baseUrl;
     private int connectionTimeout;
     private AuthenticationScheme authenticationScheme;
+    private RequestAuthenticatorFactory requestAuthenticatorFactory;
     private int proxyPort;
     private String proxyHost;
     private String proxyUsername;
     private String proxyPassword;
+    private BaseUrlResolver baseUrlResolver;
+    private TenantResolver tenantResolver;
 
     public String getApiKeyFile() {
         return apiKeyFile;
@@ -56,12 +64,34 @@ public class ClientConfiguration {
         this.apiKeySecret = apiKeySecret;
     }
 
+    /**
+     * @since 1.1.0
+     */
+    public ApiKeyResolver getApiKeyResolver() {
+        return apiKeyResolver;
+    }
+
+    /**
+     * @since 1.1.0
+     */
+    public void setApiKeyResolver(ApiKeyResolver apiKeyResolver) {
+        this.apiKeyResolver = apiKeyResolver;
+    }
+
     public AuthenticationScheme getAuthenticationScheme() {
         return authenticationScheme;
     }
 
     public void setAuthenticationScheme(AuthenticationScheme authenticationScheme) {
         this.authenticationScheme = authenticationScheme;
+    }
+
+    public RequestAuthenticatorFactory getRequestAuthenticatorFactory() {
+        return requestAuthenticatorFactory;
+    }
+
+    public void setRequestAuthenticatorFactory(RequestAuthenticatorFactory requestAuthenticatorFactory) {
+        this.requestAuthenticatorFactory = requestAuthenticatorFactory;
     }
 
     public String getBaseUrl() {
@@ -88,26 +118,51 @@ public class ClientConfiguration {
         this.cacheManagerCaches = cacheManagerCaches;
     }
 
+    /**
+     * Time to idle for cache manager in seconds
+     * @return seconds until time to idle expires
+     */
     public long getCacheManagerTti() {
         return cacheManagerTti;
     }
 
+    /**
+     * The cache manager's time to idle in seconds
+     * @param cacheManagerTti the time to idle in seconds
+     */
     public void setCacheManagerTti(long cacheManagerTti) {
         this.cacheManagerTti = cacheManagerTti;
     }
 
+    /**
+     * Time to live for cache manager in seconds
+     * @return seconds until time to live expires
+     */
     public long getCacheManagerTtl() {
         return cacheManagerTtl;
     }
 
+    /**
+     * The cache manager's time to live in seconds
+     * @param cacheManagerTtl the time to live in seconds
+     */
     public void setCacheManagerTtl(long cacheManagerTtl) {
         this.cacheManagerTtl = cacheManagerTtl;
     }
 
+    /**
+     * Connection timeout in seconds
+     * @return seconds until connection timeout
+     */
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
+    /**
+     * Connection timeout in seconds.
+     *
+     * @param connectionTimeout the timeout value in seconds
+     */
     public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
@@ -142,6 +197,34 @@ public class ClientConfiguration {
 
     public void setProxyUsername(String proxyUsername) {
         this.proxyUsername = proxyUsername;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public BaseUrlResolver getBaseUrlResolver() {
+        return baseUrlResolver;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public void setBaseUrlResolver(BaseUrlResolver baseUrlResolver) {
+        this.baseUrlResolver = baseUrlResolver;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public TenantResolver getTenantResolver() {
+        return tenantResolver;
+    }
+
+    /**
+     * @since 1.2.0
+     */
+    public void setTenantResolver(TenantResolver tenantResolver) {
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
