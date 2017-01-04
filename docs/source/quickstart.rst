@@ -13,9 +13,14 @@ It should take about 5 minutes start to finish.  Let's get started!
 This quickstart demonstrates the fastest way to enable Stormpath in a Spring Cloud Zuul gateway / reverse proxy.
 It should take about 5 minutes start to finish.  Let's get started!
 
-#else
+#elseif( $springboot )
 
 This quickstart demonstrates the fastest way to enable Stormpath in a Spring Boot web application.  It should take
+about 5 minutes start to finish.  Let's get started!
+
+#elseif( $spring )
+
+This quickstart demonstrates the fastest way to enable Stormpath in a Spring web application.  It should take
 about 5 minutes start to finish.  Let's get started!
 
 #end
@@ -63,9 +68,9 @@ Ensure that all resolved dependencies are in your web application's ``/WEB-INF/l
 
 That's it!  You're ready to start using Stormpath in your web application!  Can you believe how easy that was?
 
-#elseif( $springboot )
+#elseif( $spring or $springboot )
 
-This step allows you to enable Stormpath in a Spring Boot web app with *very minimal* configuration.
+This step allows you to enable Stormpath in a Spring #if($springboot)Boot#end web app with *very minimal* configuration.
 It includes Stormpath Spring Security, Stormpath Spring WebMVC and Stormpath Thymeleaf templates.
 
 Using your favorite dependency resolution build tool like Maven or Gradle, add the ``${maven.project.artifactId}-${maven.project.version}.jar`` to your project dependencies. For example:
@@ -117,23 +122,37 @@ That's it!  Stormpath is now enabled in your Spring Cloud Zuul gateway!
 
 #end
 
-#if( !$servlet )
+#if( $spring or $springboot or $sczuul )
 
 Spring Security
 ^^^^^^^^^^^^^^^
 
-The |project| assumes Spring Security will be used to secure your ${apptype} by default.  To ensure this
-works correctly, you will need a Spring Security configuration class:
+The |project| assumes Spring Security will be used to secure your ${apptype} by default.
+
+#if( $spring )
+
+To ensure this works correctly, you will need a Spring Security configuration class and apply the ``stormpath()`` hook:
 
 .. code-block:: java
-    :emphasize-lines: 7
+    :emphasize-lines: 10
 
     @Configuration
+    @ComponentScan
+    @PropertySource("classpath:application.properties")
+    @EnableStormpathWebSecurity
     public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
         }
     }
+
+Without this, you will see a browser popup prompting for authentication, which is the default basic authentication behavior for Spring Security.
+
+#elseif( $springboot )
+
+No programmatic configuration is needed to make use of Spring Security. The |project| handles enabling Stormpath's Spring Security integration automatically.
+
+#end
 
 By default, all paths are locked down with Spring Security. Stormpath's Spring Security integration follows this idiomatic behavior.
 
@@ -157,8 +176,8 @@ If you do not want to use our Spring Security integration, set the following two
 
 #end
 
-#if( $springboot )
-That's it!  You're ready to start using Stormpath in your Spring Boot web application!
+#if( $springboot or $spring )
+That's it! You're ready to start using Stormpath in your Spring #if($springboot)Boot#end web application!
 #end
 
 #if( $sczuul )
@@ -175,7 +194,7 @@ Try it!
 
 If you followed the steps above you will now have fully functional registration, login, logout, forgot password workflows, api authentication and more active on your site!
 
-#if( !$sczuul )
+#if( $servlet or $spring or $springboot )
 
 Don’t believe it? Try it! Start up your web application, and we'll walk you through the basics:
 
@@ -183,7 +202,7 @@ Don’t believe it? Try it! Start up your web application, and we'll walk you th
 * Submit a ``POST`` (not a ``GET``) to ``/logout``. You will be logged out of your account and then redirected back to ``/login`` by default.  You can learn more about ``POST`` for logout on the :ref:`Logout <logout>` page.
 * After logging out, navigate to ``/login``. On the lower-right, click the **Forgot Password?** link, and you'll be shown a form to enter your email.  Enter in your email address and it will send you an email.  Wait for the email and click the link and you'll be able to set a new password!
 
-#else
+#elseif( $sczuul )
 
 Don’t believe it? Try it!
 
@@ -205,8 +224,8 @@ Wasn't that easy?!
   You probably noticed that you couldn't register a user account without specifying a sufficiently strong password.
   This is because, by default, Stormpath enforces certain password strength rules.
 
-  If you'd like to change these password strength rules, you can do so easily by visiting the `Stormpath Admin Console`_,
-  navigating to your your application's user ``Directory``, and then changing the "Password Strength Policy".
+  If you'd like to change these password strength rules, you can do so easily. Visit the `Stormpath Admin Console`_,
+  navigate to your your application's user ``Directory``, and then choose the ``Password Policy`` tab on the ``Policies`` page.
 
 Any Problems?
 ^^^^^^^^^^^^^
@@ -240,7 +259,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
 
 * you have more than one Application registered with Stormpath.  If this is the case, you'll need to configure your
   ${apptype}'s Stormpath ``href``, found in the admin console. Once you get the ``href``, add the following to your
-  ${apptype}'s Spring Boot application properties or yaml file (where ``YOUR_APPLICATION_ID`` is your ${apptype}'s
+  ${apptype}'s Spring #if(!$spring)Boot#end application properties or yaml file (where ``YOUR_APPLICATION_ID`` is your ${apptype}'s
   actual Stormpath Application ID):
 
   .. code-block:: yaml
@@ -252,7 +271,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
 * your ${apptype} already uses web frameworks that make heavy use of servlet filters, like Spring Security or
   Apache Shiro. These could cause filter ordering conflicts, but the fix is easy - you just need to specify the
   specific order where you want the Stormpath filter relative to other filters.  You do this by adding the following
-  to your ${apptype}'s Spring Boot application properties (where ``preferred_value`` is your preferred integer value):
+  to your ${apptype}'s Spring #if(!$spring)Boot#end application properties (where ``preferred_value`` is your preferred integer value):
 
   .. code-block:: yaml
 
@@ -261,13 +280,14 @@ Did you experience any problems with this quickstart?  It might not have worked 
          stormpathFilter:
            order: preferred_value #must be an integer
 
-  By default, the ``StormpathFilter`` is ordered as ``Ordered.HIGHEST_PRECEDENCE``, but if you have multiple
-  filters with that same order value, you might have to change the order of the other filters as well.
+  Spring Security is ordered as ``0`` (which is its default) and the ``StormpathFilter`` is ordered as ``10`` by default.
+  If you have multiple filters with that same order value, you might have to change the order of the other filters as well.
 
+#if( $springboot or $sczuul )
 
 * you're using the ``spring-boot-starter-parent`` as a ``parent`` and you are getting errors related to Spring
-  Security. The Stormpath starter relies on Spring Security 4.1.x. The current release at the time of this writing
-  of the ``spring-boot-starter-parent`` is 1.4.0 and it also relies on Spring Security 4.1.x. Prior versions of
+  Security. The Stormpath starter relies on Spring Security 4.2.x. The current release at the time of this writing
+  of the ``spring-boot-starter-parent`` is 1.4.3 and it also relies on Spring Security 4.1.x. Prior versions of
   the ``spring-boot-starter-parent`` rely on Spring Security 3.2.x. Our first recommendation is to use the latest
   version of the ``spring-boot-starter-parent``. However, if you must use earlier versions, there is a simple
   solution to this, which is to override the Spring Security version in your ``pom.xml``
@@ -285,14 +305,14 @@ Did you experience any problems with this quickstart?  It might not have worked 
          <parent>
              <groupId>org.springframework.boot</groupId>
              <artifactId>spring-boot-starter-parent</artifactId>
-             <version>1.4.0.RELEASE</version>
+             <version>1.4.3.RELEASE</version>
              <relativePath/> <!-- lookup parent from repository -->
          </parent>
 
          <properties>
              <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
              <java.version>1.8</java.version>
-             <spring-security.version>4.1.2.RELEASE</spring-security.version>
+             <spring-security.version>4.1.3.RELEASE</spring-security.version>
          </properties>
 
          <dependencies>
@@ -308,6 +328,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
          </dependencies>
 
      </project>
+#end
 
 #end
 
@@ -325,12 +346,12 @@ That was just a little example of how much functionality is ready right out of t
 * Secure CSRF protection on views with forms
 #if( $servlet )* A simple security assertion/authorization framework
 #end
-* Events to react to registration, login, logout, etc
+* Events to react to registration, login, logout, etc.
 * Session-free (stateless) secure user account identification
 * HTTP Basic and OAuth2 authentication
 * and more!
 
-#if( $springboot )
+#if( $servlet or $spring or $springboot )
 
 Dig in to our `examples`_ to see more Stormpath Spring Boot in action.
 
