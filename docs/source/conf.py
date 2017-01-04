@@ -63,6 +63,10 @@ elif tags.has('springboot'):
     language_name = u'Spring Boot'
     language_slug = u'spring-boot'
 
+elif tags.has('spring'):
+    language_name = u'Spring'
+    language_slug = u'spring'
+
 elif tags.has('sczuul'):
     language_name = u'Zuul Spring Cloud Starter'
     language_slug = u'zuul-spring-cloud-starter'
@@ -77,8 +81,11 @@ if tags.has('servlet'):
 elif tags.has('sczuul'):
     project = u'Stormpath Zuul Spring Cloud Starter'
     apptype = u'gateway'
-else:
+elif tags.has('springboot'):
     project = u'Stormpath Default Spring Boot Starter'
+    apptype = u'application'
+elif tags.has('spring'):
+    project = u'Stormpath Spring Security WebMVC'
     apptype = u'application'
 
 copyright = '%s, Stormpath, Inc' % datetime.datetime.now().year
@@ -151,11 +158,17 @@ elif tags.has('sczuul'):
     .. |project| replace:: Stormpath Zuul Spring Cloud Starter
     .. |apptype| replace:: gateway
     """
-else:
+elif tags.has('springboot'):
     rst_prolog = """
     .. |project| replace:: Stormpath Default Spring Boot Starter
     .. |apptype| replace:: application
     """
+elif tags.has('spring'):
+    rst_prolog = """
+    .. |project| replace:: Stormpath Spring Security WebMVC
+    .. |apptype| replace:: application
+    """
+
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -195,7 +208,7 @@ html_static_path = ['_static']
 html_context = {
   'css_files': [
         '_static/theme_overrides.css',  # overrides for wide tables in RTD theme
-        ]
+  ]
 }
 
 # Add any extra paths that contain custom files (such as robots.txt or
@@ -249,8 +262,10 @@ if tags.has('servlet'):
     htmlhelp_basename = 'StormpathServletPlugindoc'
 elif tags.has('sczuul'):
     htmlhelp_basename = 'StormpathZuulSpringCloudStarterDoc'
-else:
+elif tags.has('springboot'):
     htmlhelp_basename = 'StormpathDefaultSpringBootStarterDoc'
+elif tags.has('spring'):
+    htmlhelp_basename = 'StormpathSpringSecurityWebMVCDoc'
 
 # Make the default syntax highlighting target Javascript code snippets.
 highlight_language = 'java'
@@ -281,11 +296,17 @@ elif tags.has('sczuul'):
       ('index', 'StormpathZuulSpringCloudStarter.tex', u'Stormpath Zuul Spring Cloud Starter Documentation',
        u'Stormpath, Inc.', 'manual'),
     ]
-else:
+elif tags.has('springboot'):
     latex_documents = [
         ('index', 'StormpathDefaultSpringBootStarter.tex', u'Stormpath Default Spring Starter Documentation',
          u'Stormpath, Inc.', 'manual'),
     ]
+elif tags.has('spring'):
+    latex_documents = [
+        ('index', 'StormpathSpringSecurityWebMVC.tex', u'Stormpath Spring Security WebMVC Documentation',
+         u'Stormpath, Inc.', 'manual'),
+    ]
+
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -344,10 +365,16 @@ elif tags.has('sczuul'):
          u'Stormpath', 'StormpathZuulSpringCloudStarter', 'Documentation for the Stormpath Zuul Spring Cloud Starter.',
         'Miscellaneous'),
     ]
-else:
+elif tags.has('springboot'):
     texinfo_documents = [
         (master_doc, 'StormpathDefaultSpringBootStarter', u'Stormpath Default Spring Boot Starter Documentation',
          u'Stormpath', 'StormpathDefaultSpringBootStarter', 'Documentation for the Stormpath Default Spring Boot Starter.',
+         'Miscellaneous'),
+    ]
+elif tags.has('spring'):
+    texinfo_documents = [
+        (master_doc, 'StormpathSpringSecurityWebMVC', u'Stormpath Spring Security WebMVC Documentation',
+         u'Stormpath', 'StormpathSpringSecurityWebMVC', 'Documentation for the Stormpath Spring Security WebMVC integration.',
          'Miscellaneous'),
     ]
 
