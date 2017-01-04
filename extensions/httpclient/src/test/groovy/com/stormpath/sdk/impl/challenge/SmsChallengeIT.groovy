@@ -26,13 +26,13 @@ import com.stormpath.sdk.phone.Phone
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
 
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.assertTrue
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.1.0
  */
-class SmsChallengeIT extends AbstractMultiFactorIT{
+class SmsChallengeIT extends AbstractMultiFactorIT {
 
     @Test
     void testFailedChallenge() {

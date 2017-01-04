@@ -5,8 +5,10 @@ import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createMock
-import static org.testng.Assert.*
-import static org.testng.AssertJUnit.assertTrue
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
 
 /**
  * Note: Most of DefaultApiKey is covered by other tests. This test fills out the coverage to be 100%

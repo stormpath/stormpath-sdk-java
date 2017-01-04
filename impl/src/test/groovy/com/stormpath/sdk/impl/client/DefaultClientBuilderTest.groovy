@@ -22,9 +22,9 @@ import static org.easymock.EasyMock.createStrictMock
 import static org.easymock.EasyMock.expect
 import static org.easymock.EasyMock.replay
 import static org.easymock.EasyMock.verify
+import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertTrue
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.fail
+import static org.testng.Assert.fail
 
 class DefaultClientBuilderTest {
 
