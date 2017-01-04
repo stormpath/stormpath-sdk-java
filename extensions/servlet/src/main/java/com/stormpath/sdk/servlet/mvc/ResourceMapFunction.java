@@ -23,6 +23,7 @@ import com.stormpath.sdk.lang.Function;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
+import com.stormpath.sdk.convert.ResourceConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,10 @@ import java.util.Map;
  * serialization, likely to JSON.
  *
  * @since 1.1.0
+ * @deprecated since 1.3.0.  Use a {@link ResourceConverter ResourceConverter} instead.
  */
+@SuppressWarnings("unused") //could have been referenced by app developers - can't delete until 2.0
+@Deprecated
 public class ResourceMapFunction<T extends Resource> implements Function<T, Map<String, Object>> {
 
     private static final Logger log = LoggerFactory.getLogger(ResourceMapFunction.class);

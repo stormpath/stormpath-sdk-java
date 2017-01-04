@@ -18,7 +18,6 @@ package com.stormpath.sdk.servlet.account
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.lang.Function
 import com.stormpath.sdk.servlet.json.ResourceJsonFunction
-import com.stormpath.sdk.servlet.mvc.ResourceMapFunction
 import org.testng.annotations.Test
 
 import javax.servlet.http.HttpServletRequest
@@ -41,7 +40,6 @@ class AccountStringResolverTest {
         def resolver = new AccountStringResolver()
         assertTrue resolver.accountResolver instanceof DefaultAccountResolver
         assertTrue resolver.accountStringFunction instanceof ResourceJsonFunction
-        assertTrue resolver.accountStringFunction.mapFunction instanceof ResourceMapFunction
     }
 
     @Test
