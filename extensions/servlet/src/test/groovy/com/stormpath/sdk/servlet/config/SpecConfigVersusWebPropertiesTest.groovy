@@ -51,13 +51,7 @@ class SpecConfigVersusWebPropertiesTest {
         defaultProperties = new ResourcePropertiesSource(defaultConfig).properties
     }
 
-    /**
-     * NOTE: This test is temporarily disabled as 15 new properties have been added to the framework spec for
-     * multi-tenancy that are not yet implemented in the SDK.
-     * Per high priority ticket: https://github.com/stormpath/stormpath-sdk-java/issues/1033,
-     * Todo: this should be re-enabled and support for the new properties should be added asap
-     */
-    @Test(enabled=false)
+    @Test
     void verifyPropertiesInSpecAreInDefault() {
 
         def diff = specProperties.findResults { k,v ->
@@ -74,9 +68,9 @@ class SpecConfigVersusWebPropertiesTest {
             println "Or you could adjust the assertEquals statement in this method to allow for this missing key as a temporary solution."
         }
 
-        //todo: 15 new properties related to organizations were added to the spec, we do not yet suppor them.
+        //todo: 22 new properties related to organizations were added to the spec, we do not yet support them.
         //see https://github.com/stormpath/stormpath-sdk-java/issues/1052
-        assertEquals 15, diff.size(), "Missing keys in default config: ${diff}"
+        assertEquals diff.size(), 22, "Missing keys in default config: ${diff}"
     }
 
     @Test
@@ -85,7 +79,7 @@ class SpecConfigVersusWebPropertiesTest {
             specProperties.containsKey(k) ? null : k
         }
 
-        def expected_diff_size = 81
+        def expected_diff_size = 83
 
         if (diff.size != expected_diff_size) {
             println "It looks like a property was added or removed from the Framework Spec or web.stormpath.properties."
@@ -95,20 +89,20 @@ class SpecConfigVersusWebPropertiesTest {
         assertEquals diff.size(), expected_diff_size, "Missing keys in spec config: ${diff}"
 
         // to see the keys missing in spec, uncomment the following
-        /*if (diff.size > 0) {
+        if (diff.size > 0) {
             println "Missing keys in spec:"
             diff.each {
                 println "${it}"
             }
-        }*/
+        }
 
         // to see the keys and their values for updating the wiki, uncomment the following
         // https://github.com/stormpath/stormpath-sdk-java/wiki/1.0-Configuration-Changes-&-Additions-Guide#not-in-specification
-        /*
+
         SortedSet<String> keys = new TreeSet<String>(properties.keySet());
         keys.each {
             println("|${it}|" + properties.get(it) + "|")
-        }*/
+        }
     }
 
     @Test(enabled = false)
