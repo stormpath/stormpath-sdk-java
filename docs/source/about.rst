@@ -30,7 +30,7 @@ your web application to do things like:
 
 Stormpath provides a simple REST API for all of the above.  For instance, if you wanted to create a new user account given an email address and password, you could send Stormpath an ``HTTP POST`` request and Stormpath would create a new user account for you, securely hash its password using security best practices and and store it securely in Stormpath's cloud service.
 
-In addition to allowing you to create users and groups, Stormpath also allows you to store custom data with each user account.  Let's say you want to store a user's birthday -- you can send Stormpath an ``HTTP POST`` request to the user's account URL and store *any* variable JSON data (birthdays, images, movies, links, etc.).  This information is encrypted and authenticated end-to-end, ensuring your user data is secure.
+In addition to allowing you to create users and groups, Stormpath also allows you to store custom data with each user account.  Let's say you want to store a user's birthday -- you can send Stormpath an ``HTTP POST`` request to the user's account URL and store *any* variable JSON data (birthdays, images, movies, links, etc.).  This information is cryptographically verifiable and is authenticated end-to-end, ensuring your user data is secure.
 
 What is the |project|?
 ----------------------
@@ -64,7 +64,7 @@ You might want to use Stormpath if:
 - You would like to configure and customize password strength rules.
 - You'd like to keep your user data separate from your other applications to increase platform stability / availability.
 - You are building a service oriented application or using a microservices based architecture, in which multiple independent services need access to the same user data.
-- You who would like to use Stormpath, but need to host it yourself (Stormpath has private and on-premise editions you can use internally).
+- You would like to use Stormpath, but need to host it yourself (Stormpath has private and on-premise editions you can use internally).
 
 **Stormpath is a great match for applications of any size where security, development speed, and simplicity are top priorities.**
 

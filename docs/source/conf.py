@@ -85,7 +85,7 @@ elif tags.has('springboot'):
     project = u'Stormpath Default Spring Boot Starter'
     apptype = u'application'
 elif tags.has('spring'):
-    project = u'Stormpath Spring Security WebMVC'
+    project = u'Stormpath Spring Security WebMVC Integration'
     apptype = u'application'
 
 copyright = '%s, Stormpath, Inc' % datetime.datetime.now().year
@@ -165,7 +165,7 @@ elif tags.has('springboot'):
     """
 elif tags.has('spring'):
     rst_prolog = """
-    .. |project| replace:: Stormpath Spring Security WebMVC
+    .. |project| replace:: Stormpath Spring Security WebMVC Integration
     .. |apptype| replace:: application
     """
 
@@ -303,7 +303,7 @@ elif tags.has('springboot'):
     ]
 elif tags.has('spring'):
     latex_documents = [
-        ('index', 'StormpathSpringSecurityWebMVC.tex', u'Stormpath Spring Security WebMVC Documentation',
+        ('index', 'StormpathSpringSecurityWebMVC.tex', u'Stormpath Spring Security WebMVC Integration Documentation',
          u'Stormpath, Inc.', 'manual'),
     ]
 
@@ -373,8 +373,8 @@ elif tags.has('springboot'):
     ]
 elif tags.has('spring'):
     texinfo_documents = [
-        (master_doc, 'StormpathSpringSecurityWebMVC', u'Stormpath Spring Security WebMVC Documentation',
-         u'Stormpath', 'StormpathSpringSecurityWebMVC', 'Documentation for the Stormpath Spring Security WebMVC integration.',
+        (master_doc, 'StormpathSpringSecurityWebMVC', u'Stormpath Spring Security WebMVC Integration Documentation',
+         u'Stormpath', 'StormpathSpringSecurityWebMVC', 'Documentation for the Stormpath Spring Security WebMVC Integration.',
          'Miscellaneous'),
     ]
 
