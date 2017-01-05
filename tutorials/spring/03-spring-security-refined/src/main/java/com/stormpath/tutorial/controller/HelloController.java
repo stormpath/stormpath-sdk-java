@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial;
+package com.stormpath.tutorial.controller;
 
-import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.directory.CustomData;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.group.GroupList;
-import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.tutorial.service.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,10 +24,6 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @since 1.3.0
@@ -53,29 +45,6 @@ public class HelloController {
         return "home";
     }
 
-    @RequestMapping("/userdetails")
-    String userDetails(HttpServletRequest req, Model model) {
-        Account account = AccountResolver.INSTANCE.getAccount(req);
-        Map<String, List<String>> springSecurityPermissions = new HashMap<>();
-
-        // groups
-        List<Group> groups = new ArrayList<>();
-        for (Group group : account.getGroups()) {
-            groups.add(group);
-            updateSpringSecurityPermissionsMap(
-                "group:" + group.getName(), springSecurityPermissions, group.getCustomData()
-            );
-        }
-        model.addAttribute("groups", groups);
-
-        // perms
-        updateSpringSecurityPermissionsMap("account", springSecurityPermissions, account.getCustomData());
-
-        model.addAttribute("springSecurityPermissions", springSecurityPermissions);
-
-        return "userdetails";
-    }
-
     @RequestMapping("/restricted")
     String restricted(HttpServletRequest req, Model model) {
         String msg = helloService.sayHello(
@@ -85,13 +54,4 @@ public class HelloController {
         return "restricted";
     }
 
-    @SuppressWarnings("unchecked")
-    private void updateSpringSecurityPermissionsMap(
-        String key, Map<String, List<String>> springSecurityPermissions, CustomData customData
-    ) {
-        List<String> springSecurityPermissionsList = (List<String>) customData.get("springSecurityPermissions");
-        if (!Collections.isEmpty(springSecurityPermissionsList)) {
-            springSecurityPermissions.put(key, springSecurityPermissionsList);
-        }
-    }
 }

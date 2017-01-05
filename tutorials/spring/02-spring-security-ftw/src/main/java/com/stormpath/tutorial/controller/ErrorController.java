@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial;
+package com.stormpath.tutorial.controller;
 
-import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.servlet.application.ApplicationResolver;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 1.3.0
  */
-@RestController
-public class HelloController {
+@Controller
+public class ErrorController {
 
-    @RequestMapping("/")
-    public String hello(HttpServletRequest req) {
-        Application app = ApplicationResolver.INSTANCE.getApplication(req);
-        return "Hello, " + app.getName();
+    @RequestMapping("/403")
+    public String forbidden(Model model) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("status", "403");
+        errors.put("message", "Access is Denied");
+
+        model.addAttribute("errors", errors);
+
+        return "error";
     }
 }

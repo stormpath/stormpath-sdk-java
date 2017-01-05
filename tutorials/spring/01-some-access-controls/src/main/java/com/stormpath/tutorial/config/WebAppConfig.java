@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial;
+package com.stormpath.tutorial.config;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
@@ -34,7 +34,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @EnableStormpath //Stormpath base beans
 @EnableStormpathWebMvc //Stormpath web mvc beans plus out-of-the-box views
-@ComponentScan
+@ComponentScan("com.stormpath.tutorial")
 @PropertySource("classpath:application.properties")
 public class WebAppConfig {
 

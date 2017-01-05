@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Stormpath, Inc.
+ * Copyright 2017 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial;
-
-import com.stormpath.sdk.account.Account;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
+package com.stormpath.tutorial.model;
 
 /**
  * @since 1.3.0
  */
-@Service
-public class HelloService {
-    @PreAuthorize("hasAuthority(@groups.USER)")
-    public String sayHello(Account account) {
-        return "Hello, " + account.getGivenName() +
-            ". You have the required permissions to access this restricted resource.";
+public class AccountInfo {
+
+    private String href;
+    private String fullName;
+    private String email;
+
+    public AccountInfo(String email, String fullName, String href) {
+        this.email = email;
+        this.fullName = fullName;
+        this.href = href;
     }
+
+    public String getHref() {
+        return href;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    
 }

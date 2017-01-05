@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial;
+package com.stormpath.tutorial.config;
 
 import com.stormpath.spring.config.EnableStormpathWebSecurity;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,7 +28,7 @@ import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpa
  * @since 1.3.0
  */
 @Configuration
-@ComponentScan
+@ComponentScan("com.stormpath.tutorial")
 @PropertySource("classpath:application.properties")
 @EnableStormpathWebSecurity
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {

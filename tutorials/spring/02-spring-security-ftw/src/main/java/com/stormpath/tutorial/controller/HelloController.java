@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial;
+package com.stormpath.tutorial.controller;
 
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.tutorial.service.HelloService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +31,14 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class HelloController {
 
+    private HelloService helloService;
+
+    @Autowired
+    public HelloController(HelloService helloService) {
+        Assert.notNull(helloService);
+        this.helloService = helloService;
+    }
+
     @RequestMapping("/")
     String home(HttpServletRequest req, Model model) {
         model.addAttribute("status", req.getParameter("status"));
@@ -35,11 +46,12 @@ public class HelloController {
     }
 
     @RequestMapping("/restricted")
-    String restricted(HttpServletRequest req) {
-        if (AccountResolver.INSTANCE.getAccount(req) != null) {
-            return "restricted";
-        }
-
-        return "redirect:/login";
+    String restricted(HttpServletRequest req, Model model) {
+        String msg = helloService.sayHello(
+            AccountResolver.INSTANCE.getAccount(req)
+        );
+        model.addAttribute("msg", msg);
+        return "restricted";
     }
+
 }

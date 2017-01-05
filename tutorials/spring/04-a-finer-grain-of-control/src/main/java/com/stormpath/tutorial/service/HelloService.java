@@ -13,29 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial;
+package com.stormpath.tutorial.service;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.stormpath.sdk.account.Account;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 
 /**
  * @since 1.3.0
  */
-@Controller
-public class ErrorController {
-
-    @RequestMapping("/403")
-    public String forbidden(Model model) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put("status", "403");
-        errors.put("message", "Access is Denied");
-
-        model.addAttribute("errors", errors);
-
-        return "error";
+@Service
+public class HelloService {
+    @PreAuthorize("hasAuthority(@groups.USER) and hasPermission('say', 'hello')")
+    public String sayHello(Account account) {
+        return "Hello, " + account.getGivenName() +
+            ". You have the required permissions to access this restricted resource.";
     }
 }

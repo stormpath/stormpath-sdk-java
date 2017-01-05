@@ -16,6 +16,7 @@
 package com.stormpath.tutorial;
 
 import com.stormpath.sdk.servlet.filter.StormpathFilter;
+import com.stormpath.tutorial.config.SpringSecurityWebAppConfig;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;

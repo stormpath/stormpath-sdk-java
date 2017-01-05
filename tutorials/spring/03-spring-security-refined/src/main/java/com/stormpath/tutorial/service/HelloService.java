@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Stormpath, Inc.
+ * Copyright 2016 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial;
+package com.stormpath.tutorial.service;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import com.stormpath.sdk.account.Account;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 
 /**
  * @since 1.3.0
  */
-@Configuration
-public class WebAppConfig extends WebMvcConfigurerAdapter {
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
-        registry
-            .addResourceHandler("/static/**")
-            .addResourceLocations("/static/");
+@Service
+public class HelloService {
+    @PreAuthorize("hasAuthority(@groups.USER)")
+    public String sayHello(Account account) {
+        return "Hello, " + account.getGivenName() +
+            ". You have the required permissions to access this restricted resource.";
     }
 }
