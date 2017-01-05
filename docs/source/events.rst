@@ -73,7 +73,7 @@ If you are using our `Spring Security integration <https://github.com/stormpath/
 
 .. note::
 
-    Authentication event publishing is delegated to the configured ``AuthenticationEventPublisher`` which defaults to a null implementation which doesn't publish events, so you must inject a publisher bean if you want to receive Spring Security events.
+    Authentication event publishing is delegated to the configured ``AuthenticationEventPublisher`` which defaults to a null implementation that doesn't publish events, so you must inject a publisher bean if you want to receive Spring Security events.
 
 In the case of a successful authentication an `AuthenticationSuccessEvent <http://docs.spring.io/autorepo/docs/spring-security/current/apidocs/org/springframework/security/authentication/event/AuthenticationSuccessEvent.html>`_ will be triggered. Otherwise, one of many different events denoting the actual authentication failure cause will be triggered.
 
