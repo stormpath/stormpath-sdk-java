@@ -741,7 +741,11 @@ will be able to get to the ``/restricted`` page.
 Token Management
 ----------------
 
-The code for this section can be found in `tutorials/spring-boot/05-token-management <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/05-token-management>`_.
+#if( $springboot )
+The code for this section can be found in `tutorials/spring-boot/05-token-management`_.
+#elseif( $spring )
+The code for this section can be found in `tutorials/spring/05-token-management`_.
+#end
 
 The Java SDK supports `oauth2 <http://oauth.net/2/>`_ workflows for obtaining and interacting with access tokens and
 refresh tokens. The Token Management feature is included "out of the box" and is used via the `/oauth/token` endpoint.
@@ -751,23 +755,33 @@ Spring Security (with and without WebMVC).
 
 This part of the tutorial exercises the Token Magement features using Spring Security Spring Boot WebMVC.
 
-There's a simple `@RestController` called `UserDetailsController` that returns information about the authenticated account.
+There's a simple ``@RestController`` called ``UserDetailsController`` that returns information about the authenticated account.
 
 .. code-block:: java
+    :linenos:
 
     @RestController
     public class UserDetailsController {
+
+        private AccountResolver accountResolver;
+
+        @Autowired
+        public UserDetailsController(AccountResolver accountResolver) {
+            Assert.notNull(accountResolver);
+            this.accountResolver = accountResolver;
+        }
+
         @RequestMapping(value="/userdetails", produces = MediaType.APPLICATION_JSON_VALUE)
         public AccountInfo info(HttpServletRequest req) {
             // must be logged in to get here per Spring Security config
-            Account account = AccountResolver.INSTANCE.getAccount(req);
+            Account account = accountResolver.getAccount(req);
 
             return new AccountInfo(account.getEmail(), account.getFullName(), account.getHref());
         }
     }
 
-In order to hit the `/userdetails` endpoint, we'll first, we'll get an `access_token` and a `refresh_token` by hitting the
-`/oauth/token` endpoint:
+In order to hit the ``/userdetails`` endpoint, we'll first, we'll get an ``access_token`` and a ``refresh_token`` by hitting the
+``/oauth/token`` endpoint:
 
 .. code-block:: bash
 
@@ -785,22 +799,22 @@ You will get back a response that looks something like this:
 .. code-block:: javascript
 
     {
-      "access_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa1FBNjRTdEdUQjFhVEhlNGdPIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQxNzQ3LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.-3NNpi7-DTvl2VNCfHHFNwWVikmeCyNPy6KEu--XYjk",
-      "refresh_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU5NjIyMTQ3fQ.yK5twgj3-v51z4pszKXWTX9VtCbs1KxQU4vH1eXvgGo",
+      "access_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ...",
+      "refresh_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ...",
       "token_type":"Bearer",
       "expires_in":3600
     }
 
 
-The response includes the tokens as well as information on their type (`Bearer` in this case) and when it expires.
+The response includes the tokens as well as information on their type (``Bearer`` in this case) and when it expires.
 
-We can now use the `access_token` to hit the `/userdetails` endpoint:
+We can now use the ``access_token`` to hit the ``/userdetails`` endpoint:
 
 
 .. code-block:: bash
 
     curl \
-      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa1FBNjRTdEdUQjFhVEhlNGdPIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQxNzQ3LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.-3NNpi7-DTvl2VNCfHHFNwWVikmeCyNPy6KEu--XYjk" \
+      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ..." \
       http://localhost:${port}/userdetails
 
 You will get a response like this:
@@ -815,21 +829,22 @@ You will get a response like this:
 
 Refresh tokens are used to obtain a new access token. This is useful when you want to allow your users to have a longer
 lived session - such as in a mobile application - but you still want to maintain control over how the session is
-managed. Your application could automatically use the `refresh_token` to obtain a new `access_token` when the
-`access_token` expires. With this approach, you could revoke the user's `access_token` and they would be kicked out of
-the system sooner because the `access_token` is short lived.
+managed. Your application could automatically use the ``refresh_token`` to obtain a new ``access_token`` when the
+``access_token`` expires. With this approach, you could revoke the user's ``refresh_token`` and they would be kicked out of
+the system sooner because the ``access_token`` is short lived. In this scenario, the next time the ``access_token`` expired,
+the ``refresh_token`` would be rejected when trying to get a new ``access_token``.
 
-Let's use the `refresh_token` above to get a new `access_token`:
+Let's use the ``refresh_token`` above to get a new ``access_token``:
 
 .. code-block:: bash
 
     curl -v -X POST \
       -H "Origin: http://localhost:${port}" \
       -H "Content-Type: application/x-www-form-urlencoded" \
-      -d "grant_type=refresh_token&refresh_token=eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU5NjIyMTQ3fQ.yK5twgj3-v51z4pszKXWTX9VtCbs1KxQU4vH1eXvgGo" \
+      -d "grant_type=refresh_token&refresh_token=eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ..." \
       http://localhost:${port}/oauth/token
 
-Notice that in this case the `grant_type` is `refresh_token` and that we are using the `refresh_token` that we obtained
+Notice that in this case the ``grant_type`` is ``refresh_token`` and that we are using the ``refresh_token`` that we obtained
 previously.
 
 You will get a response like this:
@@ -837,30 +852,30 @@ You will get a response like this:
 .. code-block:: javascript
 
     {
-      "access_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q",
-      "refresh_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIiwiaWF0IjoxNDU0NDM4MTQ3LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU5NjIyMTQ3fQ.yK5twgj3-v51z4pszKXWTX9VtCbs1KxQU4vH1eXvgGo",
+      "access_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ...",
+      "refresh_token":"eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ...",
       "token_type":"Bearer",
       "expires_in":3600
     }
 
-While the `refresh_token` is the same, we get a new `access_token`.
+While the ``refresh_token`` is the same, we get a new ``access_token``.
 
-By default, when you logout, both the `access_token` and the `refresh_token` will be revoked. Let's see this in action:
+By default, when you logout, both the ``access_token`` and the ``refresh_token`` will be revoked. Let's see this in action:
 
 .. code-block:: bash
 
-    curl -v \
-      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q" \
+    curl -v -X POST \
+      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ..." \
       http://localhost:${port}/logout
 
-Now, if you attempt to use the `access_token` again, you will not be granted access as it's been invalidated. You will
+Now, if you attempt to use the ``access_token`` again, you will not be granted access as it's been invalidated. You will
 need to login again.
 
 
 .. code-block:: bash
 
     curl \
-      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiI1eDlxbWlES2U0RmlFMU02alhLSDBMIiwiaWF0IjoxNDU0NDQ0MTU1LCJpc3MiOiJodHRwczovL2FwaS5zdG9ybXBhdGguY29tL3YxL2FwcGxpY2F0aW9ucy82dkZUNEFSZldDbXVIVlY4Vmt0alRvIiwic3ViIjoiaHR0cHM6Ly9hcGkuc3Rvcm1wYXRoLmNvbS92MS9hY2NvdW50cy80V1NjTWJBbm8zVjk1aWlTc3dralBYIiwiZXhwIjoxNDU0NDQ3NzU1LCJydGkiOiI2M1laa01xMTlzYUhxTHZqSDFtbzRLIn0.J2NR7MV3OoolYImfUNiu8SCDvaQdresHTnPHgL7mO1Q" \
+      -H "Authorization: Bearer eyJraWQiOiJSOTJTQkhKQzFVNERBSU1HUTNNSE9HVk1YIiwiYWxnIjoiSFMyNTYifQ..." \
       http://localhost:${port}/userdetails
 
 Here's the response:
@@ -873,7 +888,7 @@ Here's the response:
     }
 
 As you can see from the examples above, Stormpath provides powerful oauth2 Token Management out-of-the-box using the
-`/oauth/token` endpoint. There is no additional coding required on your part to make use of the Token Management
+``/oauth/token`` endpoint. There is no additional coding required on your part to make use of the Token Management
 feature.
 
 .. _wrapping-up:
@@ -902,3 +917,5 @@ for more information on all that the Stormpath Java SDK has to offer.
 .. _tutorials/spring/03-spring-security-refined: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/03-spring-security-refined
 .. _tutorials/spring-boot/04-a-finer-grain-of-control: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/04-a-finer-grain-of-control
 .. _tutorials/spring/04-a-finer-grain-of-control: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/04-a-finer-grain-of-control
+.. _tutorials/spring-boot/05-token-management: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/05-token-management
+.. _tutorials/spring/05-token-management: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/05-token-management
