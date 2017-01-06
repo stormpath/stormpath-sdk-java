@@ -3,10 +3,11 @@
 Tutorial
 ========
 
-This tutorial will take you from zero to a Stormpath enabled application featuring Spring Boot WebMVC and Spring Security integration.
+This tutorial will take you from zero to a Stormpath enabled application featuring Spring #if($springboot)Boot#end WebMVC and Spring Security integration.
 
-It should take about 30 minutes from start to finish. If you are looking for a bare bones intro to using Stormpath and
-Spring Boot, check out the :doc:`quickstart`.
+It should take about 30 minutes from start to finish. If you are looking for a bare bones intro to using |project|, check out the :doc:`quickstart`.
+
+#if( $springboot )
 
 If you've already gone through the quickstart, jump over to the :ref:`spring-boot-meet-stormpath` section.
 
@@ -14,6 +15,17 @@ All of the code in the tutorial makes use of the ``stormpath-default-spring-boot
 Spring Boot, Spring Web MVC, Spring Security and the Thymeleaf templating engine - all integrated with Stormpath. Component features,
 such as Spring Security, can easily be disabled through the use of properties or via annotations. (You'll see an example of disabling
 Spring Security with properties in the :ref:`spring-boot-meet-stormpath` section).
+
+#elseif( $spring )
+
+If you've already gone through the quickstart, jump over to the :ref:`spring-meet-stormpath` section.
+
+All of the code in the tutorial makes use of the ``stormpath-spring-security-webmvc`` integration. This integration has it all:
+Spring, Spring Web MVC, Spring Security and the JSP templating engine - all integrated with Stormpath. Component features,
+such as Spring Security, can easily be disabled through the use of properties or via annotations. (You'll see an example of disabling
+Spring Security with properties in the :ref:`spring-meet-stormpath` section).
+
+#end
 
 Topics:
 
@@ -23,27 +35,32 @@ Topics:
 
 .. include:: stormpath-setup.txt
 
-For the rest of the tutorial, we will be referring to the tutorial code found in `tutorials/spring-boot <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot>`_.
+For the rest of the tutorial, we will be referring to the tutorial code found in #if($springboot)`tutorials/spring-boot`_ #elseif($spring)`tutorials/spring`_ #end.
+
 
 Each of the tutorial sections is completely standalone and can be used as a starting point for your own applications.
 
-For instance, if you wanted to build a Spring Boot WebMVC project, including Spring Security integrated with Stormpath, you
+For instance, if you wanted to build a |project| project, including Spring Security integrated with Stormpath, you
 could do the following:
+
+#if( $springboot )
 
 .. code-block:: bash
 
-    mkdir MyProject
-    cd MyProject
+    cd <path to Stormpath sdk>
+    checkout stormpath-sdk-root-${maven.project.artifactId}
+    mkdir /MyProject
+    cd /MyProject
     cp -r <path to Stormpath sdk>/tutorials/spring-boot/03-spring-security-refined/* .
     mvn clean package
-    java -jar target/*.jar
+    mvn spring-boot:run
 
 .. _spring-boot-meet-stormpath:
 
 Spring Boot: Meet Stormpath
 ---------------------------
 
-Let's fire up a basic Spring Boot Web application. The code for this section can be found in `tutorials/spring-boot/00-the-basics <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/00-the-basics>`_.
+Let's fire up a basic Spring Boot WebMVC application. The code for this section can be found in `tutorials/spring-boot/00-the-basics`_.
 
 Note: This assumes you have your ``apiKey.properties`` file in the standard location: ``~/.stormpath/apiKey.properties``.
 
@@ -59,20 +76,19 @@ You should now be able to browse to `<http://localhost:${port}>`_ and see a welc
 This application has just two code files and a properties file in it. Here's the structure:
 
 .. code-block:: bash
-    :emphasize-lines: 9, 10
+    :emphasize-lines: 7, 9
 
-    .
-    `-- src
-       `-- main
-           |-- java
-           |   `-- com
-           |       `-- stormpath
-           |           `-- tutorial
-           |               |-- controller
-           |               |   `-- HelloController.java
-           |               `-- Application.java
-           `-- resources
-               `-- application.properties
+        src
+        └── main
+            ├── java
+            │   └── com
+            │       └── stormpath
+            │           └── tutorial
+            │               ├── Application.java
+            │               └── controller
+            │                   └── HelloController.java
+            └── resources
+                └── application.properties
 
 ``Application.java`` is a most basic Spring Boot application file with a ``main`` method and the ``@SpringBootApplication``
 annotation:
@@ -88,23 +104,134 @@ annotation:
         }
     }
 
-``HelloController.java`` is a little more interesting:
+#elseif( $spring )
+
+.. code-block:: bash
+
+    cd <path to Stormpath sdk>
+    checkout stormpath-sdk-root-${maven.project.artifactId}
+    mkdir /MyProject
+    cd /MyProject
+    cp -r <path to Stormpath sdk>/tutorials/spring/03-spring-security-refined/* .
+    mvn clean package
+    mvn tomcat7:run
+
+.. _spring-meet-stormpath:
+
+Spring: Meet Stormpath
+----------------------
+
+Let's fire up a basic Spring WebMVC application. The code for this section can be found in `tutorials/spring/00-the-basics`_.
+
+Note: This assumes you have your ``apiKey.properties`` file in the standard location: ``~/.stormpath/apiKey.properties``.
+
+To build and run, do this:
+
+.. code-block:: bash
+
+    mvn clean package
+    mvn tomcat7:run
+
+You should now be able to browse to `<http://localhost:${port}>`_ and see a welcome message with your Stormpath application's name.
+
+This application has just three code files, a properties file, and a web descriptor in it. Here's the structure:
+
+.. code-block:: bash
+    :emphasize-lines: 7, 9, 11
+
+    src
+    └── main
+        ├── java
+        │   └── com
+        │       └── stormpath
+        │           └── tutorial
+        │               ├── WebAppInitializer.java
+        │               ├── config
+        │               │   └── WebAppConfig.java
+        │               └── controller
+        │                   └── HelloController.java
+        ├── resources
+        │   └── application.properties
+        └── webapp
+            └── WEB-INF
+                └── web.xml
+
+``WebAppInitializer.java`` is a basic Spring WebMVC application class. It overrides the ``onStartup`` method from the ``WebApplicationInitializer`` interface:
 
 .. code-block:: java
     :linenos:
-    :emphasize-lines: 5,6
+    :emphasize-lines: 1, 4, 7, 10, 15
+
+    public class WebAppInitializer implements WebApplicationInitializer {
+
+        @Override
+        public void onStartup(ServletContext sc) throws ServletException {
+
+            AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+            context.register(WebAppConfig.class);
+            sc.addListener(new ContextLoaderListener(context));
+
+            DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
+            ServletRegistration.Dynamic dispatcher = sc.addServlet("dispatcher", dispatcherServlet);
+            dispatcher.setLoadOnStartup(1);
+            dispatcher.addMapping("/");
+
+            FilterRegistration.Dynamic filter = sc.addFilter("stormpathFilter", new DelegatingFilterProxy());
+            EnumSet<DispatcherType> types =
+                    EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
+            filter.addMappingForUrlPatterns(types, false, "/*");
+        }
+    }
+
+There are three primary bits of setup going on here. Line 7 registers the ``WebAppConfig`` with the application (see below).
+Line 10 sets up the ``DispatcherServlet``. And, line 15 adds in the ``stormpathFilter``.
+
+``WebAppConfig`` is where the Stormpath integration magic is happening:
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 1, 2, 5, 10
+
+    @EnableStormpath //Stormpath base beans
+    @EnableStormpathWebMvc //Stormpath web mvc beans plus out-of-the-box views
+    @EnableWebMvc
+    @ComponentScan("com.stormpath.tutorial")
+    @PropertySource("classpath:application.properties")
+    @Configuration
+    public class WebAppConfig {
+
+        @Bean
+        public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+            return new PropertySourcesPlaceholderConfigurer();
+        }
+    }
+
+Lines 1 and 2 enable Stormpath and Stormpath WebMVC. Lines 5 and 10 ensure that you can override that default
+``stormpath.*`` properties in your own ``application.properties`` file.
+
+That's everything that's needed to get the views and the other features of Stormpath!
+
+#end
+
+``HelloController.java`` is a where we get our first taste of Stormpath in action:
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 5, 9
 
     @RestController
     public class HelloController {
+
+        @Autowired
+        Application app;
+
         @RequestMapping("/")
-        public String hello(HttpServletRequest req) {
-            Application app = ApplicationResolver.INSTANCE.getApplication(req);
+        public String hello() {
             return "Hello, " + app.getName();
         }
     }
 
-Here we have our first taste of Stormpath in action. On line 5 we are getting hold of the Stormpath application and on
-line 6 we are obtaining its name for display.
+On line 5 we are getting hold of the Stormpath Application and on line 9 we are obtaining its name for display.
 
 For this example, we don't want Spring Security locking everything down, which is its default behavior. So, we will simply
 disable it. That's where the ``application.properties`` files comes in:
@@ -665,3 +792,8 @@ write a REST API that makes use of Spring Security that has no web layer.
 
 Take a look at the `javadocs </java/apidocs>`_ as well as the `other code examples <https://github.com/stormpath/stormpath-sdk-java/tree/master/examples>`_
 for more information on all that the Stormpath Java SDK has to offer.
+
+.. _tutorials/spring-boot: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot
+.. _tutorials/spring: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring
+.. _tutorials/spring-boot/00-the-basics: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/00-the-basics
+.. _tutorials/spring/00-the-basics: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/00-the-basics
