@@ -259,7 +259,11 @@ In the next section, we will talk about having access controls the "right" way b
 The purpose of this section is to demonstrate the manual labor required in "rolling your own" permissions assertion layer.
 Feel free to skip right over to the :ref:`spring-security-meet-stormpath` section.
 
-The code for this section can be found in `tutorials/spring-boot/01-some-access-controls <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/01-some-access-controls>`_.
+#if( $springboot )
+The code for this section can be found in `tutorials/spring-boot/01-some-access-controls`_.
+#elseif( $spring )
+The code for this section can be found in `tutorials/spring/01-some-access-controls`_.
+#end
 
 Let's say there's a restricted page that you only want authenticated users to have access to. We can determine that someone
 is logged in simply by obtaining an ``Account`` object. If it's ``null``, the user is not logged in. If it resolves to an
@@ -269,20 +273,28 @@ Let's take a look at the updated ``HelloController.java`` file:
 
 .. code-block:: java
     :linenos:
-    :emphasize-lines: 12
+    :emphasize-lines: 20
 
     @Controller
     public class HelloController {
 
+        private AccountResolver accountResolver;
+
+        @Autowired
+        public HelloController(AccountResolver accountResolver) {
+            Assert.notNull(accountResolver);
+            this.accountResolver = accountResolver;
+        }
+
         @RequestMapping("/")
-        String home(HttpServletRequest req, Model model) {
+        public String home(HttpServletRequest req, Model model) {
             model.addAttribute("status", req.getParameter("status"));
             return "home";
         }
 
         @RequestMapping("/restricted")
-        String restricted(HttpServletRequest req) {
-            if (AccountResolver.INSTANCE.getAccount(req) != null) {
+        public String restricted(HttpServletRequest req) {
+            if (accountResolver.getAccount(req) != null) {
                 return "restricted";
             }
 
@@ -290,14 +302,22 @@ Let's take a look at the updated ``HelloController.java`` file:
         }
     }
 
-If we are able to get an account via ``AccountResolver.INSTANCE.getAccount(req)``, then we return the ``restricted``
+If we are able to get an account via ``accountResolver.getAccount(req)``, then we return the ``restricted``
 template. Otherwise, we redirect to ``/login``.
 
+#if( $springboot )
 The code from this section also incorporates some other cool features of
 `stormpath-default-spring-boot-starter <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/boot/stormpath-default-spring-boot-starter>`_.
 
 It makes use of Thymeleaf templates. Support for Thymeleaf is built in to ``stormpath-default-spring-boot-starter``. In
 fact, the default views for login, register and forgot, change and verify are all Thymeleaf templates.
+#elseif( $spring )
+The code from this section also incorporates some other cool features of
+`stormpath-spring-security-webmvc <https://github.com/stormpath/stormpath-sdk-java/tree/master/extensions/spring/stormpath-spring-security-webmvc>`_.
+
+It makes use of JSPs. Support for JSP is built in to ``stormpath-spring-security-webmvc``. In
+fact, the default views for login, register and forgot, change and verify are all JSPs.
+#end
 
 It also makes use of some settings in ``application.properties``.
 
@@ -309,10 +329,17 @@ So, in this case, when you logout you will be redirected to the homepage with a 
 
 You can see this in action by running this example:
 
+#if( $springboot )
 .. code-block:: bash
 
     mvn clean package
     mvn spring-boot:run
+#elseif( $spring )
+.. code-block:: bash
+
+    mvn clean package
+    mvn tomcat7:run
+#end
 
 Now, let's take a look at using Spring Security to restrict access.
 
@@ -797,3 +824,5 @@ for more information on all that the Stormpath Java SDK has to offer.
 .. _tutorials/spring: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring
 .. _tutorials/spring-boot/00-the-basics: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/00-the-basics
 .. _tutorials/spring/00-the-basics: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/00-the-basics
+.. _tutorials/spring-boot/01-some-access-controls: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/01-some-access-controls
+.. _tutorials/spring/01-some-access-controls: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/01-some-access-controls
