@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -153,9 +154,11 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Qualifier("stormpathWrappedServletRequestFactory")
     private WrappedServletRequestFactory wrappedServletRequestFactory;
 
+    @Value("#{ @environment['stormpath.spring.security.enabled'] ?: true }")
+    protected boolean stormpathSecurityEnabled;
 
-    public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
-        return new StormpathWebSecurityConfigurer();
+    public SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter() {
+        return new StormpathSecurityConfigurerAdapter();
     }
 
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {

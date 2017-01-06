@@ -24,7 +24,9 @@ import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
 import com.stormpath.spring.filter.StormpathWrapperFilter;
 import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -39,6 +41,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 @EnableStormpathWebMvc
 @EnableStormpathSecurity
+@Conditional(StormpathSpringSecurityEnabled.class)
 public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean
@@ -54,8 +57,9 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     }
 
     @Bean
-    public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
-        return super.stormpathWebSecurityConfigurer();
+    @Override
+    public SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter() {
+        return super.stormpathSecurityConfigurerAdapter();
     }
 
     @Bean
