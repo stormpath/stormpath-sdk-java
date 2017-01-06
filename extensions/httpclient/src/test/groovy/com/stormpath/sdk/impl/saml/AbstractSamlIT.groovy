@@ -87,7 +87,7 @@ xu/vQr6stjuzJIsDNAtW1FlG8WALOMjV
     }
 
     protected SamlIdentityProvider getSamlIdentityProviderForAdministratorsApplication() {
-        def app = client.currentTenant.getApplications(Applications.where(Applications.name().eqIgnoreCase("Stormpath"))).asList().get(0)
+        def app = client.currentTenant.getApplications(Applications.where(Applications.name().eqIgnoreCase("Stormpath"))).single()
         return getSamlIdentityProviderForApplication(app)
     }
 
