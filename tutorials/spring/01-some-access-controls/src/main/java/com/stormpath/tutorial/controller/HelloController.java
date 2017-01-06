@@ -16,8 +16,10 @@
 package com.stormpath.tutorial.controller;
 
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,14 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class HelloController {
 
+    private AccountResolver accountResolver;
+
+    @Autowired
+    public HelloController(AccountResolver accountResolver) {
+        Assert.notNull(accountResolver);
+        this.accountResolver = accountResolver;
+    }
+
     @RequestMapping("/")
     public String home(HttpServletRequest req, Model model) {
         model.addAttribute("status", req.getParameter("status"));
@@ -36,7 +46,7 @@ public class HelloController {
 
     @RequestMapping("/restricted")
     public String restricted(HttpServletRequest req) {
-        if (AccountResolver.INSTANCE.getAccount(req) != null) {
+        if (accountResolver.getAccount(req) != null) {
             return "restricted";
         }
 

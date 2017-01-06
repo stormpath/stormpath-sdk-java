@@ -17,6 +17,7 @@ package com.stormpath.spring.boot.examples;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,12 +27,15 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class HelloController {
 
+    @Autowired
+    AccountResolver accountResolver;
+
     @RequestMapping("/")
     public String home(HttpServletRequest request, Model model) {
 
         String name = "World";
 
-        Account account = AccountResolver.INSTANCE.getAccount(request);
+        Account account = accountResolver.getAccount(request);
         if (account != null) {
             name = account.getGivenName();
             model.addAttribute(account);

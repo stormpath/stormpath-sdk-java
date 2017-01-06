@@ -40,11 +40,14 @@ import java.util.Map;
 @Controller
 public class HelloController {
 
+    private AccountResolver accountResolver;
     private HelloService helloService;
 
     @Autowired
-    public HelloController(HelloService helloService) {
+    public HelloController(AccountResolver accountResolver, HelloService helloService) {
+        Assert.notNull(accountResolver);
         Assert.notNull(helloService);
+        this.accountResolver = accountResolver;
         this.helloService = helloService;
     }
 
@@ -56,7 +59,7 @@ public class HelloController {
 
     @RequestMapping("/userdetails")
     String userDetails(HttpServletRequest req, Model model) {
-        Account account = AccountResolver.INSTANCE.getAccount(req);
+        Account account = accountResolver.getAccount(req);
         Map<String, List<String>> springSecurityPermissions = new HashMap<>();
 
         // group perms
@@ -77,7 +80,7 @@ public class HelloController {
     @RequestMapping("/restricted")
     String restricted(HttpServletRequest req, Model model) {
         String msg = helloService.sayHello(
-            AccountResolver.INSTANCE.getAccount(req)
+            accountResolver.getAccount(req)
         );
         model.addAttribute("msg", msg);
         return "restricted";

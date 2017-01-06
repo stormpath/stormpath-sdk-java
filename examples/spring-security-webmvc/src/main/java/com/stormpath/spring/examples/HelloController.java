@@ -33,12 +33,15 @@ public class HelloController {
     @Autowired
     private HelloService helloService;
 
+    @Autowired
+    AccountResolver accountResolver;
+
     @RequestMapping("/")
     ModelAndView home(HttpServletRequest request) {
 
         String name = "World";
 
-        Account account = AccountResolver.INSTANCE.getAccount(request);
+        Account account = accountResolver.getAccount(request);
         if (account != null) {
             name = account.getGivenName();
         }
@@ -50,7 +53,7 @@ public class HelloController {
 
     @RequestMapping("/restricted")
     ModelAndView restricted(HttpServletRequest request) {
-        String helloMessage = helloService.sayHello(AccountResolver.INSTANCE.getAccount(request));
+        String helloMessage = helloService.sayHello(accountResolver.getAccount(request));
         ModelAndView mav = new ModelAndView("restricted");
         mav.addObject("message", helloMessage);
         return mav;
