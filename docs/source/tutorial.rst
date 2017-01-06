@@ -512,7 +512,11 @@ In the next section, we'll add a small amount of code to be able to dynamically 
 Spring Security Refined
 -----------------------
 
-The code for this section can be found in `tutorials/spring-boot/03-spring-security-refined <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/03-spring-security-refined>`_.
+#if( $springboot )
+The code for this section can be found in `tutorials/spring-boot/03-spring-security-refined`_.
+#elseif( $spring )
+The code for this section can be found in `tutorials/spring/03-spring-security-refined`_.
+#end
 
 In the previous section, we hard-coded the Stormpath group href into ``HelloService``.
 
@@ -558,7 +562,7 @@ Let's now take a look at this ``groups`` bean.
 
         @Autowired
         public Groups(Environment env) {
-            USER = env.getProperty("stormpath.authorized.group.user");
+            USER = env.getProperty("stormpath.authorized.user.group.href");
         }
     }
 
@@ -569,17 +573,17 @@ By default, Spring will name the bean in context using camelcase conventions. Th
 
 We use some Spring magic on lines 5 and 6 to pass the ``Environment`` into the constructor using the `@Autowired` annotation.
 
-In the constructor, we set the ``USER`` variable to the value of the environment property called ``stormpath.authorized.group.user``.
+In the constructor, we set the ``USER`` variable to the value of the environment property called ``stormpath.authorized.user.group.href``.
 
-The expectation is that the ``stormpath.authorized.group.user`` environment variable will hold the fully qualified href to the
+The expectation is that the ``stormpath.authorized.user.group.href`` environment variable will hold the fully qualified href to the
 Stormpath group that backs the ``USER`` group.
 
-With Spring, you can define the ``stormpath.authorized.group.user`` in the ``application.properties`` file and that property will be available
-to your app.
+With Spring, you can define the ``stormpath.authorized.user.group.href`` in the ``application.properties`` file and that
+property will be available to your app.
 
-Now, for the Stormpath magic. You can also have a system environment variable named ``STORMPATH_AUTHORIZED_GROUP_USER``.
+Now, for the Stormpath magic. You can also have a system environment variable named ``STORMPATH_AUTHORIZED_USER_GROUP_HREF``.
 Behind the scenes, Stormpath will convert that system environment variable to a Spring environment variable named
-``stormpath.authorized.group.user``.
+``stormpath.authorized.user.group.href``.
 
 This makes it very easy to change the group ``USER`` group href in different deployment environments without having to
 reconfigure and recompile your code.
@@ -598,19 +602,28 @@ could update the ``Groups`` class like so:
 
             @Autowired
             public Groups(Environment env) {
-                USER = env.getProperty("stormpath.authorized.group.user");
-                ADMIN = env.getProperty("stormpath.authorized.group.admin");
+                USER = env.getProperty("stormpath.authorized.user.group.href");
+                ADMIN = env.getProperty("stormpath.authorized.admin.group.href");
             }
         }
 
 You can try this out for yourself by running this example like so:
 
+#if( $springboot )
 .. code-block:: bash
 
     mvn clean package
 
-    STORMPATH_AUTHORIZED_GROUP_USER=<href to your group in Stormpath> \
+    STORMPATH_AUTHORIZED_USER_GROUP_HREF=<href to your group in Stormpath> \
     mvn spring-boot:run
+#elseif( $spring )
+.. code-block:: bash
+
+    mvn clean package
+
+    STORMPATH_AUTHORIZED_USER_GROUP_HREF=<href to your group in Stormpath> \
+    mvn tomcat7:run
+#end
 
 In this example, we are also taking advantage of Stormpath's configuration mechanism. This reduces boilerplate code.
 
@@ -881,3 +894,5 @@ for more information on all that the Stormpath Java SDK has to offer.
 .. _tutorials/spring/01-some-access-controls: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/01-some-access-controls
 .. _tutorials/spring-boot/02-spring-security-ftw: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/02-spring-security-ftw
 .. _tutorials/spring/02-spring-security-ftw: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/02-spring-security-ftw
+.. _tutorials/spring-boot/03-spring-security-refined: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/03-spring-security-refined>
+.. _tutorials/spring/03-spring-security-refined: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/03-spring-security-refined>
