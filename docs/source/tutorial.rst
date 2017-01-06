@@ -634,7 +634,11 @@ Next up: An even finer grain of control using Spring Security permissions.
 A Finer Grain of Control
 ------------------------
 
-The code for this section can be found in `tutorials/spring-boot/04-a-finer-grain-of-control <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/04-a-finer-grain-of-control>`_.
+#if( $springboot )
+The code for this section can be found in `tutorials/spring-boot/04-a-finer-grain-of-control`_.
+#elseif( $spring)
+The code for this section can be found in `tutorials/spring/04-a-finer-grain-of-control`_.
+#end
 
 So far, we've restricted access to certain methods with the `hasAuthority` clause of the `@PreAuthorize` annotation. In this
 section, we are going to look at examples that give a finer grain of control and demonstrate how Stormpath hooks into
@@ -894,5 +898,7 @@ for more information on all that the Stormpath Java SDK has to offer.
 .. _tutorials/spring/01-some-access-controls: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/01-some-access-controls
 .. _tutorials/spring-boot/02-spring-security-ftw: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/02-spring-security-ftw
 .. _tutorials/spring/02-spring-security-ftw: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/02-spring-security-ftw
-.. _tutorials/spring-boot/03-spring-security-refined: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/03-spring-security-refined>
-.. _tutorials/spring/03-spring-security-refined: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/03-spring-security-refined>
+.. _tutorials/spring-boot/03-spring-security-refined: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/03-spring-security-refined
+.. _tutorials/spring/03-spring-security-refined: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/03-spring-security-refined
+.. _tutorials/spring-boot/04-a-finer-grain-of-control: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/04-a-finer-grain-of-control
+.. _tutorials/spring/04-a-finer-grain-of-control: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/04-a-finer-grain-of-control
