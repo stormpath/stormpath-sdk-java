@@ -28,7 +28,10 @@ import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
 
-import static org.testng.AssertJUnit.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertFalse
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.1.0
@@ -50,26 +53,26 @@ class GoogleAuthenticatorFactorIT extends AbstractMultiFactorIT{
         createSmsFactor(account, VALID_PHONE_NUMBER)
 
         def factors = account.getFactors(Factors.criteria().limitTo(50).offsetBy(0).orderByCreatedAt());
-        assertEquals(factors.iterator().next().account.materialized, false)
+        assertFalse(factors.iterator().next().account.materialized)
 
-        factors = account.getFactors(Factors.SMS.criteria().withPhone().withAccount().limitTo(50).offsetBy(0).orderByCreatedAt());
-        assertEquals(factors.iterator().next().account.materialized, true)
-        assertEquals(factors.iterator().next().phone.materialized, true)
-        assertEquals(factors.getProperty("items").size, 1);
+        factors = account.getFactors(Factors.SMS.criteria().withPhone().withAccount().limitTo(50).offsetBy(0).orderByCreatedAt())
+        assertTrue(factors.iterator().next().account.materialized)
+        assertTrue(factors.iterator().next().phone.materialized)
+        assertEquals(factors.getProperty("items").size, 1)
 
         List<Factor> factorsAsList = factors.asList()
-        for(Factor currentFactor : factorsAsList){
-            if(currentFactor instanceof SmsFactor){
-                assertEquals(currentFactor.phone.number,VALID_PHONE_NUMBER)
+        for (Factor currentFactor : factorsAsList) {
+            if (currentFactor instanceof SmsFactor) {
+                assertEquals(currentFactor.phone.number, VALID_PHONE_NUMBER)
             }
         }
 
         factors = account.getFactors(Factors.SMS.criteria().withPhone().limitTo(50).offsetBy(0).orderByCreatedAt());
-        assertEquals(factors.getProperty("items").size,1)
+        assertEquals(factors.getProperty("items").size, 1)
         assertEquals(factors.getProperty("items").get(0).phone.number, VALID_PHONE_NUMBER)
 
         factors = account.getFactors(Factors.GOOGLE_AUTHENTICATOR.criteria().limitTo(50).offsetBy(0).orderByCreatedAt());
-        assertEquals(factors.getProperty("items").size,1)
+        assertEquals(factors.getProperty("items").size, 1)
         assertNotNull(factors.getProperty("items").get(0).secret)
     }
 

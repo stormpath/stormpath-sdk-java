@@ -33,12 +33,14 @@ import org.joda.time.DateTimeZone
 import org.testng.annotations.Test
 
 import static com.stormpath.sdk.impl.challenge.TOTPService.getTotpPassword
-import static org.testng.AssertJUnit.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
+import static org.testng.Assert.assertNotNull
 
 /**
  * @since 1.1.0
  */
-class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT{
+class GoogleAuthenticatorChallengeIT extends AbstractMultiFactorIT {
 
     @Test
     void testSuccessfulGoogleAuthenticatorChallenge() {

@@ -37,7 +37,7 @@ import javax.servlet.ServletRequest;
  * request, the header is not set at all.
  * </p>
  * <h5>Header Name</h5>
- * <p>If an account string is available, this filter sets the {@code X-Forwarded-Account} header with the account
+ * <p>If an account string is available, this filter sets the {@code X-Forwarded-User} header with the account
  * string value.  The header name may be changed if desired by setting the superclass
  * {@link #setHeaderName(String) headerName} property.  If no account/string is available, no header will be set.
  * </p>
@@ -46,7 +46,7 @@ import javax.servlet.ServletRequest;
  */
 public class ForwardedAccountHeaderFilter extends AppliedRequestHeaderFilter {
 
-    public static final String DEFAULT_HEADER_NAME = "X-Forwarded-Account";
+    public static final String DEFAULT_HEADER_NAME = "X-Forwarded-User";
 
     private AccountResolver accountResolver;
 
@@ -60,7 +60,7 @@ public class ForwardedAccountHeaderFilter extends AppliedRequestHeaderFilter {
      *     </tr>
      *     <tr>
      *         <td>{@code headerName}</td>
-     *         <td>{@code X-Forwarded-Account}</td>
+     *         <td>{@code X-Forwarded-User}</td>
      *     </tr>
      *     <tr>
      *         <td>{@link #setAccountResolver(AccountResolver) accountResolver}</td>

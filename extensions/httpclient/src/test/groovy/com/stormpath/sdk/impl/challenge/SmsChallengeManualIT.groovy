@@ -26,12 +26,14 @@ import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.phone.Phone
 import org.testng.annotations.Test
 
-import static org.testng.AssertJUnit.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.1.0
  */
-class SmsChallengeManualIT extends ClientIT{
+class SmsChallengeManualIT extends ClientIT {
 
     // This test and the next one (testSuccessfulChallengeVerifyChallenge) require an actual phone to complete
     // Therefore they are disabled and meant to be run manually

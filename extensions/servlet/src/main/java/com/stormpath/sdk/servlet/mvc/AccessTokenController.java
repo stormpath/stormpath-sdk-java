@@ -203,7 +203,7 @@ public class AccessTokenController extends AbstractController {
     /**
      * @since 1.0.RC8.3
      */
-    private AccessTokenResult tokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected AccessTokenResult tokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         OAuthGrantRequestAuthenticationResult authenticationResult;
 
@@ -224,7 +224,7 @@ public class AccessTokenController extends AbstractController {
     /**
      * @since 1.0.RC8.3
      */
-    private AccessTokenResult refreshTokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected AccessTokenResult refreshTokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         OAuthGrantRequestAuthenticationResult authenticationResult;
 
@@ -246,7 +246,7 @@ public class AccessTokenController extends AbstractController {
     /**
      * @since 1.0.0
      */
-    private AccessTokenResult clientCredentialsAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
+    protected AccessTokenResult clientCredentialsAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
         OAuthGrantRequestAuthenticationResult authenticationResult;
 
         try {
@@ -273,7 +273,7 @@ public class AccessTokenController extends AbstractController {
     /**
      * @since 1.1.0
      */
-    private AccessTokenResult stormpathSocialAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
+    protected AccessTokenResult stormpathSocialAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
         OAuthGrantRequestAuthenticationResult authenticationResult;
 
         try {
@@ -310,7 +310,7 @@ public class AccessTokenController extends AbstractController {
         return new OAuthException(oauthError, message);
     }
 
-    private AccessTokenResult stormpathTokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
+    protected AccessTokenResult stormpathTokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
         OAuthGrantRequestAuthenticationResult authenticationResult;
 
         try {
@@ -338,7 +338,6 @@ public class AccessTokenController extends AbstractController {
 
         String json;
 
-        AuthenticationRequest authcRequest = null;
         AccessTokenResult result;
 
         try {
@@ -355,40 +354,7 @@ public class AccessTokenController extends AbstractController {
 
             grantTypeValidator.validate(grantType);
 
-            switch (grantType) {
-                case PASSWORD_GRANT_TYPE:
-                    result = this.tokenAuthenticationRequest(request, response);
-                    break;
-                case REFRESH_TOKEN_GRANT_TYPE:
-                    result = this.refreshTokenAuthenticationRequest(request, response);
-                    break;
-                case CLIENT_CREDENTIALS_GRANT_TYPE:
-                    try {
-                        result = this.clientCredentialsAuthenticationRequest(request, response);
-                    } catch (HttpAuthenticationException e) {
-                        log.warn("Unable to authenticate client", e);
-                        throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
-                    }
-                    break;
-                case STORMPATH_SOCIAL_GRANT_TYPE:
-                    try {
-                        result = this.stormpathSocialAuthenticationRequest(request, response);
-                    } catch (HttpAuthenticationException e) {
-                        log.warn("Unable to authenticate client", e);
-                        throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
-                    }
-                    break;
-                case STORMPATH_TOKEN_GRANT_TYPE:
-                    try {
-                        result = this.stormpathTokenAuthenticationRequest(request, response);
-                    } catch (HttpAuthenticationException ex) {
-                        log.warn("Unable to authenticate client", ex);
-                        throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
-                    }
-                    break;
-                default:
-                    throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE, "'" + grantType + "' is an unsupported grant type.");
-            }
+            result = getAccessTokenResult(grantType, request, response);
 
             saveResult(request, response, result);
 
@@ -396,7 +362,7 @@ public class AccessTokenController extends AbstractController {
 
             response.setStatus(HttpServletResponse.SC_OK);
 
-            SuccessfulAuthenticationRequestEvent e = createSuccessEvent(request, response, authcRequest, result);
+            SuccessfulAuthenticationRequestEvent e = createSuccessEvent(request, response, null, result);
             publish(e);
 
         } catch (OAuthException e) {
@@ -413,7 +379,7 @@ public class AccessTokenController extends AbstractController {
 
             try {
                 FailedAuthenticationRequestEvent evt =
-                        new DefaultFailedAuthenticationRequestEvent(request, response, authcRequest, e);
+                        new DefaultFailedAuthenticationRequestEvent(request, response, null, e);
                 publish(evt);
             } catch (Throwable t) {
                 log.warn(
@@ -432,6 +398,51 @@ public class AccessTokenController extends AbstractController {
 
         //we rendered the response directly - no need for a view to be resolved, so return null:
         return null;
+    }
+
+    /**
+     * Get the AccessTokenResult given the specified grantType.  The request authorization and support for the grantType
+     * will already have been validated.
+     *
+     * @since 1.3.0
+     */
+    protected AccessTokenResult getAccessTokenResult(String grantType, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        AccessTokenResult result;
+        switch (grantType) {
+            case PASSWORD_GRANT_TYPE:
+                result = this.tokenAuthenticationRequest(request, response);
+                break;
+            case REFRESH_TOKEN_GRANT_TYPE:
+                result = this.refreshTokenAuthenticationRequest(request, response);
+                break;
+            case CLIENT_CREDENTIALS_GRANT_TYPE:
+                try {
+                    result = this.clientCredentialsAuthenticationRequest(request, response);
+                } catch (HttpAuthenticationException e) {
+                    log.warn("Unable to authenticate client", e);
+                    throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
+                }
+                break;
+            case STORMPATH_SOCIAL_GRANT_TYPE:
+                try {
+                    result = this.stormpathSocialAuthenticationRequest(request, response);
+                } catch (HttpAuthenticationException e) {
+                    log.warn("Unable to authenticate client", e);
+                    throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
+                }
+                break;
+            case STORMPATH_TOKEN_GRANT_TYPE:
+                try {
+                    result = this.stormpathTokenAuthenticationRequest(request, response);
+                } catch (HttpAuthenticationException ex) {
+                    log.warn("Unable to authenticate client", ex);
+                    throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
+                }
+                break;
+            default:
+                throw new OAuthException(OAuthErrorCode.UNSUPPORTED_GRANT_TYPE, "'" + grantType + "' is an unsupported grant type.");
+        }
+        return result;
     }
 
     protected SuccessfulAuthenticationRequestEvent createSuccessEvent(HttpServletRequest request,

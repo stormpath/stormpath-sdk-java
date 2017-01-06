@@ -17,15 +17,15 @@ package com.stormpath.sdk.servlet.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Function;
 import com.stormpath.sdk.servlet.http.Resolver;
+import com.stormpath.sdk.convert.ResourceConverter;
 import com.stormpath.sdk.servlet.json.JsonFunction;
 import com.stormpath.sdk.servlet.json.ResourceJsonFunction;
-import com.stormpath.sdk.servlet.mvc.ResourceMapFunction;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * A {@code Resolver} that locates the account associated with the current request using an
@@ -57,9 +57,18 @@ public class AccountStringResolver implements Resolver<String> {
      */
     public AccountStringResolver() {
         this.accountResolver = new DefaultAccountResolver();
-        ResourceMapFunction<Account> mapFunction = new ResourceMapFunction<>();
-        mapFunction.setIncludedFields(Collections.toSet("groups")); //represent this one collection by default
-        this.accountStringFunction = new ResourceJsonFunction<>(mapFunction, new JsonFunction<>());
+        final ResourceConverter<Account> converter = new ResourceConverter<>();
+        Function<Account,Map<String,Object>> fn = new Function<Account, Map<String, Object>>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Map<String, Object> apply(Account account) {
+                Object o = converter.apply(account);
+                Assert.isInstanceOf(Map.class, o, "ResourceConverter was expected to return a Map instance.");
+                return (Map<String,Object>)o;
+            }
+        };
+
+        this.accountStringFunction = new ResourceJsonFunction<>(fn, new JsonFunction<>());
     }
 
     /**

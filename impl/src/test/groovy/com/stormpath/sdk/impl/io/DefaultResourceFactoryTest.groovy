@@ -3,7 +3,7 @@ package com.stormpath.sdk.impl.io
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-import static org.testng.AssertJUnit.assertTrue
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.0.RC9

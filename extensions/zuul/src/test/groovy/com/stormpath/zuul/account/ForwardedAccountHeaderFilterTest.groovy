@@ -37,7 +37,7 @@ class ForwardedAccountHeaderFilterTest {
     @Test
     void testDefaults() {
         def filter = new ForwardedAccountHeaderFilter()
-        assertEquals filter.getHeaderName(), 'X-Forwarded-Account'
+        assertEquals filter.getHeaderName(), 'X-Forwarded-User'
         assertTrue filter.accountResolver instanceof DefaultAccountResolver
         assertTrue filter.getValueResolver() instanceof AccountStringResolver
     }

@@ -17,13 +17,21 @@ package com.stormpath.sdk.impl.saml
 
 import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.ResourceException
-import com.stormpath.sdk.saml.*
+import com.stormpath.sdk.saml.RegisteredSamlServiceProvider
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviders
+import com.stormpath.sdk.saml.SamlIdentityProvider
+import com.stormpath.sdk.saml.SamlIdentityProviders
+import com.stormpath.sdk.saml.SamlServiceProviderRegistration
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationList
 import com.stormpath.sdk.tenant.Tenant
 import com.stormpath.sdk.tenant.Tenants
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 
-import static org.testng.AssertJUnit.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.3.0

@@ -44,7 +44,7 @@ class ChangePasswordIT extends AbstractClientIT {
     // This test ensures that errors are properly rendered when the password policy is violated and that
     // the errors that come back are different from each other.
     // TODO This breaks i18n. Fix when Stormpath backend returns specific password policy failure codes.
-    @Test
+    @Test(enabled=false)
     void testChangePasswordErrorMessagesAreDescribingTheRealError() {
 
         // create dummy email
