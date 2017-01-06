@@ -18,15 +18,27 @@ package com.stormpath.sdk.impl.saml
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig
-import com.stormpath.sdk.http.HttpMethod
-import com.stormpath.sdk.http.HttpRequest
-import com.stormpath.sdk.http.HttpRequestBuilder
-import com.stormpath.sdk.http.HttpRequests
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import com.stormpath.sdk.impl.util.Base64
 import com.stormpath.sdk.query.Options
 import com.stormpath.sdk.resource.ResourceException
-import com.stormpath.sdk.saml.*
+import com.stormpath.sdk.saml.AttributeStatementMappingRule
+import com.stormpath.sdk.saml.AttributeStatementMappingRules
+import com.stormpath.sdk.saml.AuthnVerification
+import com.stormpath.sdk.saml.AuthnVerificationRequest
+import com.stormpath.sdk.saml.CreateSamlResponseRequest
+import com.stormpath.sdk.saml.RegisteredSamlServiceProvider
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviders
+import com.stormpath.sdk.saml.SamlIdentityProvider
+import com.stormpath.sdk.saml.SamlIdentityProviderMetadata
+import com.stormpath.sdk.saml.SamlIdentityProviderStatus
+import com.stormpath.sdk.saml.SamlIdentityProviders
+import com.stormpath.sdk.saml.SamlPolicy
+import com.stormpath.sdk.saml.SamlResponse
+import com.stormpath.sdk.saml.SamlServiceProviderRegistration
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationList
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationStatus
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrations
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
 import org.testng.annotations.AfterMethod
@@ -62,8 +74,8 @@ class SamlIdentityProviderIT extends AbstractSamlIT {
     }
 
     @Test
-    public void samlPolicyForTheDefaulApplicationShouldHaveAnIdentityProvider() {
-        getSamlIdentityProviderForDefaultApplication()
+    public void samlPolicyForTheAdministrorsShouldHaveAnIdentityProvider() {
+        getSamlIdentityProviderForAdministratorsApplication()
     }
 
     @Test
@@ -130,7 +142,7 @@ class SamlIdentityProviderIT extends AbstractSamlIT {
 
     @Test
     public void identityProviderForStormpathApplicationShouldBeDisabled() {
-        def identityProvider = getSamlIdentityProviderForDefaultApplication()
+        def identityProvider = getSamlIdentityProviderForAdministratorsApplication()
         assertNotNull(identityProvider.status)
         assertEquals(identityProvider.status, SamlIdentityProviderStatus.DISABLED)
     }
@@ -149,8 +161,8 @@ class SamlIdentityProviderIT extends AbstractSamlIT {
     }
 
     @Test
-    public void identityProviderForTheDefaultApplicationShouldHaveNullSsoLoginEndpoint() {
-        def identityProvider = getSamlIdentityProviderForDefaultApplication()
+    public void identityProviderForAdministratorApplicationShouldHaveNullSsoLoginEndpoint() {
+        def identityProvider = getSamlIdentityProviderForAdministratorsApplication()
         assertNull(identityProvider.ssoLoginEndpoint)
     }
 

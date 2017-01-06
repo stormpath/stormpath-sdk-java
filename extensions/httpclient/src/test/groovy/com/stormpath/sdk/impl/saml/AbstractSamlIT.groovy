@@ -86,7 +86,7 @@ xu/vQr6stjuzJIsDNAtW1FlG8WALOMjV
         return client.getResource(samlPolicy.getIdentityProvider().href, SamlIdentityProvider)
     }
 
-    protected SamlIdentityProvider getSamlIdentityProviderForDefaultApplication() {
+    protected SamlIdentityProvider getSamlIdentityProviderForAdministratorsApplication() {
         def app = client.currentTenant.getApplications(Applications.where(Applications.name().eqIgnoreCase("Stormpath"))).asList().get(0)
         return getSamlIdentityProviderForApplication(app)
     }
