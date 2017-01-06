@@ -43,6 +43,7 @@ import org.springframework.security.authentication.AuthenticationEventPublisher
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -76,7 +77,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
     private static final Logger log = LoggerFactory.getLogger(MinimalStormpathSpringSecurityWebMvcConfigurationIT)
 
     @Autowired
-    StormpathWebSecurityConfigurer c;
+    SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter;
 
     @Autowired
     ApiKey apiKey;
@@ -141,6 +142,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
 
     @Test
     void testRequiredBeans() {
+        assertTrue stormpathSecurityConfigurerAdapter instanceof StormpathSecurityConfigurerAdapter //let's assert Stormpath's Spring Security integration is not disabled
         assertNotNull apiKey
         assertNotNull stormpathCacheManager
         assertNotNull client

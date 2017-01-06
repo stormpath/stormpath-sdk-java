@@ -31,7 +31,7 @@ import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpa
  */
 @Configuration
 @EnableStormpathWebSecurity
-public class MinimalStormpathSpringSecurityWebMvcTestAppConfig  extends WebSecurityConfigurerAdapter {
+public class MinimalStormpathSpringSecurityWebMvcTestAppConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

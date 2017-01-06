@@ -16,8 +16,8 @@
 package com.stormpath.spring.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-@Order(100) //Must come after StormpathWebSecurityConfiguration
+@Conditional(StormpathSpringSecurityDisabled.class)
 public class StormpathWebSecurityDisabledConfiguration extends AbstractStormpathWebSecurityDisabledConfiguration {
 
     @Bean
