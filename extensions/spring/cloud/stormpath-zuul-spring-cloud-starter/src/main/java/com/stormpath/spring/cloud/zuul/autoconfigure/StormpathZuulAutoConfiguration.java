@@ -242,7 +242,7 @@ public class StormpathZuulAutoConfiguration {
                 }
                 if (!signatureAlgorithm.isHmac()) {
                     String msg = "Unable to use specified JWT signature algorithm '" + signatureAlgorithm + "' when " +
-                        "creating X-Forwarded-Account JWTs, as this algorithm is incompatible with the " +
+                        "creating X-Forwarded-User JWTs, as this algorithm is incompatible with the " +
                         "fallback/default Stormpath Client ApiKey secret signing key.  Defaulting to '" +
                         defaultSigAlg + "'.  To avoid this message, either 1) do not specify a signature algorithm to " +
                         "let the framework choose an algorithm appropriate for the default signing key, or 2) define " +
@@ -290,6 +290,10 @@ public class StormpathZuulAutoConfiguration {
             @Override
             public String apply(Account account) {
                 Object value = accountFunction.apply(account);
+
+                if (value == null || (value instanceof Map && Collections.isEmpty((Map)value))) {
+                    return null;
+                }
 
                 if (value instanceof String) {
                     return (String)value;

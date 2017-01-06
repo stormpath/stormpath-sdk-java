@@ -20,13 +20,15 @@ package com.stormpath.spring.cloud.zuul.config;
  */
 public class ValueClaimConfig {
 
+    public static final String DEFAULT_CLAIM_NAME = "user";
+
     private boolean enabled;
 
     private String name;
 
     public ValueClaimConfig() {
         this.enabled = true;
-        this.name = "account";
+        this.name = DEFAULT_CLAIM_NAME;
     }
 
     public boolean isEnabled() {

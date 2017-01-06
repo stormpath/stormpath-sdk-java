@@ -3,12 +3,13 @@
 Forwarded Request
 =================
 
-If a user has authenticated, either by using a :ref:`login form <login>` or via :ref:`Request Authentication <request authentication>`,
-the user account's data will be forwarded to any backend origin servers behind the gateway in a request header.
+If a user has authenticated, either by using a :ref:`login form <login>` or via
+:ref:`Request Authentication <request authentication>`, the user account data will be forwarded to any backend
+origin servers behind the gateway in a request header.
 
-The origin server(s) may inspect this request header to discover information about the account.  This information can
+The origin server(s) may inspect this request header to discover information about the user.  This information can
 be used to customize views, send emails, update user-specific data, or practically anything else you can think of that
-might be user specific.
+might be user-specific.
 
 This page covers how to customize everything related to this header and its contents.
 
@@ -19,9 +20,9 @@ This page covers how to customize everything related to this header and its cont
 Forwarded Account Header Name
 -----------------------------
 
-If a user ``Account`` is associated with a request that will be forwarded to an origin server, the account will be
+If a user account is associated with a request that will be forwarded to an origin server, the account will be
 converted to a String and added to the forwarded request as an HTTP request header.  The default header name is
-``X-Forwarded-Account``.
+``X-Forwarded-User``, a de-facto HTTP header for forwarding user account information.
 
 If you want to specify a different HTTP header name, set the ``stormpath.zuul.account.header.name`` configuration property:
 
@@ -31,7 +32,7 @@ If you want to specify a different HTTP header name, set the ``stormpath.zuul.ac
      zuul:
        account:
          header:
-           name: X-Forwarded-Account
+           name: X-Forwarded-User
 
 .. caution::
 
@@ -39,17 +40,17 @@ If you want to specify a different HTTP header name, set the ``stormpath.zuul.ac
 
 .. note::
 
-   If there is no account associated with the request, the header will not be present in the forwarded request at all.
+   If there is no user account associated with the request, the header will not be present in the forwarded request at all.
 
 Forwarded Account Header Value
 ------------------------------
 
-If an ``Account`` is associated with the request, the forwarded account header value will be a String that represents the
+If a user ``Account`` is associated with the request, the forwarded account header value will be a String that represents the
 account.
 
-You can customize this String value to be anything you like - such as a simple single value like the Account's username
-or email, or the entire Account as a JSON document, or even a cryptographically-safe
-:ref:`JSON Web Token (JWT) <forwarded account header jwt>` that represents the Account information you choose.
+You can customize this String value to be anything you like - such as a simple single value like the account's username
+or email, or the entire account as a JSON document, or even a cryptographically-safe
+:ref:`JSON Web Token (JWT) <forwarded account header jwt>` that represents the account information you choose.
 
 By default, a digitally-signed account :ref:`JWT <forwarded account header jwt>` will be used as the header value.
 When an origin server reads the forwarded header value, the origin server can verify the JWT signature.  This allows
@@ -72,7 +73,7 @@ Single Account Field
 ^^^^^^^^^^^^^^^^^^^^
 
 If you do not want or need the security guarantees of a JWT and want your header value to be a single string value,
-like the account's username or email, you can set the following configuration:
+such as the account's username or email, you can set the following configuration:
 
 .. code-block:: yaml
 
@@ -98,7 +99,7 @@ the origin server(s) would look like this:
 
 .. code-block:: properties
 
-   x-forwarded-account: tk421
+   x-forwarded-user: tk421
 
 A similar example using the account email instead is shown in the :ref:`field <object conversion field>` section.
 
@@ -426,7 +427,7 @@ the header sent to the origin server(s) would look like this:
 
 .. code-block:: properties
 
-   x-forwarded-account: tk421@galacticempire.com
+   x-forwarded-user: tk421@galacticempire.com
 
 .. _object conversion fields:
 
@@ -1023,7 +1024,7 @@ The ``valueClaim`` config properties allow you to control how the :ref:`Account 
 represented inside the JWT.
 
 By default, the :ref:`Account JSON <forwarded account json>` is represented under a single JWT claim named
-``account``.  This results in JWT claims that look something like this:
+``user``.  This results in JWT claims that look something like this:
 
 .. code-block:: javascript
    :emphasize-lines: 5-12
@@ -1032,7 +1033,7 @@ By default, the :ref:`Account JSON <forwarded account json>` is represented unde
      "iat": 1482972605,
      "iss": "my gateway",
      "aud": "my origin server",
-     "account": {
+     "user": {
        "username": "tk421",
        "email": "tk421@galacticempire.com",
        "givenName": "TK421",
@@ -1044,9 +1045,9 @@ By default, the :ref:`Account JSON <forwarded account json>` is represented unde
    }
 
 
-As you can see, the account JSON is reflected as a single ``account`` claim, and the entire account can be
-retrieved by a single lookup of that claim.  This helps keep your account information 'clean' and separate from other
-JWT claims like ``iat``, ``iss``, ``aud``, etc.
+As you can see, the user account JSON is reflected as a single ``user`` claim, and the entire user account can be
+retrieved by a single lookup of that claim.  This helps keep your user account information 'clean' and separate from
+other JWT claims like ``iat``, ``iss``, ``aud``, etc.
 
 If you prefer, you can :ref:`change the claim name <forwarded account jwt valueclaim name>` or
 :ref:`not use a claim at all <forwarded account jwt valueclaim enabled>`
@@ -1054,14 +1055,14 @@ via the respective nested ``name`` and ``enabled`` properties.
 
 .. tip::
 
-   For you JWT experts out there, you might want to know why we didn't represent the account with the
+   For you JWT experts out there, you might want to know why we didn't represent the user account with the
    `JWT sub claim <https://tools.ietf.org/html/rfc7519#section-4.1.2>`_ .  The ``sub`` claim is the RFC-standard claim
-   that defines the target identity of the JWT, and the account is the identity we care about, right?  So why didn't we
-   just use the default ``sub`` claim instead of ``account``?
+   that defines the target identity of the JWT, and the user account is the identity we care about, right?  So why
+   didn't we just use the default ``sub`` claim instead of ``user``?
 
    The reason is that the JWT RFC (`RFC 7519 <https://tools.ietf.org/html/rfc7519>`_) says that the value of the ``sub``
    claim must be a ``StringOrURI`` data type value, as defined in
-   `RFC 7519 section 2 (Terminology) <https://tools.ietf.org/html/rfc7519#section-2>`_.  The Account JSON is a full
+   `RFC 7519 section 2 (Terminology) <https://tools.ietf.org/html/rfc7519#section-2>`_.  The user account JSON is a full
    JSON object structure, which is neither a String nor a URI as required by the RFC.  So, we choose a different
    claim name to avoid any parsing/validation errors that JWT libraries might enforce for that claim, and all is well.
 
@@ -1071,7 +1072,7 @@ via the respective nested ``name`` and ``enabled`` properties.
 ``enabled``
 """""""""""
 
-The :ref:`Account JSON <forwarded account json>` is nested in the JWT claims as single claim named ``account`` by
+The :ref:`Account JSON <forwarded account json>` is nested in the JWT claims as single claim named ``user`` by
 default.
 
 If you don't want to use a specific value claim at all, and instead prefer to have the account properties mixed
@@ -1089,7 +1090,7 @@ entirely by setting ``stormpath.zuul.account.header.jwt.valueClaim.enabled`` to 
                enabled: false
 
 
-After setting this property to ``false``, all account JSON name/value pairs are added directly to the JWT claims,
+After setting this property to ``false``, all user account JSON name/value pairs are added directly to the JWT claims,
 making each account property a claim itself.  The account properties and any other JWT-related ones are all
 intermixed and 'just claims' as far as the JWT is concerned.  For example:
 
@@ -1114,7 +1115,7 @@ intermixed and 'just claims' as far as the JWT is concerned.  For example:
 ``name``
 """"""""
 
-The single value claim is named ``account`` by default.  You can change this name if you prefer by setting the
+The single value claim is named ``user`` by default.  You can change this name if you prefer by setting the
 ``stormpath.zuul.account.header.jwt.valueClaim.name`` config property.  For example:
 
 .. code-block:: yaml
@@ -1125,7 +1126,7 @@ The single value claim is named ``account`` by default.  You can change this nam
          header:
            jwt:
              valueClaim:
-               name: user
+               name: userAccount
 
 This would result in JWT claims that look something like this:
 
@@ -1136,7 +1137,7 @@ This would result in JWT claims that look something like this:
      "iat": 1482972605,
      "iss": "my gateway",
      "aud": "my origin server",
-     "user": {
+     "userAccount": {
        "username": "tk421",
        "email": "tk421@galacticempire.com",
        "givenName": "TK421",
@@ -1173,21 +1174,61 @@ Custom Header Value
 -------------------
 
 Finally, if *none* of the above options are sufficient for you, don't worry, we still have you covered.  You can still
-create any string you want as the header value with a little custom code.  You have two easy options:
+create any string you want as the header value with a little custom code.  You have three easy options:
 
-1.  If you don't need access to the HttpServletRequest/Response pair and just want to convert an Account
-    object to a String, you can define your own
+1.  If you don't need access to the HttpServletRequest/Response pair and want to convert the Account to a
+    Map that will be automatically turned into JSON or a JWT for you, you can define your own
+    :ref:`account-to-map conversion function <forwarded account map function>` bean.
+
+2.  If you don't need access to the HttpServletRequest/Response pair and want to do the full account to final
+    header String conversion logic yourself, you can define your own
     :ref:`account-to-string conversion function <forwarded account to string function>` bean.
 
-2.  If you need access to the HttpServletRequest/Response during the account-to-string conversion process, you can
+3.  If you need access to the HttpServletRequest/Response during the account-to-string conversion process, you can
     define your own :ref:`stormpathForwardedAccountHeaderValueResolver` bean.
 
-In either case you will need to add the proper bean in your gateway Spring config.
+In any case you will need to add the proper bean in your gateway Spring config.
 
 .. note::
 
-   Remember that adding or changing either bean will probably require changes to your origin server(s) - the origin
-   server(s) will need to understand how to read the different Account string value created by your conversion bean.
+   Remember that adding or changing any of these beans will probably require changes to your origin server(s) -
+   the origin server(s) will need to understand how to read the final Account string value created by your
+   conversion bean.
+
+
+.. _forwarded account map function:
+
+Account-to-Map Function
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you don't need access to the HttpServletRequest/Response pair, and you just want to be able to convert an ``Account``
+instance to a ``Map<String,?>``, you can define your own ``stormpathForwardedAccountMapFunction`` bean:
+
+.. code-block:: java
+
+   @Bean
+   public Function<Account, ?> stormpathForwardedAccountMapFunction() {
+       return new MyAccountToMapFunction(); //implement me
+   }
+
+
+This bean/method must be named ``stormpathForwardedAccountMapFunction`` and the bean must implement the
+``com.stormpath.sdk.lang.Function<Account,?>`` interface.
+
+When the gateway determines that there is an account to forward to an origin server, your custom function will be
+called with an ``Account`` instance and it will return a ``Map<String,?>`` result.
+
+This resulting map will be
+converted to a JSON document automatically, and then potentially converted to a JWT depending on the value of the
+:ref:`stormpath.zuul.account.header.jwt.enabled <forwarded account header jwt enabled>` property (which is enabled by
+default).  If JWT is enabled, you can :ref:`customize the JWT as documented <forwarded account header jwt>` above.
+
+The final resulting JSON or JWT string will be the header value.
+
+.. note::
+
+   If the resulting Map is ``null`` or empty, the header will not be present in the forwarded request at all.
+
 
 .. _forwarded account to string function:
 
@@ -1204,7 +1245,7 @@ instance to a String, you can define your own ``stormpathForwardedAccountStringF
        return new MyAccountToStringFunction(); //implement me
    }
 
-This bean/method must be named ``stormpathForwardedAccountStringFunction``.  The bean must implement the
+This bean/method must be named ``stormpathForwardedAccountStringFunction`` and the bean must implement the
 ``com.stormpath.sdk.lang.Function<Account,String>`` interface.
 
 When the gateway determines that there is an account to forward to an origin server, your custom function will be

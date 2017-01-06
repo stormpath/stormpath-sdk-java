@@ -41,18 +41,18 @@
     {
       "name": "stormpath.zuul.account.header.name",
       "type": "java.lang.Integer",
-      "description": "The name of the HTTP header used in a forwarded request that contains a String representing the Account associated with the inbound request.  If there is no account associated with the request, this header will not be set.  Unless overridden, the default value is X-Forwarded-Account",
-      "defaultValue": "X-Forwarded-Account"
+      "description": "The name of the HTTP header used in a forwarded request that contains a String representing the Account associated with the inbound request.  If there is no account associated with the request, this header will not be set.  Unless overridden, the default value is X-Forwarded-User",
+      "defaultValue": "X-Forwarded-User"
     },
     {
       "name": "stormpath.zuul.account.header.value",
       "type": "com.stormpath.sdk.convert.Conversion",
-      "description": "The conversion rules to apply to any discovered Account to be forwarded.  These rules produce an account String that will be used as the value of the X-Forwarded-Account header."
+      "description": "The conversion rules to apply to any discovered Account to be forwarded.  These rules produce an account String that will be used as the value of the X-Forwarded-User header."
     },
     {
       "name": "stormpath.zuul.account.header.jwt.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether or not the X-Forwarded-Account header value should be a JWT instead of a plaintext string.  Unless overridden, the default value is true for extra security guarantees.  A false value will result in a plaintext string header value.",
+      "description": "Whether or not the X-Forwarded-User header value should be a JWT instead of a plaintext string.  Unless overridden, the default value is true for extra security guarantees.  A false value will result in a plaintext string header value.",
       "defaultValue": true
     },
     {
@@ -86,8 +86,8 @@
     {
       "name": "stormpath.zuul.account.header.jwt.valueClaim.name",
       "type": "java.lang.String",
-      "description": "The name of the claim within the forwarded account JWT claims map that represents the account object.  Unless overridden, the default value is 'account'.  This property is only evaluated if stormpath.zuul.account.header.jwt.valueClaim.enabled is equal to true.",
-      "defaultValue": "account"
+      "description": "The name of the claim within the forwarded user JWT claims map that represents the user account object.  Unless overridden, the default value is 'user'.  This property is only evaluated if stormpath.zuul.account.header.jwt.valueClaim.enabled is equal to true.",
+      "defaultValue": "user"
     },
     {
       "name": "stormpath.zuul.account.header.jwt.key.alg",
@@ -114,7 +114,7 @@
     {
       "name": "stormpath.zuul.account.header.jwt.key.kid",
       "type": "java.lang.Boolean",
-      "description": "Specifies the identifier of the signing key used to digitally sign the forwarded account JWT.  This is useful because backend origin servers behind the gateway can inspect the X-Forwarded-Account header JWT, find this key id, and based on this id, look up the appropriate key that should be used to verify the JWT's digital signature.  If you specify a signing key (and you should!) you would almost always want to set this property.  If you do not specify a signing key or this property, the Stormpath Client API Key secret will be used as the HMAC signing key, and this property ('kid') will default to the Client API Key's HREF URL."
+      "description": "Specifies the identifier of the signing key used to digitally sign the forwarded account JWT.  This is useful because backend origin servers behind the gateway can inspect the X-Forwarded-User header JWT, find this key id, and based on this id, look up the appropriate key that should be used to verify the JWT's digital signature.  If you specify a signing key (and you should!) you would almost always want to set this property.  If you do not specify a signing key or this property, the Stormpath Client API Key secret will be used as the HMAC signing key, and this property ('kid') will default to the Client API Key's HREF URL."
     }
   ],
   "hints": [

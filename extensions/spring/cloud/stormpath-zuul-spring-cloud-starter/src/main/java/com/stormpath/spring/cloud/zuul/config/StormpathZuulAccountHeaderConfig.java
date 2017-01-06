@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class StormpathZuulAccountHeaderConfig {
 
     @SuppressWarnings("WeakerAccess")
-    public static final String DEFAULT_NAME = "X-Forwarded-Account";
+    public static final String DEFAULT_NAME = "X-Forwarded-User";
 
     private String name;
 
