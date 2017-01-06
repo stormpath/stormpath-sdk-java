@@ -377,9 +377,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
     @Test
     void testSearchIdentityProviderCollectionOfRegisteredSamlServiceProvidersByDifferentProperties(){
-
         def application = createTempApp()
-
         def identityProvider = getSamlIdentityProviderForApplication(application)
 
         def serviceProvider = client.instantiate(RegisteredSamlServiceProvider)
@@ -428,9 +426,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
     @Test
     void testDeletion() {
-
         def application = createTempApp()
-
         def identityProvider = getSamlIdentityProviderForApplication(application)
 
         def serviceProvider = client.instantiate(RegisteredSamlServiceProvider)
