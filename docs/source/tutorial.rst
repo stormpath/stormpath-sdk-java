@@ -353,29 +353,61 @@ methods.
 
 The official Spring Security documentation is at `http://projects.spring.io/spring-security <http://projects.spring.io/spring-security/>`_.
 
-Let's take a look at the additions and changes to the project. The code for this section can be found in
-`tutorials/spring-boot/02-spring-security-ftw <https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/02-spring-security-ftw>`_.
+Let's take a look at the additions and changes to the project.
+
+#if( $springboot )
+The code for this section can be found in `tutorials/spring-boot/02-spring-security-ftw`_.
+#elseif( $spring )
+The code for this section can be found in `tutorials/spring/02-spring-security-ftw`_.
+#end
 
 We've added a configuration file called ``SpringSecurityWebAppConfig.java``. How does Spring know it's a configuration file?
 It has the ``@Configuration`` annotation:
 
+#if( $springboot )
 .. code-block:: java
     :linenos:
-    :emphasize-lines: 8
 
-      @Configuration
-      public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
-          @Override
-          protected void doConfigure(HttpSecurity http) throws Exception {
-              http
-                  .authorizeRequests()
-                  .antMatchers("/").permitAll();
-          }
-      }
+    @Configuration
+    public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                .authorizeRequests()
+                .antMatchers("/").permitAll();
+        }
+    }
+#elseif( $spring )
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 12
 
-  In order to easily hook into the Stormpath Spring Security integration, simply add a ``WebSecurityConfigurerAdapter`` in the application.
-  Doing that just sets up all of the default views and hooks the Stormpath ``AuthenticationManager``
-  into your application.
+    import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
+
+    @Configuration
+    @ComponentScan("com.stormpath.tutorial")
+    @PropertySource("classpath:application.properties")
+    @EnableStormpathWebSecurity
+    public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+
+            http
+                .apply(stormpath())
+                .and()
+                    .authorizeRequests()
+                    .antMatchers("/").permitAll()
+                .and()
+                    .exceptionHandling().accessDeniedPage("/403");
+        }
+    }
+#end
+
+In order to easily hook into the Stormpath Spring Security integration, simply add a ``WebSecurityConfigurerAdapter`` in the application.
+#if( $spring )
+Then, apply stormpath using ``.apply(stormpath())``.
+#end
+Doing that just sets up all of the default views and hooks the Stormpath ``AuthenticationManager`` into your application.
 
 Based on the ``SpringSecurityWebAppConfig`` above, we will permit access to the homepage. Any other paths will fall back
 to the default of being secured - you would be redirected to the Stormpath login page. We are going to further protect
@@ -407,21 +439,35 @@ NOTE: In this example, ``hasAuthority`` is used because Spring Security looks fo
 For this reason, we recommend you use ``hasAuthority``. See `this issue <https://github.com/stormpath/stormpath-sdk-java/issues/325#issuecomment-220923162>`_
 for more information.
 
-If the authenticated user is not in the specified group, a ``403`` (forbidden) status will be returned. This will
-automatically redirect to ``/error``, which gets handled by our ``RestrictedErrorController.java``.
+If the authenticated user is not in the specified group, a ``403`` (forbidden) status will be returned.
+
+#if( $springboot )
+This will automatically redirect to ``/error``, which gets handled by our ``RestrictedErrorController.java``.
 This returns a nicely formatted Thymeleaf template.
+#elseif( $spring)
+This will automatically redirect to ``/403``, which gets handled by our ``ErrorController.java``.
+This returns a nicely formatted JSP.
+#end
 
 With the service defined, we can incorporate it into our controller, ``HelloController.java``:
 
 .. code-block:: java
     :linenos:
-    :emphasize-lines: 4,5,15-17
+    :emphasize-lines: 7, 23-25
 
     @Controller
     public class HelloController {
 
-        @Autowired
+        private AccountResolver accountResolver;
         private HelloService helloService;
+
+        @Autowired
+        public HelloController(AccountResolver accountResolver, HelloService helloService) {
+            Assert.notNull(accountResolver);
+            Assert.notNull(helloService);
+            this.accountResolver = accountResolver;
+            this.helloService = helloService;
+        }
 
         @RequestMapping("/")
         String home(HttpServletRequest req, Model model) {
@@ -432,25 +478,32 @@ With the service defined, we can incorporate it into our controller, ``HelloCont
         @RequestMapping("/restricted")
         String restricted(HttpServletRequest req, Model model) {
             String msg = helloService.sayHello(
-                AccountResolver.INSTANCE.getAccount(req)
+                accountResolver.getAccount(req)
             );
             model.addAttribute("msg", msg);
             return "restricted";
         }
-
     }
 
-Lines 4 and 5 use the Spring Autowiring capability to make the ``HelloService`` available in the ``HelloController``.
+Line 7 uses the Spring Autowiring capability to make the ``AccountResolver`` and the ``HelloService`` available in the
+``HelloController``.
 
-Lines 15 - 17 attempt to call the ``sayHello`` method.
+Lines 23 - 25 attempts to call the ``sayHello`` method.
 
 Give this a spin yourself. Make sure that you replace the ``MY_GROUP`` value in ``HelloService`` with the actual URL to the group you've
 setup in the Stormpath Admin Console.
 
+#if( $springboot )
 .. code-block:: bash
 
     mvn clean package
     mvn spring-boot:run
+#elseif( $spring )
+.. code-block:: bash
+
+    mvn clean package
+    mvn tomcat7:run
+#end
 
 In the next section, we'll add a small amount of code to be able to dynamically set the Group reference and make the code more readable.
 
@@ -826,3 +879,5 @@ for more information on all that the Stormpath Java SDK has to offer.
 .. _tutorials/spring/00-the-basics: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/00-the-basics
 .. _tutorials/spring-boot/01-some-access-controls: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/01-some-access-controls
 .. _tutorials/spring/01-some-access-controls: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/01-some-access-controls
+.. _tutorials/spring-boot/02-spring-security-ftw: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring-boot/02-spring-security-ftw
+.. _tutorials/spring/02-spring-security-ftw: https://github.com/stormpath/stormpath-sdk-java/tree/master/tutorials/spring/02-spring-security-ftw
