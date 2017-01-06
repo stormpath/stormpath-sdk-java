@@ -26,6 +26,6 @@ public class StormpathSpringSecurityDisabled implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return context.getEnvironment().getProperty("stormpath.spring.security.enabled", Boolean.class).equals(Boolean.FALSE);
+        return context.getEnvironment().getProperty("stormpath.spring.security.enabled", Boolean.class, Boolean.TRUE).equals(Boolean.FALSE);
     }
 }
