@@ -16,14 +16,16 @@
 package com.stormpath.sdk.servlet.mvc
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.application.Application
+import com.stormpath.sdk.cache.Cache
+import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.directory.DefaultDirectory
-import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.group.DefaultGroup
 import com.stormpath.sdk.impl.organization.DefaultOrganization
 import com.stormpath.sdk.organization.Organization
@@ -47,7 +49,6 @@ import javax.servlet.http.HttpServletResponse
 import static org.easymock.EasyMock.anyObject
 import static org.easymock.EasyMock.createMock
 import static org.easymock.EasyMock.createNiceMock
-import static org.easymock.EasyMock.createStrictMock
 import static org.easymock.EasyMock.expect
 import static org.easymock.EasyMock.partialMockBuilder
 import static org.easymock.EasyMock.replay
@@ -131,6 +132,49 @@ public class RegisterControllerTest {
         verify eventPublisher, registerPreHandler, request, response, client, requestFieldValueResolver, application, account, accountStoreResolver, directory
 
         assertNotNull(vm, "ViewModel should not be empty")
+    }
+
+    @Test
+    void testAccountUnverifiedRemovedFromCache() {
+        def HREF = "a real href"
+        def cacheManager = createMock(CacheManager)
+        def cache = createMock(Cache)
+
+        RegisterController registerController = new RegisterController(
+            client: client,
+            preRegisterHandler: registerPreHandler,
+            csrfTokenManager: csrfTokenManager,
+            fieldValueResolver: requestFieldValueResolver,
+            produces: Arrays.asList(MediaType.TEXT_HTML),
+            eventPublisher: eventPublisher,
+            accountStoreResolver: accountStoreResolver
+        )
+
+        expect(client.instantiate(Account.class)).andReturn account
+        expect(requestFieldValueResolver.getAllFields(request)).andReturn new HashMap<String, Object>()
+        expect(request.getAttribute(Application.class.getName())).andReturn ((Application)application)
+        expect(accountStoreResolver.getAccountStore(request, response)).andReturn directory
+        expect(registerPreHandler.handle(request, response, account)).andReturn true
+        expect(account.setGivenName("UNKNOWN")).andReturn account
+        expect(account.setSurname("UNKNOWN")).andReturn account
+        expect(account.getStatus()).andReturn AccountStatus.UNVERIFIED
+        expect(account.getHref()).andReturn HREF
+        expect(account.getCustomData()).andReturn customData
+        expect(directory.createAccount(account)).andReturn account
+        expect(eventPublisher.publish(anyObject()))
+
+        expect(request.getAttribute(UserAgents.USER_AGENT_REQUEST_ATTRIBUTE_NAME)).andReturn new DefaultUserAgent(request)
+        expect(request.getHeader("Accept")).andReturn "text/html"
+
+        expect(client.getCacheManager()).andReturn cacheManager
+        expect(cacheManager.getCache(Account.class.name)).andReturn cache
+        expect(cache.remove(HREF)).andReturn(cache).once()
+
+        replay eventPublisher, registerPreHandler, request, response, client, cacheManager, cache, requestFieldValueResolver, application, account, accountStoreResolver, directory
+
+        def vm = registerController.onValidSubmit(request, response, form)
+
+        verify eventPublisher, registerPreHandler, request, response, client, cacheManager, cache, requestFieldValueResolver, application, account, accountStoreResolver, directory
     }
 
     @Test(expectedExceptions = [IllegalStateException])
