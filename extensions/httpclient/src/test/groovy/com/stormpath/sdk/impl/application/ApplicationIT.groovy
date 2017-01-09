@@ -351,11 +351,13 @@ class ApplicationIT extends ClientIT {
         def dirName = uniquify("Java SDK Filter IT Dir")
         def dirName2 = uniquify("Java SDK IT Dir II")
 
-        app1  = tenant.createApplication(Applications.newCreateRequestFor(app1).createDirectoryNamed(dirName).build())
-        app2 = tenant.createApplication(Applications.newCreateRequestFor(app2).createDirectoryNamed(dirName2).build())
+        app1 = tenant.createApplication(newCreateRequestFor(app1).createDirectoryNamed(dirName).build())
+        app2 = tenant.createApplication(newCreateRequestFor(app2).createDirectoryNamed(dirName2).build())
 
         deleteOnTeardown(app1)
         deleteOnTeardown(app2)
+        deleteOnTeardown(client.getResource(app1.getDefaultAccountStore().href, Directory))
+        deleteOnTeardown(client.getResource(app2.getDefaultAccountStore().href, Directory))
 
         //verify that the filter search works with a combination of criteria
         def foundApps2 = tenant.getApplications(Applications.where(Applications.filter('Java SDK Filter IT App')).and(Applications.description().endsWithIgnoreCase('02')))

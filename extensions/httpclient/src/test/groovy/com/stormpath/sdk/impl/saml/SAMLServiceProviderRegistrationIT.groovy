@@ -5,12 +5,20 @@ package com.stormpath.sdk.impl.saml
 
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.query.Options
-import com.stormpath.sdk.saml.*
+import com.stormpath.sdk.saml.RegisteredSamlServiceProvider
+import com.stormpath.sdk.saml.RegisteredSamlServiceProviderList
+import com.stormpath.sdk.saml.SamlIdentityProvider
+import com.stormpath.sdk.saml.SamlIdentityProviders
+import com.stormpath.sdk.saml.SamlPolicy
+import com.stormpath.sdk.saml.SamlServiceProviderRegistration
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationList
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrationStatus
+import com.stormpath.sdk.saml.SamlServiceProviderRegistrations
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.assertNotNull
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
 
 class SamlServiceProviderRegistrationIT extends AbstractSamlIT {
 

@@ -73,7 +73,7 @@ class DefaultLinkedInAccountRequestBuilderTest {
     }
 
     @Test
-    void testAddingAccessTokenAndCode() {
+    void testAddingBothAccessTokenAndCode() {
         def requestBuilder = Providers.LINKEDIN.account();
 
         try {

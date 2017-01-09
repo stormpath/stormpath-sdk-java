@@ -60,4 +60,12 @@ public class DefaultLinkedInProvider extends AbstractOAuthProvider<LinkedInProvi
         return this;
     }
 
+    /**
+     * @since 1.3.0
+     */
+    @Override
+    public String getProviderType() {
+        return IdentityProviderType.LINKEDIN.getNameKey();
+    }
+
 }

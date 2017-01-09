@@ -31,6 +31,9 @@ public class DefaultTwitterProvider extends AbstractOAuthProvider<TwitterProvide
         return IdentityProviderType.TWITTER.getNameKey();
     }
 
-
+    @Override
+    public String getProviderType() {
+        return IdentityProviderType.TWITTER.getNameKey();
+    }
 }
 

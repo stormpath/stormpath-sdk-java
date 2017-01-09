@@ -21,7 +21,11 @@ import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.challenge.sms.SmsChallenge
 import com.stormpath.sdk.directory.Directory
-import com.stormpath.sdk.factor.*
+import com.stormpath.sdk.factor.Factor
+import com.stormpath.sdk.factor.FactorOptions
+import com.stormpath.sdk.factor.FactorStatus
+import com.stormpath.sdk.factor.FactorVerificationStatus
+import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.factor.sms.SmsFactorOptions
 import com.stormpath.sdk.impl.multifactor.AbstractMultiFactorIT
@@ -30,8 +34,12 @@ import com.stormpath.sdk.phone.Phone
 import com.stormpath.sdk.phone.PhoneStatus
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
+
 import java.lang.reflect.Field
-import static org.testng.AssertJUnit.*
+
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.1.0

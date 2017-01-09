@@ -1,0 +1,192 @@
+{
+  "groups": [
+    {
+      "name": "stormpath.zuul"
+    },
+    {
+      "name": "stormpath.zuul.account.filter"
+    },
+    {
+      "name": "stormpath.zuul.account.header"
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt"
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.valueClaim"
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.key"
+    }
+  ],
+  "properties": [
+    {
+      "name": "stormpath.zuul.enabled",
+      "type": "java.lang.Boolean",
+      "description": "A boolean flag that can disable the Stormpath Zuul Spring Cloud Starter.  This is mostly useful during testing or debugging, or if you want to compare behavior when Stormpath/Zuul is enabled or disabled.  Unless overridden, this is true by default.  A false value will disable the starter.",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.zuul.account.filter.type",
+      "type": "java.lang.String",
+      "description": "The Zuul Filter type of the Stormpath Forwarded Account Header Filter.  If unspecified, the default value is \"pre\" and probably shouldn't be changed unless you're doing something highly customized and know exactly what you're doing.",
+      "defaultValue": "pre"
+    },
+    {
+      "name": "stormpath.zuul.account.filter.order",
+      "type": "java.lang.Integer",
+      "description": "The Zuul Filter order of the Stormpath Forwarded Account Header Filter.  If unspecified, the default value is 0 (zero).",
+      "defaultValue": 0
+    },
+    {
+      "name": "stormpath.zuul.account.header.name",
+      "type": "java.lang.Integer",
+      "description": "The name of the HTTP header used in a forwarded request that contains a String representing the Account associated with the inbound request.  If there is no account associated with the request, this header will not be set.  Unless overridden, the default value is X-Forwarded-User",
+      "defaultValue": "X-Forwarded-User"
+    },
+    {
+      "name": "stormpath.zuul.account.header.value",
+      "type": "com.stormpath.sdk.convert.Conversion",
+      "description": "The conversion rules to apply to any discovered Account to be forwarded.  These rules produce an account String that will be used as the value of the X-Forwarded-User header."
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether or not the X-Forwarded-User header value should be a JWT instead of a plaintext string.  Unless overridden, the default value is true for extra security guarantees.  A false value will result in a plaintext string header value.",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.header",
+      "type": "java.util.Map",
+      "description": "A map of name/value pairs to use as default headers in the forwarded account JWT.  The names must be strings, the values can be any JSON-compatible type.  Any pairs entered will become default values in the JWT header before any runtime values are applied.  Runtime values overwrite any identically named header pairs represented here."
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.claims",
+      "type": "java.util.Map",
+      "description": "A map of name/value pairs to use as default claims in the forwarded account JWT.  The names must be strings, the values can be any JSON-compatible type.  Any pairs entered will become default values in the JWT claims before any runtime values are applied.  Runtime values overwrite any identically named claims pairs represented here."
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.expirationSeconds",
+      "type": "java.lang.Long",
+      "description": "How long the JWT should be usable, in seconds (not milliseconds!) after the JWT is created.  This number of seconds is added to the JWT creation timestamp and the resulting timestamp is set as the JWT standard 'exp' date claim.  Specification-compliant JWT parsers will reject any JWT that is older than the exp timestamp.  The default value is null, indicating the exp claim will not be set by default.",
+      "defaultValue": null
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.notBeforeSeconds",
+      "type": "java.lang.Long",
+      "description": "The number of seconds (not milliseconds!) added (or subtracted, if negative) to the JWT creation timestamp to derive the Date used to set as the JWT standard 'nbf' (not before) date claim.  Specification-compliant JWT parsers will reject any JWT that is newer than the nbf timestamp.  The default value is null, indicating the nbf claim will not be set by default.",
+      "defaultValue": null
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.valueClaim.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether or not the serialized account JSON should be represented as a single claim in the forwarded account JWT's claims map.  Unless overridden, the default value is true to ensure the account JSON is cleanly separated from any other JWT-specific claims, such as iat, iss, aud, etc.  A false value will ensure that the account JSON properties will each be represented as a generic JWT claim, one claim per top-level account property, and intermixed along side any other JWT-standard claims like iat, iss, or aud.",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.valueClaim.name",
+      "type": "java.lang.String",
+      "description": "The name of the claim within the forwarded user JWT claims map that represents the user account object.  Unless overridden, the default value is 'user'.  This property is only evaluated if stormpath.zuul.account.header.jwt.valueClaim.enabled is equal to true.",
+      "defaultValue": "user"
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.key.alg",
+      "type": "java.lang.String",
+      "description": "The enum name of the JWT-standard signature algorithm used to digitally sign the forwarded account JWT, for example HS256, EC512, etc. If using a shared/symmetric key for HMAC (HS* variants), a default value will be chosen based on the strength of the configured key value (via the 'stormpath.zuul.account.header.jwt.key.k' property)."
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.key.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether or not to digitally sign the forwarded account JWT.  Unless overridden, the default is true to create cryptographically verifiable signatures for security guarantees.  A false value indicates that the forwarded account JWT will not be signed, resulting in what the JWT specification calls an 'unsecured JWT'.  Be careful if disabling this property - one should fully understand the security implications of unsecured JWTs.",
+      "defaultValue": true
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.key.encoding",
+      "type": "java.lang.Boolean",
+      "description": "Specifies the string encoding used for the stormpath.zuul.account.header.jwt.key.k value.  If stormpath.zuul.account.header.jwt.key.k is not specified, this property is ignored.  This value must be one of 'base64url', 'base64' or 'utf8' (without the quotes).  If unspecified, base64url is used as the default since this is the JWT standard for JSON Web Key values.",
+      "defaultValue": "base64url"
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.key.k",
+      "type": "java.lang.Boolean",
+      "description": "Specifies the shared/symmetric key to be used when computing HMAC signatures for the forwarded account JWT.  If the String value is not encoded as Base64URL, you must set the stormpath.zuul.account.header.jwt.key.encoding property to indicate which encoding is used.  If you are not using an HMAC algorithm (such as RSA or Elliptic Curve) you cannot specify this property - instead, you must specify a bean named 'stormpathForwardedAccountJwtSigningKey' that returns your private key as a java.security.Key instance.  Finally, if you do not specify a signing key at all, the secret from Stormpath Client API Key will be used as the HMAC signing key."
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.key.kid",
+      "type": "java.lang.Boolean",
+      "description": "Specifies the identifier of the signing key used to digitally sign the forwarded account JWT.  This is useful because backend origin servers behind the gateway can inspect the X-Forwarded-User header JWT, find this key id, and based on this id, look up the appropriate key that should be used to verify the JWT's digital signature.  If you specify a signing key (and you should!) you would almost always want to set this property.  If you do not specify a signing key or this property, the Stormpath Client API Key secret will be used as the HMAC signing key, and this property ('kid') will default to the Client API Key's HREF URL."
+    }
+  ],
+  "hints": [
+    {
+      "name": "stormpath.zuul.account.header.jwt.key.alg",
+      "values": [
+        {
+          "value": "HS256",
+          "description": "Digitally sign the forwarded account JWT with a shared/symmetric signing key using the JWT-standard 'HMAC using SHA-256' algorithm."
+        },
+        {
+          "value": "HS384",
+          "description": "Digitally sign the forwarded account JWT with a shared/symmetric signing key using the JWT-standard 'HMAC using SHA-384' algorithm."
+        },
+        {
+          "value": "HS512",
+          "description": "Digitally sign the forwarded account JWT with a shared/symmetric signing key using the JWT-standard 'HMAC using SHA-512' algorithm."
+        },
+        {
+          "value": "RS256",
+          "description": "Digitally sign the forwarded account JWT with an RSA PrivateKey using the JWT-standard 'RSASSA-PKCS-v1_5 using SHA-256' algorithm."
+        },
+        {
+          "value": "RS384",
+          "description": "Digitally sign the forwarded account JWT with an RSA PrivateKey using the JWT-standard 'RSASSA-PKCS-v1_5 using SHA-384' algorithm."
+        },
+        {
+          "value": "RS512",
+          "description": "Digitally sign the forwarded account JWT with an RSA PrivateKey using the JWT-standard 'RSASSA-PKCS-v1_5 using SHA-512' algorithm."
+        },
+        {
+          "value": "PS256",
+          "description": "Digitally sign the forwarded account JWT with an RSA PrivateKey using the JWT-standard 'RSASSA-PSS using SHA-256 and MGF1 with SHA-256' algorithm."
+        },
+        {
+          "value": "PS384",
+          "description": "Digitally sign the forwarded account JWT with an RSA PrivateKey using the JWT-standard 'RSASSA-PSS using SHA-384 and MGF1 with SHA-384' algorithm."
+        },
+        {
+          "value": "PS512",
+          "description": "Digitally sign the forwarded account JWT with an RSA PrivateKey using the JWT-standard 'RSASSA-PSS using SHA-512 and MGF1 with SHA-512' algorithm."
+        },
+        {
+          "value": "EC256",
+          "description": "Digitally sign the forwarded account JWT with an Elliptic Curve PrivateKey using the JWT-standard 'ECDSA using P-256 and SHA-256' algorithm."
+        },
+        {
+          "value": "EC384",
+          "description": "Digitally sign the forwarded account JWT with an Elliptic Curve PrivateKey using the JWT-standard 'ECDSA using P-256 and SHA-256' algorithm."
+        },
+        {
+          "value": "EC512",
+          "description": "Digitally sign the forwarded account JWT with an Elliptic Curve PrivateKey using the JWT-standard 'ECDSA using P-512 and SHA-512' algorithm."
+        }
+      ]
+    },
+    {
+      "name": "stormpath.zuul.account.header.jwt.key.encoding",
+      "values": [
+        {
+          "value": "base64url",
+          "description": "The stormpath.zuul.account.header.jwt.key.k value is a base64url-encoded byte array. The key bytes will be obtained by base64url-decoding this value.  If not specified, base64url is the JWT standard encoding and that will be assumed by default."
+        },
+        {
+          "value": "base64",
+          "description": "The stormpath.zuul.account.header.jwt.key.k value is a base64-encoded byte array. The key bytes will be obtained by base64-decoding this value."
+        },
+        {
+          "value": "utf8",
+          "description": "The stormpath.zuul.account.header.jwt.key.k value is a standard UTF-8 string, and the key bytes can be obtained by calling: keyString.getBytes(StandardCharsets.UTF8)."
+        }
+      ]
+    }
+  ]
+}

@@ -59,6 +59,11 @@ public enum IdentityProviderType {
     TWITTER("twitter", TwitterProvider.class, TwitterProviderData.class),
 
     /**
+     * @since 1.3.0
+     */
+    OAUTH2("oauth2", GenericOAuth2Provider.class, GenericOAuth2ProviderData.class),
+
+    /**
      * @since 1.2.2
      */
     DEFAULT("default", Provider.class, ProviderData.class);

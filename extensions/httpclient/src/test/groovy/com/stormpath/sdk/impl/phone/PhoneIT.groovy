@@ -1,7 +1,7 @@
 /*
  * Copyright 2016 Stormpath, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -25,10 +25,11 @@ import com.stormpath.sdk.phone.PhoneVerificationStatus
 import com.stormpath.sdk.phone.Phones
 import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
-import static org.testng.Assert.*
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.assertNotNull
-import static org.testng.AssertJUnit.assertTrue
+
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.1.0
@@ -60,14 +61,14 @@ class PhoneIT extends ClientIT {
         //create a phone:
         def phone = client.instantiate(Phone)
         phone.setNumber("888 391 5282")
-        phone = account.createPhone(phone);
+        phone = account.createPhone(phone)
 
         assertNotNull phone.href
-        assertEquals phone.number,"+18883915282"
+        assertEquals phone.number, "+18883915282"
         assertNull phone.name
         assertNull phone.description
         assertEquals phone.verificationStatus, PhoneVerificationStatus.UNVERIFIED
-        assertEquals phone.status,PhoneStatus.ENABLED
+        assertEquals phone.status, PhoneStatus.ENABLED
         assertNotNull phone.createdAt
         assertNotNull phone.modifiedAt
         assertNotNull phone.account
@@ -78,11 +79,11 @@ class PhoneIT extends ClientIT {
 
         //should have same values
         assertNotNull phone.href
-        assertEquals phone.number,"+18883915282"
+        assertEquals phone.number, "+18883915282"
         assertNull phone.name
         assertNull phone.description
         assertEquals phone.verificationStatus, PhoneVerificationStatus.UNVERIFIED
-        assertEquals phone.status,PhoneStatus.ENABLED
+        assertEquals phone.status, PhoneStatus.ENABLED
         assertNotNull phone.createdAt
         assertNotNull phone.modifiedAt
         assertNotNull phone.account
@@ -96,11 +97,11 @@ class PhoneIT extends ClientIT {
         phone2 = account.createPhone(builder.build())
 
         assertNotNull phone2.href
-        assertEquals phone2.number,"+18883915288"
+        assertEquals phone2.number, "+18883915288"
         assertNull phone2.name
         assertNull phone2.description
         assertEquals phone2.verificationStatus, PhoneVerificationStatus.UNVERIFIED
-        assertEquals phone2.status,PhoneStatus.ENABLED
+        assertEquals phone2.status, PhoneStatus.ENABLED
         assertNotNull phone2.createdAt
         assertNotNull phone2.modifiedAt
         assertNotNull phone2.account
@@ -111,11 +112,11 @@ class PhoneIT extends ClientIT {
 
         //should have same values
         assertNotNull phone2.href
-        assertEquals phone2.number,"+18883915288"
+        assertEquals phone2.number, "+18883915288"
         assertNull phone2.name
         assertNull phone2.description
         assertEquals phone2.verificationStatus, PhoneVerificationStatus.UNVERIFIED
-        assertEquals phone2.status,PhoneStatus.ENABLED
+        assertEquals phone2.status, PhoneStatus.ENABLED
         assertNotNull phone2.createdAt
         assertNotNull phone2.modifiedAt
         assertNotNull phone2.account
@@ -154,12 +155,12 @@ class PhoneIT extends ClientIT {
                 .setDescription(description)
                 .setVerificationStatus(PhoneVerificationStatus.VERIFIED)
                 .setStatus(PhoneStatus.DISABLED)
-        phone = account.createPhone(phone);
+        phone = account.createPhone(phone)
 
-        assertEquals(phone.number ,phoneNumber)
+        assertEquals(phone.number, phoneNumber)
         assertEquals(phone.name, name)
         assertEquals(phone.description, description)
-        assertEquals(phone.verificationStatus,PhoneVerificationStatus.VERIFIED)
+        assertEquals(phone.verificationStatus, PhoneVerificationStatus.VERIFIED)
         assertEquals(phone.status, PhoneStatus.DISABLED)
         assertNotNull(phone.createdAt)
         assertNotNull(phone.modifiedAt)
@@ -198,12 +199,12 @@ class PhoneIT extends ClientIT {
                 .setName(name)
                 .setDescription(description)
                 .setStatus(PhoneStatus.DISABLED)
-        phone = account.createPhone(phone);
+        phone = account.createPhone(phone)
 
         assertEquals(phone.number ,phoneNumber)
         assertNotNull(phone.name)
         assertNotNull(phone.description)
-        assertEquals(phone.verificationStatus,PhoneVerificationStatus.UNVERIFIED)
+        assertEquals(phone.verificationStatus, PhoneVerificationStatus.UNVERIFIED)
         assertEquals(phone.status, PhoneStatus.DISABLED)
         assertNotNull(phone.createdAt)
         assertNotNull(phone.modifiedAt)
@@ -213,7 +214,7 @@ class PhoneIT extends ClientIT {
         //should not be able to update to garbage number
         phone.setNumber("bogus")
 
-        Throwable e = null;
+        Throwable e = null
         try{
             phone.save()
         }
@@ -261,7 +262,7 @@ class PhoneIT extends ClientIT {
 
         phone.setNumber("+18008675309")
 
-        e = null;
+        e = null
         try{
             phone.save()
         }
@@ -300,21 +301,21 @@ class PhoneIT extends ClientIT {
         deleteOnTeardown(dir)
 
         PhoneList phoneList = client.getResource(account.href+"/phones", PhoneList)
-        assertEquals(phoneList.size,0)
+        assertEquals(phoneList.size, 0)
 
         //create a phone:
         def phoneNumber = "+18883915282"
         def phone = client.instantiate(Phone)
         phone.setNumber(phoneNumber)
-        account.createPhone(phone);
+        account.createPhone(phone)
 
         def phoneNumber2 = "+18883528249"
         phone = client.instantiate(Phone)
         phone.setNumber(phoneNumber2)
-        account.createPhone(phone);
+        account.createPhone(phone)
 
         phoneList = client.getResource(account.href+"/phones", PhoneList)
-        assertEquals(phoneList.size,2)
+        assertEquals(phoneList.size, 2)
     }
 
     @Test
@@ -344,7 +345,7 @@ class PhoneIT extends ClientIT {
 
         Throwable e = null
         try{
-            account.createPhone(phone);
+            account.createPhone(phone)
         }
         catch(ResourceException re){
             e=re
@@ -358,7 +359,7 @@ class PhoneIT extends ClientIT {
         phone.setNumber("+188839152822222222")
         e = null
         try{
-            account.createPhone(phone);
+            account.createPhone(phone)
         }
         catch(ResourceException re){
             e = re
@@ -373,7 +374,7 @@ class PhoneIT extends ClientIT {
 
         e = null
         try{
-            account.createPhone(phone);
+            account.createPhone(phone)
         }
         catch(ResourceException re){
             e = re
@@ -388,7 +389,7 @@ class PhoneIT extends ClientIT {
 
         e = null
         try{
-            account.createPhone(phone);
+            account.createPhone(phone)
         }
         catch(ResourceException re){
             e = re
@@ -402,13 +403,13 @@ class PhoneIT extends ClientIT {
         def phoneNumber = "+18883915282"
         phone = client.instantiate(Phone)
         phone.setNumber(phoneNumber)
-        account.createPhone(phone);
+        account.createPhone(phone)
         phone = client.instantiate(Phone)
         phone.setNumber(phoneNumber)
 
         e = null
         try{
-            account.createPhone(phone);
+            account.createPhone(phone)
         }
         catch(ResourceException re){
             e = re
@@ -446,17 +447,17 @@ class PhoneIT extends ClientIT {
         def phoneNumber = "2016549571"
         def phone = client.instantiate(Phone)
                 .setNumber(phoneNumber)
-        phone = account.createPhone(phone);
+        phone = account.createPhone(phone)
 
         def phoneNumber2 = "2026549572"
         def phone2 = client.instantiate(Phone)
                 .setNumber(phoneNumber2)
 
-        account.createPhone(phone2);
+        account.createPhone(phone2)
 
         account.delete()
 
-        Throwable e = null;
+        Throwable e = null
         try{
             client.getResource(account.href, Account)
         }
@@ -468,7 +469,7 @@ class PhoneIT extends ClientIT {
 
         assertTrue(e instanceof ResourceException)
 
-        e = null;
+        e = null
         try{
             client.getResource(phone.href, Phone)
         }
@@ -512,12 +513,12 @@ class PhoneIT extends ClientIT {
         def phone2 = client.instantiate(Phone)
                 .setNumber(phoneNumber2)
 
-        phone = account.createPhone(phone);
-        account.createPhone(phone2);
+        phone = account.createPhone(phone)
+        account.createPhone(phone2)
 
         phone.delete()
 
-        Throwable e = null;
+        Throwable e = null
         try{
             client.getResource(phone.href, Phone)
         }
@@ -536,7 +537,7 @@ class PhoneIT extends ClientIT {
         //should be able to recreate phone
         def phone3 = client.instantiate(Phone)
                 .setNumber(phoneNumber)
-        account.createPhone(phone3);
+        account.createPhone(phone3)
     }
 
     @Test
@@ -588,32 +589,32 @@ class PhoneIT extends ClientIT {
 
         account.createPhone(phone3)
 
-        Map<String, Object> queryParams = new HashMap<String, Object>();
-        queryParams.put("name", "Storm*");
+        Map<String, Object> queryParams = new HashMap<String, Object>()
+        queryParams.put("name", "Storm*")
         PhoneList phoneList = account.getPhones(queryParams)
 
         assertEquals(phoneList.size, 1)
 
-        queryParams = new HashMap<String, Object>();
-        queryParams.put("name", "Stormtrooper's Phone");
+        queryParams = new HashMap<String, Object>()
+        queryParams.put("name", "Stormtrooper's Phone")
         phoneList = account.getPhones(queryParams)
 
         assertEquals(phoneList.size, 1)
 
-        queryParams = new HashMap<String, Object>();
-        queryParams.put("description", "Storm*");
+        queryParams = new HashMap<String, Object>()
+        queryParams.put("description", "Storm*")
         phoneList = account.getPhones(queryParams)
 
         assertEquals(phoneList.size, 1)
 
-        queryParams = new HashMap<String, Object>();
-        queryParams.put("description", "*Description");
+        queryParams = new HashMap<String, Object>()
+        queryParams.put("description", "*Description")
         phoneList = account.getPhones(queryParams)
 
         assertEquals(phoneList.size, 2)
 
-        queryParams = new HashMap<String, Object>();
-        queryParams.put("number", "+18883915282");
+        queryParams = new HashMap<String, Object>()
+        queryParams.put("number", "+18883915282")
         phoneList = account.getPhones(queryParams)
 
         assertEquals(phoneList.size, 1)
@@ -657,34 +658,34 @@ class PhoneIT extends ClientIT {
         deleteOnTeardown(phone2)
 
         //Let's check we have 2 phones and the account is not materialized
-        def phones = account.getPhones(Phones.criteria().orderByName().ascending());
-        assertEquals(phones.getLimit(), 25);
-        assertEquals(phones.getProperty("items").size, 2);
+        def phones = account.getPhones(Phones.criteria().orderByName().ascending())
+        assertEquals(phones.getLimit(), 25)
+        assertEquals(phones.getProperty("items").size, 2)
         assertEquals(phones.iterator().next().account.materialized, false)
 
         //Let's retrieve 1 phone per page and confirm that the account is materialized
-        phones = account.getPhones(Phones.criteria().limitTo(1).withAccount().orderByName().ascending());
-        assertEquals(phones.getLimit(), 1);
-        assertEquals(phones.getProperty("items").size, 1);
-        assertEquals(phones.getOffset(), 0);
+        phones = account.getPhones(Phones.criteria().limitTo(1).withAccount().orderByName().ascending())
+        assertEquals(phones.getLimit(), 1)
+        assertEquals(phones.getProperty("items").size, 1)
+        assertEquals(phones.getOffset(), 0)
         assertEquals(phones.iterator().next().account.materialized, true)
 
-        Phone firstPhoneWithOffset0 = phones.iterator().next();
+        Phone firstPhoneWithOffset0 = phones.iterator().next()
 
-        assertNotNull(firstPhoneWithOffset0);
-        assertEquals(firstPhoneWithOffset0.getHref(), phone1.getHref());
+        assertNotNull(firstPhoneWithOffset0)
+        assertEquals(firstPhoneWithOffset0.getHref(), phone1.getHref())
 
         //Since we have 2 phones and offset = 1 here, then this page should only have 1 phone, the last one
-        phones = account.getPhones(Phones.criteria().offsetBy(1).orderByName().ascending());
-        assertEquals(phones.getLimit(), 25);
-        assertEquals(phones.getProperty("items").size, 1);
-        assertEquals(phones.getOffset(), 1);
+        phones = account.getPhones(Phones.criteria().offsetBy(1).orderByName().ascending())
+        assertEquals(phones.getLimit(), 25)
+        assertEquals(phones.getProperty("items").size, 1)
+        assertEquals(phones.getOffset(), 1)
 
-        Phone firstPhoneWithOffset1 = phones.iterator().next();
+        Phone firstPhoneWithOffset1 = phones.iterator().next()
 
-        assertNotNull(firstPhoneWithOffset1);
-        assertEquals(firstPhoneWithOffset1.getHref(), phone2.getHref());
+        assertNotNull(firstPhoneWithOffset1)
+        assertEquals(firstPhoneWithOffset1.getHref(), phone2.getHref())
 
-        assertTrue(firstPhoneWithOffset0.getHref() != firstPhoneWithOffset1.getHref());
+        assertTrue(firstPhoneWithOffset0.getHref() != firstPhoneWithOffset1.getHref())
     }
 }

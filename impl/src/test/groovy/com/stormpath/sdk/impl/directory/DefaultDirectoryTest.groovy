@@ -164,7 +164,7 @@ class DefaultDirectoryTest {
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).
                 andReturn(new DefaultTenant(internalDataStore, properties.tenant))
 
-        expect(internalDataStore.getResource(properties.provider.href, Provider.class, "providerId", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP))
+        expect(internalDataStore.getResource(properties.provider.href, Provider.class, "providerType", IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP))
                 .andReturn(new DefaultStormpathProvider(internalDataStore, properties.provider))
 
         expect(internalDataStore.instantiate(PasswordPolicy, properties.passwordPolicy)).
