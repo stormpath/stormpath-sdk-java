@@ -167,7 +167,7 @@ public class StormpathZuulAutoConfiguration {
                 signatureAlgorithm = SignatureAlgorithm.forName(value);
             }
 
-            String kid = jwk.getKid();
+            String kid = jwk.getId();
 
             key = stormpathForwardedAccountJwtSigningKey(); //check if explicitly provided as a bean
 
@@ -175,7 +175,7 @@ public class StormpathZuulAutoConfiguration {
 
                 byte[] bytes = null;
 
-                String encodedKeyBytes = jwk.getK();
+                String encodedKeyBytes = jwk.getValue();
                 if (encodedKeyBytes != null) {
 
                     String encoding = jwk.getEncoding();

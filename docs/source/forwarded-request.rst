@@ -624,9 +624,9 @@ with in transit. JWTs are among the simplest and safest means of secure identity
 this approach to ensure best-in-class security by default.
 
 If JWTs are not desirable - perhaps because you implicitly trust the network and machine transmission to your origin
-servers - you can disable the JWT approach entirely (see the ``enabled`` property below) and instead send a simple string
-value or JSON document as documented above  If you don't have a preference however, it is recommended in most
-scenarios to retain the added security that JWTs can offer.
+servers - you can disable the JWT approach entirely (see the :ref:`enabled <forwarded account header jwt enabled>`
+property below) and instead send a simple string value or JSON document as documented above  If you don't have a
+preference however, it is recommended in most scenarios to retain the added security that JWTs can offer.
 
 .. tip::
 
@@ -813,8 +813,8 @@ You may configure the signing key used to cryptographically sign the JWT via var
    not be able to verify the JWT's digital signature.
 
    To avoid JWT key/parsing errors in your origin servers, we recommend that specify your own signing key via
-   the :ref:`stormpath.zuul.account.header.jwt.key.k property <forwarded account signing key value>` or by defining the
-   :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.
+   the :ref:`stormpath.zuul.account.header.jwt.key.value property <forwarded account signing key value>` or by
+   defining the :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.
 
    Also please see the :ref:`signing key alg <forwarded account signing key alg>` section for more information.
 
@@ -861,7 +861,7 @@ For example:
 If you are using an HMAC algorithm by specifying ``HS256``, ``HS384``, or ``HS512``, you can provide your HMAC
 symmetric key in one of two ways.  Either:
 
-A. Set the ``stormpath.zuul.account.header.jwt.key.k`` and ``stormpath.zuul.account.header.jwt.key.encoding``
+A. Set the ``stormpath.zuul.account.header.jwt.key.value`` and ``stormpath.zuul.account.header.jwt.key.encoding``
    config properties, or
 
 B. Define the :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.
@@ -897,7 +897,7 @@ If you're unsure, we recommend that you *do not* set this property.
 ``encoding``
 """"""""""""
 
-If you specified the text value of your HMAC signing key via the ``stormpath.zuul.account.header.jwt.key.k`` property,
+If you specified the text value of your HMAC signing key via the ``stormpath.zuul.account.header.jwt.key.value`` property,
 and that string is *not* Base64Url-encoded, you will need to set the ``stormpath.zuul.account.header.jwt.key.encoding``
 property to indicate which encoding is used.  For example:
 
@@ -910,25 +910,25 @@ property to indicate which encoding is used.  For example:
          header:
            jwt:
              key:
-               k: EQDGRjSpZB87/eWO42XQ7h7mfxk0EmF6ZDY0TDGdAoA=
+               value: EQDGRjSpZB87/eWO42XQ7h7mfxk0EmF6ZDY0TDGdAoA=
                encoding: base64
 
 
 The default/assumed encoding is ``base64url``.  There are two other supported encodings:
 
 * ``base64``: standard Base64 encoding (not URL encoded)
-* ``utf8``: direct UTF-8 bytes of the configured string, i.e. ``k.getBytes(StandardCharsets.UTF8)``
+* ``utf8``: direct UTF-8 bytes of the configured string, i.e. ``value.getBytes(StandardCharsets.UTF8)``
 
 **CAUTION**: these 3 text encodings are not cryptographically secure.  Please see the
 :ref:`key caution <forwarded account signing key value caution>` concerning key string values.
 
 .. _forwarded account signing key value:
 
-``k``
-"""""
+``value``
+"""""""""
 
 If you want to configure your HMAC signing key as a string, you can set the
-``stormpath.zuul.account.header.jwt.key.k`` property.  For example:
+``stormpath.zuul.account.header.jwt.key.value`` property.  For example:
 
 .. code-block:: yaml
 
@@ -938,13 +938,13 @@ If you want to configure your HMAC signing key as a string, you can set the
          header:
            jwt:
              key:
-               k: EQDGRjSpZB87_eWO42XQ7h7mfxk0EmF6ZDY0TDGdAoA
+               value: EQDGRjSpZB87_eWO42XQ7h7mfxk0EmF6ZDY0TDGdAoA
 
 
-By default, the value is expected to be a Base64Url string.  The |project| will then base64url-decode this value
+By default, the key value is expected to be a Base64Url string.  The |project| will then base64url-decode this value
 at startup to obtain the raw signing key bytes used to compute the JWT signature.
 
-If your string value is not Base64Url, you can specify the ``stormpath.zuul.account.header.jwt.key.encoding``
+If your value string is not Base64Url, you can specify the ``stormpath.zuul.account.header.jwt.key.encoding``
 config property to indicate which encoding is used.
 
 .. _forwarded account signing key value caution:
@@ -954,13 +954,13 @@ config property to indicate which encoding is used.
    **Base64, Base64Url and UTF-8 encoding DOES NOT imply encryption**.
 
    Anyone that can access the
-   ``stormpath.zuul.account.header.jwt.key.k`` string value can use it to sign JWTs as you.  Keep this text string (and
+   ``stormpath.zuul.account.header.jwt.key.value`` string value can use it to sign JWTs as you.  Keep this text string (and
    the configured property value) safe and secret.
 
    If you are uncomfortable embedding key strings in your configuration due to security concerns, we recommend
    any of three approaches:
 
-   1.  Specify the ``stormpath.zuul.account.header.jwt.key.k`` value as an
+   1.  Specify the ``stormpath.zuul.account.header.jwt.key.value`` value as an
        `external Spring Boot property <https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html>`_.
        For example, set the ``STORMPATH_ZUUL_ACCOUNT_HEADER_JWT_KEY_K`` environment variable via an operations
        orchestration mechanism like Chef, Puppet or CloudFoundry that has access to secure/encrypted data store for
@@ -970,21 +970,21 @@ config property to indicate which encoding is used.
        to securely represent key values as text properties in your config.  Spring Cloud Config Server will decrypt
        the text value just before giving it to the |project| so it may be used correctly.
 
-   3.  Do not configure the ``stormpath.zuul.account.header.jwt.key.k`` property and instead define your own
+   3.  Do not configure the ``stormpath.zuul.account.header.jwt.key.value`` property and instead define your own
        :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.  You can then load the
        key bytes in whatever secure way you prefer.
 
 
-``kid``
-"""""""
+``id``
+""""""
 
 When specifying a signing key, it is usually recommended to also specify a string identifier for the key in the JWT
 header.  This allows JWT recipients (i.e. your origin servers) the ability to inspect the JWT header and identify which
 signing key was used.  Based on this identifier, the JWT recipient can then look up the corresponding key
 (or public key) to use in order to correctly verify the JWT's digital signature.
 
-You can specify your signing key's id (the ``kid`` param in the JWT header) by setting the
-``stormpath.zuul.account.header.jwt.key.kid`` configuration property.  For example:
+You can specify your signing key's id (the ``id`` param in the JWT header) by setting the
+``stormpath.zuul.account.header.jwt.key.id`` configuration property.  For example:
 
 .. code-block:: yaml
 
@@ -994,7 +994,7 @@ You can specify your signing key's id (the ``kid`` param in the JWT header) by s
          header:
            jwt:
              key:
-               kid: my signing key id
+               id: my signing key id
 
 
 This will set the JWT's ``kid`` header accordingly.
@@ -1167,7 +1167,7 @@ configuration:
 
 
 You can also define this bean to provide your symmetric key for HMAC algorithms as well if you prefer not to
-configure the HMAC signing key using the ``stormpath.zuul.account.header.jwt.key.k`` config property.
+configure the HMAC signing key using the ``stormpath.zuul.account.header.jwt.key.value`` config property.
 
 
 Custom Header Value

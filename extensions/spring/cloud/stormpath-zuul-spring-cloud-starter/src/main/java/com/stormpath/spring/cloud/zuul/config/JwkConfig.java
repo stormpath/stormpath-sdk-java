@@ -26,9 +26,9 @@ public class JwkConfig {
 
     private String encoding;
 
-    private String k;
+    private String value;
 
-    private String kid;
+    private String id;
 
     public JwkConfig() {
         this.enabled = true;
@@ -58,19 +58,19 @@ public class JwkConfig {
         this.encoding = encoding;
     }
 
-    public String getK() {
-        return k;
+    public String getValue() {
+        return value;
     }
 
-    public void setK(String k) {
-        this.k = k;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public String getKid() {
-        return kid;
+    public String getId() {
+        return id;
     }
 
-    public void setKid(String kid) {
-        this.kid = kid;
+    public void setId(String id) {
+        this.id = id;
     }
 }
