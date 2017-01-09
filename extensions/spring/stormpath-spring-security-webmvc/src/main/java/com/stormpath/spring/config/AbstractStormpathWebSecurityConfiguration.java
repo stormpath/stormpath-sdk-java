@@ -153,7 +153,6 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Qualifier("stormpathWrappedServletRequestFactory")
     private WrappedServletRequestFactory wrappedServletRequestFactory;
 
-
     public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
         return new StormpathWebSecurityConfigurer();
     }

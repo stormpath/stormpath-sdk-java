@@ -277,6 +277,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         http.servletApi().rolePrefix(""); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/325
 
         if (loginEnabled) {
+            //This filter adds Client and Application as attributes to every request in order for subsequent Filters to have access to them
             http.addFilterBefore(stormpathWrapperFilter, SecurityContextPersistenceFilter.class);
 
             // We need to add the springSecurityResolvedAccountFilter whenever we have our login enabled in order to
