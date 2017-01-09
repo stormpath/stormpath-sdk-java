@@ -38,12 +38,7 @@ environments {
                         'source/appendix/default-stormpath-properties.rst',
                         'source/appendix/spring-boot-core-properties.rst',
                         'source/appendix/spring-boot-web-properties.rst',
-                        'source/appendix/forgot-password.rst',
-                        'source/appendix/change-password.rst',
-                        'source/appendix/head.rst',
-                        'source/appendix/login.rst',
-                        'source/appendix/register.rst',
-                        'source/appendix/verify.rst']
+                        'source/appendix/head.rst']
             model {
                 servlet = true
                 maven.project.groupId = 'com.stormpath.sdk'
@@ -78,7 +73,7 @@ environments {
 
     spring {
         scms {
-            excludes = springExcludes + ['source/about_sczuul.rst', 'source/forwarded-request.rst']
+            excludes = springExcludes + ['source/about_sczuul.rst', 'source/forwarded-request.rst', 'source/appendix/head.rst']
             model {
                 spring = true
                 maven.project.groupId = 'com.stormpath.spring'
