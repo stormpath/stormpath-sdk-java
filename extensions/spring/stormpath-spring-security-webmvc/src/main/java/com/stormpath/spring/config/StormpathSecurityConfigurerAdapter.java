@@ -55,9 +55,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 1.0.RC5
  */
-//@Configuration
 @EnableStormpathWebSecurity
-//public abstract class AbstractStormpathWebSecurityConfigurer extends AbstractHttpConfigurer<AbstractStormpathWebSecurityConfigurer, HttpSecurity> {
 public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurityConfigurerAdapter  {
 
     private static final Logger log = LoggerFactory.getLogger(StormpathSecurityConfigurerAdapter.class);

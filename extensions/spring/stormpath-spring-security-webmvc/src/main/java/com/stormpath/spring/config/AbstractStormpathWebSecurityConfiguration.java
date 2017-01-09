@@ -154,9 +154,6 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Qualifier("stormpathWrappedServletRequestFactory")
     private WrappedServletRequestFactory wrappedServletRequestFactory;
 
-    @Value("#{ @environment['stormpath.spring.security.enabled'] ?: true }")
-    protected boolean stormpathSecurityEnabled;
-
     public SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter() {
         return new StormpathSecurityConfigurerAdapter();
     }

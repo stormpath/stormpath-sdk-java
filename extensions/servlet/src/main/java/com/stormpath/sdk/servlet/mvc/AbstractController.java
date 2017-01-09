@@ -80,7 +80,6 @@ public abstract class AbstractController implements Controller {
     private Resolver<Locale> localeResolver;
     private AccountResolver accountResolver = AccountResolver.INSTANCE;
     private ContentNegotiationResolver contentNegotiationResolver = ContentNegotiationResolver.INSTANCE;
-    private ProviderAccountRequestFactory providerAccountRequestFactory;
 
     public String getUri() {
         return uri;
