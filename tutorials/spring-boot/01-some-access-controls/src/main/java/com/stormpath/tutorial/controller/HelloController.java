@@ -32,6 +32,7 @@ public class HelloController {
 
     private AccountResolver accountResolver;
 
+    @Autowired
     public HelloController(AccountResolver accountResolver) {
         Assert.notNull(accountResolver);
         this.accountResolver = accountResolver;

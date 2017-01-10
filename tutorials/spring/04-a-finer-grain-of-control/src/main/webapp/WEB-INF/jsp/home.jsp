@@ -55,8 +55,8 @@
                         <c:when test="${account != null}">
                             <h1>Hello, ${account.givenName}</h1>
                             <form action="${pageContext.request.contextPath}/logout" method="post">
-                                <a href="/restricted" class="btn btn-primary">Restricted</a>
-                                <a href="/userdetails" class="btn btn-warning">My Groups</a>
+                                <a href="${pageContext.request.contextPath}/restricted" class="btn btn-primary">Restricted</a>
+                                <a href="${pageContext.request.contextPath}/userdetails" class="btn btn-warning">My Groups</a>
                                 <input type="submit" class="btn btn-danger" value="Logout"/>
                             </form>
                         </c:when>

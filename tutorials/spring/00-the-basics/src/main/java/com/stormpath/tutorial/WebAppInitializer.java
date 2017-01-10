@@ -15,6 +15,7 @@
  */
 package com.stormpath.tutorial;
 
+import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import com.stormpath.tutorial.config.WebAppConfig;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -46,9 +47,10 @@ public class WebAppInitializer implements WebApplicationInitializer {
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
 
-        FilterRegistration.Dynamic filter = sc.addFilter("stormpathFilter", new DelegatingFilterProxy());
+        FilterRegistration.Dynamic stormpathFilter =
+            sc.addFilter(StormpathFilter.DEFAULT_FILTER_NAME, DelegatingFilterProxy.class);
         EnumSet<DispatcherType> types =
-                EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
-        filter.addMappingForUrlPatterns(types, false, "/*");
+            EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
+        stormpathFilter.addMappingForUrlPatterns(types, false, "/*");
     }
 }

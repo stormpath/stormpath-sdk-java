@@ -36,8 +36,8 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-            .apply(stormpath())
-            .and() // Starting with Spring Security 4.2 we do not need to explicitly apply the Stormpath configuration in Spring Boot but it is still required in Spring
+            .apply(stormpath()) // Starting with Spring Security 4.2 we do not need to explicitly apply the Stormpath configuration in Spring Boot but it is still required in Spring
+            .and()
                 .authorizeRequests()
                 .antMatchers("/restricted").fullyAuthenticated()
                 .antMatchers("/**").permitAll()

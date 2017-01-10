@@ -54,7 +54,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
         //Stormpath Filter (after Spring Security)
         FilterRegistration.Dynamic stormpathFilter = sc.addFilter(StormpathFilter.DEFAULT_FILTER_NAME, DelegatingFilterProxy.class);
         EnumSet<DispatcherType> types =
-                EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
+            EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
         stormpathFilter.addMappingForUrlPatterns(types, false, "/*");
     }
 }

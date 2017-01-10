@@ -45,8 +45,7 @@
                     </div>
 
                     <h1>Hello, ${account.givenName}! You're allowed to see this page!</h1>
-                    <a href="/" class="btn btn-primary">Go Home</a>
-
+                    <a href="${pageContext.request.contextPath}/" class="btn btn-primary">Go Home</a>
                 </div>
             </div>
         </div>

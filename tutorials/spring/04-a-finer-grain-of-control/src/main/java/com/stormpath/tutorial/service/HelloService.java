@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class HelloService {
+
     @PreAuthorize("hasAuthority(@groups.USER) and hasPermission('say', 'hello')")
     public String sayHello(Account account) {
         return "Hello, " + account.getGivenName() +

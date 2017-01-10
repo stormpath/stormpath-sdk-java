@@ -48,7 +48,7 @@
                         <h1>${errors.status}</h1>
                     </div>
                     <p class="lead text-muted">${errors.message}</p>
-                    <a href="/" class="btn btn-primary">Go Home</a>
+                    <a href="${pageContext.request.contextPath}/" class="btn btn-primary">Go Home</a>
                 </div>
             </div>
         </div>

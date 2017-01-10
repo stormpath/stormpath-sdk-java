@@ -45,7 +45,7 @@ public class WebAppConfig {
     private Client client; //can be used to interact with all things in your Stormpath tenant
 
     /**
-     * This bean and the @PropertySource annotation above allow you to configure Stormpath beans with properties
+     * This bean and the @PropertySource annotation above allows you to configure Stormpath beans with properties
      * prefixed with {@code stormpath.}, i.e. {@code stormpath.application.href}, {@code stormpath.client.apiKey.file}, etc.
      *
      * <p>Combine this with Spring's Profile support to override property values based on specific runtime environments,

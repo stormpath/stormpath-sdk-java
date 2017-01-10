@@ -33,6 +33,9 @@ import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpa
 @EnableStormpathWebSecurity
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
 
+    // This configuration ensures that the static index.html is served
+    // without requiring authentication. Every other custom path would
+    // require authentication.
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
