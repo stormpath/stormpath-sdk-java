@@ -38,7 +38,7 @@ public class DefaultGoogleProvider extends AbstractOAuthProvider<GoogleProvider>
     private static final EnumProperty<GoogleProviderAccessType> ACCESS_TYPE = new EnumProperty<>("accessType", GoogleProviderAccessType.class);
     private static final EnumProperty<GoogleProviderDisplay> DISPLAY = new EnumProperty<>("display", GoogleProviderDisplay.class);
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID , CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE, REDIRECT_URI, HD, DISPLAY, ACCESS_TYPE);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID , CREATED_AT, MODIFIED_AT, CLIENT_ID, CLIENT_SECRET, SCOPE, REDIRECT_URI, HD, DISPLAY, ACCESS_TYPE, USER_INFO_MAPPING_RULES);
 
     public DefaultGoogleProvider(InternalDataStore dataStore) {
         super(dataStore);
@@ -89,5 +89,13 @@ public class DefaultGoogleProvider extends AbstractOAuthProvider<GoogleProvider>
             return null;
         }
         return GoogleProviderAccessType.valueOf(value.toUpperCase());
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Override
+    public String getProviderType() {
+        return IdentityProviderType.GOOGLE.getNameKey();
     }
 }

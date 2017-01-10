@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 
 /**
  * @since 0.1
@@ -156,7 +157,10 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
         return !Strings.hasText(href);
     }
 
-    protected void materialize() {
+    public void materialize() {
+        if (this.materialized) {
+            return;
+        }
         AbstractResource resource = dataStore.getResource(getHref(), getClass());
         writeLock.lock();
         try {
@@ -232,6 +236,23 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
         return readProperty(name);
     }
 
+    /**
+     * Returns {@code true} if this resource has a property with the specified name, {@code false} otherwise.
+     *
+     * @param name the name of the property to check for existence
+     * @return {@code true} if this resource has a property with the specified name, {@code false} otherwise.
+     * @since 1.3.0
+     */
+    public boolean hasProperty(String name) {
+        readLock.lock();
+        try {
+            return !this.deletedPropertyNames.contains(name) &&
+                (this.dirtyProperties.containsKey(name) || this.properties.containsKey(name));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
     private Object readProperty(String name) {
         readLock.lock();
         try {
@@ -282,14 +303,13 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
             }
             this.dirty = dirty;
 
-            /**
+            /*
              * The instance variable "deletedPropertyNames" is overloaded here.
              * For "CustomData" value=null means that the property/field has been deleted from custom data,
              * hence it is added to "deletedPropertyNames". See DefaultCustomData.java
              * In this case, where value=null and the field is nullable, adding it to "deletedPropertyNames" forces
              * and makes sure that the property is saved with value=null (but not deleted).
              * e.g. matchingProperty in AccountLinkingPolicy
-             *
              */
             if (isNullable && value == null) { //fix for https://github.com/stormpath/stormpath-sdk-java/issues/966
                 this.deletedPropertyNames.add(name);
@@ -332,9 +352,32 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
         }
 
         String msg = "'" + key + "' property value type does not match the specified type.  Specified type: " +
-                clazz.getName() + ".  Existing type: " + value.getClass().getName();
+            clazz.getName() + ".  Existing type: " + value.getClass().getName();
         msg += (isPrintableProperty(key) ? ".  Value: " + value : ".");
         throw new IllegalArgumentException(msg);
+    }
+
+    /**
+     * Returns the {@link List} property identified by {@code key}
+     *
+     * @since 1.3.0
+     */
+    protected List getListProperty(String key){
+        Object list = getProperty(key);
+        return (List) list;
+    }
+
+    /**
+     * Returns the {@link Set} property identified by {@code key}
+     *
+     * @since 1.3.0
+     */
+    protected Set getSetProperty(String key) {
+        Object set = getProperty(key);
+        if (set instanceof List) {
+            return new HashSet((List) set);
+        }
+        return (Set) set;
     }
 
 //    /**

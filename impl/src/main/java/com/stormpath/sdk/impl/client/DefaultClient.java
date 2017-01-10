@@ -48,6 +48,7 @@ import com.stormpath.sdk.organization.*;
 import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
+import com.stormpath.sdk.saml.*;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 
@@ -450,5 +451,35 @@ public class DefaultClient implements Client {
     @Override
     public Tenant getCurrentTenant(TenantOptions tenantOptions) {
         return this.tenantResolver.getCurrentTenant(tenantOptions);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.3.0
+     */
+    @Override
+    public RegisteredSamlServiceProvider createRegisterdSamlServiceProvider(RegisteredSamlServiceProvider registeredSamlServiceProvider) throws ResourceException {
+        return getCurrentTenant().createRegisterdSamlServiceProvider(registeredSamlServiceProvider);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.3.0
+     */
+    @Override
+    public RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders() {
+        return getCurrentTenant().getRegisterdSamlServiceProviders();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.3.0
+     */
+    @Override
+    public RegisteredSamlServiceProviderList getRegisterdSamlServiceProviders(RegisteredSamlServiceProviderCriteria criteria) {
+        return getCurrentTenant().getRegisterdSamlServiceProviders(criteria);
     }
 }

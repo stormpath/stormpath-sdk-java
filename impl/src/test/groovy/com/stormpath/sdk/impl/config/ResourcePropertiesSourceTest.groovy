@@ -5,7 +5,7 @@ import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.fail
-import static org.testng.AssertJUnit.assertTrue
+import static org.testng.Assert.assertTrue
 
 /**
  * @since 1.0.RC9

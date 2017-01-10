@@ -25,9 +25,7 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createStrictMock
 import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
-
 /**
  * @since 1.0.beta
  */
@@ -46,7 +44,7 @@ class DefaultFacebookProviderTest {
         assertTrue(propertyDescriptors.get("clientId") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("clientSecret") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("scope") instanceof ListProperty)
-        assertEquals(propertyDescriptors.size(), 6)
+        assertEquals(propertyDescriptors.size(), 7)
 
         assertTrue(Provider.isInstance(provider))
         assertTrue(FacebookProvider.isInstance(provider))

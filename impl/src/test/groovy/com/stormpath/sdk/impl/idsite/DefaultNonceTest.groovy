@@ -3,7 +3,7 @@ package com.stormpath.sdk.impl.idsite
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
-import static org.testng.AssertJUnit.fail
+import static org.testng.Assert.fail
 
 /**
  * @since 1.0.RC9

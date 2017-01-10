@@ -15,6 +15,8 @@
  */
 package com.stormpath.sdk.provider;
 
+import com.stormpath.sdk.provider.social.UserInfoMappingRules;
+
 import java.util.List;
 
 /**
@@ -42,4 +44,18 @@ public interface OAuthProvider extends Provider {
      * @since 1.2.0
      */
     List<String> getScope();
+
+    /**
+     * Returns the userInfoMappingRules configured for the oauth provider
+     * @return the userInfoMappingRules configured for the oauth provider
+     * @since 1.3.0
+     */
+    UserInfoMappingRules getUserInfoMappingRules();
+
+    /**
+     * Returns the Type of the Provider (e.g. "facebook" or "google", "oauth2").
+     * @return the Type of the Provider.
+     * @since 1.3.0
+     */
+    String getProviderType();
 }

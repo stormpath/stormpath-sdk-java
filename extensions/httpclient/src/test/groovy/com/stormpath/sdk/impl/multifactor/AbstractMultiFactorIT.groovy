@@ -34,7 +34,9 @@ import com.stormpath.sdk.phone.Phone
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
-import static org.testng.AssertJUnit.*
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertNull
 
 /**
  * @since 1.1.0
@@ -96,7 +98,7 @@ abstract class AbstractMultiFactorIT extends ClientIT{
             }
         }
 
-        assertEquals(URLDecoder.decode(expectedKeyUri, "UTF-8"), URLDecoder.decode(actualKeyUri, "UTF-8"))
+        assertEquals(URLDecoder.decode(actualKeyUri, "UTF-8"), URLDecoder.decode(expectedKeyUri, "UTF-8"))
         assertNotNull(factor.getBase64QrImage())
         assertBase64EncodedQRCodeEncodesString(factor.getBase64QrImage(), expectedKeyUri)
 
@@ -130,7 +132,7 @@ abstract class AbstractMultiFactorIT extends ClientIT{
 
     protected void assertInitialChallengeFields(Challenge challenge, String expectedChallengeStatus = 'CREATED', boolean expectDefaultMessage = true) {
         if (expectDefaultMessage) {
-            assertEquals(challenge.message,'Your verification code is ${code}')
+            assertEquals(challenge.message, 'Your verification code is ${code}')
         }
         assertEquals(challenge.status as String, expectedChallengeStatus)
         assertNotNull(challenge.factor)

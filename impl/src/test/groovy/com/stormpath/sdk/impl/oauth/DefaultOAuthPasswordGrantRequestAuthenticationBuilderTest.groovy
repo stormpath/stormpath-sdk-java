@@ -21,8 +21,8 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.createMock
 import static org.testng.Assert.assertSame
-import static org.testng.AssertJUnit.assertEquals
-import static org.testng.AssertJUnit.fail
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.fail
 
 /**
  * Test for PasswordGrantRequestBuilder class

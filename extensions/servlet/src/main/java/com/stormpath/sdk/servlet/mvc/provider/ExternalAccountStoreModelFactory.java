@@ -21,6 +21,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappings;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
@@ -73,7 +74,7 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
     @SuppressWarnings("WeakerAccess") // Want to allow overriding this method
     protected String getAuthorizeBaseUri(@SuppressWarnings("UnusedParameters") HttpServletRequest request, ApplicationWebConfig webConfig) {
         String authorizeBaseUri = null;
-        if (webConfig.getLogin().isEnabled()) {
+        if (webConfig.getStatus() == ApplicationWebConfigStatus.ENABLED && webConfig.getLogin().isEnabled()) {
             authorizeBaseUri = "https://" + webConfig.getDomainName();
         }
         return authorizeBaseUri;

@@ -22,6 +22,7 @@ import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.directory.DirectoryOptions
 import com.stormpath.sdk.directory.PasswordPolicy
+import com.stormpath.sdk.impl.provider.AbstractOAuthProvider
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.lang.Duration
@@ -29,7 +30,11 @@ import com.stormpath.sdk.mail.EmailStatus
 import com.stormpath.sdk.organization.Organization
 import com.stormpath.sdk.organization.OrganizationStatus
 import com.stormpath.sdk.organization.Organizations
-import com.stormpath.sdk.provider.Providers
+import com.stormpath.sdk.provider.*
+import com.stormpath.sdk.provider.saml.SamlProvider
+import com.stormpath.sdk.provider.social.SocialUserInfoMappingRules
+import com.stormpath.sdk.provider.social.UserInfoMappingRule
+import com.stormpath.sdk.provider.social.UserInfoMappingRules
 import com.stormpath.sdk.saml.AttributeStatementMappingRule
 import com.stormpath.sdk.saml.AttributeStatementMappingRules
 import com.stormpath.sdk.saml.SamlAttributeStatementMappingRules
@@ -39,13 +44,13 @@ import org.testng.annotations.Test
 import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertNotEquals
-import static org.testng.Assert.assertNotNull
-import static org.testng.Assert.assertNotSame
 import static org.testng.Assert.assertNull
+import static org.testng.Assert.assertNotNull
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertNotEquals
+import static org.testng.Assert.assertNotSame
 import static org.testng.Assert.assertTrue
+import static org.testng.Assert.assertFalse
 import static org.testng.Assert.fail
 
 /**
@@ -296,13 +301,33 @@ class DirectoryIT extends ClientIT {
         deleteOnTeardown(dir)
         assertNotNull dir.href
 
-        def provider = dir.provider
+        SamlProvider provider = dir.provider
         assertNotNull provider.href
         assertNotNull provider.serviceProviderMetadata.href
         assertEquals provider.providerId, "saml"
         assertEquals provider.ssoLoginUrl, "https://idp.whatever.com/saml2/sso/login"
         assertEquals provider.ssoLogoutUrl, "https://idp.whatever.com/saml2/sso/logout"
         assertEquals provider.forceAuthn, false
+
+        // TODO : fix to be able to update SAML attributeStatementMappingRules for the provider
+        /*AttributeStatementMappingRules rules = provider.attributeStatementMappingRules
+        assertNotNull rules
+        assertNotNull rules.items
+        assertEquals rules.items.size() , 2
+        UserInfoMappingRule userInfoMappingRule =
+                SocialUserInfoMappingRules.ruleBuilder().setName("locale").setAccountAttributes("customData.locale").build()
+        List<UserInfoMappingRule> mappingRules = new ArrayList<>();
+        mappingRules.add(userInfoMappingRule)
+        rules.setItems(SamlAttributeStatementMappingRules.rulesBuilder().addAttributeStatementMappingRule(
+                SamlAttributeStatementMappingRules.ruleBuilder().setName("name3")
+                .setNameFormat("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified")
+                .setAccountAttributes("customData.name3", "customData.otherName3")
+                .build()
+        ).build())
+        def updatedRules = provider.attributeStatementMappingRules
+        assertNotNull updatedRules
+        assertNotNull updatedRules.items
+        assertEquals updatedRules.items.size() , 1*/
     }
 
     /**
@@ -375,6 +400,169 @@ class DirectoryIT extends ClientIT {
         deleteOnTeardown(dir)
         assertNotNull dir.href
     }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateLinkedInDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateLinkedInDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.LINKEDIN.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43").setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<LinkedInProvider>) dir.provider)
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateGoogleDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateGoogleDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.GOOGLE.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43").setRedirectUri("https://myApp.com").
+                setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<GoogleProvider>) dir.provider)
+    }
+
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateGithubDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateGithubDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.GITHUB.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43").
+                setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<GithubProvider>) dir.provider)
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateFacebookDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateFacebookDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.FACEBOOK.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<FacebookProvider>) dir.provider)
+
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test
+    void testCreateTwitterDirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateTwitterDirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.TWITTER.builder()
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<TwitterProvider>) dir.provider)
+
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Test(enabled = false) //TODO : enable this when the generic OAuth2 changes are there in prod (api.stormpath.com)
+    void testCreateGenericOAuth2DirectoryWithUserInfoMappingRules() {
+        Directory dir = client.instantiate(Directory)
+        dir.name = uniquify("Java SDK: DirectoryIT.testCreateGenericOAuth2DirectoryRequest")
+
+        def request = Directories.newCreateRequestFor(dir)
+                .forProvider(Providers.OAUTH2.builder().setProviderId("imgur")
+                .setClientId("73i1dq2fko01s2")
+                .setClientSecret("wJhXc81l63qEOc43")
+                .setAccessTokenType(AccessTokenType.BEARER)
+                .setAuthorizationEndpoint("https://api.imgur.com/oauth2/authorize")
+                .setTokenEndpoint("https://api.imgur.com/oauth2/token")
+                .setResourceEndpoint("https://api.imgur.com/oauth2/token")
+                .setUserInfoMappingRules(buildSampleUserInfoMappingRules()).build()).build()
+        dir = client.createDirectory(request);
+        deleteOnTeardown(dir)
+        assertNotNull dir.href
+        assertUserInfoMappingRuleWasCreatedAndUpdate((AbstractOAuthProvider<TwitterProvider>) dir.provider)
+
+    }
+
+    void assertUserInfoMappingRuleWasCreatedAndUpdate(AbstractOAuthProvider provider) {
+
+        UserInfoMappingRules rules = provider.getUserInfoMappingRules()
+        assertNotNull rules
+        assertNotNull rules.items
+        assertEquals rules.items.size() , 2
+        UserInfoMappingRule userInfoMappingRule =
+                SocialUserInfoMappingRules.ruleBuilder().setName("locale").setAccountAttributes("customData.locale").build()
+        List<UserInfoMappingRule> mappingRules = new ArrayList<>();
+        mappingRules.add(userInfoMappingRule)
+        rules.setItems(mappingRules)
+        rules.save()
+        def updatedRules = provider.userInfoMappingRules
+        assertNotNull updatedRules
+        assertNotNull updatedRules.items
+        assertEquals updatedRules.items.size() , 1
+
+    }
+
+    UserInfoMappingRules buildSampleUserInfoMappingRules() {
+
+        Set<String> accountAttributesId = new HashSet<>();
+        accountAttributesId.add("customData.id")
+
+        Set<String> accountAttributesName = new HashSet<>();
+        accountAttributesName.add("customData.fullName")
+
+        UserInfoMappingRule userInfoMappingRuleForId =
+                SocialUserInfoMappingRules.ruleBuilder().setName("id").setAccountAttributes(accountAttributesId).build();
+
+        UserInfoMappingRule userInfoMappingRuleForName =
+                SocialUserInfoMappingRules.ruleBuilder().setName("name").setAccountAttributes(accountAttributesName).build();
+
+        UserInfoMappingRules userInfoMappingRules =
+                SocialUserInfoMappingRules.rulesBuilder().
+                        addUserInfoMappingRule(userInfoMappingRuleForId).addUserInfoMappingRule(userInfoMappingRuleForName).build();
+
+        userInfoMappingRules
+
+    }
+
 
     /**
      * @since 1.0.RC

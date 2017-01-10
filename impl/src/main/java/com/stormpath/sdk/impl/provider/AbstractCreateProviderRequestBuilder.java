@@ -19,6 +19,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.CreateProviderRequest;
 import com.stormpath.sdk.provider.CreateProviderRequestBuilder;
+import com.stormpath.sdk.provider.social.UserInfoMappingRules;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ abstract class AbstractCreateProviderRequestBuilder<T extends CreateProviderRequ
 
     protected String clientId;
     protected String clientSecret;
+    protected UserInfoMappingRules userInfoMappingRules;
 
     @Override
     public T setClientId(String clientId) {
@@ -46,6 +48,13 @@ abstract class AbstractCreateProviderRequestBuilder<T extends CreateProviderRequ
         return (T) this;
     }
 
+    @Override
+    public T setUserInfoMappingRules(UserInfoMappingRules userInfoMappingRules) {
+        Assert.notNull(userInfoMappingRules, "userInfoMappingRules cannot be null or empty.");
+        this.userInfoMappingRules = userInfoMappingRules;
+        return (T) this;
+    }
+
     public CreateProviderRequest build() {
         Assert.state(Strings.hasText(this.clientId), "clientId is a required property. It must be provided before building.");
         Assert.state(Strings.hasText(this.clientSecret), "clientSecret is a required property. It must be provided before building.");
@@ -53,7 +62,7 @@ abstract class AbstractCreateProviderRequestBuilder<T extends CreateProviderRequ
         final String providerId = getConcreteProviderId();
         Assert.state(Strings.hasText(providerId), "The providerId property is missing.");
 
-        Map<String, Object> properties = new LinkedHashMap<String, Object>();
+        Map<String, Object> properties = new LinkedHashMap<>();
         properties.put("providerId", providerId);
 
         return doBuild(Collections.unmodifiableMap(properties));

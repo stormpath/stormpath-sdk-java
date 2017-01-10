@@ -5,6 +5,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus
 import com.stormpath.sdk.application.webconfig.LoginConfig
 import com.stormpath.sdk.directory.AccountStoreVisitor
 import com.stormpath.sdk.directory.Directory
@@ -29,6 +30,7 @@ import static org.hamcrest.Matchers.containsString
 import static org.hamcrest.Matchers.instanceOf
 import static org.hamcrest.Matchers.nullValue
 import static org.hamcrest.Matchers.startsWith
+import static org.testng.Assert.assertNull
 
 class ExternalAccountStoreModelFactoryTest {
     static final String WEB_CONFIG_DOMAIN_NAME = "blah-blah.apps.stormpath.io"
@@ -39,6 +41,7 @@ class ExternalAccountStoreModelFactoryTest {
     MockHttpServletRequest request
     Application application
     ApplicationWebConfig applicationWebConfig
+    ApplicationWebConfigStatus applicationWebConfigEnabled
     LoginConfig loginConfig
     boolean loginConfigEnabled
 
@@ -70,7 +73,14 @@ class ExternalAccountStoreModelFactoryTest {
                 return loginConfigEnabled
             }
         })
+        applicationWebConfigEnabled = ApplicationWebConfigStatus.DISABLED
         applicationWebConfig = createNiceMock(ApplicationWebConfig)
+        expect(applicationWebConfig.getStatus()).andStubAnswer(new IAnswer<ApplicationWebConfigStatus>() {
+            @Override
+            ApplicationWebConfigStatus answer() throws Throwable {
+                return applicationWebConfigEnabled
+            }
+        })
         expect(applicationWebConfig.login).andStubReturn(loginConfig)
         expect(applicationWebConfig.domainName).andStubReturn(WEB_CONFIG_DOMAIN_NAME)
 
@@ -190,7 +200,8 @@ class ExternalAccountStoreModelFactoryTest {
     }
 
     @Test
-    void testOAuthAccountStoreMappingWithWebConfigLoginEnabled() {
+    void testOAuthAccountStoreMappingWithWebConfigEnabledLoginEnabled() {
+        applicationWebConfigEnabled = ApplicationWebConfigStatus.ENABLED
         loginConfigEnabled = true
         addMapping(facebookAccountStore)
         def actual = factoryUT.getAccountStores(request)
@@ -201,6 +212,20 @@ class ExternalAccountStoreModelFactoryTest {
         assertThat("authorizeUri", accountStoreModel.authorizeUri, containsString("response_type=stormpath_token"))
         assertThat("authorizeUri", accountStoreModel.authorizeUri, containsString("account_store_href=${URLEncoder.encode(FACEBOOK_ACCOUNT_STORE_HREF, "UTF-8")}"))
         assertThat("authorizeUri", accountStoreModel.authorizeUri, startsWith("https://${WEB_CONFIG_DOMAIN_NAME}/authorize"))
+    }
+
+    // test to verify fix for https://github.com/stormpath/stormpath-sdk-java/issues/1159
+    @Test
+    void testOAuthAccountStoreMappingWithWebConfigDisabledLoginEnabled() {
+        applicationWebConfigEnabled = ApplicationWebConfigStatus.DISABLED
+        loginConfigEnabled = true
+        addMapping(facebookAccountStore)
+        def actual = factoryUT.getAccountStores(request)
+
+        assertThat(actual, Matchers.hasSize(1))
+        def accountStoreModel = actual[0]
+        assertThat(accountStoreModel.provider, instanceOf(DefaultOAuthProviderModel))
+        assertNull(accountStoreModel.authorizeUri)
     }
 
     private ApplicationAccountStoreMapping addMapping(Directory directory) {
