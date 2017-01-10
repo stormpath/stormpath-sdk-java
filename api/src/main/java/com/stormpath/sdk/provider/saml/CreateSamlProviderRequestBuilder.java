@@ -78,6 +78,7 @@ public interface CreateSamlProviderRequestBuilder {
      * Sets the boolean value for the forceAuthn attribute of the SamlProvider.
      *
      * @return this instance for method chaining.
+     * @since 1.3.0
      */
     CreateSamlProviderRequestBuilder setForceAuthn(boolean forceAuthn);
 

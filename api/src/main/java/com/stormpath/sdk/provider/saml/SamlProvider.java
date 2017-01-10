@@ -104,11 +104,13 @@ public interface SamlProvider extends Provider {
      * Returns the boolean value for the forceAuthn attribute of the SamlProvider.
      *
      * @return Returns the boolean value for the forceAuthn attribute of the SamlProvider.
+     * @since 1.3.0
      */
     boolean getForceAuthn();
 
     /**
      * Sets the boolean value for the forceAuthn attribute of the SamlProvider.
+     * @since 1.3.0
      */
     void setForceAuthn(boolean forceAuthn);
 
