@@ -78,6 +78,8 @@ public class HttpHeaders implements MultiValueMap<String, String> {
 
     public static final String STORMPATH_AGENT = "X-Stormpath-Agent";
 
+    public static final String STORMPATH_CLIENT_REQUEST_ID = "X-Stormapth-Client-Request-Id";
+
     private static final String[] DATE_FORMATS = new String[]{
             "EEE, dd MMM yyyy HH:mm:ss zzz",
             "EEE, dd-MMM-yy HH:mm:ss zzz",
