@@ -106,7 +106,7 @@
         <snakeyaml.version>1.17</snakeyaml.version>
         <servlet.version>3.1.0</servlet.version>
         <spring.version>4.3.2.RELEASE</spring.version>
-        <spring.boot.version>1.4.0.RELEASE</spring.boot.version>
+        <spring.boot.version>1.4.3.RELEASE</spring.boot.version>
         <spring.cloud.netflix.version>1.1.5.RELEASE</spring.cloud.netflix.version>
         <spring.security.version>4.1.2.RELEASE</spring.security.version>
         <zuul.version>1.2.2</zuul.version>
