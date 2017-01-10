@@ -33,6 +33,17 @@
         <system>GitHub</system>
         <url>https://github.com/stormpath/stormpath-sdk-java/issues</url>
     </issueManagement>
+    <developers>
+        <developer>
+            <id>jsdk-team</id>
+            <name>Java SDK Team</name>
+            <email>java@stormpath.com</email>
+            <url>http://stormpath.com</url>
+            <timezone>-8</timezone>
+            <organization>Stormpath, Inc.</organization>
+            <organizationUrl>http://www.stormpath.com</organizationUrl>
+        </developer>
+    </developers>
 
     <properties>
         <stormpath.version>1.3.0-SNAPSHOT</stormpath.version>
@@ -132,4 +143,21 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>sonatype-nexus-staging</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <skipStagingRepositoryClose>true</skipStagingRepositoryClose>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
