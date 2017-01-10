@@ -256,7 +256,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     /**
      * @since 1.3.0
      */
-    public AccountResolverFilter springSecuritResolvedAccountFilter() {
+    public AccountResolverFilter springSecurityResolvedAccountFilter() {
         AccountResolverFilter accountResolverFilter = new AccountResolverFilter();
         accountResolverFilter.setEnabled(stormpathFilterEnabled);
         accountResolverFilter.setResolvers(stormpathAccountResolvers);
