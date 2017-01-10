@@ -123,8 +123,8 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
      * @since 1.3.0
      */
     @Bean
-    public AccountResolverFilter springSecuritResolvedAccountFilter() {
-        return super.springSecuritResolvedAccountFilter();
+    public AccountResolverFilter springSecurityResolvedAccountFilter() {
+        return super.springSecurityResolvedAccountFilter();
     }
 
     /**

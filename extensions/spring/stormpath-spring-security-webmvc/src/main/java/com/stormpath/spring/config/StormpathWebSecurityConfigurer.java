@@ -296,7 +296,7 @@ public class StormpathWebSecurityConfigurer extends SecurityConfigurerAdapter<De
         }
 
         if (corsEnabled) {
-            http.cors(); // Let's add Spring Security's built-in support for CORs
+            http.cors(); // Let's add Spring Security's built-in support for CORS
         }
 
         if (idSiteEnabled && loginEnabled) {
