@@ -236,7 +236,7 @@ If the name of the field does not match a predefined field name, the field is tr
 Field Definition
 ++++++++++++++++
 
-A field definition has properties that control the behavior of a form field.  Here is an example a form
+A field definition has properties that control the behavior of a form field.  Here is an example of a form
 field definition - in this case, a field that represents a user account's ``givenName``:
 
 .. code-block:: yaml
@@ -421,7 +421,7 @@ And then, in your ``i18n_en.properties`` file you would add:
     stormpath.web.register.form.fields.birthday.label = Birthday
     stormpath.web.register.form.fields.birthday.placeholder = 4/1/1980
 
-While in your tentative ``i18n_es.properties`` file you would add:
+While in your alternative ``i18n_es.properties`` file you would add:
 
 .. code-block:: properties
 
@@ -540,7 +540,8 @@ Password Strength
 
 When you first fill out the registration form, you probably noticed that you couldn't register a user account without specifying a sufficiently strong password.  This is because, by default, Stormpath enforces certain password strength rules.
 
-If you'd like to change these password strength rules, you can do so easily by visiting the `Stormpath Admin Console`_, navigating to your application's associated user account ``Directory``, and then changing the directory's "Password Strength Policy".
+If you'd like to change these password strength rules, you can do so easily. Visit the `Stormpath Admin Console`_,
+navigate to your your application's user ``Directory``, and then choose the ``Password Policy`` tab on the ``Policies`` page.
 
 .. _email verification:
 
@@ -662,7 +663,7 @@ If you implement a :ref:`Request Event Listener <events>`, you can listen regist
 Registered Account
 ^^^^^^^^^^^^^^^^^^
 
-A ``RegisteredAccountRequestEvent`` will be published when processing an HTTP request that results in a newly registered ``Account``.  If the newly registered account requires email verification before it can login, ``event.getAccount().getStatus() == AccountStatus.UNDEFINED`` will be ``true``.
+A ``RegisteredAccountRequestEvent`` will be published when processing an HTTP request that results in a newly registered ``Account``.  If the newly registered account requires email verification before it can login, ``event.getAccount().getStatus() == AccountStatus.UNVERIFIED`` will be ``true``.
 
 Verified Account
 ^^^^^^^^^^^^^^^^

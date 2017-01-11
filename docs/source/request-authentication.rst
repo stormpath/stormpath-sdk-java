@@ -71,8 +71,9 @@ For example with cURL:
 
 .. code-block:: bash
 
-   curl -X POST --data 'grant_type=password&username=ACCOUNT_USERNAME&password=ACCOUNT_PASSWORD' \
-        -H 'Origin: http://localhost:${port}' http://localhost:${port}/oauth/token
+   curl -X POST --data \
+      'grant_type=password&username=ACCOUNT_USERNAME&password=ACCOUNT_PASSWORD' \
+      -H 'Origin: http://localhost:${port}' http://localhost:${port}/oauth/token
 
 where:
 
@@ -86,9 +87,10 @@ The response body will be an OAuth 2 response, for example:
 .. code-block:: json
 
    {
-     "expires_in": 3600,
-     "token_type": "Bearer",
-     "access_token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0NTI0ODhlZi00NWU4LTQ1NTMtOTRiNS0xMTM2NTY2ZGFhOTIiLCJpYXQiOjE0MjE3ODQ3NjYsInN1YiI6Imh0dHBzOi8vYXBpLnN0b3JtcGF0aC5jb20vdjEvYWNjb3VudHMvNDE5MndEaEx6ejFjVnFLdk44b1p4NyIsImV4cCI6MTQyMTc4ODM2Nn0._I4wlDRML6GfgZEL_qjmTDVh0a-qfP20CB7v7IgFwAc"
+      "expires_in": 3600,
+      "token_type": "Bearer",
+      "access_token": "eyJraWQiOiJSOTJTQkhKQz...",
+      "refresh_token": "eyJraWQiOiJSOTJTQkhKQz..."
    }
 
 
@@ -96,13 +98,13 @@ The ``access_token`` value is the Bearer Token to send back on future requests i
 
 .. code-block:: rest
 
-   Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0NTI0ODhlZi00NWU4LTQ1NTMtOTRiNS0xMTM2NTY2ZGFhOTIiLCJpYXQiOjE0MjE3ODQ3NjYsInN1YiI6Imh0dHBzOi8vYXBpLnN0b3JtcGF0aC5jb20vdjEvYWNjb3VudHMvNDE5MndEaEx6ejFjVnFLdk44b1p4NyIsImV4cCI6MTQyMTc4ODM2Nn0._I4wlDRML6GfgZEL_qjmTDVh0a-qfP20CB7v7IgFwAc
+   Authorization: Bearer eyJraWQiOiJSOTJTQkhKQz...
 
 For example, with cURL (the value is shortened for brevity):
 
 .. code-block:: bash
 
-   curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0NTI0ODhlZ...' http://localhost:${port}
+   curl -H 'Authorization: Bearer eyJraWQiOiJSOTJTQkhKQz...' http://localhost:${port}
 
 that the actual ``Authorization`` header value is the string literal ``Bearer``, followed by a space character, followed by the actual token value string.
 

@@ -24,6 +24,13 @@ cp -r ../docs/build/springboot/build/html source/java/spring-boot-web
 cp -r ../docs/build/springboot/build/html source/java/spring-boot-web/latest
 cp -r ../docs/build/springboot/build/html source/java/spring-boot-web/$RELEASE_VERSION
 
+info "Copying over spring docs"
+rm -rf source/java/spring-web
+cp -r ../docs/build/spring/build/html source/java/spring-web
+cp -r ../docs/build/spring/build/html source/java/spring-web/latest
+cp -r ../docs/build/spring/build/html source/java/spring-web/$RELEASE_VERSION
+
+
 info "Copying over spring cloud zuul docs"
 rm -rf source/java/spring-cloud-zuul
 cp -r ../docs/build/sczuul/build/html source/java/spring-cloud-zuul

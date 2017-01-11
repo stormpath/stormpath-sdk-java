@@ -13,7 +13,7 @@ The |project| provides out-of-the-box template files to render views at supporte
 
 All of the default built-in views are all based on the same principle: they are a standard html templates styled with shared `Bootstrap <http://getbootstrap.com/>`_ CSS. Internationalization (i18n) is used to represent text on all default views so you can provide a nice translated view for each user based on their locale.  CSS styles control the view look and feel.
 
-#if( $servlet )
+#if( $servlet or $spring )
 
 JSP Views
 ---------
@@ -105,7 +105,7 @@ Here is an extremely simple template file that shows how the others operate:
 Internationalization (i18n)
 ---------------------------
 
-#if( $servlet )
+#if( $servlet or $spring )
 
 All of the |project| default views are internationalized to support language translation based on the end-user's locale.
 
@@ -256,7 +256,7 @@ The second interesting line above is this one:
     <!--/*/ <th:block th:include="${headViewName} :: ${headFragmentSelector}"/> /*/-->
 
 
-While this may look like a commented-out HTML comment, this is actually a special `Thymeleaf directive <http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#thymeleaf-prototype-only-comment-blocks>`_ that will include another template.  As you see, ``${headViewName}`` and ``${headFragmentSelector}`` are themselves values that are substituted at runtime with a template view name and a 'fragment selector' to allow you to control which fragment within the template is included.  These values are configured with the following two configuration properties:
+While this may look like an HTML comment, this is actually a special `Thymeleaf directive <http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#thymeleaf-prototype-only-comment-blocks>`_ that will include another template.  As you see, ``${headViewName}`` and ``${headFragmentSelector}`` are themselves values that are substituted at runtime with a template view name and a 'fragment selector' to allow you to control which fragment within the template is included.  These values are configured with the following two configuration properties:
 
 .. code-block:: properties
 
