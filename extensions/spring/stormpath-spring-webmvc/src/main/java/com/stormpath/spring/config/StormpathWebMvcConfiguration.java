@@ -52,6 +52,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
@@ -119,6 +120,15 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Override
     public ApplicationResolver stormpathApplicationResolver() {
         return super.stormpathApplicationResolver();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    @Override
+    public ProviderAccountRequestFactory stormpathAccountProviderRequestHandler() {
+        return super.stormpathAccountProviderRequestHandler();
     }
 
     /**

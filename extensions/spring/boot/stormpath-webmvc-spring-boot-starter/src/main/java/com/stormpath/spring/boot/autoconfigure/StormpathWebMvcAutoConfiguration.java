@@ -53,6 +53,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
@@ -113,6 +114,16 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     @Override
     public ApplicationResolver stormpathApplicationResolver() {
         return super.stormpathApplicationResolver();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @Override
+    public ProviderAccountRequestFactory stormpathAccountProviderRequestHandler() {
+        return super.stormpathAccountProviderRequestHandler();
     }
 
     @Override

@@ -106,6 +106,7 @@ import com.stormpath.sdk.servlet.mvc.ChangePasswordController;
 import com.stormpath.sdk.servlet.mvc.ContentNegotiatingFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.DefaultExpandsResolver;
+import com.stormpath.sdk.servlet.mvc.DefaultProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.DefaultViewResolver;
 import com.stormpath.sdk.servlet.mvc.DisabledWebHandler;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
@@ -120,6 +121,7 @@ import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.MeController;
+import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
 import com.stormpath.sdk.servlet.mvc.SamlController;
@@ -278,7 +280,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.enabled'] ?: true }")
     protected boolean stormpathFilterEnabled;
 
-    @Value("#{ @environment['stormpath.web.stormpathFilter.order'] ?: T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE }")
+    @Value("#{ @environment['stormpath.web.stormpathFilter.order'] ?: 10}") //Spring Security uses order 0, we want to be behind it, so we set it to 10 in case there is need for addional filters in-between
     protected int stormpathFilterOrder;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.urlPatterns'] ?: '/*' }")
@@ -588,6 +590,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public ApplicationResolver stormpathApplicationResolver() {
         return new DefaultApplicationResolver();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    public ProviderAccountRequestFactory stormpathAccountProviderRequestHandler() {
+        return new DefaultProviderAccountRequestFactory();
     }
 
     public Resolver<Boolean> stormpathRegisterEnabledResolver() {

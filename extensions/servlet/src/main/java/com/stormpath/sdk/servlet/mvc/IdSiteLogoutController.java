@@ -21,6 +21,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.servlet.filter.ServerUriResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,7 +74,12 @@ public class IdSiteLogoutController extends LogoutController {
         }
 
         //redirect to ID Site to perform the SSO logout to effectively log out the user across all applications:
-        return idSiteController.handleRequest(request, response);
+        ViewModel viewModel = idSiteController.handleRequest(request, response);
+        //Let's commit the response right away as sometimes IDSite's logout fails to be invoked on time before the login screen is re-loaded.
+        //When that happens, the logout does not take place either in IDSIte nor in our end since IDSIte will reply to the login request with
+        //an already authenticated response.That causes our integration to create a new cookie.
+        ServletUtils.issueRedirect(request, response, viewModel.getViewName(), null, true, true);
+        return null;
     }
 
     private static class LogoutIdSiteController extends IdSiteController {

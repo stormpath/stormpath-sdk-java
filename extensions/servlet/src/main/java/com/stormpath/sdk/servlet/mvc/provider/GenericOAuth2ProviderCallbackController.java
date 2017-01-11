@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 public class GenericOAuth2ProviderCallbackController extends AbstractSocialCallbackController {
 
     @Override
-    protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
+    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
         String providerId = ServletUtils.getCleanParam(request, "providerId");
         String code = ServletUtils.getCleanParam(request, "code");
 

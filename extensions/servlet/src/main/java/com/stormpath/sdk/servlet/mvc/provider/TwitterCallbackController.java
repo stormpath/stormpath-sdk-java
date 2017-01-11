@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 public class TwitterCallbackController extends AbstractSocialCallbackController {
 
     @Override
-    protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
+    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
         String accessToken = ServletUtils.getCleanParam(request, "accessToken");
         String accessTokenSecret = ServletUtils.getCleanParam(request, "accessTokenSecret");
 

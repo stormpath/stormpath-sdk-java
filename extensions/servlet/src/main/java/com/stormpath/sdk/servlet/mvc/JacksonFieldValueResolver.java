@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class JacksonFieldValueResolver implements RequestFieldValueResolver {
 
-    protected static final String MARSHALLED_OBJECT = JacksonFieldValueResolver.class.getName() + ".MARSHALLED_OBJECT";
+    public static final String MARSHALLED_OBJECT = JacksonFieldValueResolver.class.getName() + ".MARSHALLED_OBJECT";
 
     ObjectMapper objectMapper = new ObjectMapper();
 
