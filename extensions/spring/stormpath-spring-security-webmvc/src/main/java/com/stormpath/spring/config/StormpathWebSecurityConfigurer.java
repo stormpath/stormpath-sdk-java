@@ -19,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,9 +35,12 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
 
     private static final Logger log = LoggerFactory.getLogger(StormpathWebSecurityConfigurer.class);
 
-    @Autowired
+    @Autowired(required = false) //when stormpath.enabled = false then this bean is not present but Spring Boot is still loading this class, so we need required = false here
     @Qualifier("stormpathSecurityConfigurerAdapter")
     protected SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter;
+
+    @Value("#{ @environment['stormpath.enabled'] ?: true }")
+    protected boolean stormpathEnabled;
 
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
@@ -77,7 +82,9 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
-        stormpathSecurityConfigurerAdapter.init(http);
+        if (stormpathEnabled) {
+            stormpathSecurityConfigurerAdapter.init(http);
+        }
     }
 
 }
