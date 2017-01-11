@@ -753,7 +753,11 @@ refresh tokens. The Token Management feature is included "out of the box" and is
 The Token Management feature is supported all through the Java SDK stack, including Servlet, Spring, Spring Boot and
 Spring Security (with and without WebMVC).
 
+#if( $springboot )
 This part of the tutorial exercises the Token Magement features using Spring Security Spring Boot WebMVC.
+#elseif( $spring )
+This part of the tutorial exercises the Token Magement features using Spring Security WebMVC.
+#end
 
 There's a simple ``@RestController`` called ``UserDetailsController`` that returns information about the authenticated account.
 
@@ -896,11 +900,15 @@ feature.
 Wrapping Up
 -----------
 
-We hope this tutorial has been of value to you in learning about Stormpath's integration with Spring Security for Spring Boot
-applications.
+We hope this tutorial has been of value to you in learning about the |project|.
 
-You can use the Stormpath Spring Security integration in contexts other than Spring Boot as well. For instance, you could
-write a REST API that makes use of Spring Security that has no web layer.
+#if( $springboot )
+You can use the Stormpath Spring Security integration in contexts other than Spring Boot as well.
+#elseif( $spring )
+You can use the Stormpath Spring Security integration in contexts other than Spring WebMVC as well.
+#end
+For instance, you could write a REST API that makes use of Spring Security that has no web layer.
+
 
 Take a look at the `javadocs </java/apidocs>`_ as well as the `other code examples <https://github.com/stormpath/stormpath-sdk-java/tree/master/examples>`_
 for more information on all that the Stormpath Java SDK has to offer.
