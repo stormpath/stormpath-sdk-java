@@ -15,30 +15,63 @@
  */
 package com.stormpath.sdk.servlet.filter.oauth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @since 1.0.RC3
  */
 public class OAuthException extends RuntimeException {
 
+    private static final ObjectMapper objectMapper;
+
+    static {
+        objectMapper = new ObjectMapper();
+    }
+
     private final OAuthErrorCode errorCode;
 
+    private Map<String, Object> errorMap;
+
     public OAuthException(OAuthErrorCode code) {
-        this(code, null, null);
+        this(code, null, (Exception) null);
     }
 
     public OAuthException(OAuthErrorCode code, String message) {
         super(message != null ? message : (code != null ? code.getValue() : ""));
         Assert.notNull(code, "OAuthErrorCode cannot be null.");
         this.errorCode = code;
+
+        initializeErrorMap();
     }
 
     public OAuthException(OAuthErrorCode code, String message, Exception cause) {
         super(message != null ? message : (code != null ? code.getValue() : ""), cause);
         Assert.notNull(code, "OAuthErrorCode cannot be null.");
         this.errorCode = code;
+
+        initializeErrorMap();
+    }
+
+    private void initializeErrorMap() {
+        errorMap = new LinkedHashMap<>();
+
+        errorMap.put("error", errorCode.getValue());
+
+        String val = getMessage();
+        if (Strings.hasText(val)) {
+            errorMap.put("message", val);
+        }
+    }
+
+    public OAuthException(OAuthErrorCode code, Map<String, Object> error, String message) {
+        this(code, message, null);
+
+        errorMap.putAll(error);
     }
 
     public OAuthErrorCode getErrorCode() {
@@ -46,25 +79,11 @@ public class OAuthException extends RuntimeException {
     }
 
     public String toJson() {
-
-        String json = "{" + toJson("error", getErrorCode());
-
-        String val = getMessage();
-        if (Strings.hasText(val)) {
-            json += "," + toJson("message", val);
+        try {
+            return objectMapper.writeValueAsString(errorMap);
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to serialize OAuthException to json.", e);
         }
-
-        json += "}";
-
-        return json;
     }
 
-    protected static String toJson(String name, Object value) {
-        String stringValue = String.valueOf(value);
-        return quote(name) + ":" + quote(stringValue);
-    }
-
-    protected static String quote(String val) {
-        return "\"" + val + "\"";
-    }
 }

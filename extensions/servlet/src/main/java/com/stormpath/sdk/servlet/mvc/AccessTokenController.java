@@ -23,6 +23,7 @@ import com.stormpath.sdk.impl.authc.DefaultBasicApiAuthenticationRequest;
 import com.stormpath.sdk.impl.authc.DefaultHttpServletRequestWrapper;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticationRequest;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthentication;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
@@ -33,6 +34,7 @@ import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthRequests;
+import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthentication;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
@@ -58,6 +60,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @since 1.0.RC4
@@ -71,6 +75,7 @@ public class AccessTokenController extends AbstractController {
     private static final String STORMPATH_SOCIAL_GRANT_TYPE = "stormpath_social";
     private static final String STORMPATH_TOKEN_GRANT_TYPE = "stormpath_token";
     private static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
+    private static final String STORMPATH_FACTOR_CHALLENGE_GRANT_TYPE = "stormpath_factor_challenge";
     private static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 
     private RefreshTokenResultFactory refreshTokenResultFactory;
@@ -297,14 +302,64 @@ public class AccessTokenController extends AbstractController {
         return createAccessTokenResult(request, response, authenticationResult);
     }
 
+    /**
+     * @since 1.3.1
+     */
+    protected AccessTokenResult stormpathFactorChallengeAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
+        OAuthGrantRequestAuthenticationResult authenticationResult;
+
+        try {
+            Application app = getApplication(request);
+            String challenge = request.getParameter("challenge");
+            String code = request.getParameter("code");
+            OAuthStormpathFactorChallengeGrantRequestAuthentication grantRequestAuthentication =
+                    new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(challenge, code);
+
+            authenticationResult = Authenticators.OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR
+                    .forApplication(app)
+                    .authenticate(grantRequestAuthentication);
+        } catch (ResourceException e) {
+            log.debug("Unable to authenticate stormpath social grant request: {}", e.getMessage(), e);
+            throw convertToOAuthException(e, OAuthErrorCode.INVALID_CLIENT);
+        } catch (IllegalArgumentException ex) {
+            throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);
+        }
+
+        return createAccessTokenResult(request, response, authenticationResult);
+    }
+
     private OAuthException convertToOAuthException(ResourceException e, OAuthErrorCode defaultErrorCode) {
         com.stormpath.sdk.error.Error error = e.getStormpathError();
         String message = error.getMessage();
 
         OAuthErrorCode oauthError = defaultErrorCode;
         if (error instanceof DefaultError) {
-            Object errorObject = ((DefaultError) error).getProperty("error");
+            DefaultError defaultError = ((DefaultError) error);
+
+            Object errorObject = defaultError.getProperty("error");
             oauthError = errorObject == null ? oauthError : new OAuthErrorCode(errorObject.toString());
+
+            Object action = defaultError.getProperty("action");
+            if (action instanceof String) {
+                // get action map from error based on the action
+                Map<String, Object> errorMap = new LinkedHashMap<>();
+                errorMap.put("error_description", defaultError.getProperty("error_description"));
+                errorMap.put("action", action);
+                if ("factor_enroll".equals(action)) {
+                    errorMap.put("state", defaultError.getProperty("state"));
+                    errorMap.put("allowedFactorTypes", defaultError.getProperty("allowedFactorTypes"));
+                }
+                else if ("factor_challenge".equals(action)) {
+                    errorMap.put("state", defaultError.getProperty("state"));
+                    errorMap.put("allowedFactorTypes", defaultError.getProperty("allowedFactorTypes"));
+                    errorMap.put("factor", defaultError.getProperty("factor"));
+                    errorMap.put("challenge", defaultError.getProperty("challenge"));
+                }
+                else if ("factor_select".equals(action)) {
+                    errorMap.put("factors", defaultError.getProperty("factors"));
+                }
+                return new OAuthException(oauthError, errorMap, "");
+            }
         }
 
         return new OAuthException(oauthError, message);
@@ -436,6 +491,14 @@ public class AccessTokenController extends AbstractController {
                     result = this.stormpathTokenAuthenticationRequest(request, response);
                 } catch (HttpAuthenticationException ex) {
                     log.warn("Unable to authenticate client", ex);
+                    throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
+                }
+                break;
+            case STORMPATH_FACTOR_CHALLENGE_GRANT_TYPE:
+                try {
+                    result = this.stormpathFactorChallengeAuthenticationRequest(request, response);
+                } catch (HttpAuthenticationException e) {
+                    log.warn("Unable to authenticate client", e);
                     throw new OAuthException(OAuthErrorCode.INVALID_CLIENT);
                 }
                 break;
