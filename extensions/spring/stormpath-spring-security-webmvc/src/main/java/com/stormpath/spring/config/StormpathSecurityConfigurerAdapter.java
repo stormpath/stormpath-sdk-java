@@ -69,8 +69,8 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
     @Autowired
     AccountResolverFilter springSecurityResolvedAccountFilter;
 
-    //Based on this http://docs.spring.io/spring-security/site/docs/4.1.2.RELEASE/reference/htmlsingle/#filter-ordering
-    //We are introducing a new filter in order to place the Stormpath Account in context
+    //Based on http://docs.spring.io/spring-security/site/docs/4.2.0.RELEASE/reference/htmlsingle/#filter-ordering
+    //we are introducing a new filter in order to place the Stormpath Account in context.
     //This is required when a user is logged in (cookie in browser) and then the Web App is restarted. In that case
     //Spring security will deny access at some point and redirect you to login. Stormpath will see your cookie, will do an
     //automatic login and will forward you to the original URL but Spring Security will not have its security context set
@@ -188,10 +188,8 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
     /**
      * The pre-defined Stormpath access control settings are defined here.
      *
-     * @param http
-     *            the {@link HttpSecurity} to be modified
-     * @throws Exception
-     *             if an error occurs
+     * @param http the {@link HttpSecurity} to be modified
+     * @throws Exception if an error occurs
      */
     @Override
     public void init(HttpSecurity http) throws Exception {
@@ -225,38 +223,34 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
         if (idSiteEnabled && loginEnabled) {
             String permittedResultPath = (idSiteEnabled) ? idSiteResultUri : samlResultUri;
 
-            http
-                    .authorizeRequests()
-                    .antMatchers(loginUri).permitAll()
-                    .antMatchers(permittedResultPath).permitAll()
-                    .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
+            http.authorizeRequests()
+                .antMatchers(loginUri).permitAll()
+                .antMatchers(permittedResultPath).permitAll()
+                .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
         } else if (stormpathWebEnabled) {
             if (loginEnabled) {
                 // make sure that /login and /login?status=... is permitted
                 String loginUriMatch = (loginUri.endsWith("*")) ? loginUri : loginUri + "*";
 
-                http
-                        .authorizeRequests()
-                        .antMatchers(loginUriMatch).permitAll()
-                        .antMatchers(googleCallbackUri).permitAll()
-                        .antMatchers(githubCallbackUri).permitAll()
-                        .antMatchers(facebookCallbackUri).permitAll()
-                        .antMatchers(linkedinCallbackUri).permitAll()
-                        .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
+                http.authorizeRequests()
+                    .antMatchers(loginUriMatch).permitAll()
+                    .antMatchers(googleCallbackUri).permitAll()
+                    .antMatchers(githubCallbackUri).permitAll()
+                    .antMatchers(facebookCallbackUri).permitAll()
+                    .antMatchers(linkedinCallbackUri).permitAll()
+                    .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
             }
 
             if (meEnabled) {
-                http
-                        .authorizeRequests().antMatchers(meUri).fullyAuthenticated();
+                http.authorizeRequests().antMatchers(meUri).fullyAuthenticated();
             }
 
             http.authorizeRequests()
-                    .antMatchers("/assets/css/stormpath.css").permitAll()
-                    .antMatchers("/assets/css/custom.stormpath.css").permitAll()
-                    .antMatchers("/assets/js/stormpath.js").permitAll()
-                    // fix for https://github.com/stormpath/stormpath-sdk-java/issues/822
-                    .antMatchers("/WEB-INF/jsp/stormpath/**").permitAll();
-
+                .antMatchers("/assets/css/stormpath.css").permitAll()
+                .antMatchers("/assets/css/custom.stormpath.css").permitAll()
+                .antMatchers("/assets/js/stormpath.js").permitAll()
+                // fix for https://github.com/stormpath/stormpath-sdk-java/issues/822
+                .antMatchers("/WEB-INF/jsp/stormpath/**").permitAll();
         }
 
         if (idSiteEnabled || callbackEnabled || stormpathWebEnabled) {
@@ -270,10 +264,8 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
                     httpSecurityLogoutConfigurer.logoutSuccessUrl(logoutNextUri);
                 }
 
-                httpSecurityLogoutConfigurer
-                        .addLogoutHandler(logoutHandler)
-                        .and().authorizeRequests()
-                        .antMatchers(logoutUri).permitAll();
+                httpSecurityLogoutConfigurer.addLogoutHandler(logoutHandler)
+                                            .and().authorizeRequests().antMatchers(logoutUri).permitAll();
             }
 
             if (forgotEnabled) {

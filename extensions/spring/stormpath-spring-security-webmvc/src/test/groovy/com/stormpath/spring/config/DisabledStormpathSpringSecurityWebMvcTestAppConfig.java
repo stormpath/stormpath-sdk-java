@@ -23,7 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
 
 /**
- * @since 1.0.RC5
+ * @since 1.3.0
  */
 @Configuration
 @EnableStormpathWebSecurity

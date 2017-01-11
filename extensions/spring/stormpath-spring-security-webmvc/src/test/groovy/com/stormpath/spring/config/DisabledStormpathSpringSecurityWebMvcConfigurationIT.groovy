@@ -71,9 +71,9 @@ class DisabledStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClien
         super.setUp()
 
         mvc = MockMvcBuilders.webAppContextSetup(context)
-                .addFilter(springSecurityFilterChain, "/*") //Spring security in front of Stormpath
-                .addFilter(stormpathFilter, "/*")
-                .build();
+                             .addFilter(springSecurityFilterChain, "/*") //Spring security in front of Stormpath
+                             .addFilter(stormpathFilter, "/*")
+                             .build();
     }
 
     @Test
