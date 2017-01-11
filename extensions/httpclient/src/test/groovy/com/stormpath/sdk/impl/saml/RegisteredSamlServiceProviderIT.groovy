@@ -72,6 +72,16 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
     @Test
     void testUniquenessOfRegisteredSamlServiceProviders() {
+        def registeredSamlServiceProvider = createRegisteredSamlServiceProvider()
+
+        def registeredSamlServiceProvider2 = createRegisteredSamlServiceProvider()
+
+        registeredSamlServiceProvider.setEntityId(registeredSamlServiceProvider2.getEntityId())
+
+        updatedSaveableError(registeredSamlServiceProvider, 10110)
+    }
+
+    RegisteredSamlServiceProvider createRegisteredSamlServiceProvider() {
         def registeredSamlServiceProvider = client.instantiate(RegisteredSamlServiceProvider)
         registeredSamlServiceProvider
                 .setName("testName")
@@ -83,8 +93,7 @@ class RegisteredSamlServiceProviderIT extends AbstractSamlIT {
 
         assertRegisteredSAMLServiceProviderFields(registeredSamlServiceProviderReturned, registeredSamlServiceProvider)
 
-        registeredSamlServiceProvider.setEntityId(registeredSamlServiceProvider.getEntityId())
-        updatedSaveableError(registeredSamlServiceProvider, 10110)
+        return registeredSamlServiceProviderReturned
     }
 
     @Test
