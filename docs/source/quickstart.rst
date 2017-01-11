@@ -312,7 +312,7 @@ Did you experience any problems with this quickstart?  It might not have worked 
          <properties>
              <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
              <java.version>1.8</java.version>
-             <spring-security.version>4.1.3.RELEASE</spring-security.version>
+             <spring-security.version>4.2.0.RELEASE</spring-security.version>
          </properties>
 
          <dependencies>
@@ -353,7 +353,7 @@ That was just a little example of how much functionality is ready right out of t
 
 #if( $servlet or $spring or $springboot )
 
-Dig in to our `examples`_ to see more Stormpath Spring Boot in action.
+Dig in to our `examples`_ to see more |project| in action.
 
 #end
 

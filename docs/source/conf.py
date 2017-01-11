@@ -85,7 +85,7 @@ elif tags.has('springboot'):
     project = u'Stormpath Default Spring Boot Starter'
     apptype = u'application'
 elif tags.has('spring'):
-    project = u'Stormpath Spring Security WebMVC Integration'
+    project = u'Stormpath Spring WebMVC Integration'
     apptype = u'application'
 
 copyright = '%s, Stormpath, Inc' % datetime.datetime.now().year
