@@ -165,7 +165,7 @@ elif tags.has('springboot'):
     """
 elif tags.has('spring'):
     rst_prolog = """
-    .. |project| replace:: Stormpath Spring Security WebMVC Integration
+    .. |project| replace:: Stormpath Spring WebMVC Integration
     .. |apptype| replace:: application
     """
 
@@ -265,7 +265,7 @@ elif tags.has('sczuul'):
 elif tags.has('springboot'):
     htmlhelp_basename = 'StormpathDefaultSpringBootStarterDoc'
 elif tags.has('spring'):
-    htmlhelp_basename = 'StormpathSpringSecurityWebMVCDoc'
+    htmlhelp_basename = 'StormpathSpringWebMVCIntegrationDoc'
 
 # Make the default syntax highlighting target Javascript code snippets.
 highlight_language = 'java'
@@ -303,7 +303,7 @@ elif tags.has('springboot'):
     ]
 elif tags.has('spring'):
     latex_documents = [
-        ('index', 'StormpathSpringSecurityWebMVC.tex', u'Stormpath Spring Security WebMVC Integration Documentation',
+        ('index', 'StormpathSpringWebMVCIntegration.tex', u'Stormpath Spring WebMVC Integration Documentation',
          u'Stormpath, Inc.', 'manual'),
     ]
 
@@ -373,8 +373,8 @@ elif tags.has('springboot'):
     ]
 elif tags.has('spring'):
     texinfo_documents = [
-        (master_doc, 'StormpathSpringSecurityWebMVC', u'Stormpath Spring Security WebMVC Integration Documentation',
-         u'Stormpath', 'StormpathSpringSecurityWebMVC', 'Documentation for the Stormpath Spring Security WebMVC Integration.',
+        (master_doc, 'StormpathSpringWebMVCIntegration', u'Stormpath Spring WebMVC Integration Documentation',
+         u'Stormpath', 'StormpathSpringWebMVCIntegration', 'Documentation for the Stormpath Spring WebMVC Integration.',
          'Miscellaneous'),
     ]
 
