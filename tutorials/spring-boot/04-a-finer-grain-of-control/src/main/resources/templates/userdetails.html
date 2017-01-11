@@ -45,7 +45,7 @@
                             <th>Source</th>
                             <th>Spring Security Permissions</th>
                         </tr>
-                        <tr th:each="permission: ${springSecurityPermissions}">
+                        <tr th:each="permission: ${aggregatePermissionsModel}">
                             <td th:text="${permission.key}"/>
                             <td>
                                 <span th:each="value: ${permission.value}" th:inline="text">[[${value}]]<br/></span>

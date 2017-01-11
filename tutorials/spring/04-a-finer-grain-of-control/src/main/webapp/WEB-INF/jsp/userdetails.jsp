@@ -69,7 +69,7 @@
                             <th>Source</th>
                             <th>Spring Security Permissions</th>
                         </tr>
-                        <c:forEach items="${springSecurityPermissions}" var="permission">
+                        <c:forEach items="${aggregatePermissionsModel}" var="permission">
                             <tr>
                                 <td>${permission.key}</td>
                                 <td><c:forEach items="${permission.value}" var="value">${value}<br/></c:forEach></td>

@@ -70,13 +70,13 @@ public class HelloController {
     @RequestMapping("/userdetails")
     String userDetails(HttpServletRequest req, Model model) {
         Account account = accountResolver.getAccount(req);
-        Map<String, Set<Permission>> springSecurityPermissions = new HashMap<>();
+        Map<String, Set<Permission>> aggregatePermissionsModel = new HashMap<>();
 
         // groups & group perms
         List<Group> groups = new ArrayList<>();
         for (Group group : account.getGroups()) {
             groups.add(group);
-            springSecurityPermissions.put(
+            aggregatePermissionsModel.put(
                 "group:" + group.getName(),
                 stormpathGroupPermissionResolver.resolvePermissions(group)
             );
@@ -84,11 +84,11 @@ public class HelloController {
         model.addAttribute("groups", groups);
 
         // account perms
-        springSecurityPermissions.put(
+        aggregatePermissionsModel.put(
             "account",
             stormpathAccountPermissionResolver.resolvePermissions(account)
         );
-        model.addAttribute("springSecurityPermissions", springSecurityPermissions);
+        model.addAttribute("aggregatePermissionsModel", aggregatePermissionsModel);
 
         return "userdetails";
     }
