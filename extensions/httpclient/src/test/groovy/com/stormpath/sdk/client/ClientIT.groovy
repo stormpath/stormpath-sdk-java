@@ -39,8 +39,7 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.BeforeTest
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
-import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertTrue
+import static org.testng.Assert.*
 
 abstract class ClientIT {
 
@@ -167,28 +166,22 @@ abstract class ClientIT {
     }
 
     protected void getDeletedResourceError(String href, Class resourceClass){
-        Throwable e = null;
         try {
             client.getResource(href, resourceClass)
+            fail("should have thrown ResourceException")
         } catch (ResourceException re) {
-            e = re
             assertEquals(re.status, 404)
             assertEquals(re.getCode(), 404)
         }
-
-        assertTrue(e instanceof ResourceException)
     }
 
-    protected void updatedSaveableError(Saveable input, int expectedErrorCode){
-        Throwable e = null;
+    protected void updatedSaveableError(Saveable input, int expectedErrorCode) {
         try {
             input.save()
+            fail("should have thrown ResourceException")
         } catch (ResourceException re) {
-            e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), expectedErrorCode)
         }
-
-        assertTrue(e instanceof ResourceException)
     }
 }
