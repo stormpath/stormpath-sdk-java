@@ -21,7 +21,6 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
-import com.stormpath.spring.config.StormpathWebSecurityConfigurer;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
 import com.stormpath.spring.filter.StormpathWrapperFilter;
@@ -34,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -72,9 +72,10 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     }
 
     @Bean
-    @ConditionalOnMissingBean(name="stormpathWebSecurityConfigurer")
-    public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
-        return super.stormpathWebSecurityConfigurer();
+    @Override
+    @ConditionalOnMissingBean(name="stormpathSecurityConfigurerAdapter")
+    public SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter() {
+        return super.stormpathSecurityConfigurerAdapter();
     }
 
     @Bean
