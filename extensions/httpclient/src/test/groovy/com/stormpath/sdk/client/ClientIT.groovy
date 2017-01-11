@@ -175,7 +175,7 @@ abstract class ClientIT {
         }
     }
 
-    static void updatedSaveableError(Saveable input, int expectedErrorCode) {
+    protected void updatedSaveableError(Saveable input, int expectedErrorCode) {
         try {
             input.save()
             fail("should have thrown ResourceException")
