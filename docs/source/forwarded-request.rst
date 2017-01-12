@@ -164,13 +164,8 @@ properties.  This is the default configuration in effect if you don't specify an
            value:
              strategy: scalars
              fields:
-               href:
-                 enabled: false
                customData:
                  strategy: scalars
-                 fields:
-                   href:
-                     enabled: false
                groups:
                  strategy: defined
                  elements:
@@ -188,23 +183,18 @@ So what does this mean?  You can summarize this in English as the following:
 
    - all of the account's `scalar`_ (i.e. non object/collection) fields to be included, each as a JSON name/value pair.
 
-   - However, I want specific overriding rules for the ``href``, ``customData`` and ``groups`` fields.  For these:
-
-     - don't include the account's ``href`` field.  My origin server(s) behind the gateway probably won't talk
-       directly with Stormpath and won't know what to do with that url, so exclude it
+   - However, I want specific overriding rules for the ``customData`` and ``groups`` fields.  For these:
 
      - ``customData`` isn't a scalar, but I want it included anyway, so I'm going to define conversion rules for it
-       too.  Those are:
+       too.  That is :
 
        - Include any of the customData's scalar properties automatically
-
-       - However, don't include the customData's ``href``, since my origin server(s) won't know what to do with it.
 
      - ``groups`` isn't a scalar (it's a ``GroupsCollection`` object), but I want it included anyway.
 
        - However, in this case I want to include *only* fields that are explicitly *defined* in its ``fields``
          list.  (In this case, even though the strategy is ``defined``, no actual ``fields`` have been specified.
-         This means that *no* fields on the ``GroupsCollection`` object itself, like 'size' and 'limit' will be
+         This means that *no* fields on the ``GroupsCollection`` object itself, like 'href', 'size' and 'limit' will be
          included.  We just want the collection's elements, described next.)
 
        - The collection ``elements`` are enabled so I do want the elements in the collection.
@@ -221,6 +211,7 @@ bytes transmitted over the network, the actual value won't be pretty-printed):
 .. code-block:: json
 
    {
+     "href": "https://api.stormpath.com/v1/accounts/753veZGE2aIy64VnTrF5Ov",
      "username": "tk421",
      "email": "tk421@galacticempire.com",
      "givenName": "TK421",
@@ -233,6 +224,7 @@ bytes transmitted over the network, the actual value won't be pretty-printed):
      "passwordModifiedAt": "2016-12-15T19:58:55.000Z",
      "emailVerificationToken": null,
      "customData": {
+       "href": "https://api.stormpath.com/v1/accounts/753veZGE2aIy64VnTrF5Ov/customData",
        "createdAt": "2016-12-15T19:58:55.272Z",
        "modifiedAt":"2016-12-15T19:59:23.729Z",
        "favoriteColor": "Blaster Black"
@@ -240,6 +232,7 @@ bytes transmitted over the network, the actual value won't be pretty-printed):
      "groups": {
        "items": [
          {
+           "href": "https://api.stormpath.com/v1/groups/4NQzRKj0qDq1wIg9M0jUfa",
            "name": "dsguards",
            "description": "Death Star Guards",
            "status": "ENABLED",
@@ -247,6 +240,7 @@ bytes transmitted over the network, the actual value won't be pretty-printed):
            "modifiedAt":"2016-12-28T00:34:46.453Z"
          },
          {
+           "href": "https://api.stormpath.com/v1/groups/9fBEMQtvElx2Zn7a0ku1Dj",
            "name": "troopers",
            "description": "All stormtroopers",
            "status": "ENABLED",
@@ -397,6 +391,23 @@ Notice the resulting JSON - ``groups`` is not an object with a nested ``items`` 
 The ``enabled`` conversion property indicates if the field will be included in the output sent to the origin server.  If
 the value is ``false``, that field will not be included at all in the output sent to the origin server.  The default
 value is ``true``.
+
+For example, the following config indicates that, although the general strategy is to include the user account's
+scalar fields, the ``href`` field is excluded/omitted from the output JSON entirely:
+
+.. code-block:: yaml
+   :emphasize-lines: 8-9
+
+   stormpath:
+     zuul:
+       account:
+         header:
+           value:
+             strategy: scalars
+             fields:
+               href:
+                 enabled: false
+
 
 .. _object conversion field:
 

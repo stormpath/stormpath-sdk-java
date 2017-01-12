@@ -88,6 +88,7 @@
 
     <properties>
         <jdk.version>1.7</jdk.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.21</slf4j.version>
         <bouncycastle.version>1.56</bouncycastle.version>
         <hazelcast.version>3.6.4</hazelcast.version>
@@ -100,10 +101,10 @@
         <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
         <snakeyaml.version>1.17</snakeyaml.version>
         <servlet.version>3.1.0</servlet.version>
-        <spring.version>4.3.2.RELEASE</spring.version>
+        <spring.version>4.3.5.RELEASE</spring.version>
         <spring.boot.version>1.4.3.RELEASE</spring.boot.version>
         <spring.cloud.netflix.version>1.1.5.RELEASE</spring.cloud.netflix.version>
-        <spring.security.version>4.2.0.RELEASE</spring.security.version>
+        <spring.security.version>4.2.1.RELEASE</spring.security.version>
         <zuul.version>1.2.2</zuul.version>
 
         <!-- Test Dependencies: Only required for testing when building the SDK.  Not required by SDK users at runtime: -->
