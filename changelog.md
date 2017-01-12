@@ -1,5 +1,36 @@
 ## Change Log ##
 
+### 1.3.0 ##
+
+This release has a number of feature additions and bug fixes. Of note:
+
+* Added Documentation sections for Spring WebMVC and Zuul integrations
+* Updated Zuul integration forward a highly configurable authentication assertion
+    * Can be raw JSON or a JWT
+    * Can use a variety of signing algorithms, including HMAC, RSA and Elliptic Curve families
+* Put the Stormpath Spring Security Filter in front of the Stormpath Filter (critical fix for stability and future Spring Security work)
+* Upgraded to Spring Boot version 1.4.3
+* Upgraded to Spring Security 4.2.0
+    * Enables the auto-loading of the StormpathWebSecuriytConfigurer for Spring Boot apps alleviating the need to use the `.apply(stormpath())` pattern
+* Added a BOM (Bill of Materials) module enabling developers to include a single master dependency without having to specify a version for each stormpath module they want to use. Also enables Stormpath to be listed on start.spring.io
+* Added PUT to the default list of supported CORS methods
+* Added SAML idP (identity Provider) support to the SDK
+* Added Twitter Social support to the SDK
+* Added generic OAuth2 support to the SDK
+    * This enables us to use nearly any external provider that supports OAuth2
+* Bug Fixes
+    * Disabling Spring Security via properties was not working
+    * Spring Security was making two authentication attempts
+
+See [1.3.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.3.0+is%3Aclosed)
+
+### 1.2.4 ##
+
+This release fixes a bug whereby an Account would be cached with UNVERIFIED status which would interfere with a user
+logging in when the Account Status had been updated on the backend.
+
+See [1.2.4 closed bugs](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.4+is%3Aclosed)
+
 ### 1.2.3 ##
 
 This release fixes a bug whereby new passwords that violate the password policy were showing the wrong error on the forgot password flow.
@@ -33,6 +64,13 @@ This release has a number of feature additions and bug fixes. Of note:
 * Idiomatic support for the `passwordModifiedAt` field in the [Account](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/account/Account.html) interface in in search criteria on [Accounts](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/account/Accounts.html#passwordModifiedAt--)
 
 See [1.2.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.0+is%3Aclosed) for a complete list of changes.
+
+### 1.1.6 ##
+
+This release fixes a bug whereby an Account would be cached with UNVERIFIED status which would interfere with a user
+logging in when the Account Status had been updated on the backend.
+
+See [1.1.6 closed bugs](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.6+is%3Aclosed)
 
 ### 1.1.5 ##
 
