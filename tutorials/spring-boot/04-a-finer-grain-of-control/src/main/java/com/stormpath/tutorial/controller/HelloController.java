@@ -15,7 +15,12 @@
  */
 package com.stormpath.tutorial.controller;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.spring.security.authz.permission.Permission;
+import com.stormpath.spring.security.provider.AccountPermissionResolver;
+import com.stormpath.spring.security.provider.GroupPermissionResolver;
 import com.stormpath.tutorial.service.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +29,11 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 1.0.RC5
@@ -31,11 +41,23 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class HelloController {
 
+    private AccountResolver accountResolver;
+    private GroupPermissionResolver stormpathGroupPermissionResolver;
+    private AccountPermissionResolver stormpathAccountPermissionResolver;
     private HelloService helloService;
 
     @Autowired
-    public HelloController(HelloService helloService) {
+    public HelloController(
+        AccountResolver accountResolver, GroupPermissionResolver stormpathGroupPermissionResolver,
+        AccountPermissionResolver stormpathAccountPermissionResolver, HelloService helloService
+    ) {
+        Assert.notNull(accountResolver);
+        Assert.notNull(stormpathAccountPermissionResolver);
+        Assert.notNull(stormpathGroupPermissionResolver);
         Assert.notNull(helloService);
+        this.accountResolver = accountResolver;
+        this.stormpathAccountPermissionResolver = stormpathAccountPermissionResolver;
+        this.stormpathGroupPermissionResolver = stormpathGroupPermissionResolver;
         this.helloService = helloService;
     }
 
@@ -46,17 +68,37 @@ public class HelloController {
     }
 
     @RequestMapping("/userdetails")
-    String userDetails() {
+    String userDetails(HttpServletRequest req, Model model) {
+        Account account = accountResolver.getAccount(req);
+        Map<String, Set<Permission>> aggregatePermissionsModel = new HashMap<>();
+
+        // groups & group perms
+        List<Group> groups = new ArrayList<>();
+        for (Group group : account.getGroups()) {
+            groups.add(group);
+            aggregatePermissionsModel.put(
+                "group:" + group.getName(),
+                stormpathGroupPermissionResolver.resolvePermissions(group)
+            );
+        }
+        model.addAttribute("groups", groups);
+
+        // account perms
+        aggregatePermissionsModel.put(
+            "account",
+            stormpathAccountPermissionResolver.resolvePermissions(account)
+        );
+        model.addAttribute("aggregatePermissionsModel", aggregatePermissionsModel);
+
         return "userdetails";
     }
 
     @RequestMapping("/restricted")
     String restricted(HttpServletRequest req, Model model) {
         String msg = helloService.sayHello(
-            AccountResolver.INSTANCE.getAccount(req)
+            accountResolver.getAccount(req)
         );
         model.addAttribute("msg", msg);
         return "restricted";
     }
-
 }
