@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 Stormpath, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stormpath.spring.config
 
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent
@@ -74,6 +89,7 @@ class StormpathAuthenticationFailureHandlerTest {
         RequestDispatcher mockRequestDispatcher = createMock(RequestDispatcher)
 
         expect(contentNegotiationResolver.getContentType(mockRequest, mockResponse, [MediaType.APPLICATION_JSON, MediaType.TEXT_HTML])).andReturn(MediaType.APPLICATION_JSON)
+        expect(mockRequest.getRequestURI()).andReturn(ME_URI)
         expect(mockRequest.getRequestDispatcher(ME_URI)).andReturn mockRequestDispatcher
         expect(mockRequestDispatcher.forward(mockRequest, mockResponse))
         expect(publisher.publish(anyObject(FailedAuthenticationRequestEvent)))
@@ -89,6 +105,7 @@ class StormpathAuthenticationFailureHandlerTest {
     void testOnAuthenticationFailureHtmlResponseWithNextParam() {
         HttpServletRequest mockRequest = createMock(HttpServletRequest)
         HttpServletResponse mockResponse = createMock(HttpServletResponse)
+        RequestDispatcher mockRequestDispatcher = createMock(RequestDispatcher)
         HttpSession mockSession = createMock(HttpSession)
         ErrorModel errorModel = ErrorModel.builder().build()
 
@@ -97,7 +114,7 @@ class StormpathAuthenticationFailureHandlerTest {
         expect(errorModelFactory.toError(mockRequest, authenticationException)).andReturn errorModel
         expect(mockSession.setAttribute(FormController.SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModel))
         expect(mockRequest.getParameter(NEXT_QUERY_PARAM)).andReturn(NEXT_VALUE)
-        expect(redirectStrategy.sendRedirect(mockRequest, mockResponse, "/login?next=%2Frestricted"))
+        expect(mockRequest.getRequestDispatcher("/login?next=%2Frestricted")).andReturn(mockRequestDispatcher)
         expect(publisher.publish(anyObject(FailedAuthenticationRequestEvent)))
 
         replay mockRequest, mockResponse, mockSession, publisher, errorModelFactory, redirectStrategy, contentNegotiationResolver
@@ -112,6 +129,7 @@ class StormpathAuthenticationFailureHandlerTest {
     void testOnAuthenticationFailureHtmlResponseWithoutNextParam() {
         HttpServletRequest mockRequest = createMock(HttpServletRequest)
         HttpServletResponse mockResponse = createMock(HttpServletResponse)
+        RequestDispatcher mockRequestDispatcher = createMock(RequestDispatcher)
         HttpSession mockSession = createMock(HttpSession)
         ErrorModel errorModel = ErrorModel.builder().build()
 
@@ -122,7 +140,7 @@ class StormpathAuthenticationFailureHandlerTest {
             expect(errorModelFactory.toError(mockRequest, authenticationException)).andReturn errorModel
             expect(mockSession.setAttribute(FormController.SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModel))
             expect(mockRequest.getParameter(NEXT_QUERY_PARAM)).andReturn(nextValue)
-            expect(redirectStrategy.sendRedirect(mockRequest, mockResponse, "/login"))
+            expect(mockRequest.getRequestDispatcher("/login")).andReturn(mockRequestDispatcher)
             expect(publisher.publish(anyObject(FailedAuthenticationRequestEvent)))
 
             replay mockRequest, mockResponse, mockSession, publisher, errorModelFactory, redirectStrategy, contentNegotiationResolver

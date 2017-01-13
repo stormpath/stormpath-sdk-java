@@ -616,11 +616,13 @@ class ResourceConverterTest {
 
         def result = fn.apply(account)
 
-        assertEquals result.size(), props.size() - 1 // no href
+        assertEquals result.size(), props.size()
+        assertEquals result.href, 'https://example.io/users/1'
         assertEquals result.username, props.username
         assertEquals result.email, props.email
 
-        assertEquals result.customData.size(), cd.size() - 1 // no href
+        assertEquals result.customData.size(), cd.size()
+        assertEquals result.customData.href, 'https://example.io/users/1/customData'
         assertTrue result.customData.containsKey('createdAt')
         assertTrue result.customData.containsKey('modifiedAt')
 
@@ -629,15 +631,18 @@ class ResourceConverterTest {
         def i = result.groups.items.iterator()
 
         def g = i.next()
-        assertEquals g.size(), 1 //no href by default
+        assertEquals g.size(), 2
+        assertEquals g.href, 'https://example.io/groups/1'
         assertEquals g.name, 'foo'
 
         g = i.next()
-        assertEquals g.size(), 1 //no href by default
+        assertEquals g.size(), 2
+        assertEquals g.href, 'https://example.io/groups/2'
         assertEquals g.name, 'bar'
 
         g = i.next()
-        assertEquals g.size(), 1 //no href by default
+        assertEquals g.size(), 2
+        assertEquals g.href, 'https://example.io/groups/3'
         assertEquals g.name, 'baz'
     }
 

@@ -52,6 +52,7 @@ import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.http.authc.HeaderAuthenticator;
 import com.stormpath.sdk.servlet.http.authc.HttpAuthenticationScheme;
 import com.stormpath.sdk.servlet.idsite.IdSiteOrganizationContext;
+import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.Controller;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
@@ -122,6 +123,15 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     /**
+     * @since 1.3.0
+     */
+    @Bean
+    @Override
+    public ProviderAccountRequestFactory stormpathAccountProviderRequestHandler() {
+        return super.stormpathAccountProviderRequestHandler();
+    }
+
+    /**
      * @since 1.0.0
      */
     @Bean
@@ -143,76 +153,91 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public HandlerInterceptor stormpathLayoutInterceptor() {
         return super.stormpathLayoutInterceptor();
     }
 
     @Bean
+    @Override
     public AccountStoreResolver stormpathAccountStoreResolver() {
         return super.stormpathAccountStoreResolver();
     }
 
     @Bean
+    @Override
     public UsernamePasswordRequestFactory stormpathUsernamePasswordRequestFactory() {
         return super.stormpathUsernamePasswordRequestFactory();
     }
 
     @Bean
+    @Override
     public AccessTokenCookieProperties accessTokenCookieProperties() {
         return super.accessTokenCookieProperties();
     }
 
     @Bean
+    @Override
     public RefreshTokenCookieProperties refreshTokenCookieProperties() {
         return super.refreshTokenCookieProperties();
     }
 
     @Bean
+    @Override
     public CookieConfig stormpathAccessTokenCookieConfig() {
         return super.stormpathAccessTokenCookieConfig();
     }
 
     @Bean
+    @Override
     public Resolver<String> stormpathRemoteAddrResolver() {
         return super.stormpathRemoteAddrResolver();
     }
 
     @Bean
+    @Override
     public Resolver<Boolean> stormpathLocalhostResolver() {
         return super.stormpathLocalhostResolver();
     }
 
     @Bean
+    @Override
     public Resolver<Boolean> stormpathSecureResolver() {
         return super.stormpathSecureResolver();
     }
 
     @Bean
+    @Override
     public Saver<AuthenticationResult> stormpathCookieAuthenticationResultSaver() {
         return super.stormpathCookieAuthenticationResultSaver();
     }
 
     @Bean
+    @Override
     public List<Saver<AuthenticationResult>> stormpathAuthenticationResultSavers() {
         return super.stormpathAuthenticationResultSavers();
     }
 
     @Bean
+    @Override
     public Saver<AuthenticationResult> stormpathAuthenticationResultSaver() {
         return super.stormpathAuthenticationResultSaver();
     }
 
     @Bean
+    @Override
     public JwtSigningKeyResolver stormpathJwtSigningKeyResolver() {
         return super.stormpathJwtSigningKeyResolver();
     }
 
     @Bean
+    @Override
     public RequestEventListener stormpathRequestEventListener() {
         return super.stormpathRequestEventListener();
     }
 
     @Bean
+    @Override
     public Publisher<RequestEvent> stormpathRequestEventPublisher() {
         return super.stormpathRequestEventPublisher();
     }
@@ -223,16 +248,19 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public JwtAccountResolver stormpathJwtAccountResolver() {
         return super.stormpathJwtAccountResolver();
     }
 
     @Bean
+    @Override
     public Cache<String, String> stormpathNonceCache() {
         return super.stormpathNonceCache();
     }
 
     @Bean
+    @Override
     public CsrfTokenManager stormpathCsrfTokenManager() {
         return super.stormpathCsrfTokenManager();
     }
@@ -244,96 +272,115 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public AccessTokenResultFactory stormpathAccessTokenResultFactory() {
         return super.stormpathAccessTokenResultFactory();
     }
 
     @Bean
+    @Override
     public RefreshTokenResultFactory stormpathRefreshTokenResultFactory(){
         return super.stormpathRefreshTokenResultFactory();
     }
 
     @Bean
+    @Override
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {
         return super.stormpathWrappedServletRequestFactory();
     }
 
     @Bean
+    @Override
     public HttpAuthenticationScheme stormpathBasicAuthenticationScheme() {
         return super.stormpathBasicAuthenticationScheme();
     }
 
     @Bean
+    @Override
     public HttpAuthenticationScheme stormpathBearerAuthenticationScheme() {
         return super.stormpathBearerAuthenticationScheme();
     }
 
     @Bean
+    @Override
     public List<HttpAuthenticationScheme> stormpathHttpAuthenticationSchemes() {
         return super.stormpathHttpAuthenticationSchemes();
     }
 
     @Bean
+    @Override
     public HeaderAuthenticator stormpathAuthorizationHeaderAuthenticator() {
         return super.stormpathAuthorizationHeaderAuthenticator();
     }
 
     @Bean
+    @Override
     public Resolver<Account> stormpathAuthorizationHeaderAccountResolver() {
         return super.stormpathAuthorizationHeaderAccountResolver();
     }
 
     @Bean
+    @Override
     public Resolver<Account> stormpathCookieAccountResolver() {
         return super.stormpathCookieAccountResolver();
     }
 
     @Bean
+    @Override
     public List<Resolver<Account>> stormpathAccountResolvers() {
         return super.stormpathAccountResolvers();
     }
 
     @Bean
+    @Override
     public Resolver<List<String>> stormpathSubdomainResolver() {
         return super.stormpathSubdomainResolver();
     }
 
     @Bean
+    @Override
     public Resolver<String> stormpathOrganizationNameKeyResolver() {
         return super.stormpathOrganizationNameKeyResolver();
     }
 
     @Bean
+    @Override
     public Resolver<IdSiteOrganizationContext> stormpathIdSiteOrganizationResolver() {
         return super.stormpathIdSiteOrganizationResolver();
     }
 
     @Bean
+    @Override
     public Controller stormpathGoogleCallbackController() {
         return super.stormpathGoogleCallbackController();
     }
 
     @Bean
+    @Override
     public Controller stormpathGithubCallbackController() {
         return super.stormpathGithubCallbackController();
     }
 
     @Bean
+    @Override
     public Controller stormpathFacebookCallbackController() {
         return super.stormpathFacebookCallbackController();
     }
 
     @Bean
+    @Override
     public Controller stormpathLinkedinCallbackController() {
         return super.stormpathLinkedinCallbackController();
     }
 
     @Bean
+    @Override
     public ErrorModelFactory stormpathLoginErrorModelFactory() {
         return super.stormpathLoginErrorModelFactory();
     }
 
     @Bean
+    @Override
     public Controller stormpathLoginController() {
         return super.stormpathLoginController();
     }
@@ -372,11 +419,13 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public com.stormpath.sdk.servlet.i18n.MessageSource stormpathMessageSource() {
         return super.stormpathMessageSource();
     }
 
     @Bean
+    @Override
     public Controller stormpathRegisterController() {
         return super.stormpathRegisterController();
     }
@@ -394,16 +443,19 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public Controller stormpathVerifyController() {
         return super.stormpathVerifyController();
     }
 
     @Bean
+    @Override
     public Controller stormpathChangePasswordController() {
         return super.stormpathChangePasswordController();
     }
 
     @Bean
+    @Override
     public Controller stormpathAccessTokenController() {
         return super.stormpathAccessTokenController();
     }
@@ -415,46 +467,55 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public ExpandsResolver stormpathMeExpandsResolver(){
         return super.stormpathMeExpandsResolver();
     }
 
     @Bean
+    @Override
     public Controller stormpathIdSiteResultController() {
         return super.stormpathIdSiteResultController();
     }
 
     @Bean
+    @Override
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {
         return super.stormpathAccessTokenAuthenticationRequestFactory();
     }
 
     @Bean
+    @Override
     public RefreshTokenAuthenticationRequestFactory stormpathRefreshTokenAuthenticationRequestFactory(){
         return super.stormpathRefreshTokenAuthenticationRequestFactory();
     }
 
     @Bean
+    @Override
     public RequestAuthorizer stormpathAccessTokenRequestAuthorizer() {
         return super.stormpathAccessTokenRequestAuthorizer();
     }
 
     @Bean
+    @Override
     public RequestAuthorizer stormpathOriginAccessTokenRequestAuthorizer() {
         return super.stormpathOriginAccessTokenRequestAuthorizer();
     }
 
     @Bean
+    @Override
     public ServerUriResolver stormpathServerUriResolver() {
         return super.stormpathServerUriResolver();
     }
 
     @Bean
+    @Override
     public Controller stormpathLogoutController() {
         return super.stormpathLogoutController();
     }
 
     @Bean
+    @Override
     public FilterChainResolver stormpathFilterChainResolver() {
         return super.stormpathFilterChainResolver();
     }
@@ -471,7 +532,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return new DefaultFilterBuilder()
             .setFilter(filter)
             .setServletContext(servletContext)
-            .setName("stormpathFilter")
+            .setName(StormpathFilter.DEFAULT_FILTER_NAME)
             .build();
     }
 
@@ -488,31 +549,37 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     }
 
     @Bean
+    @Override
     public ControllerConfig stormpathForgotPasswordConfig() {
         return super.stormpathForgotPasswordConfig();
     }
 
     @Bean
+    @Override
     public ControllerConfig stormpathLoginConfig() {
         return super.stormpathLoginConfig();
     }
 
     @Bean
+    @Override
     public ControllerConfig stormpathRegisterConfig() {
         return super.stormpathRegisterConfig();
     }
 
     @Bean
+    @Override
     public ControllerConfig stormpathVerifyConfig() {
         return super.stormpathVerifyConfig();
     }
 
     @Bean
+    @Override
     public ChangePasswordControllerConfig stormpathChangePasswordConfig() {
         return super.stormpathChangePasswordConfig();
     }
 
     @Bean
+    @Override
     public ControllerConfig stormpathLogoutConfig() {
         return super.stormpathLogoutConfig();
     }
@@ -521,6 +588,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
      * @since 1.2.0
      */
     @Bean
+    @Override
     public AccessTokenControllerConfig stormpathAccessTokenConfig(){
         return super.stormpathAccessTokenConfig();
     }
@@ -529,6 +597,7 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
      * @since 1.2.0
      */
     @Bean
+    @Override
     public GrantTypeValidator stormpathGrantTypeStatusValidator(){
         return super.stormpathGrantTypeStatusValidator();
     }

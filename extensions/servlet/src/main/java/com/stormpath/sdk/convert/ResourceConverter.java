@@ -46,9 +46,9 @@ public class ResourceConverter<T> implements Function<T, Object> {
     private static final Logger log = LoggerFactory.getLogger(ResourceConverter.class);
 
     public static final Conversion DEFAULT_CONFIG = Conversions
-        .withField("href", Conversions.disabled())
-        .withField("customData", Conversions.withField("href", Conversions.disabled()))
-        .withField("groups", Conversions.withStrategy(ConversionStrategyName.DEFINED).setElements(Conversions.each(Conversions.withField("href", Conversions.disabled()))));
+        //.withField("href", Conversions.disabled())
+        .withField("customData", Conversions.withStrategy(ConversionStrategyName.SCALARS))
+        .withField("groups", Conversions.withStrategy(ConversionStrategyName.DEFINED).setElements(Conversions.each(new Conversion())));
 
     private Conversion config;
 

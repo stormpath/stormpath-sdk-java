@@ -29,11 +29,15 @@ If you want to use ID Site, the first thing you'll need to do is to `enable the 
 
    These instructions will only cover using the built-in hosted login site – if you’d like to customize your ID Site URL or look and feel (theme), please see the official `ID Site documentation`_.
 
-In the box labeled “Authorized Redirect URIs”, enter your redirect URL – this should be set to something like: ``https://www.mysite.com/stormpathCallback``. If you’re testing locally, you might want to set this to: ``http://localhost:${port}/stormpathCallback``
+In the box labeled “Authorized Redirect URIs”, enter your redirect URL – this should be set to something like: ``https://www.my-site.com/stormpathCallback``. If you’re testing locally, you might want to set this to: ``http://localhost:${port}/stormpathCallback``.
+
+If you are taking advantage of Stormpath's Multi-Tenancy features, you can use wildcards, like: ``https://*.my-multi-tenant-app.com/stormpathCallback``. This would authorize any subdomain of ``my-multi-tenant-app.com``, such as ``https://fun-co.my-multi-tenant-app.com/stormpathCallback``.
+
+For more information on using Stormpath in a multi-tenant configuration, read our `Multi-Tenant SaaS Guide`_.
 
 If you’d like to support both production and local environments, you can add multiple URLs (*just click the “Add another” button and enter as many URLs as you’d like*).
 
-Lastly, make sure to click the “Update” button at the bottom of the page to save your changes.
+Lastly, make sure to click the “Save” button at the bottom of the page to save your changes.
 
 In the end, it should look something like this:
 
@@ -64,3 +68,4 @@ Here's a screenshot of the default ID Site login page to show an example of what
 .. image:: /_static/idsite-login.png
 
 .. _ID Site documentation: http://docs.stormpath.com/guides/using-id-site/
+.. _Multi-Tenant SaaS Guide: https://docs.stormpath.com/rest/product-guide/latest/multitenancy.html

@@ -37,6 +37,8 @@ import java.util.Set;
  */
 public class StormpathFilter extends HttpFilter {
 
+    public final static String DEFAULT_FILTER_NAME = "stormpathFilter";
+
     private FilterChainResolver filterChainResolver;
     private Set<String> clientRequestAttributeNames;
     private Set<String> applicationRequestAttributeNames;

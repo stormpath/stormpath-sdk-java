@@ -26,21 +26,20 @@ import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequests
 import com.stormpath.sdk.resource.Deletable
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
-import com.stormpath.sdk.servlet.client.ClientLoader
 import com.stormpath.sdk.servlet.config.CookieConfig
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.event.RequestEventListener
 import com.stormpath.sdk.servlet.event.TokenRevocationRequestEventListener
 import com.stormpath.sdk.servlet.event.impl.RequestEventPublisher
 import com.stormpath.sdk.servlet.filter.UsernamePasswordRequestFactory
+import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory
 import com.stormpath.sdk.servlet.http.Resolver
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver
 import com.stormpath.sdk.servlet.mvc.Controller
 import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import com.stormpath.spring.csrf.SpringSecurityCsrfTokenManager
-import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter
-import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter
+import com.stormpath.spring.filter.StormpathWrapperFilter
 import com.stormpath.spring.security.authz.CustomDataPermissionsEditor
 import com.stormpath.spring.security.provider.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -68,6 +67,7 @@ import javax.servlet.http.HttpServletResponse
 
 import static org.easymock.EasyMock.*
 import static org.testng.Assert.*
+
 /**
  * @since 1.0.RC5
  */
@@ -81,10 +81,10 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
     Application application;
 
     @Autowired
-    OAuthAuthenticationSpringSecurityProcessingFilter oauth2AuthenticationSpringSecurityProcessingFilter;
+    AccountResolverFilter springSecurityResolvedAccountFilter;
 
     @Autowired
-    SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter;
+    StormpathWrapperFilter stormpathWrapperFilter;
 
     //Spring Security Bean
     @Autowired
@@ -158,9 +158,12 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
         assertTrue stormpathAuthenticationProvider.authenticationTokenFactory instanceof UsernamePasswordAuthenticationTokenFactory
 
         assertNotNull springSecurityResolvedAccountFilter
-        assertNotNull springSecurityResolvedAccountFilter
-        assertNotNull oauth2AuthenticationSpringSecurityProcessingFilter
-        assertNotNull oauth2AuthenticationSpringSecurityProcessingFilter.authenticationProvider
+        assertNotNull stormpathWrapperFilter
+        assertNotNull stormpathWrapperFilter.client
+        assertNotNull stormpathWrapperFilter.application
+        assertTrue stormpathWrapperFilter.applicationRequestAttributeNameList.size() > 0
+        assertTrue stormpathWrapperFilter.applicationRequestAttributeNameList.size() > 0
+        assertNotNull stormpathWrapperFilter.wrappedServletRequestFactory
 
         assertNotNull stormpathWildcardPermissionEvaluator
         assertNotNull stormpathMethodSecurityExpressionHandler
@@ -229,9 +232,8 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
-        expect(httpServletRequest.getServletContext()).andReturn(servletContext)
-        expect(httpServletRequest.getAttribute(Client.class.getName())).andReturn(client)
-        expect(servletContext.getAttribute(ClientLoader.CLIENT_ATTRIBUTE_KEY)).andReturn(client)
+        expect(httpServletRequest.getServletContext()).andReturn(servletContext).times(2)
+        expect(servletContext.getAttribute("com.stormpath.sdk.client.Client")).andReturn(client).times(2)
 
         replay(httpServletRequest, httpServletResponse, servletContext)
 

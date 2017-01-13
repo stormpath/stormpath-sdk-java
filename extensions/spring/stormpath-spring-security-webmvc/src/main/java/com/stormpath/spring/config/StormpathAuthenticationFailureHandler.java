@@ -24,12 +24,17 @@ import com.stormpath.sdk.servlet.event.RequestEvent;
 import com.stormpath.sdk.servlet.event.impl.Publisher;
 import com.stormpath.sdk.servlet.filter.ContentNegotiationResolver;
 import com.stormpath.sdk.servlet.http.MediaType;
+import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.UnresolvedMediaTypeException;
+import com.stormpath.sdk.servlet.i18n.MessageSource;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.FormController;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -37,10 +42,12 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Locale;
 
 import static com.stormpath.sdk.servlet.mvc.Controller.NEXT_QUERY_PARAM;
 
@@ -71,6 +78,14 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
+    private static final String INVALID_LOGIN_KEY = "stormpath.web.login.form.errors.invalidLogin";
+
+    @Autowired
+    Resolver<Locale> localeResolver;
+
+    @Autowired
+    MessageSource messageSource;
+
     public StormpathAuthenticationFailureHandler(
             String defaultFailureUrl, Publisher<RequestEvent> publisher,
             ErrorModelFactory errorModelFactory, String produces
@@ -86,18 +101,25 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
     }
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+    public void onAuthenticationFailure(final HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
 
         // Content Negotiation per https://github.com/stormpath/stormpath-sdk-java/issues/682
         try {
             MediaType mediaType = contentNegotiationResolver.getContentType(request, response, supportedMediaTypes);
 
-            if (MediaType.APPLICATION_JSON.equals(mediaType)) {
+            if (MediaType.APPLICATION_JSON.equals(mediaType) && meUri.equals(request.getRequestURI())) {
                 request.getRequestDispatcher(meUri).forward(request, response);
+            } else if (MediaType.APPLICATION_JSON.equals(mediaType)) {
+                // this "else if" is a fix for https://github.com/stormpath/stormpath-sdk-java/issues/915
+                // and to ensure conformance with the stormpath-framework-spec
+                // as enforced by the stormpath-framework-tck
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                response.getWriter().write(getJsonBody(request));
+                response.getWriter().flush();
             } else {
-                //We are saving the error message in the session (rather than in the request itself) since a redirect is taking place
-                //along the line and that causes the saved attributes to be lost.
+                //We are saving the error message in the session (rather than in the request itself)
                 //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/648
                 request.getSession().setAttribute(FormController.SPRING_SECURITY_AUTHENTICATION_FAILED_KEY, errorModelFactory.toError(request, exception));
 
@@ -114,7 +136,25 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
                     }
                 }
 
-                redirectStrategy.sendRedirect(request, response, redirectUrl);
+                // forwarding rather than redirecting is a fix for
+                // https://github.com/stormpath/stormpath-sdk-java/issues/915
+                // and to ensure conformance with the stormpath-framework-spec
+                // as enforced by the stormpath-framework-tck
+                HttpServletRequestWrapper r = new HttpServletRequestWrapper(request) {
+                    @Override
+                    public String getMethod() {
+                        return HttpMethod.GET.name();
+                    }
+
+                    @Override
+                    public String getParameter(String param) {
+                        if ("password".equals(param) || "confirmPassword".equals(param)) {
+                            return null;
+                        }
+                        return request.getParameter(param);
+                    }
+                };
+                request.getRequestDispatcher(redirectUrl).forward(r, response);
             }
         } catch (UnresolvedMediaTypeException ex) {
             log.error("Couldn't resolve media type: {}", ex.getMessage(), ex);
@@ -146,6 +186,16 @@ public class StormpathAuthenticationFailureHandler implements AuthenticationFail
                     "the raw AuthenticationRequest used by the StormpathAuthenticationProvider.";
             throw new UnsupportedOperationException(msg);
         }
+    }
+
+    private String getJsonBody(HttpServletRequest request) {
+        Locale locale = localeResolver.get(request, null);
+        String errMsg = messageSource.getMessage(INVALID_LOGIN_KEY, locale);
+
+        return new JSONObject()
+            .put("status", HttpServletResponse.SC_BAD_REQUEST)
+            .put("message", errMsg)
+            .toString();
     }
 
     //For testing purposes

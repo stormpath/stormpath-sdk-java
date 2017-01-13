@@ -196,7 +196,7 @@ Additionally, the JWT is cryptographically signed by a key known only to your ap
 Cookie Config
 ~~~~~~~~~~~~~
 
-You can control the authentication cookie behavior by setting various ``stormpath.web.accessTokenCookie``.\* configuration properties:
+You can control the authentication cookie behavior by setting various ``stormpath.web.accessTokenCookie.*`` configuration properties:
 
 #[[
 ============================================================================================================ ================================================ ==========================================================
@@ -209,7 +209,7 @@ You can control the authentication cookie behavior by setting various ``stormpat
 `secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.accessTokenCookie.secure``       ``null``
 ============================================================================================================ ================================================ ==========================================================
 
-You need to set the refresh token behavior by setting various ``stormpath.web.refreshTokenCookie``.\* configuration properties:
+You need to set the refresh token behavior by setting various ``stormpath.web.refreshTokenCookie.*`` configuration properties:
 
 ============================================================================================================ ================================================ ==========================================================
 `Cookie <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html>`_ property                      Config Property Name                             Default Value
@@ -253,7 +253,7 @@ JWT Creation
 
 As mentioned above, the cookie value is actually a `cryptographically-signed JSON Web Token`_.  The JWT string itself is created by the ``stormpathAuthenticationJwtFactory`` bean, an instance of the ``AuthenticationJwtFactory`` interface.
 
-The default implementation supports configuring the JWT's TTL (time-to-live) to indicate how long it is valid for.  By default, the JWT itself is valid for 3 days, but it would never be used longer than the cookie's ``maxAge`` value (1 day by default).  If you need to change the JWT TLL, it is configurable via the ``stormpath.web.account.jwt.ttl`` property:
+The default implementation supports configuring the JWT's TTL (time-to-live) to indicate how long it is valid for.  By default, the JWT itself is valid for 3 days, but it would never be used longer than the cookie's ``maxAge`` value (1 day by default).  If you need to change the JWT TTL, it is configurable via the ``stormpath.web.account.jwt.ttl`` property:
 
 .. code-block:: properties
 
@@ -334,7 +334,7 @@ If you are using our `Spring Security integration <https://github.com/stormpath/
         String username = account.getUsername();
     }
 
-The authentication token will always be available indistinctively of the kind of authentication used to login. It does not matter whether the user authenticated via ``cookie``, ``access_token``, ``credentials``, ``social providers``, etc, the Stormpath Account information will always be available in Spring Security's ``SecurityContext``.
+The ``Authentication`` token will always be available irrespective of the kind of authentication used to login. It does not matter whether the user authenticated via ``cookie``, ``access_token``, ``credentials``, ``social providers``, etc, the Stormpath Account information will always be available in Spring Security's ``SecurityContext``.
 
 #end
 

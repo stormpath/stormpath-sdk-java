@@ -15,6 +15,8 @@
  */
 package com.stormpath.spring.cloud.zuul.config;
 
+import org.springframework.core.io.Resource;
+
 /**
  * @since 1.3.0
  */
@@ -27,6 +29,8 @@ public class JwkConfig {
     private String encoding;
 
     private String value;
+
+    private Resource resource;
 
     private String id;
 
@@ -56,6 +60,14 @@ public class JwkConfig {
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 
     public String getValue() {

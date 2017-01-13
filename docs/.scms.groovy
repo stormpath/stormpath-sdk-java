@@ -34,15 +34,11 @@ environments {
                         //    WARNING: document isn't included in any toctree
                         ['source/forwarded-request.rst',
                         'source/about_sczuul.rst',
+                        'source/tutorial.rst',
                         'source/appendix/default-stormpath-properties.rst',
                         'source/appendix/spring-boot-core-properties.rst',
                         'source/appendix/spring-boot-web-properties.rst',
-                        'source/appendix/forgot-password.rst',
-                        'source/appendix/change-password.rst',
-                        'source/appendix/head.rst',
-                        'source/appendix/login.rst',
-                        'source/appendix/register.rst',
-                        'source/appendix/verify.rst']
+                        'source/appendix/head.rst']
             model {
                 servlet = true
                 maven.project.groupId = 'com.stormpath.sdk'
@@ -53,7 +49,7 @@ environments {
 
     sczuul {
         scms {
-            excludes = springExcludes
+            excludes = springExcludes + ['source/tutorial.rst']
             model {
                 sczuul = true
                 apptype = 'gateway'
@@ -71,6 +67,17 @@ environments {
                 springboot = true
                 maven.project.groupId = 'com.stormpath.spring'
                 maven.project.artifactId = 'stormpath-default-spring-boot-starter'
+            }
+        }
+    }
+
+    spring {
+        scms {
+            excludes = springExcludes + ['source/about_sczuul.rst', 'source/forwarded-request.rst', 'source/appendix/head.rst']
+            model {
+                spring = true
+                maven.project.groupId = 'com.stormpath.spring'
+                maven.project.artifactId = 'stormpath-spring-security-webmvc'
             }
         }
     }

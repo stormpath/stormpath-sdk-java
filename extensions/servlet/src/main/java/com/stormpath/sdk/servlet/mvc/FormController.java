@@ -132,7 +132,10 @@ public abstract class FormController extends AbstractController {
     @SuppressWarnings("unchecked")
     protected Map<String,?> createModel(HttpServletRequest request, HttpServletResponse response) {
         List<ErrorModel> errors = null;
-        if (request.getParameter("error") != null) {
+        // We need to look for error in queryString now that we moved SpringSecurity to in in front of us: https://github.com/stormpath/stormpath-sdk-java/issues/915
+        String queryString = request.getQueryString();
+        boolean requestContainsError = request.getParameter("error") != null || (queryString != null && queryString.contains("error"));
+        if (requestContainsError) {
             errors = new ArrayList<>();
             ErrorModel error = null;
             HttpSession session = request.getSession(false);

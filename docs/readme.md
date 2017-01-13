@@ -63,6 +63,7 @@ Where `<name>` is the unique identifier of the guide to generate.
 The current possible values for `<name>` are:
 
 - `servlet`
+- `spring`
 - `springboot`
 - `sczuul`
 

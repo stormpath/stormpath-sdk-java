@@ -9,6 +9,10 @@
 
 The |project| allows you to use Stormpath almost instantly in any Spring Boot application. It makes it *incredibly* simple to add user management, authentication and authorization to your application.
 
+#elseif( $spring )
+
+The |project| allows you to use Stormpath almost instantly in any Spring application. It makes it *incredibly* simple to add user management, authentication and authorization to your application.
+
 #else
 
 The |project| is a drop-in plugin for web applications deployed to a `Servlet`_ container, like Tomcat or Jetty.  It makes it *incredibly* simple to add user management, authentication and authorization to your application.
@@ -22,11 +26,15 @@ User Guide
 
 #if( $servlet )
 
-This part of the documentation will show you how to get started with the Stormpath Java Servlet Plugin.  If you're new to the plugin, start here!
+This part of the documentation will show you how to get started with the Stormpath Java Servlet Plugin. If you're new to the plugin, start here!
 
 #elseif( $springboot )
 
-This part of the documentation will show you how to get started right away.  If you are building a Spring Boot application and are new to Stormpath, start here!
+This part of the documentation will show you how to get started right away. If you are building a Spring Boot application and are new to Stormpath, start here!
+
+#elseif( $spring )
+
+This part of the documentation will show you how to get started right away. If you are building a Spring application and are new to Stormpath, start here!
 
 #end
 
@@ -35,7 +43,8 @@ This part of the documentation will show you how to get started right away.  If 
 
   about
   quickstart
-  tutorial
+  #if($spring or $springboot)tutorial#end
+
   config
   registration
   login

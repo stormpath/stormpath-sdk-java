@@ -30,7 +30,7 @@ public class LinkedinCallbackController extends AbstractSocialCallbackController
     private static final String FAKE_LINKEDIN_STATE = "oauthState";
 
     @Override
-    protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
+    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
         String code = ServletUtils.getCleanParam(request, "code");
         return Providers.LINKEDIN.account().setCode(code).build();
     }
