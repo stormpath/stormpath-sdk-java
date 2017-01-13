@@ -259,6 +259,10 @@ public class RegisterController extends FormController {
         }
 
         AccountStatus status = account.getStatus();
+        if (status == AccountStatus.UNVERIFIED) {
+            // purge account from cache in case status is updated on the backend
+            invalidateAccountCache(account);
+        }
 
         if (isJsonPreferred(req, resp)) {
             //noinspection unchecked
@@ -275,8 +279,6 @@ public class RegisterController extends FormController {
                 return new DefaultViewModel(loginUri + "?status=created").setRedirect(true);
             }
         } else if (status == AccountStatus.UNVERIFIED) {
-            // purge account from cache in case status is updated on the backend
-            invalidateAccountCache(account);
             return new DefaultViewModel(loginUri + "?status=unverified").setRedirect(true);
         }
         return new DefaultViewModel(nextUri).setRedirect(true);
