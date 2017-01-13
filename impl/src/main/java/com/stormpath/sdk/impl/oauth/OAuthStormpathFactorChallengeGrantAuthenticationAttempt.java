@@ -7,6 +7,12 @@ import com.stormpath.sdk.resource.Resource;
  */
 public interface OAuthStormpathFactorChallengeGrantAuthenticationAttempt extends Resource {
     /**
+     * Method used to set the Authentication Grant Type that will be used for the token exchange request.
+     * @param grantType the Authentication Grant Type that will be used for the token exchange request.
+     */
+    void setGrantType(String grantType);
+
+    /**
      * Method used to set the href of the challenge to be verified.
      * @param challenge the href of the challenge to be verified.
      */
