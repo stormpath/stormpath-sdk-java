@@ -18,6 +18,9 @@ package com.stormpath.sdk.impl.oauth;
 import com.stormpath.sdk.resource.Resource;
 
 /**
+ * This class is used to wrap the information required to request an OAuth token in exchange for verifying
+ * a challenge to an authentication factor.
+ *
  * @since 1.3.1
  */
 public interface OAuthStormpathFactorChallengeGrantAuthenticationAttempt extends Resource {
