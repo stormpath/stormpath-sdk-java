@@ -27,11 +27,7 @@ import java.util.Map;
  */
 public class OAuthException extends RuntimeException {
 
-    private static final ObjectMapper objectMapper;
-
-    static {
-        objectMapper = new ObjectMapper();
-    }
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final OAuthErrorCode errorCode;
 
