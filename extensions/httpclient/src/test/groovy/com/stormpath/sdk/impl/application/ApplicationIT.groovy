@@ -92,6 +92,8 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.apache.commons.codec.binary.Base32
 import org.apache.commons.codec.binary.Base64
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import org.testng.annotations.Test
 
 import javax.crypto.Mac
@@ -1910,6 +1912,8 @@ class ApplicationIT extends ClientIT {
 
         GoogleAuthenticatorFactor factor = createGoogleAuthenticatorFactor(account)
 
+        sleepToAvoidCrossingThirtySecondMark()
+
         def challenge = client.instantiate(GoogleAuthenticatorChallenge)
         challenge = factor.createChallenge(challenge)
 
@@ -2009,6 +2013,20 @@ class ApplicationIT extends ClientIT {
         } catch (NoSuchAlgorithmException | InvalidKeyException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+
+    protected void sleepToAvoidCrossingThirtySecondMark() {
+        DateTime now = new DateTime(DateTimeZone.UTC)
+        int seconds = now.getSecondOfMinute()
+        int secondsToWait
+        if ((seconds <= 30) && (seconds > 25)) {
+            secondsToWait = 31 - seconds
+        }
+        else if ((seconds <= 60) && (seconds > 55)) {
+            secondsToWait = 61 - seconds
+        }
+
+        sleep(secondsToWait * 1000)
     }
 
     /* @since 1.0.RC7 */
