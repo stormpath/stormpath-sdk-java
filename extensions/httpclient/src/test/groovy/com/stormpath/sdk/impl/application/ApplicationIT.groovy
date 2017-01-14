@@ -1899,7 +1899,6 @@ class ApplicationIT extends ClientIT {
         catch (ResourceException re) {
             assertEquals(re.getStatus(), 400)
             assertEquals(re.getCode(), 13104)
-            assertEquals("The code submitted is not valid.", re.getDeveloperMessage())
         }
     }
 
