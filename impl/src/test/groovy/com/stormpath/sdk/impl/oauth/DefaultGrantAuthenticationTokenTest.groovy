@@ -16,12 +16,12 @@
 package com.stormpath.sdk.impl.oauth
 
 import com.stormpath.sdk.impl.ds.InternalDataStore
-import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.StringProperty
 import org.testng.annotations.Test
 
-import static org.easymock.EasyMock.*
-import static org.testng.Assert.*
+import static org.easymock.EasyMock.createStrictMock
+import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertTrue
 
 /**
  * Test for DefaultGrantAuthenticationToken class
@@ -51,6 +51,7 @@ class DefaultGrantAuthenticationTokenTest {
         def properties = [
                 access_token: "32J45K565JK3N4K5JN3K4QVMwOFFIRlhNTzdGNTY4Ukc2IiwiYWxnIjoiSFMyNT",
                 refresh_token: "eyJraWQiOiI2UDVKTjRTQVMwOFFIRlhNTzdGNTY4Ukc2IiwiYWxnIjoiSFMyNT",
+                id_token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9",
                 token_type: "Bearer",
                 stormpath_access_token_href: "https://api.stormpath.com/v1/accessTokens/5hFj6FUwNb28OQrp93phPP",
                 expires_in: "3600",
@@ -61,6 +62,7 @@ class DefaultGrantAuthenticationTokenTest {
 
         assertEquals(defaultGrantAuthenticationToken.getAccessToken(), properties.access_token)
         assertEquals(defaultGrantAuthenticationToken.getRefreshToken(), properties.refresh_token)
+        assertEquals(defaultGrantAuthenticationToken.getIdToken(), properties.id_token)
         assertEquals(defaultGrantAuthenticationToken.getExpiresIn(), properties.expires_in)
         assertEquals(defaultGrantAuthenticationToken.getTokenType(), properties.token_type)
         assertEquals(defaultGrantAuthenticationToken.getAccessTokenHref(), properties.stormpath_access_token_href)

@@ -27,11 +27,13 @@ public class DefaultTokenResponse implements TokenResponse {
     private final String applicationHref;
 
     private final OAuthResponse oAuthResponse;
+    private final String idToken;
 
     private DefaultTokenResponse(Builder builder) {
         accessToken = builder.accessToken;
         expiresIn = builder.expiresIn;
         refreshToken = builder.refreshToken;
+        idToken = builder.idToken;
         scope = builder.scope;
         tokenType = builder.tokenType;
         applicationHref = builder.applicationHref;
@@ -50,6 +52,11 @@ public class DefaultTokenResponse implements TokenResponse {
     @Override
     public String getAccessToken() {
         return accessToken;
+    }
+
+    @Override
+    public String getIdToken() {
+        return idToken;
     }
 
     @Override
@@ -93,6 +100,7 @@ public class DefaultTokenResponse implements TokenResponse {
         private String scope;
         private String tokenType;
         private String applicationHref;
+        private String idToken;
 
         private OAuthASResponse.OAuthTokenResponseBuilder tokenResponseBuilder;
 
@@ -105,6 +113,11 @@ public class DefaultTokenResponse implements TokenResponse {
         public Builder accessToken(String accessToken) {
             this.accessToken = accessToken;
             tokenResponseBuilder.setAccessToken(accessToken);
+            return this;
+        }
+
+        public Builder idToken(String idToken) {
+            this.idToken = idToken;
             return this;
         }
 

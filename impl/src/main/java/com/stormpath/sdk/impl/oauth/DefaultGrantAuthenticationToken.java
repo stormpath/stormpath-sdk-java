@@ -34,11 +34,11 @@ import java.util.Map;
 public class DefaultGrantAuthenticationToken extends AbstractInstanceResource implements GrantAuthenticationToken {
 
     static final StringProperty ACCESS_TOKEN = new StringProperty("access_token");
+    static final StringProperty ID_TOKEN = new StringProperty("id_token");
     static final StringProperty REFRESH_TOKEN = new StringProperty("refresh_token");
     static final StringProperty TOKEN_TYPE = new StringProperty("token_type");
     static final StringProperty EXPIRES_IN = new StringProperty("expires_in");
     static final StringProperty ACCESS_TOKEN_HREF = new StringProperty("stormpath_access_token_href");
-
     static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(ACCESS_TOKEN, REFRESH_TOKEN, EXPIRES_IN, TOKEN_TYPE, ACCESS_TOKEN_HREF);
 
     public DefaultGrantAuthenticationToken(InternalDataStore dataStore) {
@@ -62,6 +62,10 @@ public class DefaultGrantAuthenticationToken extends AbstractInstanceResource im
         return getString(REFRESH_TOKEN);
     }
 
+    public String getIdToken() {
+        return getString(ID_TOKEN);
+    }
+
     public String getTokenType() {
         return getString(TOKEN_TYPE);
     }
@@ -75,7 +79,7 @@ public class DefaultGrantAuthenticationToken extends AbstractInstanceResource im
     }
 
     public AccessToken getAsAccessToken(){
-        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
+        Map<String, Object> props = new LinkedHashMap<>(1);
         props.put("href", this.getAccessTokenHref());
         return getDataStore().instantiate(AccessToken.class, props);
     }
@@ -89,7 +93,7 @@ public class DefaultGrantAuthenticationToken extends AbstractInstanceResource im
         }
 
         Jws<Claims> jws = AbstractBaseOAuthToken.parseJws(refreshToken, getDataStore());
-        Map<String, Object> props = new LinkedHashMap<String, Object>(1);
+        Map<String, Object> props = new LinkedHashMap<>(1);
         String refreshTokenID = jws.getBody().getId();
         props.put("href", getDataStore().getBaseUrl() + "/refreshTokens/" + refreshTokenID);
         return getDataStore().instantiate(RefreshToken.class, props);

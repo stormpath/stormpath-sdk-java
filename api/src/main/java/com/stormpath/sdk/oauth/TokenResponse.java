@@ -60,6 +60,13 @@ public interface TokenResponse {
     String getAccessToken();
 
     /**
+     * Returns the Id Token string that should be used by the client as defined in the OpenID Connect spec.
+     * @return the Id Token string that should be used by the client as defined in the OpenID Connect spec.
+     * @since 1.4.0
+     */
+    String getIdToken();
+
+    /**
      * Returns the space separated collection of granted scopes.
      *
      * @return the space separated collection of granted scopes.
