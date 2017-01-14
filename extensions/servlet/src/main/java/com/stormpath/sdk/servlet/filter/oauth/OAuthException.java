@@ -53,6 +53,12 @@ public class OAuthException extends RuntimeException {
         initializeErrorMap();
     }
 
+    public OAuthException(OAuthErrorCode code, Map<String, Object> error, String message) {
+        this(code, message, null);
+
+        errorMap.putAll(error);
+    }
+
     private void initializeErrorMap() {
         errorMap = new LinkedHashMap<>();
 
@@ -62,12 +68,6 @@ public class OAuthException extends RuntimeException {
         if (Strings.hasText(val)) {
             errorMap.put("message", val);
         }
-    }
-
-    public OAuthException(OAuthErrorCode code, Map<String, Object> error, String message) {
-        this(code, message, null);
-
-        errorMap.putAll(error);
     }
 
     public OAuthErrorCode getErrorCode() {
