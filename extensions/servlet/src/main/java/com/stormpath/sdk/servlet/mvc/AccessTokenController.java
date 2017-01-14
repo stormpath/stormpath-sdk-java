@@ -78,6 +78,15 @@ public class AccessTokenController extends AbstractController {
     private static final String STORMPATH_FACTOR_CHALLENGE_GRANT_TYPE = "stormpath_factor_challenge";
     private static final String GRANT_TYPE_PARAM_NAME = "grant_type";
 
+    private static final String OAUTH_RESPONSE_ERROR = "error";
+    private static final String OAUTH_RESPONSE_ACTION = "action";
+    private static final String OAUTH_RESPONSE_ERROR_DESCRIPTION = "error_description";
+    private static final String OAUTH_RESPONSE_STATE = "state";
+    private static final String OAUTH_RESPONSE_ALLOWED_FACTOR_TYPES = "allowedFactorTypes";
+    private static final String OAUTH_RESPONSE_FACTOR = "factor";
+    private static final String OAUTH_RESPONSE_CHALLENGE = "challenge";
+    private static final String OAUTH_RESPONSE_FACTORS = "factors";
+
     private RefreshTokenResultFactory refreshTokenResultFactory;
     private RefreshTokenAuthenticationRequestFactory refreshTokenAuthenticationRequestFactory;
     private RequestAuthorizer requestAuthorizer;
@@ -336,33 +345,37 @@ public class AccessTokenController extends AbstractController {
         if (error instanceof DefaultError) {
             DefaultError defaultError = ((DefaultError) error);
 
-            Object errorObject = defaultError.getProperty("error");
+            Object errorObject = defaultError.getProperty(OAUTH_RESPONSE_ERROR);
             oauthError = errorObject == null ? oauthError : new OAuthErrorCode(errorObject.toString());
 
-            Object action = defaultError.getProperty("action");
+            Object action = defaultError.getProperty(OAUTH_RESPONSE_ACTION);
             if (action instanceof String) {
                 // get action map from error based on the action
                 Map<String, Object> errorMap = new LinkedHashMap<>();
-                errorMap.put("error_description", defaultError.getProperty("error_description"));
-                errorMap.put("action", action);
+                exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_ERROR_DESCRIPTION);
+                exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_ACTION);
                 if ("factor_enroll".equals(action)) {
-                    errorMap.put("state", defaultError.getProperty("state"));
-                    errorMap.put("allowedFactorTypes", defaultError.getProperty("allowedFactorTypes"));
+                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_STATE);
+                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_ALLOWED_FACTOR_TYPES);
                 }
                 else if ("factor_challenge".equals(action)) {
-                    errorMap.put("state", defaultError.getProperty("state"));
-                    errorMap.put("allowedFactorTypes", defaultError.getProperty("allowedFactorTypes"));
-                    errorMap.put("factor", defaultError.getProperty("factor"));
-                    errorMap.put("challenge", defaultError.getProperty("challenge"));
+                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_STATE);
+                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_ALLOWED_FACTOR_TYPES);
+                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_FACTOR);
+                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_CHALLENGE);
                 }
                 else if ("factor_select".equals(action)) {
-                    errorMap.put("factors", defaultError.getProperty("factors"));
+                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_FACTORS);
                 }
                 return new OAuthException(oauthError, errorMap, "");
             }
         }
 
         return new OAuthException(oauthError, message);
+    }
+
+    private void exposeOAuthErrorProperty(Map<String, Object> errorMap, DefaultError defaultError, String propertyName) {
+        errorMap.put(propertyName, defaultError.getProperty(propertyName));
     }
 
     protected AccessTokenResult stormpathTokenAuthenticationRequest(HttpServletRequest request, HttpServletResponse response) {
