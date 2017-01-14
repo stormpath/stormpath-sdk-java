@@ -1916,9 +1916,9 @@ class ApplicationIT extends ClientIT {
         def challenge = client.instantiate(GoogleAuthenticatorChallenge)
         challenge = factor.createChallenge(challenge)
 
-        String padded = getValidCode(factor)
+        String validCode = calculateCurrentTOTP(new Base32().decode(factor.getSecret()))
 
-        OAuthStormpathFactorChallengeGrantRequestAuthentication request = new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(challenge.href, padded)
+        OAuthStormpathFactorChallengeGrantRequestAuthentication request = new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(challenge.href, validCode)
 
         def result = Authenticators.OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
         assertNotNull result.getAccessTokenHref()
@@ -1933,16 +1933,6 @@ class ApplicationIT extends ClientIT {
 
         assertEquals result.getTokenType(), "Bearer"
         assertEquals result.getExpiresIn(), 3600
-    }
-
-    private String getValidCode(GoogleAuthenticatorFactor factor) {
-        byte[] secret = new Base32().decode(factor.getSecret())
-
-        final long timeWindow = System.currentTimeMillis() / TimeUnit.SECONDS.toMillis(30)
-
-        int validCode = calculateCode(secret, timeWindow)
-        String padded = String.format("%06d", validCode)
-        return padded
     }
 
     private GoogleAuthenticatorFactor createGoogleAuthenticatorFactor(Account account) {
@@ -1961,39 +1951,35 @@ class ApplicationIT extends ClientIT {
     private static final int KEY_MODULUS = (int) Math.pow(10, CODE_DIGITS);
     private static final int CODE_DIGITS = 6;
 
-    private static int calculateCode(byte[] key, long tm) {
-        // Allocating an array of bytes to represent the specified instant
-        // of time.
-        byte[] data = new byte[8];
-        long value = tm;
+    /**
+     * Calculates a TOTP from the given key which should agree with the one generated
+     * by Google Authenticator when provided with the same key.
+     * See https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm
+     *
+     * @param key the key used to compute the TOTP
+     * @return the current TOTP, as would be computed by Google Authenticator
+     */
+    private static String calculateCurrentTOTP(byte[] key) {
+        long timeCounter = System.currentTimeMillis() / TimeUnit.SECONDS.toMillis(30)
 
-        // Converting the instant of time from the long representation to a
-        // big-endian array of bytes (RFC4226, 5.2. Description).
+        byte[] data = new byte[8];
+        long value = timeCounter;
+
         for (int i = 8; i-- > 0; value >>>= 8) {
             data[i] = (byte) value;
         }
 
-        // Building the secret key specification for the HmacSHA1 algorithm.
         SecretKeySpec signKey = new SecretKeySpec(key, HMAC_HASH_FUNCTION);
 
         try {
-            // Getting an HmacSHA1 algorithm implementation from the JCE.
             Mac mac = Mac.getInstance(HMAC_HASH_FUNCTION);
-
-            // Initializing the MAC algorithm.
             mac.init(signKey);
 
-            // Processing the instant of time and getting the encrypted data.
             byte[] hash = mac.doFinal(data);
 
-            // Building the validation code performing dynamic truncation
-            // (RFC4226, 5.3. Generating an HOTP value)
             int offset = hash[hash.length - 1] & 0xF;
 
-            // We are using a long because Java hasn't got an unsigned integer type
-            // and we need 32 unsigned bits).
             long truncatedHash = 0;
-
             for (int i = 0; i < 4; ++i) {
                 truncatedHash <<= 8;
 
@@ -2007,9 +1993,9 @@ class ApplicationIT extends ClientIT {
             truncatedHash &= 0x7FFFFFFF;
             truncatedHash %= KEY_MODULUS;
 
-            // Returning the validation code to the caller.
-            return (int) truncatedHash;
-        } catch (NoSuchAlgorithmException | InvalidKeyException ex) {
+            return String.format("%06d", (int) truncatedHash)
+        }
+        catch (NoSuchAlgorithmException | InvalidKeyException ex) {
             throw new IllegalStateException(ex);
         }
     }
