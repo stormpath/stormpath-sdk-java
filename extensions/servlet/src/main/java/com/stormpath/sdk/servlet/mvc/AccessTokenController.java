@@ -337,8 +337,16 @@ public class AccessTokenController extends AbstractController {
         return createAccessTokenResult(request, response, authenticationResult);
     }
 
-    private OAuthException convertToOAuthException(ResourceException e, OAuthErrorCode defaultErrorCode) {
-        com.stormpath.sdk.error.Error error = e.getStormpathError();
+    /**
+     * Takes a {@link ResourceException ResourceException} thrown when retrieving an oauth token and exposes
+     * select fields from its Error to be returned as an {@link OAuthException OAuthException}.
+     *
+     * @param resourceException the ResourceException to convert
+     * @param defaultErrorCode the OAuthErrorCode to use in case none is supplied in the underlying Error
+     * @return an OAuthException exposing select fields depending on the value of the action property
+     */
+    private OAuthException convertToOAuthException(ResourceException resourceException, OAuthErrorCode defaultErrorCode) {
+        com.stormpath.sdk.error.Error error = resourceException.getStormpathError();
         String message = error.getMessage();
 
         OAuthErrorCode oauthError = defaultErrorCode;
