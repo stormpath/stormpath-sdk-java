@@ -1879,7 +1879,7 @@ class ApplicationIT extends ClientIT {
 
     /* @since 1.3.1 */
     @Test
-    void testCreateStormpathFactorChallengeTokenForAppAccountWithBadCode() {
+    void testCreateStormpathFactorChallengeTokenForGoogleAuthenticatorFactorWithBadCode() {
         def app = createTempApp()
 
         def account = createTestAccount(app)
@@ -1905,7 +1905,7 @@ class ApplicationIT extends ClientIT {
 
     /* @since 1.3.1 */
     @Test
-    void testCreateStormpathFactorChallengeTokenForAppAccountWithValidCode() {
+    void testCreateStormpathFactorChallengeTokenForGoogleAuthenticatorFactorWithValidCode() {
         def app = createTempApp()
 
         def account = createTestAccount(app)
