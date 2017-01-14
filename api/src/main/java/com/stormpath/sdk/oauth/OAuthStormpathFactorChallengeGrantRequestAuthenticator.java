@@ -17,6 +17,10 @@ package com.stormpath.sdk.oauth;
 
 
 /**
+ * Interface denoting a Stormpath Factor Challenge Grant-specific {@link OAuthRequestAuthenticator}.
+ * It is used to authenticate an account using a challenge to a factor and receive in exchange
+ * a valid OAuth 2.0 token.
+ *
  * @since 1.3.1
  */
 public interface OAuthStormpathFactorChallengeGrantRequestAuthenticator extends OAuthRequestAuthenticator<OAuthGrantRequestAuthenticationResult> {
