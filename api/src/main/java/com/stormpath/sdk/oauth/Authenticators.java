@@ -135,7 +135,7 @@ public class Authenticators {
      * @since 1.3.1
      */
     public static final OAuthStormpathFactorChallengeGrantRequestAuthenticatorFactory OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR =
-            (OAuthStormpathFactorChallengeGrantRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeRequestAuthenticatorFactory");
+            (OAuthStormpathFactorChallengeGrantRequestAuthenticatorFactory) Classes.newInstance("com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticatorFactory");
 
 }
 
