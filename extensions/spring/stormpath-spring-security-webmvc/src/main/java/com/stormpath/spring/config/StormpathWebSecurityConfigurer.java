@@ -42,6 +42,9 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
     @Value("#{ @environment['stormpath.enabled'] ?: true }")
     protected boolean stormpathEnabled;
 
+    @Value("#{ @environment['security.basic.enabled'] ?: true }")
+    protected boolean securityBasicEnabled;
+
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
      * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
@@ -82,7 +85,7 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
-        if (stormpathEnabled) {
+        if (stormpathEnabled && securityBasicEnabled) { /// we only need the configurer if both Stormpath and Basic Configuration is enabled
             stormpathSecurityConfigurerAdapter.init(http);
         }
     }

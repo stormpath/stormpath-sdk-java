@@ -64,6 +64,7 @@ import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -82,6 +83,7 @@ import java.util.Locale;
  * @since 1.0.RC4
  */
 @Configuration
+@Conditional({StormpathWebEnabled.class, StormpathEnabled.class})
 public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfiguration
     implements ServletContextAware, InitializingBean {
 

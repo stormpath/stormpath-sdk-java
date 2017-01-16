@@ -26,17 +26,20 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-@Conditional(StormpathSpringSecurityDisabled.class)
+@Conditional(StormpathSpringSecurityOrSecurityBasicDisabled.class)
 public class StormpathWebSecurityDisabledConfiguration extends AbstractStormpathWebSecurityDisabledConfiguration {
 
     @Bean
+    @Conditional(SecurityBasicEnabled.class) //we only need our Disabled Configurer Adapter if Spring Security is enabled
     public SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter() {
-        //This bean will only be created if `stormpath.spring.security.enabled` is false
+        //This bean will only be created if Spring Security integration is disabled but Spring Security is enabled
         return super.stormpathSecurityConfigurerAdapter();
     }
 
     @Bean
+    @Conditional(SecurityBasicEnabled.class) //we only need our Disabled Configurer Adapter if Spring Security is enabled
     public LogoutHandler stormpathLogoutHandler() {
+        //This bean will only be created if Spring Security integration is disabled but Spring Security is enabled
         return super.stormpathLogoutHandler();
     }
 }

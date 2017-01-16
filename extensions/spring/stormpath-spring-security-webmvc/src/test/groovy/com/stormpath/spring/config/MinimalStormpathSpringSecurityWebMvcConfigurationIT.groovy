@@ -86,9 +86,6 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
     CacheManager stormpathCacheManager;
 
     @Autowired
-    Filter stormpathFilter
-
-    @Autowired
     AccountResolverFilter springSecurityResolvedAccountFilter
 
     @Autowired

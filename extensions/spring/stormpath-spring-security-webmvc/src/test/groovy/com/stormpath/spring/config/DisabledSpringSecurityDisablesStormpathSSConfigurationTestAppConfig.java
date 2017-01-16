@@ -15,17 +15,18 @@
  */
 package com.stormpath.spring.config;
 
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 /**
- * @since 1.3.0
+ * Disabling Spring Security must also disable Stormpath's Spring Security integration
+ *
+ * @since 1.3.2
  */
-public class StormpathSpringSecurityDisabled implements Condition {
+@Configuration
+@EnableStormpathWebSecurity
+@PropertySource({"classpath:com/stormpath/spring/config/disabledspringsecuritydisablesstormpathss.application.properties"})
+public class DisabledSpringSecurityDisablesStormpathSSConfigurationTestAppConfig {
 
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return context.getEnvironment().getProperty("stormpath.spring.security.enabled", Boolean.class, Boolean.TRUE).equals(Boolean.FALSE);
-    }
 }
+

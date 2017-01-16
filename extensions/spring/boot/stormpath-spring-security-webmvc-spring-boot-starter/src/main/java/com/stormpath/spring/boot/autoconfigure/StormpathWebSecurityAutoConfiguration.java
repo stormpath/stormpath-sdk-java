@@ -50,7 +50,7 @@ import javax.servlet.Servlet;
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-@ConditionalOnProperty(name = {"stormpath.enabled", "stormpath.web.enabled", "stormpath.spring.security.enabled"}, matchIfMissing = true)
+@ConditionalOnProperty(name = {"stormpath.enabled", "stormpath.web.enabled", "stormpath.spring.security.enabled", "security.basic.enabled"}, matchIfMissing = true)
 @ConditionalOnClass({Servlet.class, Filter.class, DispatcherServlet.class})
 @ConditionalOnWebApplication
 @AutoConfigureBefore(StormpathWebMvcAutoConfiguration.class)
