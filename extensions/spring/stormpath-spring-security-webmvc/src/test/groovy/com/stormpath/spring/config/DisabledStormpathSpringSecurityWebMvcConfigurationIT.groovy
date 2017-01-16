@@ -17,11 +17,13 @@ package com.stormpath.spring.config
 
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.CacheManager
+import com.stormpath.sdk.servlet.filter.StormpathFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter
 import org.springframework.security.web.FilterChainProxy
+import org.springframework.security.web.authentication.logout.LogoutHandler
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
@@ -30,7 +32,6 @@ import org.springframework.web.context.WebApplicationContext
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
-import javax.servlet.Filter
 import static org.testng.Assert.*
 
 /**
@@ -52,21 +53,21 @@ class DisabledStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClien
     CacheManager stormpathCacheManager;
 
     @Autowired
-    Filter stormpathFilter
-
-    @Autowired
     WebApplicationContext context;
 
     @Autowired
     protected FilterChainProxy springSecurityFilterChain;
 
     @Autowired
-    protected Filter stormpathFilter;
+    StormpathFilter stormpathFilter;
+
+    @Autowired
+    LogoutHandler stormpathLogoutHandler
 
     private MockMvc mvc;
 
     @BeforeClass
-    public void setUp() {
+    void setUp() {
 
         super.setUp()
 
@@ -83,7 +84,8 @@ class DisabledStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClien
         assertNotNull stormpathCacheManager
         assertNotNull client
         assertNotNull application
-        assertNotNull stormpathFilter
+        assertTrue stormpathFilter instanceof StormpathFilter
+        assertNotNull stormpathLogoutHandler //when Stormpath's Spring Security is disabled we still our logout handler for the cookies to be removed during logout
     }
 
 }
