@@ -36,10 +36,11 @@ class DefaultGrantAuthenticationTokenTest {
 
         def propertyDescriptors = defaultGrantAuthenticationToken.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 5)
+        assertEquals(propertyDescriptors.size(), 6)
 
         assertTrue(propertyDescriptors.get("access_token") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("refresh_token") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("id_token") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("token_type") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("expires_in") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("stormpath_access_token_href") instanceof StringProperty)
