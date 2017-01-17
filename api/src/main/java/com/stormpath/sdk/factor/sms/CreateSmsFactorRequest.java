@@ -23,12 +23,5 @@ import com.stormpath.sdk.factor.CreateFactorRequest;
  * @see com.stormpath.sdk.account.Account#createFactor(CreateFactorRequest)
  * @since 1.1.0
  */
-public interface CreateSmsFactorRequest<T extends SmsFactor, O extends SmsFactorOptions> extends CreateFactorRequest<T,O>{
-    /**
-     * Returns true in case Factor should be challenged upon creation.
-     * In which case a challenge resource is also created.
-     *
-     * @return rtue in case Factor should be challenged upon creation..
-     */
-    boolean isCreateChallenge();
+public interface CreateSmsFactorRequest<T extends SmsFactor, O extends SmsFactorOptions> extends CreateFactorRequest<T, O> {
 }
