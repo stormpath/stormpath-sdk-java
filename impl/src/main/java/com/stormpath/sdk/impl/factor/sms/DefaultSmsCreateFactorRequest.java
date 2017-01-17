@@ -25,16 +25,7 @@ import com.stormpath.sdk.impl.factor.AbstractCreateFactorRequest;
  */
 public class DefaultSmsCreateFactorRequest extends AbstractCreateFactorRequest<SmsFactor, SmsFactorOptions> implements CreateSmsFactorRequest<SmsFactor, SmsFactorOptions> {
 
-    private final boolean createChallenge;
-
     public DefaultSmsCreateFactorRequest(SmsFactor factor, SmsFactorOptions options, boolean createChallenge) {
-        super(factor, options);
-        this.createChallenge = createChallenge;
+        super(factor, options, createChallenge);
     }
-
-    @Override
-    public boolean isCreateChallenge() {
-        return createChallenge;
-    }
-
 }
