@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 1.3.1 ##
+
+See [1.3.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.3.1+is%3Aclosed)
+
 ### 1.3.0 ##
 
 This release has a number of feature additions and bug fixes. Of note:
@@ -23,6 +27,10 @@ This release has a number of feature additions and bug fixes. Of note:
     * Spring Security was making two authentication attempts
 
 See [1.3.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.3.0+is%3Aclosed)
+
+### 1.2.5 ##
+
+See [1.2.5 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.5+is%3Aclosed)
 
 ### 1.2.4 ##
 
@@ -64,6 +72,10 @@ This release has a number of feature additions and bug fixes. Of note:
 * Idiomatic support for the `passwordModifiedAt` field in the [Account](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/account/Account.html) interface in in search criteria on [Accounts](https://docs.stormpath.com/java/apidocs/com/stormpath/sdk/account/Accounts.html#passwordModifiedAt--)
 
 See [1.2.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.2.0+is%3Aclosed) for a complete list of changes.
+
+### 1.1.7 ##
+
+See [1.1.7 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.1.7+is%3Aclosed)
 
 ### 1.1.6 ##
 
