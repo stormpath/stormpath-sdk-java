@@ -29,6 +29,13 @@ import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor;
  *
  * @since 1.1.0
  */
-public interface GoogleAuthenticatorChallenge extends Challenge<GoogleAuthenticatorFactor,GoogleAuthenticatorChallengeStatus>{
+public interface GoogleAuthenticatorChallenge extends Challenge<GoogleAuthenticatorFactor, GoogleAuthenticatorChallengeStatus> {
 
+     /**
+      * A GoogleAuthenticatorChallenge can be validated at the same time the challenge is created by setting the code on the challenge.
+      *
+      * @param code the code the validated at the same time the GoogleAuthenticatorChallenge is created
+      * @since 1.4.0
+      */
+     void setCode(String code);
 }
