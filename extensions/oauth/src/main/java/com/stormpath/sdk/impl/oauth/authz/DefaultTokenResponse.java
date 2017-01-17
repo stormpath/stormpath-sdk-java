@@ -50,6 +50,9 @@ public class DefaultTokenResponse implements TokenResponse {
         oAuthResponse.put("token_type", tokenType);
         oAuthResponse.put("access_token", accessToken);
         oAuthResponse.put("expires_in", Long.parseLong(expiresIn));
+        if (Strings.hasText(scope)) {
+            oAuthResponse.put("scope", scope);
+        }
         if (Strings.hasText(refreshToken)) {
             oAuthResponse.put("refresh_token", refreshToken);
         }

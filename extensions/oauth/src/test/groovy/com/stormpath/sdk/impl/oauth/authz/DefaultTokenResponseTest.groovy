@@ -43,6 +43,7 @@ class DefaultTokenResponseTest {
         TokenResponse tokenResponse = DefaultTokenResponse.tokenType(TokenType.BEARER)
                 .accessToken(ACCESS_TOKEN)
                 .expiresIn(EXPIRES_IN)
+                .scope(SCOPE)
                 .applicationHref(APP_HREF)
                 .build()
 
@@ -51,6 +52,7 @@ class DefaultTokenResponseTest {
         assertField(actual, "token_type", TOKEN_TYPE)
         assertField(actual, "access_token", ACCESS_TOKEN)
         assertField(actual, "expires_in", EXPIRES_IN)
+        assertField(actual, "scope", SCOPE)
         assertNoField(actual, "refresh_token")
         assertNoField(actual, "id_token")
     }
