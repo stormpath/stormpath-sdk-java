@@ -239,10 +239,14 @@ disable it. That's where the ``application.properties`` files comes in:
 .. code-block:: java
     :linenos:
 
-    stormpath.spring.security.enabled = false
     security.basic.enabled = false
 
-The first line disables Stormpath's hooks into Spring Security and the second line disables Spring Security itself.
+That property disables Spring Security and avoids our Spring Security integration to be loaded.
+
+.. note::
+   Alternatively you can disable the Stormpath Spring Security integration while keeping Spring Security enabled. Such setup will allow you
+   to take full control of Spring Security's configuration without having Stormath's integration in the mix. This can be
+   achieved by having `stormpath.spring.security.enabled = false` in your configuration file.
 
 Pretty simple setup, right? In the next section, we'll layer in some flow logic based on logged-in state. And then we
 will refine that to make use of all the Spring Security has to offer in making our lives easier.
