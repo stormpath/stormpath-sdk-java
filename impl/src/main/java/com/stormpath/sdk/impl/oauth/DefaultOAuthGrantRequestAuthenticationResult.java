@@ -16,7 +16,9 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.lang.Classes;
-import com.stormpath.sdk.oauth.*;
+import com.stormpath.sdk.oauth.AccessToken;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.RefreshToken;
 
 /**
  * @since 1.0.RC7
@@ -26,6 +28,8 @@ public class DefaultOAuthGrantRequestAuthenticationResult implements OAuthGrantR
     private final AccessToken accessToken;
 
     private final String accessTokenString;
+
+    private final String idTokenString;
 
     private final RefreshToken refreshToken;
 
@@ -40,6 +44,7 @@ public class DefaultOAuthGrantRequestAuthenticationResult implements OAuthGrantR
     public DefaultOAuthGrantRequestAuthenticationResult(DefaultOAuthGrantRequestAuthenticationResultBuilder builder) {
         this.accessToken = builder.getAccessToken();
         this.accessTokenString = builder.getAccessTokenString();
+        this.idTokenString = builder.getIdTokenString();
         this.refreshToken = builder.getRefreshToken();
         this.refreshTokenString = builder.getRefreshTokenString();
         this.accessTokenHref = builder.getAccessTokenHref();
@@ -49,6 +54,11 @@ public class DefaultOAuthGrantRequestAuthenticationResult implements OAuthGrantR
 
     public AccessToken getAccessToken() {
         return accessToken;
+    }
+
+    @Override
+    public String getIdTokenString() {
+        return idTokenString;
     }
 
     public String getRefreshTokenString() {

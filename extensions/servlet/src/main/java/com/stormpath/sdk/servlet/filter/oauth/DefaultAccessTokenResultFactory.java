@@ -48,6 +48,7 @@ public class DefaultAccessTokenResultFactory implements AccessTokenResultFactory
                 DefaultTokenResponse.tokenType(TokenType.BEARER)
                         .accessToken(result.getAccessTokenString())
                         .refreshToken(result.getRefreshTokenString())
+                        .idToken(result.getIdTokenString())
                         .applicationHref(application.getHref())
                         .expiresIn(String.valueOf(result.getExpiresIn())).build();
         return new PasswordGrantAccessTokenResult(result.getAccessToken().getAccount(), tokenResponse);
