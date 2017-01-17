@@ -27,6 +27,7 @@ import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.factor.FactorStatus
 import com.stormpath.sdk.factor.FactorType
 import com.stormpath.sdk.factor.FactorVerificationStatus
+import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.phone.Phone
@@ -41,19 +42,18 @@ import static org.testng.Assert.assertNull
 /**
  * @since 1.1.0
  */
-abstract class AbstractMultiFactorIT extends ClientIT{
+abstract class AbstractMultiFactorIT extends ClientIT {
 
     protected static final String VALID_PHONE_NUMBER = "+15005550006"
     protected static final String INVALID_PHONE_NUMBER = "+15005550001"
 
-    protected void assertGoogleAuthenticatorFactorFields(GoogleAuthenticatorFactor factor, String expectedIssuer = null, String expectedAccountName = null, boolean enabled = true) {
+    protected void assertGoogleAuthenticatorFactorFields(GoogleAuthenticatorFactor factor, String expectedIssuer = null, String expectedAccountName = null, boolean enabled = true, boolean createChallenge = false) {
         assertNotNull factor.href
         assertEquals(factor.type, FactorType.GOOGLE_AUTHENTICATOR)
         assertEquals(factor.factorVerificationStatus, FactorVerificationStatus.UNVERIFIED)
-        if(enabled) {
+        if (enabled) {
             assertEquals(factor.status, FactorStatus.ENABLED)
-        }
-        else{
+        } else {
             assertEquals(factor.status, FactorStatus.DISABLED)
         }
 
@@ -61,8 +61,7 @@ abstract class AbstractMultiFactorIT extends ClientIT{
 
         if (expectedAccountName == null) {
             assertNull(actualAccountName)
-        }
-        else {
+        } else {
             assertEquals(actualAccountName, expectedAccountName)
         }
 
@@ -70,9 +69,8 @@ abstract class AbstractMultiFactorIT extends ClientIT{
 
         if (expectedIssuer == null) {
             assertNull(actualIssuer)
-        }
-        else {
-            assertEquals(actualIssuer,expectedIssuer)
+        } else {
+            assertEquals(actualIssuer, expectedIssuer)
         }
 
         assertNotNull(factor.secret)
@@ -105,7 +103,12 @@ abstract class AbstractMultiFactorIT extends ClientIT{
         assertNotNull(factor.getAccount())
         assertNotNull(factor.getAccount().href)
 
-        assertNull(factor.getMostRecentChallenge())
+        if (createChallenge) {
+            assertNotNull(factor.getMostRecentChallenge())
+            assertNotNull(factor.getMostRecentChallenge().getHref())
+        } else {
+            assertNull(factor.getMostRecentChallenge())
+        }
 
         assertNotNull(factor.getChallenges())
         assertNotNull(factor.getChallenges().href)
@@ -141,14 +144,20 @@ abstract class AbstractMultiFactorIT extends ClientIT{
         assertNotNull(challenge.account.href)
     }
 
-    protected GoogleAuthenticatorFactor createGoogleAuthenticatorFactor(Account account, String issuer = null, String accountName = null, boolean enabled = true) {
-        def factor = client.instantiate(GoogleAuthenticatorFactor.class)
+    protected GoogleAuthenticatorFactor createGoogleAuthenticatorFactor(Account account, String issuer = null, String accountName = null, boolean enabled = true, boolean createChallenge = false) {
+        GoogleAuthenticatorFactor factor = client.instantiate(GoogleAuthenticatorFactor.class)
         factor.accountName = accountName
         factor.issuer = issuer
-        if(!enabled){
+        if (!enabled) {
             factor.status = FactorStatus.DISABLED
         }
-        factor = account.createFactor(factor)
+
+        def builder = Factors.GOOGLE_AUTHENTICATOR.newCreateRequestFor(factor)
+        if (createChallenge) {
+            builder = builder.createChallenge()
+        }
+
+        factor = account.createFactor(builder.build())
         factor
     }
 
@@ -162,7 +171,7 @@ abstract class AbstractMultiFactorIT extends ClientIT{
         factor
     }
 
-    protected Account createGoogleAuthenticatorFactorAndSmsFactor(String issuer = null, String accountName = null, Account account){
+    protected Account createGoogleAuthenticatorFactorAndSmsFactor(String issuer = null, String accountName = null, Account account) {
         createSmsFactor(account)
         createGoogleAuthenticatorFactor(account, issuer, accountName)
         account
