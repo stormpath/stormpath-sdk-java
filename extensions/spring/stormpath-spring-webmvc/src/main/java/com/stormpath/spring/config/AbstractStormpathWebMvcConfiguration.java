@@ -406,11 +406,14 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.cors.allowed.originUris'] }")
     protected String corsAllowedOrigins;
 
-    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] ?: 'Content-Type,Accept,X-Requested-With,remember-me' }")
+    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] ?: 'Content-Type,Accept,X-Requested-With,remember-me,authorization,x-stormpath-agent' }")
     protected String corsAllowedHeaders;
 
     @Value("#{ @environment['stormpath.web.cors.allowed.methods'] ?: 'POST,GET,OPTIONS,DELETE,PUT' }")
     protected String corsAllowedMethods;
+
+    @Value("#{ @environment['stormpath.web.cors.allow.credentials'] ?: true }")
+    protected boolean corsAllowCredentials;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -1530,6 +1533,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         config.setAllowedOrigins(stormpathCorsAllowedOrigins());
         config.setAllowedHeaders(stormpathCorsAllowedHeaders());
         config.setAllowedMethods(stormpathCorsAllowedMethods());
+        config.setAllowCredentials(corsAllowCredentials);
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }

@@ -119,6 +119,7 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
      * @since 1.3.0
      */
     @Bean
+    @Override
     public CorsConfigurationSource corsConfigurationSource() {
         return super.corsConfigurationSource();
     }
