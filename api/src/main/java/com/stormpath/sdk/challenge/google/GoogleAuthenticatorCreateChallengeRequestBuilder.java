@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Stormpath, Inc.
+ * Copyright 2017 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,19 @@ package com.stormpath.sdk.challenge.google;
 
 import com.stormpath.sdk.challenge.CreateChallengeRequestBuilder;
 
+/**
+ * A builder to construct {@link GoogleAuthenticatorCreateChallengeRequest}s Google Authenticator specific create challenge requests.
+ *
+ * Google Authenticator can both create the challenge and set the code in one API call.
+ * See {@link com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor}
+ *
+ * @since 1.4.0
+ */
 public interface GoogleAuthenticatorCreateChallengeRequestBuilder  extends CreateChallengeRequestBuilder<GoogleAuthenticatorChallenge> {
 
+    /**
+     * @param code to be used to validate the challenge for the {@link com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor}
+     * @return GoogleAuthenticatorCreateChallengeRequestBuilder for method chaining with the builder pattern
+     */
     GoogleAuthenticatorCreateChallengeRequestBuilder withCode(String code);
 }

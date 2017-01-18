@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Stormpath, Inc.
+ * Copyright 2017 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenge;
 import com.stormpath.sdk.challenge.google.GoogleAuthenticatorCreateChallengeRequestBuilder;
 import com.stormpath.sdk.impl.challenge.DefaultCreateChallengeRequestBuilder;
 
+/**
+ * @since 1.4.0
+ */
 public class DefaultGoogleAuthenticatorCreateChallengeRequestBuilder extends DefaultCreateChallengeRequestBuilder<GoogleAuthenticatorChallenge> implements GoogleAuthenticatorCreateChallengeRequestBuilder {
 
     public DefaultGoogleAuthenticatorCreateChallengeRequestBuilder(GoogleAuthenticatorChallenge challenge) {

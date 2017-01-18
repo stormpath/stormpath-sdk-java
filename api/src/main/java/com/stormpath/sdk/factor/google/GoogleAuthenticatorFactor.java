@@ -22,8 +22,21 @@ import com.stormpath.sdk.factor.Factor;
  * A {@code GoogleAuthenticatorFactor} is a Factor that represents a two-step verification services using
  * the Time-based One-time Password Algorithm (TOTP) and HMAC-based One-time Password Algorithm (HOTP),
  * for authenticating users of mobile applications by Google.
- * When issuing a challenge via an GoogleAuthenticatorFactor, a code is sent to the Google Authenticator app,
- * and the user can enter the received code back into the system to verify/complete the challenge.
+ * <p/>
+ * The TOTP algorithm determines the next valid code without the requirement for any communication between server and
+ * TOTP client.
+ * <p/>
+ * As such, the challenge can be created with the code at the same time:
+ * <p/>
+ * <pre>
+ * GoogleAuthenticatorChallenge challenge = client.instantiate(GoogleAuthenticatorChallenge.class);
+ * challenge = (GoogleAuthenticatorChallenge) googleAuthenticatorFactor.createChallenge(
+ *     Challenges.GOOGLE_AUTHENTICATOR
+ *         .newCreateRequestFor(challenge)
+ *         <b>.withCode(code)</b>
+ *         .build()
+ *     );
+ * </pre>
  *
  * @since 1.1.0
  */
