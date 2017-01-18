@@ -31,7 +31,7 @@ import java.util.Map;
 public abstract class AbstractChallenge<T extends Factor, R extends Enum> extends AbstractInstanceResource implements Challenge<T,R> {
 
     public static final EnumProperty<Enum> STATUS = new EnumProperty<>("status", Enum.class);
-    static final StringProperty CODE = new StringProperty("code");
+    public static final StringProperty CODE = new StringProperty("code");
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<>("account", Account.class);
     static final ResourceReference<? extends Factor> FACTOR = new ResourceReference<>("factor", Factor.class);
     public static final DateProperty CREATED_AT = new DateProperty("createdAt");
@@ -92,16 +92,11 @@ public abstract class AbstractChallenge<T extends Factor, R extends Enum> extend
     @Override
     public boolean validate(String code) {
         Assert.notNull(code, "code can not be null.");
-        setCode(code);
+        setProperty(CODE, code);
         Challenge returnedChallenge = getDataStore().create(getHref(), this);
         if ((returnedChallenge.getStatus()).name().equals("SUCCESS")) {
             return true;
         }
         return false;
-    }
-
-    protected Challenge setCode(String code) {
-        setProperty(CODE, code);
-        return this;
     }
 }
