@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.factor.google;
 import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenge;
 import com.stormpath.sdk.factor.FactorType;
 import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor;
+import com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorChallenge;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.factor.AbstractFactor;
 import com.stormpath.sdk.impl.resource.Property;
@@ -87,6 +88,13 @@ public class DefaultGoogleAuthenticatorFactor extends AbstractFactor<GoogleAuthe
     @Override
     public String getBase64QrImage() {
         return getString(BASE64_QR_IMAGE);
+    }
+
+    @Override
+    public GoogleAuthenticatorChallenge createChallenge(String code) {
+        GoogleAuthenticatorChallenge challenge = new DefaultGoogleAuthenticatorChallenge(getDataStore());
+        challenge.setCode(code);
+        return createChallenge(challenge);
     }
 
     protected FactorType getConcreteFactorType() {

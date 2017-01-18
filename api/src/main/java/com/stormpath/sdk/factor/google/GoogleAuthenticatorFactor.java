@@ -28,14 +28,9 @@ import com.stormpath.sdk.factor.Factor;
  * <p/>
  * As such, the challenge can be created with the code at the same time:
  * <p/>
+ *
  * <pre>
- * GoogleAuthenticatorChallenge challenge = client.instantiate(GoogleAuthenticatorChallenge.class);
- * challenge = (GoogleAuthenticatorChallenge) googleAuthenticatorFactor.createChallenge(
- *     Challenges.GOOGLE_AUTHENTICATOR
- *         .newCreateRequestFor(challenge)
- *         <b>.withCode(code)</b>
- *         .build()
- *     );
+ * GoogleAuthenticatorChallenge challenge = googleAuthenticatorFactor.createChallenge(code);
  * </pre>
  *
  * @since 1.1.0
@@ -93,4 +88,12 @@ public interface GoogleAuthenticatorFactor<T extends GoogleAuthenticatorChalleng
      * @return the base64QRImage.
      */
     String getBase64QrImage();
+
+    /**
+     *
+     * @param code The code to validate the challenge that is created. With Google Authenticator, you can create a
+     *             challenge and validate it all in one call.
+     * @return the {@link GoogleAuthenticatorChallenge}
+     */
+    GoogleAuthenticatorChallenge createChallenge(String code);
 }
