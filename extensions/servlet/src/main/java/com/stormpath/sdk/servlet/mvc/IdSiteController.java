@@ -68,7 +68,7 @@ public class IdSiteController extends AbstractController {
         Assert.notNull(callbackUri, "callbackUri must be configured.");
         Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
         Assert.notNull(alreadyLoggedInUri, "alreadyLoggedInUri must be configured.");
-        Assert.isTrue(preRegisterHandler != null ^ preLoginHandler != null || (preRegisterHandler == null && preLoginHandler == null), "This IDSite controller should have only one of preRegisterHandler and preLoginHandler");
+        Assert.isTrue(!(preRegisterHandler != null && preLoginHandler != null), "This IDSite controller must contain only one of preRegisterHandler and preLoginHandler");
     }
 
     @Override
