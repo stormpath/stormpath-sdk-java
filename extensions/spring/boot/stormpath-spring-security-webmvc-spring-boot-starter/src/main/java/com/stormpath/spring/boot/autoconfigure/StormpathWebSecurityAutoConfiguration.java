@@ -150,8 +150,13 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     /**
      * @since 1.3.0
      */
+    /*
+     * We cannot add @ConditionalOnMissingBean here.
+     * When using the spring boot starter parent, it has a CorsConfigurationSource that would prevent this bean from being used.
+     * Fix for: https://github.com/stormpath/stormpath-sdk-java/issues/1241
+     */
     @Bean
-    @ConditionalOnMissingBean
+    @Override
     public CorsConfigurationSource corsConfigurationSource() {
         return super.corsConfigurationSource();
     }

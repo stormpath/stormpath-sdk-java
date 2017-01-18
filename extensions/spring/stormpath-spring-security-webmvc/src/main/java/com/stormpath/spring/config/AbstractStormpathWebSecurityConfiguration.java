@@ -129,11 +129,14 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.cors.allowed.originUris'] }")
     protected String corsAllowedOrigins;
 
-    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] ?: 'Content-Type,Accept,X-Requested-With,remember-me' }")
+    @Value("#{ @environment['stormpath.web.cors.allowed.headers'] ?: 'Content-Type,Accept,X-Requested-With,remember-me,authorization,x-stormpath-agent' }")
     protected String corsAllowedHeaders;
 
     @Value("#{ @environment['stormpath.web.cors.allowed.methods'] ?: 'POST,GET,OPTIONS,DELETE,PUT' }")
     protected String corsAllowedMethods;
+
+    @Value("#{ @environment['stormpath.web.cors.allow.credentials'] ?: true }")
+    protected boolean corsAllowCredentials;
 
     @Value("#{ @environment['stormpath.web.stormpathFilter.enabled'] ?: true }")
     protected boolean stormpathFilterEnabled;
@@ -279,6 +282,7 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
         configuration.setAllowedOrigins(Strings.split(corsAllowedOrigins) != null ? Arrays.asList(Strings.split(corsAllowedOrigins)) : Collections.<String>emptyList());
         configuration.setAllowedHeaders(Strings.split(corsAllowedHeaders) != null ? Arrays.asList(Strings.split(corsAllowedHeaders)) : Collections.<String>emptyList());
         configuration.setAllowedMethods(Strings.split(corsAllowedMethods) != null ? Arrays.asList(Strings.split(corsAllowedMethods)) : Collections.<String>emptyList());
+        configuration.setAllowCredentials(corsAllowCredentials); // fix for https://github.com/stormpath/stormpath-sdk-java/issues/1241
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

@@ -1018,13 +1018,19 @@
       "name": "stormpath.web.cors.allowed.headers",
       "type": "java.lang.String",
       "description": "Comma separated list of allowed headers for a CORS request.",
-      "defaultValue": "Content-Type,Accept,X-Requested-With,remember-me"
+      "defaultValue": "Content-Type,Accept,X-Requested-With,remember-me,authorization,x-stormpath-agent"
     },
     {
       "name": "stormpath.web.cors.allowed.methods",
       "type": "java.lang.String",
       "description": "Comma separated list of allowed methods for a CORS request.",
       "defaultValue": "POST,GET,OPTIONS,DELETE,PUT"
+    },
+    {
+      "name": "stormpath.web.cors.allow.credentials",
+      "type": "java.lang.Boolean",
+      "description": "Whether user credentials are supported.",
+      "defaultValue": true
     }
   ]
 }
