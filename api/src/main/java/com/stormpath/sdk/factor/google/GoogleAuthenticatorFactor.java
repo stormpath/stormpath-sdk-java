@@ -94,6 +94,7 @@ public interface GoogleAuthenticatorFactor<T extends GoogleAuthenticatorChalleng
      * @param code The code to validate the challenge that is created. With Google Authenticator, you can create a
      *             challenge and validate it all in one call.
      * @return the {@link GoogleAuthenticatorChallenge}
+     * @since 1.4.0
      */
     GoogleAuthenticatorChallenge createChallenge(String code);
 }
