@@ -5,6 +5,7 @@
 * Refactored Google Authenticator MFA support to streamline and simplify
     * Fixed a Google Authenticator bug whereby it was not respecting the createChallenge setting on request
 * Fixed a bug whereby id_token was not being included in the DefaultTokenResponse
+* Fixed CORS support to play nice with spring boot starter parent
 
 See [1.4.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.4.0+is%3Aclosed)
 
