@@ -1,5 +1,13 @@
 ## Change Log ##
 
+### 1.4.0 ##
+
+* Refactored Google Authenticator MFA support to streamline and simplify
+    * Fixed a Google Authenticator bug whereby it was not respecting the createChallenge setting on request
+* Fixed a bug whereby id_token was not being included in the DefaultTokenResponse
+
+See [1.4.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.4.0+is%3Aclosed)
+
 ### 1.3.1 ##
 
 See [1.3.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.3.1+is%3Aclosed)
