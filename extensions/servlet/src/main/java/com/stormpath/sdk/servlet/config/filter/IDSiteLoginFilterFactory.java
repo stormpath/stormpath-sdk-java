@@ -31,5 +31,6 @@ public class IDSiteLoginFilterFactory extends IDSiteFilterFactory {
     public void doConfigure(IdSiteController controller, Config config) {
         controller.setIdSiteUri(config.get("stormpath.web.idSite.loginUri"));
         controller.setNextUri(config.get("stormpath.web.login.nextUri"));
+        controller.setPreLoginHandler(config.getLoginPreHandler());
     }
 }

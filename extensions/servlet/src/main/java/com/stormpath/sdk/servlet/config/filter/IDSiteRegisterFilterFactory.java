@@ -32,6 +32,7 @@ public class IDSiteRegisterFilterFactory extends IDSiteFilterFactory {
     public void doConfigure(IdSiteController controller, Config config) {
         controller.setIdSiteUri(config.get("stormpath.web.idSite.registerUri"));
         controller.setNextUri(config.get("stormpath.web.register.nextUri"));
+        controller.setPreRegisterHandler(config.getRegisterPreHandler());
     }
 
 }

@@ -909,7 +909,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return resolver;
     }
 
-    protected Controller createIdSiteController(String idSiteUri) {
+    protected IdSiteController createIdSiteController(String idSiteUri) {
         IdSiteController controller = new IdSiteController();
         controller.setServerUriResolver(stormpathServerUriResolver());
         controller.setIdSiteUri(idSiteUri);
@@ -962,7 +962,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathLoginController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteLoginUri);
+            IdSiteController controller = createIdSiteController(idSiteLoginUri);
+            controller.setPreLoginHandler(loginPreHandler);
+            return controller;
         }
 
         //otherwise standard login controller:
@@ -1094,7 +1096,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathRegisterController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteRegisterUri);
+            IdSiteController controller = createIdSiteController(idSiteRegisterUri);
+            controller.setPreRegisterHandler(registerPreHandler);
+            return controller;
         }
 
         //otherwise standard registration:
@@ -1202,6 +1206,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (springSecurityIdSiteResultListener != null) {
             controller.addIdSiteResultListener(springSecurityIdSiteResultListener);
         }
+        controller.setPostLoginHandler(loginPostHandler);
+        controller.setPostRegisterHandler(registerPostHandler);
         controller.init();
         return controller;
     }
