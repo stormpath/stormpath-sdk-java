@@ -22,7 +22,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Returns true if either 'stormpath.spring.security.enabled = false' OR 'security.basic.enabled = false'
  *
- * @since 1.3.2
+ * @since 1.5.0
  */
 public class StormpathSpringSecurityOrSecurityBasicDisabled implements Condition {
 

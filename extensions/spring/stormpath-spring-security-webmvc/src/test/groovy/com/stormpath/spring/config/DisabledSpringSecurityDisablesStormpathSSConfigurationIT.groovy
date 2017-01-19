@@ -41,7 +41,7 @@ import static org.testng.Assert.*
 /**
  * Disabling Spring Security must also disable Stormpath's Spring Security integration
  *
- * @since 1.3.2
+ * @since 1.5.0
  */
 @ContextConfiguration(classes = [DisabledSpringSecurityDisablesStormpathSSConfigurationTestAppConfig.class, TwoAppTenantStormpathTestConfiguration.class])
 @WebAppConfiguration

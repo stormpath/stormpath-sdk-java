@@ -22,7 +22,7 @@ import org.springframework.context.annotation.PropertySource;
 /**
  * Disabling Spring Security must also disable Stormpath's Spring Security integration
  *
- * @since 1.3.2
+ * @since 1.5.0
  */
 @Configuration
 @PropertySource({"classpath:disabledspringsecuritydisablesstormpathss.application.properties"})

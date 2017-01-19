@@ -34,7 +34,7 @@ import static org.testng.Assert.assertNull
 import static org.testng.Assert.assertTrue
 
 /**
- * @since 1.3.2
+ * @since 1.5.0
  */
 @ContextConfiguration(classes = [DisabledStormpathTestAppConfig.class])
 @WebAppConfiguration

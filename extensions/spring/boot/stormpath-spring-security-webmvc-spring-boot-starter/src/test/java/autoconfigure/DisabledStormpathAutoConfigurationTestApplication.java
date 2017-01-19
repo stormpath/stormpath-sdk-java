@@ -22,7 +22,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * @since 1.3.2
+ * @since 1.5.0
  */
 @Configuration
 @EnableAutoConfiguration
