@@ -62,6 +62,7 @@ import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 import com.stormpath.spring.mvc.AccessTokenControllerConfig;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
+import com.stormpath.spring.mvc.RevokeTokenControllerConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -464,6 +465,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
     @Bean
     @Override
+    public Controller stormpathRevokeTokenController() {
+        return super.stormpathRevokeTokenController();
+    }
+
+    @Bean
+    @Override
     public Controller stormpathMeController() {
         return super.stormpathMeController();
     }
@@ -593,6 +600,15 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Override
     public AccessTokenControllerConfig stormpathAccessTokenConfig(){
         return super.stormpathAccessTokenConfig();
+    }
+
+    /**
+     * @since 1.5.0
+     */
+    @Bean
+    @Override
+    public RevokeTokenControllerConfig stormpathRevokeTokenConfig() {
+        return super.stormpathRevokeTokenConfig();
     }
 
     /**

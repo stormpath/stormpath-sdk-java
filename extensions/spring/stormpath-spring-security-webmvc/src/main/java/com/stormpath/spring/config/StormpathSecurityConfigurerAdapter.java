@@ -135,6 +135,9 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
     @Value("#{ @environment['stormpath.web.oauth2.uri'] ?: '/oauth/token' }")
     protected String accessTokenUri;
 
+    @Value("#{ @environment['stormpath.web.oauth2.revoke.uri'] ?: '/oauth/revoke' }")
+    protected String revokeTokenUri;
+
     @Value("#{ @environment['stormpath.web.oauth2.revokeOnLogout'] ?: true }")
     protected boolean accessTokenRevokeOnLogout;
 
@@ -281,7 +284,8 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
                 http.authorizeRequests().antMatchers(verifyUri).permitAll();
             }
             if (accessTokenEnabled) {
-                http.authorizeRequests().antMatchers(accessTokenUri).permitAll();
+                http.authorizeRequests().antMatchers(accessTokenUri).permitAll()
+                     .and().authorizeRequests().antMatchers(revokeTokenUri).permitAll();
             }
 
             if (fullyAuthenticatedEnabled) {

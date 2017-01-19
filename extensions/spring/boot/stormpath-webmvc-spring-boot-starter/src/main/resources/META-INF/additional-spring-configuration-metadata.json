@@ -387,6 +387,12 @@
       "description": "This is only used for additional origin URIs that don't already match the server URI."
     },
     {
+      "name": "stormpath.web.oauth2.revoke.uri",
+      "type": "java.lang.String",
+      "description": "The context-relative path an HTTP client may POST to revoke access and refresh tokens.",
+      "defaultValue": "/oauth/revoke"
+    },
+    {
       "name": "stormpath.web.idSite.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether Stormpath ID Site should be enabled or not. This setting tells your project to use the hosted ID Site for user registration, login, and password reset instead of the built-in local functionality. This is good if you have multiple apps that should have the same login experience.",

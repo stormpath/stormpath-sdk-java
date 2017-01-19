@@ -124,6 +124,7 @@ import com.stormpath.sdk.servlet.mvc.MeController;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
+import com.stormpath.sdk.servlet.mvc.RevokeTokenController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
@@ -156,6 +157,7 @@ import com.stormpath.spring.mvc.LoginControllerConfig;
 import com.stormpath.spring.mvc.LogoutControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
 import com.stormpath.spring.mvc.RegisterControllerConfig;
+import com.stormpath.spring.mvc.RevokeTokenControllerConfig;
 import com.stormpath.spring.mvc.SingleNamedViewResolver;
 import com.stormpath.spring.mvc.SpringMessageSource;
 import com.stormpath.spring.mvc.SpringView;
@@ -543,7 +545,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         AccessTokenControllerConfig accessTokenControllerConfig = stormpathAccessTokenConfig();
         if (accessTokenControllerConfig.isEnabled()) {
+            RevokeTokenControllerConfig revokeTokenControllerConfig = stormpathRevokeTokenConfig();
             addFilter(mgr, stormpathAccessTokenController(), accessTokenControllerConfig.getControllerKey(), accessTokenControllerConfig.getAccessTokenUri());
+            addFilter(mgr, stormpathRevokeTokenController(), revokeTokenControllerConfig.getControllerKey(), revokeTokenControllerConfig.getRevokeTokenUri());
         }
 
         if (idSiteEnabled) {
@@ -1167,7 +1171,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathAccessTokenController() {
-
         AccessTokenController c = new AccessTokenController();
         c.setEventPublisher(stormpathRequestEventPublisher());
         c.setAccessTokenAuthenticationRequestFactory(stormpathAccessTokenAuthenticationRequestFactory());
@@ -1179,6 +1182,22 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setBasicAuthenticationScheme(stormpathBasicAuthenticationScheme());
         c.setGrantTypeValidator(stormpathGrantTypeStatusValidator());
 
+        return init(c);
+    }
+
+    /**
+     * @since 1.5.0
+     */
+    public RevokeTokenControllerConfig stormpathRevokeTokenConfig() {
+        return new RevokeTokenControllerConfig();
+    }
+
+    /**
+     * @since 1.5.0
+     */
+    public Controller stormpathRevokeTokenController() {
+        RevokeTokenController c = new RevokeTokenController();
+        c.setApplicationResolver(stormpathApplicationResolver());
         return init(c);
     }
 

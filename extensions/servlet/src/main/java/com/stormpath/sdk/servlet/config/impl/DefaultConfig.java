@@ -80,6 +80,7 @@ public class DefaultConfig implements Config {
     public static final String UNAUTHORIZED_URL = "stormpath.web.unauthorized.uri";
     public static final String LOGOUT_INVALIDATE_HTTP_SESSION = "stormpath.web.logout.invalidateHttpSession";
     public static final String ACCESS_TOKEN_URL = "stormpath.web.oauth2.uri";
+    public static final String REVOKE_TOKEN_URL = "stormpath.web.oauth2.revoke.uri";
     public static final String ACCESS_TOKEN_VALIDATION_STRATEGY = "stormpath.web.oauth2.password.validationStrategy";
 
     protected static final String SERVER_URI_RESOLVER = "stormpath.web.oauth2.origin.authorizer.serverUriResolver";
@@ -272,6 +273,11 @@ public class DefaultConfig implements Config {
     @Override
     public String getAccessTokenUrl() {
         return CFG.getString(ACCESS_TOKEN_URL);
+    }
+
+    @Override
+    public String getRevokeTokenUrl() {
+        return CFG.getString(REVOKE_TOKEN_URL);
     }
 
     @Override
