@@ -48,6 +48,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
+import static org.springframework.boot.autoconfigure.security.SecurityProperties.ACCESS_OVERRIDE_ORDER;
+
 /**
  * @since 1.0.RC5
  */
@@ -184,7 +186,7 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
 
     // Fix for: https://github.com/stormpath/stormpath-sdk-java/issues/1238
     // If stormpath is enabled, we don't want the spring security default definition
-    @Order // uses default of max which ensure there won't be a clash with override
+    @Order(ACCESS_OVERRIDE_ORDER)
     @Configuration
     protected static class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
         @Override
