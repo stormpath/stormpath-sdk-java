@@ -899,6 +899,14 @@ As you can see from the examples above, Stormpath provides powerful oauth2 Token
 ``/oauth/token`` endpoint. There is no additional coding required on your part to make use of the Token Management
 feature.
 
+#if( $springboot )
+You may notice that there is no class in this part of the tutorial that extends ``WebSecurityConfigurerAdapter``.
+In this particular case, *all* user-defined paths are locked down. This is the default for Spring Security and the
+Stormpath Spring Security integration follows suit.
+
+If you fire up the tutorial app and browse to the home page: http://localhost:8080/, you will be redirected to `/login`.
+#end
+
 .. _wrapping-up:
 
 Wrapping Up
