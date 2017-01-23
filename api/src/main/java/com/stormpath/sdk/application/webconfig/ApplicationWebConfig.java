@@ -148,6 +148,13 @@ public interface ApplicationWebConfig extends Resource, Saveable, Auditable {
     ChangePasswordConfig getChangePassword();
 
     /**
+     * Returns the {@link MobileCallbackConfig mobileCallbackConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     *
+     * @return the {@link MobileCallbackConfig mobileCallbackConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
+     */
+    MobileCallbackConfig getMobileCallback();
+
+    /**
      * Returns the {@link MeConfig meConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.
      *
      * @return the {@link MeConfig meConfig} associated to this {@link ApplicationWebConfig applicationWebConfig}.

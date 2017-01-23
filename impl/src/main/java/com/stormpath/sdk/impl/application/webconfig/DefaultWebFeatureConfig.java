@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.application.webconfig;
 import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
 import com.stormpath.sdk.application.webconfig.ForgotPasswordConfig;
 import com.stormpath.sdk.application.webconfig.LoginConfig;
+import com.stormpath.sdk.application.webconfig.MobileCallbackConfig;
 import com.stormpath.sdk.application.webconfig.RegisterConfig;
 import com.stormpath.sdk.application.webconfig.VerifyEmailConfig;
 import com.stormpath.sdk.application.webconfig.WebFeatureConfig;
@@ -74,6 +75,12 @@ public class DefaultWebFeatureConfig<T extends WebFeatureConfig<T>> extends Conf
 
     public static class VerifyEmail extends DefaultWebFeatureConfig<VerifyEmailConfig> implements VerifyEmailConfig {
         public VerifyEmail(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
+            super(name, properties, parent);
+        }
+    }
+
+    public static class MobileCallback extends DefaultWebFeatureConfig<MobileCallbackConfig> implements MobileCallbackConfig {
+        public MobileCallback(String name, Map<String, Object> properties, AbstractPropertyRetriever parent) {
             super(name, properties, parent);
         }
     }

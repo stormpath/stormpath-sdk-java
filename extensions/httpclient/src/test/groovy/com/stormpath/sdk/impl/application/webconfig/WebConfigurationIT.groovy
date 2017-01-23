@@ -60,6 +60,7 @@ class WebConfigurationIT extends ClientIT {
 
         assertTrue webConfiguration.getLogin().enabled
         assertTrue webConfiguration.getOAuth2().enabled
+        assertFalse webConfiguration.getMobileCallback().enabled
 
         assertEquals requestCountingClient.requestCount, 2
     }
@@ -71,6 +72,7 @@ class WebConfigurationIT extends ClientIT {
 
         webConfig.getLogin().setEnabled(false)
         webConfig.getRegister().setEnabled(false)
+        webConfig.getMobileCallback().setEnabled(true)
 
         Oauth2Config oauth2Config = webConfig.getOAuth2()
         oauth2Config.setEnabled(false)
@@ -88,6 +90,7 @@ class WebConfigurationIT extends ClientIT {
 
         assertFalse readWebConfig.getRegister().isEnabled()
         assertFalse readWebConfig.getLogin().isEnabled()
+        assertTrue readWebConfig.getMobileCallback().isEnabled()
 
         Oauth2Config readOAuth2 = readWebConfig.getOAuth2()
 

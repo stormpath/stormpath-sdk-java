@@ -23,6 +23,7 @@ import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
 import com.stormpath.sdk.application.webconfig.ForgotPasswordConfig;
 import com.stormpath.sdk.application.webconfig.LoginConfig;
 import com.stormpath.sdk.application.webconfig.MeConfig;
+import com.stormpath.sdk.application.webconfig.MobileCallbackConfig;
 import com.stormpath.sdk.application.webconfig.Oauth2Config;
 import com.stormpath.sdk.application.webconfig.RegisterConfig;
 import com.stormpath.sdk.application.webconfig.VerifyEmailConfig;
@@ -58,6 +59,7 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.VerifyEmail, AbstractPropertyRetriever> VERIFY_EMAIL;
     private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.ForgotPassword, AbstractPropertyRetriever> FORGOT_PASSWORD;
     private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.ChangePassword, AbstractPropertyRetriever> CHANGE_PASSWORD;
+    private static final ParentAwareObjectProperty<DefaultWebFeatureConfig.MobileCallback, AbstractPropertyRetriever> MOBILE_CALLBACK;
     private static final ParentAwareObjectProperty<DefaultMeConfig, AbstractPropertyRetriever> ME;
     // INSTANCE RESOURCE REFERENCES:
     private static final ResourceReference<ApiKey> SIGNING_API_KEY = new ResourceReference<>("signingApiKey", ApiKey.class);
@@ -71,11 +73,12 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
         VERIFY_EMAIL = new ParentAwareObjectProperty<>("verifyEmail", DefaultWebFeatureConfig.VerifyEmail.class, AbstractPropertyRetriever.class);
         FORGOT_PASSWORD = new ParentAwareObjectProperty<>("forgotPassword", DefaultWebFeatureConfig.ForgotPassword.class, AbstractPropertyRetriever.class);
         CHANGE_PASSWORD = new ParentAwareObjectProperty<>("changePassword", DefaultWebFeatureConfig.ChangePassword.class, AbstractPropertyRetriever.class);
+        MOBILE_CALLBACK = new ParentAwareObjectProperty<>("mobileCallback", DefaultWebFeatureConfig.MobileCallback.class, AbstractPropertyRetriever.class);
         ME = new ParentAwareObjectProperty<>("me", DefaultMeConfig.class, AbstractPropertyRetriever.class);
     }
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(CREATED_AT, MODIFIED_AT, DOMAIN_NAME,
-            DNS_LABEL, STATUS, OAUTH2, REGISTER, VERIFY_EMAIL, FORGOT_PASSWORD, CHANGE_PASSWORD,
+            DNS_LABEL, STATUS, OAUTH2, REGISTER, VERIFY_EMAIL, FORGOT_PASSWORD, CHANGE_PASSWORD, MOBILE_CALLBACK,
             SIGNING_API_KEY, APPLICATION, TENANT);
 
 
@@ -168,6 +171,11 @@ public class DefaultApplicationWebConfig extends AbstractInstanceResource implem
     @Override
     public ChangePasswordConfig getChangePassword() {
         return getParentAwareObjectProperty(CHANGE_PASSWORD);
+    }
+
+    @Override
+    public MobileCallbackConfig getMobileCallback() {
+        return getParentAwareObjectProperty(MOBILE_CALLBACK);
     }
 
     @Override
