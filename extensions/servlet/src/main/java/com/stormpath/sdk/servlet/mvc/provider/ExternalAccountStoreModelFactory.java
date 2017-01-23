@@ -15,8 +15,8 @@
  */
 package com.stormpath.sdk.servlet.mvc.provider;
 
+import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.application.ApplicationAccountStoreMapping;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappings;
@@ -26,11 +26,14 @@ import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.organization.Organization;
+import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList;
 import com.stormpath.sdk.provider.GoogleProvider;
 import com.stormpath.sdk.provider.OAuthProvider;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.saml.SamlProvider;
+import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,17 +54,25 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
     public List<AccountStoreModel> getAccountStores(HttpServletRequest request) {
 
         Application app = ApplicationResolver.INSTANCE.getApplication(request);
+        CollectionResource<? extends AccountStoreMapping> accountStoreMappings;
 
-        int pageSize = 100; //get as much as we can in a single request
-        ApplicationAccountStoreMappingCriteria criteria = ApplicationAccountStoreMappings.criteria().limitTo(pageSize);
-        ApplicationAccountStoreMappingList mappings = app.getAccountStoreMappings(criteria);
+        String onk = request.getParameter("organizationNameKey");
+        if (Strings.hasText(onk)) {
+            accountStoreMappings = getOrganizationAccountStoreMappings(app, onk);
+        } else {
+            accountStoreMappings = getApplicationAccountStoreMappings(app);
+        }
 
-        final List<AccountStoreModel> accountStores = new ArrayList<>(mappings.getSize());
+        if (accountStoreMappings == null) {
+            return new ArrayList<>(); //maybe error if onk isn't found???
+        }
+
+        final List<AccountStoreModel> accountStores = new ArrayList<>(accountStoreMappings.getSize());
 
         AccountStoreModelVisitor visitor =
                 new AccountStoreModelVisitor(accountStores, getAuthorizeBaseUri(request, app.getWebConfig()));
 
-        for (ApplicationAccountStoreMapping mapping : mappings) {
+        for (AccountStoreMapping mapping : accountStoreMappings) {
 
             final AccountStore accountStore = mapping.getAccountStore();
 
@@ -69,6 +80,42 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         }
 
         return visitor.getAccountStores();
+    }
+
+    private ApplicationAccountStoreMappingList getApplicationAccountStoreMappings(Application app) {
+        int pageSize = 100; //get as much as we can in a single request
+        ApplicationAccountStoreMappingCriteria criteria = ApplicationAccountStoreMappings.criteria().limitTo(pageSize);
+        return app.getAccountStoreMappings(criteria);
+    }
+
+    private OrganizationAccountStoreMappingList getOrganizationAccountStoreMappings(Application app, final String nameKey) {
+        ApplicationAccountStoreMappingList accountStoreMappings = app.getAccountStoreMappings();
+
+        final Organization[] organization = new Organization[1];
+
+        for (final AccountStoreMapping accountStoreMapping : accountStoreMappings) {
+            AccountStore accountStore = accountStoreMapping.getAccountStore();
+            accountStore.accept(new AccountStoreVisitor() {
+                @Override
+                public void visit(Group group) {}
+
+                @Override
+                public void visit(Directory directory) {}
+
+                @Override
+                public void visit(Organization org) {
+                    if (org.getNameKey().equals(nameKey)) {
+                         organization[0] = org;
+                    }
+                }
+            });
+        }
+
+        if (organization[0] == null) {
+            return null;
+        }
+
+        return organization[0].getAccountStoreMappings();
     }
 
     @SuppressWarnings("WeakerAccess") // Want to allow overriding this method
