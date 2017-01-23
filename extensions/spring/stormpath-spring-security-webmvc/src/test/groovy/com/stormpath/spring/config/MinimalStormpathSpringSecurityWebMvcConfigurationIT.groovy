@@ -20,8 +20,11 @@ import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthentication
+import com.stormpath.sdk.oauth.OAuthRequestAuthenticationResult
 import com.stormpath.sdk.oauth.OAuthRequests
+import com.stormpath.sdk.resource.ResourceException
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager
 import com.stormpath.sdk.servlet.csrf.DefaultCsrfTokenManager
@@ -66,6 +69,7 @@ import static org.easymock.EasyMock.*
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.testng.Assert.*
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * @since 1.0.RC5
@@ -273,6 +277,46 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
         assertTrue MinimalStormpathSpringSecurityWebMvcTestAppConfig.CustomAuthenticationSuccessEventListener.eventWasTriggered
         SecurityContextHolder.clearContext()
     }
+
+    /**
+     * @since 1.5.0
+     */
+    @Test
+    void testOauthRevokeEndpoint() {
+
+        String password = "Changeme1!"
+        Account account = createTempAccount(password)
+
+        //Let's create the tokes
+        OAuthPasswordGrantRequestAuthentication createRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder().setLogin(account.getEmail()).setPassword(password).build();
+        OAuthRequestAuthenticationResult result = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR.forApplication(application).authenticate(createRequest)
+
+        String jwt = result.getAccessToken().getJwt()
+
+        //Authenticate with access token
+        OAuthBearerRequestAuthentication authRequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(jwt).build()
+        def bearerResult = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR.forApplication(application).authenticate(authRequest)
+
+        assertTrue(bearerResult.getAccount().getEmail().equals(account.getEmail()))
+
+        //Let's revoke the tokens
+        mvc.perform(post(new URI("/oauth/revoke"))
+                    .contentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                    .content("token="+jwt)
+        ).andExpect(status().is(HttpServletResponse.SC_OK)) //200
+
+        // Authentication with the token should fail now since we have just revoked it
+        authRequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder().setJwt(jwt).build()
+        try {
+            Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR.forApplication(application).authenticate(authRequest)
+            fail("should have thrown")
+        } catch (ResourceException e) {
+            //this exceptions is expected
+            assertEquals(e.getStatus(), 404)
+            assertEquals(e.getCode(), 10013)
+        }
+    }
+
 
     /**
      * @return true if the user has one of the specified roles.
