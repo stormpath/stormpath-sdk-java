@@ -239,7 +239,7 @@ disable it. That's where the ``application.properties`` files comes in:
 .. code-block:: java
     :linenos:
 
-    security.basic.enabled = false
+    stormpath.spring.security.enabled = false
 
 That property disables Spring Security and avoids our Spring Security integration to be loaded.
 
