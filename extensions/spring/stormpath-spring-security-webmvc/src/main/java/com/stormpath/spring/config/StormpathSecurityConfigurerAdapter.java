@@ -153,9 +153,13 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
     @Value("#{ @environment['stormpath.web.callback.enabled'] ?: true }")
     protected boolean callbackEnabled;
 
-    @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/idSiteResult' }")
+    // both idSiteResultUri and samlResultUri default to `/stormpathCallback`
+    // this is a fix for https://github.com/stormpath/stormpath-sdk-java/issues/1254
+    // TODO - for 2.0.0 release remove stormpath.web.idSite.resultUri and use stormpath.web.callback.uri for both id site and saml
+    @Value("#{ @environment['stormpath.web.idSite.resultUri'] ?: '/stormpathCallback' }")
     protected String idSiteResultUri;
 
+    // TODO - for 2.0.0 release rename variable webCallbackUri
     @Value("#{ @environment['stormpath.web.callback.uri'] ?: '/stormpathCallback' }")
     protected String samlResultUri;
 
