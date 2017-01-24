@@ -17,6 +17,7 @@ package com.stormpath.spring.config
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.api.ApiKey
+import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.lang.Assert
 import com.stormpath.sdk.oauth.Authenticators
@@ -210,8 +211,8 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
-        expect(httpServletRequest.getServletContext()).andReturn(servletContext).times(2)
-        expect(servletContext.getAttribute("com.stormpath.sdk.client.Client")).andReturn(client).times(2)
+        //expect(httpServletRequest.getServletContext()).andReturn(servletContext).times(2)
+        expect(httpServletRequest.getAttribute(Application.class.getName())).andReturn(application)
 
         replay(httpServletRequest, httpServletResponse, servletContext)
 
@@ -221,7 +222,7 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
         def logoutRequestEvent = new DefaultLogoutRequestEvent(httpServletRequest, httpServletResponse, account)
         requestEventPublisher.publish(logoutRequestEvent)
         Assert.isTrue(account.getAccessTokens().getSize() == 0)
-        Assert.isTrue(account.getRefreshTokens().getSize() == 0)
+        Assert.isTrue(account.getRefreshTokens().getSize() == 1)
 
         verify(httpServletRequest, httpServletResponse, servletContext)
     }
