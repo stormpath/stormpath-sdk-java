@@ -30,7 +30,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
  * @since 1.0.RC5
  */
 @Configuration
-@Conditional({ StormpathEnabled.class, StormpathSpringSecurityEnabled.class, SecurityBasicEnabled.class})
+@Conditional({ StormpathEnabled.class, StormpathSpringSecurityEnabled.class})
 public class StormpathSpringSecurityConfiguration extends AbstractStormpathSpringSecurityConfiguration {
 
     @Bean

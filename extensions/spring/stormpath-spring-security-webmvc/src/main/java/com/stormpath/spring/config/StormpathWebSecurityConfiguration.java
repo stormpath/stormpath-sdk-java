@@ -41,7 +41,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 @EnableStormpathWebMvc
 @EnableStormpathSecurity
-@Conditional({StormpathSpringSecurityEnabled.class, StormpathWebEnabled.class, StormpathEnabled.class, SecurityBasicEnabled.class})
+@Conditional({StormpathSpringSecurityEnabled.class, StormpathWebEnabled.class, StormpathEnabled.class})
 public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean

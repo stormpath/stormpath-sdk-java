@@ -39,7 +39,7 @@ import org.springframework.security.config.annotation.authentication.configurers
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
-@ConditionalOnProperty(name = { "stormpath.enabled", "stormpath.spring.security.enabled",  "security.basic.enabled"}, matchIfMissing = true)
+@ConditionalOnProperty(name = { "stormpath.enabled", "stormpath.spring.security.enabled"}, matchIfMissing = true)
 @AutoConfigureAfter({ StormpathAutoConfiguration.class, SecurityAutoConfiguration.class })
 public class StormpathSpringSecurityAutoConfiguration extends AbstractStormpathSpringSecurityConfiguration {
 
