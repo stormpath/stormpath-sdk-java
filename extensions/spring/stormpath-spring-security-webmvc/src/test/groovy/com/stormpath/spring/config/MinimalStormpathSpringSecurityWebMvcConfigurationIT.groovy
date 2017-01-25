@@ -211,7 +211,6 @@ class MinimalStormpathSpringSecurityWebMvcConfigurationIT extends AbstractClient
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
-        //expect(httpServletRequest.getServletContext()).andReturn(servletContext).times(2)
         expect(httpServletRequest.getAttribute(Application.class.getName())).andReturn(application)
 
         replay(httpServletRequest, httpServletResponse, servletContext)

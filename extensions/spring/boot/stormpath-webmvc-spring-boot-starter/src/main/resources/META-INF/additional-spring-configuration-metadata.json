@@ -389,7 +389,7 @@
     {
       "name": "stormpath.web.oauth2.revoke.uri",
       "type": "java.lang.String",
-      "description": "The context-relative path an HTTP client may POST to revoke access and refresh tokens.",
+      "description": "The context-relative path an HTTP client may POST to in order to revoke access and refresh tokens.",
       "defaultValue": "/oauth/revoke"
     },
     {
