@@ -368,9 +368,7 @@ public class AccessTokenController extends AbstractController {
                 }
                 else if ("factor_challenge".equals(action)) {
                     exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_STATE);
-                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_ALLOWED_FACTOR_TYPES);
                     exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_FACTOR);
-                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_CHALLENGE);
                 }
                 else if ("factor_select".equals(action)) {
                     exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_FACTORS);
