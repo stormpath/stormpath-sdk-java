@@ -16,8 +16,8 @@
 package com.stormpath.sdk.impl.http.httpclient;
 
 import com.stormpath.sdk.client.AuthenticationScheme;
-import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.http.QueryString;
@@ -32,6 +32,7 @@ import com.stormpath.sdk.impl.http.support.BackoffStrategy;
 import com.stormpath.sdk.impl.http.support.DefaultRequest;
 import com.stormpath.sdk.impl.http.support.DefaultResponse;
 import com.stormpath.sdk.lang.Assert;
+import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -42,15 +43,18 @@ import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.params.AllClientPNames;
-import org.apache.http.client.params.ClientPNames;
+import org.apache.http.config.ConnectionConfig;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +97,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
     private final RequestAuthenticator requestAuthenticator;
 
-    private DefaultHttpClient httpClient;
+    private HttpClient httpClient;
 
     private BackoffStrategy backoffStrategy;
 
@@ -150,9 +154,8 @@ public class HttpClientRequestExecutor implements RequestExecutor {
 
         this.requestAuthenticator = factory.create(authenticationScheme, clientCredentials);
 
-        this.httpClientRequestFactory = new HttpClientRequestFactory();
+        PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager();
 
-        PoolingClientConnectionManager connMgr = new PoolingClientConnectionManager();
         if (MAX_CONNECTIONS_TOTAL >= MAX_CONNECTIONS_PER_ROUTE) {
             connMgr.setDefaultMaxPerRoute(MAX_CONNECTIONS_PER_ROUTE);
             connMgr.setMaxTotal(MAX_CONNECTIONS_TOTAL);
@@ -173,25 +176,31 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         // Therefore, multiply it by 1000 to be milliseconds since DefaultHttpClient expects milliseconds.
         int connectionTimeoutAsMilliseconds = connectionTimeout * 1000;
 
-        this.httpClient = new DefaultHttpClient(connMgr);
-        httpClient.getParams().setParameter(AllClientPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-        httpClient.getParams().setParameter(AllClientPNames.SO_TIMEOUT, connectionTimeoutAsMilliseconds);
-        httpClient.getParams().setParameter(AllClientPNames.CONNECTION_TIMEOUT, connectionTimeoutAsMilliseconds);
-        httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
-        httpClient.getParams().setParameter("http.protocol.content-charset", "UTF-8");
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectionTimeoutAsMilliseconds)
+                .setSocketTimeout(connectionTimeoutAsMilliseconds).setRedirectsEnabled(false).build();
+
+        ConnectionConfig connectionConfig = ConnectionConfig.custom().setCharset(Consts.UTF_8).build();
+
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig)
+                .disableCookieManagement().setDefaultConnectionConfig(connectionConfig).setConnectionManager(connMgr);
+
+        this.httpClientRequestFactory = new HttpClientRequestFactory(requestConfig);
 
         if (proxy != null) {
             //We have some proxy setting to use!
             HttpHost httpProxyHost = new HttpHost(proxy.getHost(), proxy.getPort());
-            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, httpProxyHost);
+            httpClientBuilder.setProxy(httpProxyHost);
 
             if (proxy.isAuthenticationRequired()) {
-                httpClient.getCredentialsProvider().setCredentials(
-                        new AuthScope(proxy.getHost(), proxy.getPort()),
-                        new UsernamePasswordCredentials(proxy.getUsername(), proxy.getPassword()));
+                AuthScope authScope = new AuthScope(proxy.getHost(), proxy.getPort());
+                Credentials credentials = new UsernamePasswordCredentials(proxy.getUsername(), proxy.getPassword());
+                CredentialsProvider credentialsProviderProvider = new BasicCredentialsProvider();
+                credentialsProviderProvider.setCredentials(authScope, credentials);
+                httpClientBuilder.setDefaultCredentialsProvider(credentialsProviderProvider);
             }
-
         }
+
+        this.httpClient = httpClientBuilder.build();
     }
 
     public int getNumRetries() {
@@ -213,7 +222,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         this.backoffStrategy = backoffStrategy;
     }
 
-    public void setHttpClient(DefaultHttpClient httpClient) {
+    public void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
