@@ -109,6 +109,8 @@ public interface Config extends Map<String, String> {
 
     String getAccessTokenUrl();
 
+    String getRevokeTokenUrl();
+
     String getUnauthorizedUrl();
 
     boolean isMeEnabled();

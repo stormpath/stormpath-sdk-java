@@ -18,9 +18,7 @@ package com.stormpath.spring.config
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.application.Application
-import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.client.Client
-import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.lang.Strings
 import org.springframework.beans.factory.annotation.Autowired

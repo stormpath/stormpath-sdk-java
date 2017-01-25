@@ -107,6 +107,10 @@ public class DefaultFilterChainManagerConfigurer {
         boolean accessTokenChainSpecified = false;
         boolean oauthEnabled = config.isOAuthEnabled();
 
+        String revokeTokenUrl = config.getRevokeTokenUrl();
+        String revokeTokenUrlPattern = cleanUri(revokeTokenUrl);
+        boolean revokeTokenChainSpecified = false;
+
         String unauthorizedUrl = config.getUnauthorizedUrl();
         String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
         boolean unauthorizedChainSpecified = false;
@@ -240,6 +244,14 @@ public class DefaultFilterChainManagerConfigurer {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
 
+                } else if (uriPattern.startsWith(revokeTokenUrlPattern)) {
+                    revokeTokenChainSpecified = true;
+
+                    String filterName = DefaultFilter.revokeToken.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+
                 } else if (uriPattern.startsWith(unauthorizedUrlPattern)) {
                     unauthorizedChainSpecified = true;
 
@@ -320,6 +332,9 @@ public class DefaultFilterChainManagerConfigurer {
         }
         if (!accessTokenChainSpecified && oauthEnabled) {
             mgr.createChain(accessTokenUrlPattern, DefaultFilter.accessToken.name());
+        }
+        if (!revokeTokenChainSpecified && oauthEnabled) {
+            mgr.createChain(revokeTokenUrlPattern, DefaultFilter.revokeToken.name());
         }
         if (!samlChainSpecified && callbackEnabled) {
             mgr.createChain(samlUrlPattern, DefaultFilter.saml.name());
