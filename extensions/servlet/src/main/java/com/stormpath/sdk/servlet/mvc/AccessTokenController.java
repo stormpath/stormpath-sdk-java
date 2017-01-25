@@ -319,10 +319,11 @@ public class AccessTokenController extends AbstractController {
 
         try {
             Application app = getApplication(request);
+            String state = request.getParameter("state");
             String challenge = request.getParameter("challenge");
             String code = request.getParameter("code");
             OAuthStormpathFactorChallengeGrantRequestAuthentication grantRequestAuthentication =
-                    new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(challenge, code);
+                    new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(state, challenge, code);
 
             authenticationResult = Authenticators.OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR
                     .forApplication(app)

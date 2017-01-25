@@ -23,6 +23,8 @@ package com.stormpath.sdk.oauth;
  */
 public interface OAuthStormpathFactorChallengeGrantRequestAuthentication extends OAuthGrantRequestAuthentication {
 
+    String getState();
+
     String getChallenge();
 
     String getCode();

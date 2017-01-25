@@ -37,6 +37,13 @@ public interface OAuthStormpathFactorChallengeGrantAuthenticationAttempt extends
     void setChallenge(String challenge);
 
     /**
+     * Method used to set the state token referencing a challenge to be verified.  Typically this token will have come
+     * in response to a previous OAuth token request.
+     * @param state the state token referencing the challenge to be verified.
+     */
+    void setState(String state);
+
+    /**
      * Method used to set the code for the multifactor challenge.
      * @param code the code for the multifactor challenge.
      */

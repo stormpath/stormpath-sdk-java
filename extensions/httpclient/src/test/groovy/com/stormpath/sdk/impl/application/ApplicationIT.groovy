@@ -1890,7 +1890,7 @@ class ApplicationIT extends ClientIT {
         challenge = factor.createChallenge(challenge)
 
         String bogusCode = "000000"
-        OAuthStormpathFactorChallengeGrantRequestAuthentication request = new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(challenge.href, bogusCode)
+        OAuthStormpathFactorChallengeGrantRequestAuthentication request = new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(null, challenge.href, bogusCode)
 
         try {
             Authenticators.OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
@@ -1918,7 +1918,7 @@ class ApplicationIT extends ClientIT {
 
         String validCode = calculateCurrentTOTP(new Base32().decode(factor.getSecret()))
 
-        OAuthStormpathFactorChallengeGrantRequestAuthentication request = new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(challenge.href, validCode)
+        OAuthStormpathFactorChallengeGrantRequestAuthentication request = new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(null, challenge.href, validCode)
 
         def result = Authenticators.OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
         assertNotNull result.getAccessTokenHref()
