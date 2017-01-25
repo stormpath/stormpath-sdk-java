@@ -33,7 +33,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -44,6 +47,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
+
+import static org.springframework.boot.autoconfigure.security.SecurityProperties.ACCESS_OVERRIDE_ORDER;
 
 /**
  * @since 1.0.RC5
@@ -179,4 +184,12 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
         return super.stormpathWrapperFilter();
     }
 
+    // Fix for: https://github.com/stormpath/stormpath-sdk-java/issues/1238
+    // If stormpath is enabled, we don't want the spring security default definition
+    @Order(ACCESS_OVERRIDE_ORDER)
+    @Configuration
+    protected static class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {}
+    }
 }
