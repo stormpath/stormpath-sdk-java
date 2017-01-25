@@ -583,6 +583,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
     @Bean
     @Override
+    public ControllerConfig stormpathSamlConfig() {
+        return super.stormpathSamlConfig();
+    }
+
+    @Bean
+    @Override
     public ChangePasswordControllerConfig stormpathChangePasswordConfig() {
         return super.stormpathChangePasswordConfig();
     }

@@ -217,6 +217,11 @@ public class DefaultConfig implements Config {
     }
 
     @Override
+    public ControllerConfig getSamlConfig() {
+        return new ServletControllerConfig("saml", this);
+    }
+
+    @Override
     public ChangePasswordConfig getChangePasswordConfig() {
         return new ChangePasswordServletControllerConfig(this, "changePassword");
     }

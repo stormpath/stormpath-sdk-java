@@ -115,8 +115,8 @@ public class DefaultFilterChainManagerConfigurer {
         String unauthorizedUrlPattern = cleanUri(unauthorizedUrl);
         boolean unauthorizedChainSpecified = false;
 
-        //TODO 542: what is this?
-        String samlUrl = "/saml";
+        //fixed per https://github.com/stormpath/stormpath-sdk-java/issues/1254
+        String samlUrl = config.getSamlConfig().getUri();
         String samlUrlPattern = cleanUri(samlUrl);
         String samlCallbackUrl = config.getCallbackUri();
         String samlCallbackPattern = cleanUri(samlCallbackUrl);

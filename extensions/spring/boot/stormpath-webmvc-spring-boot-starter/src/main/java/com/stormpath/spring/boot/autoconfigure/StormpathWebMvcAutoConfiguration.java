@@ -682,6 +682,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathVerifyConfig();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathSamlConfig")
+    public ControllerConfig stormpathSamlConfig() {
+        return super.stormpathSamlConfig();
+    }
+
     /**
      * @since 1.2.0
      */

@@ -157,6 +157,7 @@ import com.stormpath.spring.mvc.LoginControllerConfig;
 import com.stormpath.spring.mvc.LogoutControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
 import com.stormpath.spring.mvc.RegisterControllerConfig;
+import com.stormpath.spring.mvc.SamlControllerConfig;
 import com.stormpath.spring.mvc.RevokeTokenControllerConfig;
 import com.stormpath.spring.mvc.SingleNamedViewResolver;
 import com.stormpath.spring.mvc.SpringMessageSource;
@@ -554,7 +555,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             addFilter(mgr, stormpathIdSiteResultController(), "idSiteResult", callbackUri);
         }
         if (callbackEnabled) {
-            addFilter(mgr, stormpathSamlController(), "saml", "/saml"); //TODO: why isn't this a configurable uri?
+            addFilter(mgr, stormpathSamlController(), "saml", stormpathSamlConfig().getUri());
             addFilter(mgr, stormpathSamlResultController(), "samlResult", callbackUri);
         }
         if (meEnabled) {
@@ -978,6 +979,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setForgotPasswordUri(stormpathForgotPasswordConfig().getUri());
         c.setVerifyEnabled(stormpathVerifyConfig().isEnabled());
         c.setVerifyUri(stormpathVerifyConfig().getUri());
+        c.setSamlUri(stormpathSamlConfig().getUri());
         c.setRegisterEnabledResolver(stormpathRegisterEnabledResolver());
         c.setRegisterUri(stormpathRegisterConfig().getUri());
         c.setLogoutUri(stormpathLogoutConfig().getUri());
@@ -1137,6 +1139,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setAccountStoreResolver(stormpathAccountStoreResolver());
 
         return init(c);
+    }
+
+    public ControllerConfig stormpathSamlConfig() {
+        return new SamlControllerConfig();
     }
 
     public ChangePasswordControllerConfig stormpathChangePasswordConfig() {

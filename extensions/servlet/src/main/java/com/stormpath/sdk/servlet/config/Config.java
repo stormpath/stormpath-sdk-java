@@ -78,6 +78,8 @@ public interface Config extends Map<String, String> {
 
     ControllerConfig getVerifyConfig();
 
+    ControllerConfig getSamlConfig();
+
     ChangePasswordConfig getChangePasswordConfig();
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();

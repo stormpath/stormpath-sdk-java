@@ -241,6 +241,8 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
 
                 http.authorizeRequests()
                     .antMatchers(loginUriMatch).permitAll()
+                    .antMatchers(samlUri).permitAll()
+                    .antMatchers(samlResultUri).permitAll()
                     .antMatchers(googleCallbackUri).permitAll()
                     .antMatchers(githubCallbackUri).permitAll()
                     .antMatchers(facebookCallbackUri).permitAll()
@@ -263,16 +265,17 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
         if (idSiteEnabled || callbackEnabled || stormpathWebEnabled) {
             if (logoutEnabled) {
                 LogoutConfigurer<HttpSecurity> httpSecurityLogoutConfigurer = http
-                        .logout()
-                        .invalidateHttpSession(true)
-                        .logoutUrl(logoutUri);
+                    .logout()
+                    .invalidateHttpSession(true)
+                    .logoutUrl(logoutUri);
 
                 if (!idSiteEnabled) {
                     httpSecurityLogoutConfigurer.logoutSuccessUrl(logoutNextUri);
                 }
 
-                httpSecurityLogoutConfigurer.addLogoutHandler(logoutHandler)
-                                            .and().authorizeRequests().antMatchers(logoutUri).permitAll();
+                httpSecurityLogoutConfigurer
+                    .addLogoutHandler(logoutHandler).and()
+                    .authorizeRequests().antMatchers(logoutUri).permitAll();
             }
 
             if (forgotEnabled) {
@@ -331,5 +334,4 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
             }
         }
     }
-
 }
