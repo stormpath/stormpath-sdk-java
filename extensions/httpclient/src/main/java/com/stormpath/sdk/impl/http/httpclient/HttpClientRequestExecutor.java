@@ -40,7 +40,6 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -173,7 +172,7 @@ public class HttpClientRequestExecutor implements RequestExecutor {
         }
 
         // The connectionTimeout value is specified in seconds in Stormpath configuration settings.
-        // Therefore, multiply it by 1000 to be milliseconds since DefaultHttpClient expects milliseconds.
+        // Therefore, multiply it by 1000 to be milliseconds since RequestConfig expects milliseconds.
         int connectionTimeoutAsMilliseconds = connectionTimeout * 1000;
 
         RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectionTimeoutAsMilliseconds)
