@@ -331,7 +331,7 @@ class DirectoryIT extends ClientIT {
     }
 
     /**
-     * @since 1.3.0
+     * @since 1.5.0
      */
     @Test
     void testCreateSamlDirectoryWithForceAuthnTrue() {
