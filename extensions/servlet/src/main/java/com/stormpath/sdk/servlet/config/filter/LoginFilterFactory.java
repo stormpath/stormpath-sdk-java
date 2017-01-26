@@ -40,6 +40,7 @@ public class LoginFilterFactory extends FormControllerFilterFactory<LoginControl
         controller.setForgotPasswordUri(config.getForgotPasswordConfig().getUri());
         controller.setVerifyEnabled(config.getVerifyConfig().isEnabled());
         controller.setVerifyUri(config.getVerifyConfig().getUri());
+        controller.setSamlUri(config.getSamlConfig().getUri());
         controller.setRegisterEnabledResolver(config.getRegisterEnabledResolver());
         controller.setRegisterUri(config.getRegisterConfig().getUri());
         controller.setLogoutUri(config.getLogoutConfig().getUri());
