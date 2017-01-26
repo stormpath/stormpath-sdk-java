@@ -1,5 +1,11 @@
 ## Change Log ##
 
+### 1.4.1 ##
+
+* Fixed problem with HttpClient that caused cookies send by server to be stored and sent in every request. 
+
+See [1.4.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.4.1+is%3Aclosed)
+
 ### 1.4.0 ##
 
 * Refactored Google Authenticator MFA support to streamline and simplify
