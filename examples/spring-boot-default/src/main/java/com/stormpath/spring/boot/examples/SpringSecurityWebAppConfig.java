@@ -15,9 +15,15 @@
  */
 package com.stormpath.spring.boot.examples;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @since 1.0.RC6
@@ -38,5 +44,27 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers("/restricted").fullyAuthenticated()
             .antMatchers("/**").permitAll();
+    }
+
+    @Bean
+    public WebHandler loginPreHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                System.out.print("AAAAAAA pre");
+                return true;
+            }
+        };
+    }
+
+    @Bean
+    public WebHandler loginPostHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                System.out.print("AAAAAAA post");
+                return true;
+            }
+        };
     }
 }

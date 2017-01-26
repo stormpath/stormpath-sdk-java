@@ -501,6 +501,9 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathAccessTokenController();
     }
 
+    /**
+     * @since 1.5.0
+     */
     @Bean
     @ConditionalOnMissingBean(name = "stormpathRevokeTokenController")
     @Override
@@ -682,6 +685,10 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathVerifyConfig();
     }
 
+    /**
+     *
+     * @since 1.5.0
+     */
     @Bean
     @ConditionalOnMissingBean(name = "stormpathSamlConfig")
     public ControllerConfig stormpathSamlConfig() {

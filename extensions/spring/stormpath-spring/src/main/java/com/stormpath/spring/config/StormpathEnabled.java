@@ -20,7 +20,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * @since 1.4.2
+ * @since 1.5.0
  */
 public class StormpathEnabled implements Condition {
 

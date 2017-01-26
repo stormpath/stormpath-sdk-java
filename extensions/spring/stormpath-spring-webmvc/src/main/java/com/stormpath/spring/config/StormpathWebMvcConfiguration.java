@@ -463,6 +463,9 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathAccessTokenController();
     }
 
+    /**
+     * @since 1.5.0
+     */
     @Bean
     @Override
     public Controller stormpathRevokeTokenController() {
@@ -581,6 +584,9 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathVerifyConfig();
     }
 
+    /**
+     * @since 1.5.0
+     */
     @Bean
     @Override
     public ControllerConfig stormpathSamlConfig() {
