@@ -40,9 +40,6 @@ public class IdSiteController extends AbstractController {
 
     private Resolver<IdSiteOrganizationContext> idSiteOrganizationResolver;
 
-    protected WebHandler preRegisterHandler;
-    protected WebHandler preLoginHandler;
-
     public void setServerUriResolver(ServerUriResolver serverUriResolver) {
         this.serverUriResolver = serverUriResolver;
     }
@@ -68,20 +65,11 @@ public class IdSiteController extends AbstractController {
         Assert.notNull(callbackUri, "callbackUri must be configured.");
         Assert.notNull(idSiteOrganizationResolver, "idSiteOrganizationResolver must be configured.");
         Assert.notNull(alreadyLoggedInUri, "alreadyLoggedInUri must be configured.");
-        Assert.isTrue(!(preRegisterHandler != null && preLoginHandler != null), "This IDSite controller must contain only one of preRegisterHandler and preLoginHandler");
     }
 
     @Override
     public boolean isNotAllowedIfAuthenticated() {
         return false;
-    }
-
-    public void setPreLoginHandler(WebHandler preLoginHandler) {
-        this.preLoginHandler = preLoginHandler;
-    }
-
-    public void setPreRegisterHandler(WebHandler preRegisterHandler) {
-        this.preRegisterHandler = preRegisterHandler;
     }
 
     protected Application getApplication(HttpServletRequest request) {
@@ -107,16 +95,6 @@ public class IdSiteController extends AbstractController {
 
     @Override
     protected ViewModel doGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        if (preLoginHandler != null) {
-            if (!preLoginHandler.handle(request, response, null)) {
-                return null;
-            }
-        } else if (preRegisterHandler != null) {
-            if (!preRegisterHandler.handle(request, response, null)) {
-                return null;
-            }
-        }
 
         //Let's redirect to "alreadyLoggedInUri" if the user is already logged in
         if (AccountResolver.INSTANCE.getAccount(request) != null) {

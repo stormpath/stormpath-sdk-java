@@ -107,10 +107,8 @@ public abstract class CallbackController extends AbstractController {
 
         publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
 
-        if (postLoginHandler != null) {
-            if (!postLoginHandler.handle(request, response, result.getAccount())) {
-                return null;
-            }
+        if (postLoginHandler != null && !postLoginHandler.handle(request, response, result.getAccount())) {
+            return null;
         }
 
         return new DefaultViewModel(loginNextUri).setRedirect(true);

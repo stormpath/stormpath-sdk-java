@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Stormpath, Inc.
+ * Copyright 2017 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,20 @@
 package com.stormpath.sdk.servlet.config.filter;
 
 import com.stormpath.sdk.servlet.config.Config;
-import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.mvc.IdSiteRegisterController;
 
 /**
- * @since 1.0.0
+ * @since 1.5.0
  */
-public class IDSiteRegisterFilterFactory extends IDSiteFilterFactory {
+public class IDSiteRegisterFilterFactory extends AbstractIDSiteFilterFactory<IdSiteRegisterController> {
 
     @Override
-    protected IdSiteController newController() {
-        return new IdSiteController();
+    protected IdSiteRegisterController newController() {
+        return new IdSiteRegisterController();
     }
 
     @Override
-    public void doConfigure(IdSiteController controller, Config config) {
+    public void doConfigure(IdSiteRegisterController controller, Config config) {
         controller.setIdSiteUri(config.get("stormpath.web.idSite.registerUri"));
         controller.setNextUri(config.get("stormpath.web.register.nextUri"));
         controller.setPreRegisterHandler(config.getRegisterPreHandler());

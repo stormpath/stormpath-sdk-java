@@ -114,7 +114,9 @@ import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 import com.stormpath.sdk.servlet.mvc.FormController;
 import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.mvc.IdSiteLoginController;
 import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
+import com.stormpath.sdk.servlet.mvc.IdSiteRegisterController;
 import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.JacksonView;
 import com.stormpath.sdk.servlet.mvc.LoginController;
@@ -962,8 +964,15 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathLoginController() {
 
         if (idSiteEnabled) {
-            IdSiteController controller = createIdSiteController(idSiteLoginUri);
+            IdSiteLoginController controller = new IdSiteLoginController();
+            controller.setServerUriResolver(stormpathServerUriResolver());
+            controller.setIdSiteUri(idSiteLoginUri);
+            controller.setCallbackUri(callbackUri);
+            controller.setAlreadyLoggedInUri(stormpathLoginConfig().getNextUri());
+            controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+            controller.setNextUri(stormpathLoginConfig().getNextUri());
             controller.setPreLoginHandler(loginPreHandler);
+            controller.init();
             return controller;
         }
 
@@ -1096,8 +1105,15 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathRegisterController() {
 
         if (idSiteEnabled) {
-            IdSiteController controller = createIdSiteController(idSiteRegisterUri);
+            IdSiteRegisterController controller = new IdSiteRegisterController();
+            controller.setServerUriResolver(stormpathServerUriResolver());
+            controller.setIdSiteUri(idSiteRegisterUri);
+            controller.setCallbackUri(callbackUri);
+            controller.setAlreadyLoggedInUri(stormpathLoginConfig().getNextUri());
+            controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+            controller.setNextUri(stormpathLoginConfig().getNextUri());
             controller.setPreRegisterHandler(registerPreHandler);
+            controller.init();
             return controller;
         }
 
