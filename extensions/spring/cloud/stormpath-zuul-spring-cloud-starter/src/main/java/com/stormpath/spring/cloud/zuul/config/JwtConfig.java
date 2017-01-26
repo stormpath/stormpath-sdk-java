@@ -46,6 +46,7 @@ public class JwtConfig {
 
     public JwtConfig() {
         this.enabled = true;
+        this.key = new JwkConfig();
         this.valueClaim = new ValueClaimConfig();
     }
 

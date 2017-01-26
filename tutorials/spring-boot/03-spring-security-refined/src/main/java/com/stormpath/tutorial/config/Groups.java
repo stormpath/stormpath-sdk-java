@@ -28,6 +28,6 @@ public class Groups {
 
     @Autowired
     public Groups(Environment env) {
-        USER = env.getProperty("stormpath.authorized.group.user");
+        USER = env.getProperty("stormpath.authorized.user.group.href");
     }
 }

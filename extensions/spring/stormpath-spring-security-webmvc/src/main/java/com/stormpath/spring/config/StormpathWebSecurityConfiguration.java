@@ -17,16 +17,22 @@ package com.stormpath.spring.config;
 
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
+import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
-import com.stormpath.spring.filter.SpringSecurityResolvedAccountFilter;
-import com.stormpath.spring.oauth.OAuthAuthenticationSpringSecurityProcessingFilter;
+import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
+import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
+import com.stormpath.spring.filter.StormpathWrapperFilter;
+import com.stormpath.spring.security.provider.SocialCallbackSpringSecurityProcessingFilter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * @since 1.0.RC5
@@ -35,6 +41,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @Configuration
 @EnableStormpathWebMvc
 @EnableStormpathSecurity
+@Conditional(StormpathSpringSecurityEnabled.class)
 public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecurityConfiguration {
 
     @Bean
@@ -50,8 +57,9 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
     }
 
     @Bean
-    public StormpathWebSecurityConfigurer stormpathWebSecurityConfigurer() {
-        return super.stormpathWebSecurityConfigurer();
+    @Override
+    public SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter() {
+        return super.stormpathSecurityConfigurerAdapter();
     }
 
     @Bean
@@ -82,20 +90,54 @@ public class StormpathWebSecurityConfiguration extends AbstractStormpathWebSecur
 
     @Bean
     @Override
-    public OAuthAuthenticationSpringSecurityProcessingFilter oAuthAuthenticationProcessingFilter() {
-        return super.oAuthAuthenticationProcessingFilter();
+    public StormpathSecurityContextPersistenceFilter stormpathSecurityContextPersistenceFilter() {
+        return super.stormpathSecurityContextPersistenceFilter();
     }
 
     @Bean
     @Override
-    public SpringSecurityResolvedAccountFilter springSecurityResolvedAccountFilter() {
-        return super.springSecurityResolvedAccountFilter();
+    public SocialCallbackSpringSecurityProcessingFilter socialCallbackSpringSecurityProcessingFilter() {
+        return super.socialCallbackSpringSecurityProcessingFilter();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    @Override
+    public ContentNegotiationSpringSecurityAuthenticationFilter contentNegotiationSpringSecurityAuthenticationFilter() {
+        return super.contentNegotiationSpringSecurityAuthenticationFilter();
     }
 
     @Bean
     @Override
     public AuthenticationEntryPoint stormpathAuthenticationEntryPoint() {
         return super.stormpathAuthenticationEntryPoint();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    @Override
+    public CorsConfigurationSource corsConfigurationSource() {
+        return super.corsConfigurationSource();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    public AccountResolverFilter springSecurityResolvedAccountFilter() {
+        return super.springSecurityResolvedAccountFilter();
+    }
+
+    /**
+     * @since 1.3.0
+     */
+    @Bean
+    public StormpathWrapperFilter stormpathWrapperFilter() {
+        return super.stormpathWrapperFilter();
     }
 
 }

@@ -25,15 +25,17 @@ import com.stormpath.sdk.lang.Assert;
  * @param <O> The specific {@link FactorOptions} class
  * @since 1.1.0
  */
-public abstract class AbstractCreateFactorRequest<T extends Factor, O extends FactorOptions> implements CreateFactorRequest<T,O> {
+public abstract class AbstractCreateFactorRequest<T extends Factor, O extends FactorOptions> implements CreateFactorRequest<T, O> {
 
     protected final T factor;
     protected final O options;
+    private final boolean createChallenge;
 
-    public AbstractCreateFactorRequest(T factor, O options) {
+    public AbstractCreateFactorRequest(T factor, O options, boolean createChallenge) {
         Assert.notNull(factor, "factor cannot be null.");
         this.factor = factor;
         this.options = options;
+        this.createChallenge = createChallenge;
     }
 
     @Override
@@ -48,9 +50,14 @@ public abstract class AbstractCreateFactorRequest<T extends Factor, O extends Fa
 
     @Override
     public O getFactorOptions() throws IllegalStateException {
-        if(this.options == null){
+        if (this.options == null) {
             throw new IllegalStateException("FactorOptions has not been configured.");
         }
         return this.options;
+    }
+
+    @Override
+    public boolean isCreateChallenge() {
+        return createChallenge;
     }
 }

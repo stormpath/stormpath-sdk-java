@@ -37,6 +37,15 @@ public interface OAuthGrantRequestAuthenticationResult extends OAuthRequestAuthe
      */
     AccessToken getAccessToken();
 
+
+    /**
+     * Returns the String that corresponds to the OpenID Connect id_token (if present) created during the Create Grant
+     * Authentication operation.
+     * @return the String representation of the OpenID Connect id_token
+     * @since 1.4.0
+     */
+    String getIdTokenString();
+
     /**
      * Returns the String that corresponds to the token created during the Refresh Grant Authentication operation.
      * @return the String representation of the Oauth refresh token

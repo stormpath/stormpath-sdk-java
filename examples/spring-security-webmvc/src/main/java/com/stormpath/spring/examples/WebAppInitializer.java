@@ -15,6 +15,7 @@
  */
 package com.stormpath.spring.examples;
 
+import com.stormpath.sdk.servlet.filter.StormpathFilter;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -46,14 +47,15 @@ public class WebAppInitializer implements WebApplicationInitializer {
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
 
-        //Stormpath Filter
-        FilterRegistration.Dynamic filter = sc.addFilter("stormpathFilter", new DelegatingFilterProxy());
-        EnumSet<DispatcherType> types =
-                EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
-        filter.addMappingForUrlPatterns(types, false, "/*");
-
-        //Spring Security Filter
+        //Spring Security Filter: in front of Stormpath
         FilterRegistration.Dynamic securityFilter = sc.addFilter(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME, DelegatingFilterProxy.class);
         securityFilter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
+
+        //Stormpath Filter (after Spring Security)
+        FilterRegistration.Dynamic stormpathFilter = sc.addFilter(StormpathFilter.DEFAULT_FILTER_NAME, DelegatingFilterProxy.class);
+        EnumSet<DispatcherType> types =
+                EnumSet.of(DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
+        stormpathFilter.addMappingForUrlPatterns(types, false, "/*");
+
     }
 }

@@ -630,7 +630,7 @@ yl85oFHAdkguTA==
 
         CreateSamlResponseRequest createSamlResponseRequest = client.instantiate(CreateSamlResponseRequest.class)
         createSamlResponseRequest.setAccount(account)
-                createSamlResponseRequest.setAuthnIssueInstant(new Date())
+        createSamlResponseRequest.setAuthnIssueInstant(new Date())
         createSamlResponseRequest.setRequestId(requestId)
                 .setServiceProvider(registeredSamlServiceProvider)
 

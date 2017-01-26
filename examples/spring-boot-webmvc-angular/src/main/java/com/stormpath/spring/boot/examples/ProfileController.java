@@ -17,6 +17,7 @@ package com.stormpath.spring.boot.examples;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +31,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Controller
 public class ProfileController {
 
+    @Autowired
+    AccountResolver accountResolver;
+
     @RequestMapping(path = "/profile", method = POST)
     public void profile(HttpServletRequest req, HttpServletResponse res, @RequestBody Map<String, String> params) {
 
-        Account account = AccountResolver.INSTANCE.getAccount(req);
+        Account account = accountResolver.getAccount(req);
 
         if (account != null) {
             account.setGivenName(params.get("givenName"));

@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @since 1.1.0
  */
-public class DefaultGoogleAuthenticatorChallenge extends AbstractChallenge<GoogleAuthenticatorFactor, GoogleAuthenticatorChallengeStatus> implements GoogleAuthenticatorChallenge{
+public class DefaultGoogleAuthenticatorChallenge extends AbstractChallenge<GoogleAuthenticatorFactor, GoogleAuthenticatorChallengeStatus> implements GoogleAuthenticatorChallenge {
 
     static final Map<String, Property> PROPERTY_DESCRIPTORS = AbstractChallenge.PROPERTY_DESCRIPTORS;
 
@@ -52,5 +52,10 @@ public class DefaultGoogleAuthenticatorChallenge extends AbstractChallenge<Googl
             return null;
         }
         return GoogleAuthenticatorChallengeStatus.valueOf(value.toUpperCase());
+    }
+
+    @Override
+    public void setCode(String code) {
+        setProperty(CODE, code);
     }
 }

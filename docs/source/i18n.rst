@@ -9,7 +9,35 @@ All of the default views are fully internationalized using a standard `Java Reso
 
 #else
 
-All of the |project| default views are fully internationalized using standard Spring ``MessageSource`` internationalization support.  Spring Boot makes this even easier by supporting a default ``MessageSource`` as a ``messages`` resource bundle at the root of the classpath.  For example, assuming a Maven/Gradle project layout:
+All of the |project| default views are fully internationalized using standard Spring ``MessageSource`` internationalization support.
+
+#if( $springboot)
+
+Spring Boot makes this even easier by supporting a default ``MessageSource`` as a ``messages`` resource bundle at the root of the classpath.
+
+#elseif( $spring )
+
+You can support a default ``MessageSource`` as a ``messages`` resource bundle at the root of the classpath.
+
+Create a configuration somewhere in your project like so:
+
+.. code-block:: java
+
+    @Configuration
+    public class MessageConfig {
+
+        @Bean
+        public MessageSource messageSource() {
+            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+            messageSource.setBasename("messages");
+            messageSource.setDefaultEncoding("UTF-8");
+            return messageSource;
+        }
+    }
+
+#end
+
+Assuming a Maven/Gradle project layout, here's the structure for your internationalization properties files:
 
 .. parsed-literal::
 
@@ -20,7 +48,6 @@ All of the |project| default views are fully internationalized using standard Sp
            \|-- messages_es.properties
            \|-- messages_de.properties
            \|-- ... etc ...
-
 
 #end
 
@@ -47,8 +74,13 @@ You can add other languages as follows:
 
 #else
 
-1.  Create one or more ``messages_LOCALE.properties`` files to the root package (as shown above), for example ``messages_es.properties`` for Spanish (or even ``messages_es_ES.properties`` for Spain's dialect of Spanish and ``messages_es_MX.properties`` for Mexican dialect of Spanish, etc).
-2.  In each locale-specific file, re-define each Stormpath :ref:`i18n property <i18n-properties-file>` value in that language.
+1.  Create a ``messages.properties`` file in the root package (as shown above). Even if you do not put anything inside of it, other languages will not work unless the base file exists.
+2.  Create one or more ``messages_LOCALE.properties`` files to the root package (as shown above), for example ``messages_es.properties`` for Spanish (or even ``messages_es_ES.properties`` for Spain's dialect of Spanish and ``messages_es_MX.properties`` for Mexican dialect of Spanish, etc).
+3.  In each locale-specific file, re-define each Stormpath :ref:`i18n property <i18n-properties-file>` value in that language.
+
+.. caution::
+
+    Even if there are no English properties you wish to override, you must have a ``messages.properties`` file (can be empty) if you intend to provide properties in other languages
 
 #end
 

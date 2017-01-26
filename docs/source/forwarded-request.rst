@@ -164,13 +164,8 @@ properties.  This is the default configuration in effect if you don't specify an
            value:
              strategy: scalars
              fields:
-               href:
-                 enabled: false
                customData:
                  strategy: scalars
-                 fields:
-                   href:
-                     enabled: false
                groups:
                  strategy: defined
                  elements:
@@ -188,23 +183,18 @@ So what does this mean?  You can summarize this in English as the following:
 
    - all of the account's `scalar`_ (i.e. non object/collection) fields to be included, each as a JSON name/value pair.
 
-   - However, I want specific overriding rules for the ``href``, ``customData`` and ``groups`` fields.  For these:
-
-     - don't include the account's ``href`` field.  My origin server(s) behind the gateway probably won't talk
-       directly with Stormpath and won't know what to do with that url, so exclude it
+   - However, I want specific overriding rules for the ``customData`` and ``groups`` fields.  For these:
 
      - ``customData`` isn't a scalar, but I want it included anyway, so I'm going to define conversion rules for it
-       too.  Those are:
+       too.  That is :
 
        - Include any of the customData's scalar properties automatically
-
-       - However, don't include the customData's ``href``, since my origin server(s) won't know what to do with it.
 
      - ``groups`` isn't a scalar (it's a ``GroupsCollection`` object), but I want it included anyway.
 
        - However, in this case I want to include *only* fields that are explicitly *defined* in its ``fields``
          list.  (In this case, even though the strategy is ``defined``, no actual ``fields`` have been specified.
-         This means that *no* fields on the ``GroupsCollection`` object itself, like 'size' and 'limit' will be
+         This means that *no* fields on the ``GroupsCollection`` object itself, like 'href', 'size' and 'limit' will be
          included.  We just want the collection's elements, described next.)
 
        - The collection ``elements`` are enabled so I do want the elements in the collection.
@@ -221,6 +211,7 @@ bytes transmitted over the network, the actual value won't be pretty-printed):
 .. code-block:: json
 
    {
+     "href": "https://api.stormpath.com/v1/accounts/753veZGE2aIy64VnTrF5Ov",
      "username": "tk421",
      "email": "tk421@galacticempire.com",
      "givenName": "TK421",
@@ -233,6 +224,7 @@ bytes transmitted over the network, the actual value won't be pretty-printed):
      "passwordModifiedAt": "2016-12-15T19:58:55.000Z",
      "emailVerificationToken": null,
      "customData": {
+       "href": "https://api.stormpath.com/v1/accounts/753veZGE2aIy64VnTrF5Ov/customData",
        "createdAt": "2016-12-15T19:58:55.272Z",
        "modifiedAt":"2016-12-15T19:59:23.729Z",
        "favoriteColor": "Blaster Black"
@@ -240,6 +232,7 @@ bytes transmitted over the network, the actual value won't be pretty-printed):
      "groups": {
        "items": [
          {
+           "href": "https://api.stormpath.com/v1/groups/4NQzRKj0qDq1wIg9M0jUfa",
            "name": "dsguards",
            "description": "Death Star Guards",
            "status": "ENABLED",
@@ -247,6 +240,7 @@ bytes transmitted over the network, the actual value won't be pretty-printed):
            "modifiedAt":"2016-12-28T00:34:46.453Z"
          },
          {
+           "href": "https://api.stormpath.com/v1/groups/9fBEMQtvElx2Zn7a0ku1Dj",
            "name": "troopers",
            "description": "All stormtroopers",
            "status": "ENABLED",
@@ -397,6 +391,23 @@ Notice the resulting JSON - ``groups`` is not an object with a nested ``items`` 
 The ``enabled`` conversion property indicates if the field will be included in the output sent to the origin server.  If
 the value is ``false``, that field will not be included at all in the output sent to the origin server.  The default
 value is ``true``.
+
+For example, the following config indicates that, although the general strategy is to include the user account's
+scalar fields, the ``href`` field is excluded/omitted from the output JSON entirely:
+
+.. code-block:: yaml
+   :emphasize-lines: 8-9
+
+   stormpath:
+     zuul:
+       account:
+         header:
+           value:
+             strategy: scalars
+             fields:
+               href:
+                 enabled: false
+
 
 .. _object conversion field:
 
@@ -687,7 +698,7 @@ security contexts.  For example:
 ``notBeforeSeconds``
 ^^^^^^^^^^^^^^^^^^^^
 
-You can specify a minimum timestamp of when the JWT is allowed to be used by the origin servers by
+You can specify the earliest timestamp of when the JWT is allowed to be used by the origin servers by
 specifying the ``stormpath.zuul.account.header.jwt.notBeforeSeconds`` property.
 
 The value is a ``long`` that indicates the number of **seconds** (*not* milliseconds!) that will be added
@@ -812,11 +823,10 @@ You may configure the signing key used to cryptographically sign the JWT via var
    However, it is probably unlikely that your backend origin servers will have this same key configured, so they will
    not be able to verify the JWT's digital signature.
 
-   To avoid JWT key/parsing errors in your origin servers, we recommend that specify your own signing key via
-   the :ref:`stormpath.zuul.account.header.jwt.key.value property <forwarded account signing key value>` or by
-   defining the :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.
-
-   Also please see the :ref:`signing key alg <forwarded account signing key alg>` section for more information.
+   To avoid JWT key/parsing errors in your origin servers, we recommend that specify your own signing key via either
+   the :ref:`stormpath.zuul.account.header.jwt.key.value <forwarded account signing key value>` or
+   :ref:`stormpath.zuul.account.header.jwt.key.resource <forwarded account signing key resource>` properties or by
+   defining your own :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.
 
 
 .. _forwarded account signing key alg:
@@ -858,17 +868,15 @@ For example:
                alg: HS256
 
 
-If you are using an HMAC algorithm by specifying ``HS256``, ``HS384``, or ``HS512``, you can provide your HMAC
-symmetric key in one of two ways.  Either:
+You can provide the corresponding secret/private key in one of three ways:
 
 A. Set the ``stormpath.zuul.account.header.jwt.key.value`` and ``stormpath.zuul.account.header.jwt.key.encoding``
    config properties, or
 
-B. Define the :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.
+B. (for RSA and Elliptic Curve private keys only): Set the ``stormpath.zuul.account.header.jwt.key.resource`` to a
+   `Spring Resource Path <http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html#resources-resourceloader>`_, or
 
-
-**If you are not using an HMAC algorithm**, you **must** provide your signing key
-by defining the :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.
+C. Define the :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.
 
 
 ``enabled``
@@ -893,13 +901,14 @@ This will ensure that the JWT created is *NOT* digitally signed - it will be an
 However, unsecured JWTs could be useful in very specific circumstances specific to your application.
 If you're unsure, we recommend that you *do not* set this property.
 
+.. _forwarded account signing key encoding:
 
 ``encoding``
 """"""""""""
 
-If you specified the text value of your HMAC signing key via the ``stormpath.zuul.account.header.jwt.key.value`` property,
-and that string is *not* Base64Url-encoded, you will need to set the ``stormpath.zuul.account.header.jwt.key.encoding``
-property to indicate which encoding is used.  For example:
+If you specified the text value of your private key via the ``stormpath.zuul.account.header.jwt.key.value`` property,
+and that string is *not* Base64Url-encoded or PEM-encoded, you must set the
+``stormpath.zuul.account.header.jwt.key.encoding`` property to indicate which encoding is used.  For example:
 
 .. code-block:: yaml
    :emphasize-lines: 8
@@ -914,65 +923,19 @@ property to indicate which encoding is used.  For example:
                encoding: base64
 
 
-The default/assumed encoding is ``base64url``.  There are two other supported encodings:
+There are four supported encodings:
 
+* ``base64url``: standard Base64Url encoding, assumed by default
 * ``base64``: standard Base64 encoding (not URL encoded)
 * ``utf8``: direct UTF-8 bytes of the configured string, i.e. ``value.getBytes(StandardCharsets.UTF8)``
+* ``pem``: a `PEM-formatted <https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail>`_ string, automatically detected
 
-**CAUTION**: these 3 text encodings are not cryptographically secure.  Please see the
+The default/assumed encoding is ``base64url``, but PEM-encoded strings will be detected automatically.  Therefore you
+only need to set the ``stormpath.zuul.account.header.jwt.key.encoding`` property if your key value is ``base64`` or
+``utf8`` encoded.
+
+**CAUTION**: these 4 text encodings are not inherently cryptographically secure.  Please see the
 :ref:`key caution <forwarded account signing key value caution>` concerning key string values.
-
-.. _forwarded account signing key value:
-
-``value``
-"""""""""
-
-If you want to configure your HMAC signing key as a string, you can set the
-``stormpath.zuul.account.header.jwt.key.value`` property.  For example:
-
-.. code-block:: yaml
-
-   stormpath:
-     zuul:
-       account:
-         header:
-           jwt:
-             key:
-               value: EQDGRjSpZB87_eWO42XQ7h7mfxk0EmF6ZDY0TDGdAoA
-
-
-By default, the key value is expected to be a Base64Url string.  The |project| will then base64url-decode this value
-at startup to obtain the raw signing key bytes used to compute the JWT signature.
-
-If your value string is not Base64Url, you can specify the ``stormpath.zuul.account.header.jwt.key.encoding``
-config property to indicate which encoding is used.
-
-.. _forwarded account signing key value caution:
-
-.. caution::
-
-   **Base64, Base64Url and UTF-8 encoding DOES NOT imply encryption**.
-
-   Anyone that can access the
-   ``stormpath.zuul.account.header.jwt.key.value`` string value can use it to sign JWTs as you.  Keep this text string (and
-   the configured property value) safe and secret.
-
-   If you are uncomfortable embedding key strings in your configuration due to security concerns, we recommend
-   any of three approaches:
-
-   1.  Specify the ``stormpath.zuul.account.header.jwt.key.value`` value as an
-       `external Spring Boot property <https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html>`_.
-       For example, set the ``STORMPATH_ZUUL_ACCOUNT_HEADER_JWT_KEY_K`` environment variable via an operations
-       orchestration mechanism like Chef, Puppet or CloudFoundry that has access to secure/encrypted data store for
-       such values.
-
-   2.  Use `Spring Cloud Config Server <https://cloud.spring.io/spring-cloud-config/spring-cloud-config.html#_security>`_
-       to securely represent key values as text properties in your config.  Spring Cloud Config Server will decrypt
-       the text value just before giving it to the |project| so it may be used correctly.
-
-   3.  Do not configure the ``stormpath.zuul.account.header.jwt.key.value`` property and instead define your own
-       :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.  You can then load the
-       key bytes in whatever secure way you prefer.
 
 
 ``id``
@@ -1015,6 +978,116 @@ Note that since it is a header, an alternative approach of accomplishing the sam
 
 The first approach keeps the key id configuration 'close to' the other key parameters, which might be desirable
 depending on preference.  Either approach accomplishes the same thing - feel free to use what you prefer.
+
+
+.. _forwarded account signing key resource:
+
+``resource``
+""""""""""""
+
+If you want to use an RSA or Elliptic Curve private key to sign the JWT, you can point to a private key resource
+(like a file or URL) instead of pasting the the key contents into your Spring configuration files by specifying the
+``stormpath.zuul.account.header.jwt.key.resource`` property.  For example:
+
+.. code-block:: yaml
+
+   stormpath:
+     zuul:
+       account:
+         header:
+           jwt:
+             key:
+               resource: classpath://myRsaPrivateKey.pem
+
+
+The ``resource`` property value can be any String path supported by the
+`Spring ResourceLoader <http://docs.spring.io/spring/docs/current/spring-framework-reference/html/resources.html#resources-resourceloader>`_.
+
+The resource loaded must be a PEM-encoded RSA or Elliptic Curve PRIVATE KEY (public keys cannot be used to create
+cryptographic signatures).  However, **NOTE**:
+
+.. note::
+
+   Because PEM-encoding is not natively supported by the JVM, you must have BouncyCastle's ``bcpkix-jdk15on``
+   artifact, version 1.56 or newer as a dependency in your application's runtime classpath. For example:
+
+   **Maven**:
+
+   .. code-block:: xml
+
+      <dependency>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcpkix-jdk15on</artifactId>
+          <version>1.56</version>
+          <scope>runtime</scope>
+      </dependency>
+
+   **Gradle**:
+
+   .. code-block:: groovy
+
+      dependencies {
+          runtime 'org.bouncycastle:bcpkix-jdk15on:1.56'
+      }
+
+
+.. _forwarded account signing key value:
+
+``value``
+"""""""""
+
+If you want to configure your private signing key as a string, you can set the
+``stormpath.zuul.account.header.jwt.key.value`` property.  For example:
+
+.. code-block:: yaml
+
+   stormpath:
+     zuul:
+       account:
+         header:
+           jwt:
+             key:
+               value: EQDGRjSpZB87_eWO42XQ7h7mfxk0EmF6ZDY0TDGdAoA
+
+
+By default, the key value is expected to be a Base64Url string, but PEM-encoded values will be detected automatically.
+The |project| will then base64url-decode (or PEM-decode) this value at startup to obtain the private signing key bytes
+used to compute the JWT signature.
+
+If your value string is not Base64Url or PEM-encoded, you must also specify the
+:ref:`stormpath.zuul.account.header.jwt.key.encoding <forwarded account signing key encoding>` property.
+
+.. _forwarded account signing key value caution:
+
+.. caution::
+
+   **Base64, Base64Url, UTF-8 and PEM encoding DOES NOT imply encryption**.
+
+   Anyone that can access the
+   ``stormpath.zuul.account.header.jwt.key.value`` string value can use it to sign JWTs as you.  Keep this text string
+   (and the configured property value) safe and secret.
+
+   If you are uncomfortable embedding key strings in your configuration due to security concerns, we recommend
+   any of four approaches:
+
+   1. Specify the ``stormpath.zuul.account.header.jwt.key.value`` value as an
+      `external Spring Boot property <https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html>`_.
+      For example, set the ``STORMPATH_ZUUL_ACCOUNT_HEADER_JWT_KEY_K`` environment variable via an operations
+      orchestration mechanism like Chef, Puppet or CloudFoundry that has access to secure/encrypted data store for
+      such values.
+
+   2. Use `Spring Cloud Config Server <https://cloud.spring.io/spring-cloud-config/spring-cloud-config.html#_security>`_
+      to securely represent key values as text properties in your config.  Spring Cloud Config Server will decrypt
+      the text value just before giving it to the |project| so it may be used correctly.
+
+   3. If using an RSA or Elliptic Curve private key, configure the
+      :ref:`stormpath.zuul.account.header.jwt.key.resource <forwarded account signing key resource>`
+      property instead.  This will load your private key from the specified resource location, which can reflect a
+      secured file system or URL for example.
+
+   4. Do not configure the ``stormpath.zuul.account.header.jwt.key.value`` property and instead define your own
+      :ref:`stormpathForwardedAccountJwtSigningKey <forwarded account signing key bean>` bean.  You can then load the
+      key bytes in whatever secure way you prefer.
 
 
 ``valueClaim``
@@ -1154,20 +1227,17 @@ This would result in JWT claims that look something like this:
 Signing Key Bean
 """"""""""""""""
 
-If you are using an RSA or Elliptic Curve private key to sign the JWT, or you just prefer to specify your signing key
-as a bean, you must provide the key by defining a ``stormpathForwardedAccountJwtSigningKey`` bean in your Spring
-configuration:
+If you cannot or do not want to load your secret/private key using the configuration properties above, you can provide
+the key by defining a ``stormpathForwardedAccountJwtSigningKey`` bean in your Spring configuration:
 
 .. code-block:: java
 
     @Bean
     public java.security.Key stormpathForwardedAccountJwtSigningKey() {
-        //load the RSA or Elliptic Curve private key here and return it.
+        //load the HMAC, RSA or Elliptic Curve private key here and return it.
     }
 
-
-You can also define this bean to provide your symmetric key for HMAC algorithms as well if you prefer not to
-configure the HMAC signing key using the ``stormpath.zuul.account.header.jwt.key.value`` config property.
+This allows you finer grained control to look up the Key from whatever source you prefer.
 
 
 Custom Header Value

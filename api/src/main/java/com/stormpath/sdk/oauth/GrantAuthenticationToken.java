@@ -39,6 +39,14 @@ public interface GrantAuthenticationToken extends Resource {
     public String getRefreshToken();
 
     /**
+     * Returns the value denoting the id token of the response as a <a href="https://en.wikipedia.org/wiki/JSON_Web_Token">Json Web Token</a> for certain requests.
+     * The details of id_token are described in the <a href="http://openid.net/specs/openid-connect-core-1_0.html#IDToken">OpenID Connect spec</a>.
+     * @return the String value denoting the id token of the response or null if there is no id token returned
+     * @since 1.4.0
+     */
+    public String getIdToken();
+
+    /**
      * Returns the type of the token included in the response.
      *
      * @return the String value denoting the type of the token included in the response.

@@ -176,7 +176,7 @@ Property Overrides
 
 Wherever possible, sane default configuration values are used to automatically configure Stormpath beans loaded by Spring.
 
-If you wish to override any of these defaults, you can do so by overriding properties in your ${apptype}'s Spring Boot `application.properties`_ locations.  In most cases, setting a configuration property will be all that is necessary - most of all of the default Stormpath bean implementations are highly configurable with property values.  If you need even finer control, you may wish to re-define a Stormpath bean entirely to provide your own implementation as discussed in the next section below.
+If you wish to override any of these defaults, you can do so by overriding properties in your ${apptype}'s Spring #if(!$spring)Boot#end `application.properties`_ locations.  In most cases, setting a configuration property will be all that is necessary - most of all of the default Stormpath bean implementations are highly configurable with property values.  If you need even finer control, you may wish to re-define a Stormpath bean entirely to provide your own implementation as discussed in the next section below.
 
 All Stormpath configuration properties are prefixed with ``stormpath.`` and take the following form (for example):
 
@@ -185,7 +185,7 @@ All Stormpath configuration properties are prefixed with ``stormpath.`` and take
     stormpath.some.property.name = aValue
     stormpath.another.property.name = anotherValue
 
-Simply just re-define the relevant ``stormpath.``\* property in one of your ${apptype}'s Spring Boot `application.properties`_ locations and your value will be used instead of the default.
+Simply just re-define the relevant ``stormpath.*`` property in one of your ${apptype}'s Spring #if(!$spring)Boot#end `application.properties`_ locations and your value will be used instead of the default.
 
 .. _property security considerations:
 
@@ -206,7 +206,7 @@ Bean Overrides
 
 If property overrides are not sufficient or you need even finer control, you may wish to re-define a Stormpath bean entirely and provide your own custom implementation.
 
-To do so, you just need to re-define that bean in your own Spring Boot Java configuration.  Often certain bean names must be retained, so if you re-define a bean, try to use the same name and your bean will be used instead of the default.
+To do so, you just need to re-define that bean in your own Spring #if(!$spring)Boot#end Java configuration.  Often certain bean names must be retained, so if you re-define a bean, try to use the same name and your bean will be used instead of the default.
 
 For example, assume a bean named ``stormpathJwtFactory`` existed.  To use your own implementation instead of the Stormpath default, just redefine the bean in your project's Java Config.  For example:
 
@@ -233,12 +233,14 @@ The API Key used by the SDK Client will be acquired from the following locations
 
 #if( $servlet )
 
+* ``STORMPATH_API_KEY_FILE`` environment variable, which refers to the location of an api key properties file
 * ``$HOME/.stormpath/apiKey.properties`` file
 * Any ``stormpath.client.apiKey.id`` value discovered from inspected :ref:`property locations <stormpath.properties locations>`
 * Any ``stormpath.client.apiKey.secret`` value discovered from inspected :ref:`property locations <stormpath.properties locations>`
 
 #else
 
+* ``STORMPATH_API_KEY_FILE`` environment variable, which refers to the location of an api key properties file
 * ``$HOME/.stormpath/apiKey.properties`` file
 * Any ``stormpath.client.apiKey.id`` value discovered from Spring property placeholder locations
 * Any ``stormpath.client.apiKey.secret`` value discovered from Spring property placeholder locations
@@ -467,4 +469,8 @@ URI Evaluation Priority
 .. _context path: http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServletRequest.html#getContextPath()
 .. _cryptographic digest: http://en.wikipedia.org/wiki/Cryptographic_hash_function
 .. _Stormpath Admin Console: https://api.stormpath.com
+#if( $springboot or $sczuul )
 .. _application.properties: http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
+#elseif( $spring )
+.. _application.properties: http://docs.spring.io/spring/docs/current/spring-framework-reference/html/beans.html#beans-property-source-abstraction
+#end

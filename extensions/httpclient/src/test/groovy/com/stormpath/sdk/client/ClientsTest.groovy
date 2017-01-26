@@ -59,8 +59,9 @@ public class ClientsTest {
         //match what is set in stormpath.properties since it can't be created/deleted while testing
         assertEquals client.dataStore.cacheManager.defaultTimeToLive, new Duration(300, TimeUnit.SECONDS)
         assertEquals client.dataStore.cacheManager.defaultTimeToIdle, new Duration(300, TimeUnit.SECONDS)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 30 * 1000)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 30 * 1000)
+
+        assertEquals(client.dataStore.requestExecutor.httpClient.defaultConfig.socketTimeout, 30 * 1000)
+        assertEquals(client.dataStore.requestExecutor.httpClient.defaultConfig.connectTimeout, 30 * 1000)
     }
 
     @Test
@@ -195,8 +196,9 @@ public class ClientsTest {
         def builder = Clients.builder().setConnectionTimeout(990)
         assertEquals(builder.clientConfig.connectionTimeout, 990)
         def client = builder.build()
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.SO_TIMEOUT), 990000)
-        assertEquals(client.dataStore.requestExecutor.httpClient.getParams().getParameter(AllClientPNames.CONNECTION_TIMEOUT), 990000)
+
+        assertEquals(client.dataStore.requestExecutor.httpClient.defaultConfig.socketTimeout, 990000)
+        assertEquals(client.dataStore.requestExecutor.httpClient.defaultConfig.connectTimeout, 990000)
     }
 
     /* @since 1.0.RC3 */

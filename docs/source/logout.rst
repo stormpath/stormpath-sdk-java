@@ -26,7 +26,7 @@ manipulates resource (user) state, ideally logout should never be available via 
 What does this mean for you?  It simply means that you will need to put a Logout link or button somewhere
 in your pages that allows a user to logout safely.
 
-#if( $servlet )
+#if( $servlet or $spring )
 
 For example, here is a JSTL snippet that renders a logout that is submitted with a logout button:
 
@@ -39,7 +39,7 @@ For example, here is a JSTL snippet that renders a logout that is submitted with
     </form>
   </c:if>
 
-#else
+#elseif ( $springboot or $sczuul )
 
 For example, here is a Thymeleaf snippet that renders a logout form that is submitted with a logout button:
 

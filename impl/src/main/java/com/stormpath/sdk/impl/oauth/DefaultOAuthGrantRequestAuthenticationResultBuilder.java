@@ -33,6 +33,8 @@ public class DefaultOAuthGrantRequestAuthenticationResultBuilder implements OAut
 
     protected String refreshTokenString;
 
+    protected String idTokenString;
+
     protected String accessTokenHref;
 
     protected String tokenType;
@@ -52,6 +54,10 @@ public class DefaultOAuthGrantRequestAuthenticationResultBuilder implements OAut
 
     public String getAccessTokenString() {
         return accessTokenString;
+    }
+
+    public String getIdTokenString() {
+        return idTokenString;
     }
 
     public RefreshToken getRefreshToken() {
@@ -80,6 +86,7 @@ public class DefaultOAuthGrantRequestAuthenticationResultBuilder implements OAut
 
         this.accessToken = grantAuthenticationToken.getAsAccessToken();
         this.accessTokenString = grantAuthenticationToken.getAccessToken();
+        this.idTokenString = grantAuthenticationToken.getIdToken();
         this.refreshTokenString = grantAuthenticationToken.getRefreshToken();
         this.accessTokenHref = grantAuthenticationToken.getAccessTokenHref();
         this.tokenType = grantAuthenticationToken.getTokenType();

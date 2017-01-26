@@ -32,12 +32,18 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMapping
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList
 import com.stormpath.sdk.application.Applications
 import com.stormpath.sdk.authc.UsernamePasswordRequests
+import com.stormpath.sdk.challenge.google.GoogleAuthenticatorChallenge
+import com.stormpath.sdk.challenge.sms.SmsChallenge
 import com.stormpath.sdk.client.AuthenticationScheme
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.AccountStore
 import com.stormpath.sdk.directory.Directories
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.factor.FactorOptions
+import com.stormpath.sdk.factor.Factors
+import com.stormpath.sdk.factor.google.GoogleAuthenticatorFactor
+import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.group.Group
 import com.stormpath.sdk.group.Groups
 import com.stormpath.sdk.http.HttpMethod
@@ -47,6 +53,7 @@ import com.stormpath.sdk.impl.ds.DefaultDataStore
 import com.stormpath.sdk.impl.error.DefaultError
 import com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator
 import com.stormpath.sdk.impl.idsite.IdSiteClaims
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication
 import com.stormpath.sdk.impl.resource.AbstractResource
 import com.stormpath.sdk.impl.saml.SamlResultStatus
 import com.stormpath.sdk.impl.security.ApiKeySecretEncryptionService
@@ -62,6 +69,7 @@ import com.stormpath.sdk.oauth.OAuthPolicy
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthRequestAuthenticator
 import com.stormpath.sdk.oauth.OAuthRequests
+import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthentication
 import com.stormpath.sdk.oauth.OAuthTokenRevocator
 import com.stormpath.sdk.oauth.OAuthTokenRevocators
 import com.stormpath.sdk.oauth.RefreshToken
@@ -82,11 +90,19 @@ import io.jsonwebtoken.Jws
 import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import org.apache.commons.codec.binary.Base32
 import org.apache.commons.codec.binary.Base64
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import org.testng.annotations.Test
 
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import javax.servlet.http.HttpServletRequest
 import java.lang.reflect.Field
+import java.security.InvalidKeyException
+import java.security.NoSuchAlgorithmException
+import java.util.concurrent.TimeUnit
 
 import static com.stormpath.sdk.application.Applications.newCreateRequestFor
 import static org.easymock.EasyMock.createMock
@@ -681,8 +697,9 @@ class ApplicationIT extends ClientIT {
         } catch (com.stormpath.sdk.resource.ResourceException e) {
             assertEquals(e.getStatus(), 400)
             assertEquals(e.getCode(), 7200)
-            assertTrue(e.getDeveloperMessage().contains("Stormpath was not able to complete the request to"))
-            assertTrue(e.getDeveloperMessage().contains("Google") || e.getDeveloperMessage().contains("google"))
+            //asserting this error message has caused problems, we are just reducing it to be sure that the error message
+            //refers to a google directory
+            assertTrue(e.getDeveloperMessage().toUpperCase().contains("GOOGLE"))
         }
     }
 
@@ -1860,6 +1877,143 @@ class ApplicationIT extends ClientIT {
         assertEquals result.getExpiresIn(), 3600
     }
 
+    /* @since 1.3.1 */
+    @Test
+    void testCreateStormpathFactorChallengeTokenForGoogleAuthenticatorFactorWithBadCode() {
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        GoogleAuthenticatorFactor factor = createGoogleAuthenticatorFactor(account)
+
+        def challenge = client.instantiate(GoogleAuthenticatorChallenge)
+        challenge = factor.createChallenge(challenge)
+
+        String bogusCode = "000000"
+        OAuthStormpathFactorChallengeGrantRequestAuthentication request = new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(null, challenge.href, bogusCode)
+
+        try {
+            Authenticators.OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
+            fail()
+        }
+        catch (ResourceException re) {
+            assertEquals(re.getStatus(), 400)
+            assertEquals(re.getCode(), 13104)
+        }
+    }
+
+    /* @since 1.3.1 */
+    @Test
+    void testCreateStormpathFactorChallengeTokenForGoogleAuthenticatorFactorWithValidCode() {
+        def app = createTempApp()
+
+        def account = createTestAccount(app)
+
+        GoogleAuthenticatorFactor factor = createGoogleAuthenticatorFactor(account)
+
+        sleepToAvoidCrossingThirtySecondMark()
+
+        def challenge = client.instantiate(GoogleAuthenticatorChallenge)
+        challenge = factor.createChallenge(challenge)
+
+        String validCode = calculateCurrentTOTP(new Base32().decode(factor.getSecret()))
+
+        OAuthStormpathFactorChallengeGrantRequestAuthentication request = new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(null, challenge.href, validCode)
+
+        def result = Authenticators.OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR.forApplication(app).authenticate(request)
+        assertNotNull result.getAccessTokenHref()
+        assertEquals result.getAccessToken().getHref(), result.getAccessTokenHref()
+        assertEquals(result.getAccessToken().getAccount().getHref(), account.getHref())
+        assertEquals(result.getAccessToken().getApplication().getHref(), app.getHref())
+        assertTrue Strings.hasText(result.getAccessTokenString())
+
+        assertNotNull result.getRefreshToken().getHref()
+        assertEquals(result.getRefreshToken().getAccount().getHref(), account.getHref())
+        assertEquals(result.getRefreshToken().getApplication().getHref(), app.getHref())
+
+        assertEquals result.getTokenType(), "Bearer"
+        assertEquals result.getExpiresIn(), 3600
+    }
+
+    private GoogleAuthenticatorFactor createGoogleAuthenticatorFactor(Account account) {
+        GoogleAuthenticatorFactor factor = client.instantiate(GoogleAuthenticatorFactor)
+        factor = factor.setAccountName("accountName").setIssuer("issuer")
+
+        def builder = Factors.GOOGLE_AUTHENTICATOR.newCreateRequestFor(factor).createChallenge()
+        factor = account.createFactor(builder.build())
+
+        FactorOptions factorOptions = Factors.options().withMostRecentChallenge()
+        factor = client.getResource(factor.href, GoogleAuthenticatorFactor.class, factorOptions)
+        return factor
+    }
+
+    private static final String HMAC_HASH_FUNCTION = "HmacSHA1";
+    private static final int KEY_MODULUS = (int) Math.pow(10, CODE_DIGITS);
+    private static final int CODE_DIGITS = 6;
+
+    /**
+     * Calculates a TOTP from the given key which should agree with the one generated
+     * by Google Authenticator when provided with the same key.
+     * See https://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm
+     *
+     * @param key the key used to compute the TOTP
+     * @return the current TOTP, as would be computed by Google Authenticator
+     */
+    private static String calculateCurrentTOTP(byte[] key) {
+        long timeCounter = System.currentTimeMillis() / TimeUnit.SECONDS.toMillis(30)
+
+        byte[] data = new byte[8];
+        long value = timeCounter;
+
+        for (int i = 8; i-- > 0; value >>>= 8) {
+            data[i] = (byte) value;
+        }
+
+        SecretKeySpec signKey = new SecretKeySpec(key, HMAC_HASH_FUNCTION);
+
+        try {
+            Mac mac = Mac.getInstance(HMAC_HASH_FUNCTION);
+            mac.init(signKey);
+
+            byte[] hash = mac.doFinal(data);
+
+            int offset = hash[hash.length - 1] & 0xF;
+
+            long truncatedHash = 0;
+            for (int i = 0; i < 4; ++i) {
+                truncatedHash <<= 8;
+
+                // Java bytes are signed but we need an unsigned integer:
+                // cleaning off all but the LSB.
+                truncatedHash |= (hash[offset + i] & 0xFF);
+            }
+
+            // Clean bits higher than the 32nd (inclusive) and calculate the
+            // module with the maximum validation code value.
+            truncatedHash &= 0x7FFFFFFF;
+            truncatedHash %= KEY_MODULUS;
+
+            return String.format("%06d", (int) truncatedHash)
+        }
+        catch (NoSuchAlgorithmException | InvalidKeyException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    protected void sleepToAvoidCrossingThirtySecondMark() {
+        DateTime now = new DateTime(DateTimeZone.UTC)
+        int seconds = now.getSecondOfMinute()
+        int secondsToWait
+        if ((seconds <= 30) && (seconds > 25)) {
+            secondsToWait = 31 - seconds
+        }
+        else if ((seconds <= 60) && (seconds > 55)) {
+            secondsToWait = 61 - seconds
+        }
+
+        sleep(secondsToWait * 1000)
+    }
+
     /* @since 1.0.RC7 */
 
     @Test
@@ -2438,4 +2592,5 @@ class ApplicationIT extends ClientIT {
 
         assertFalse result.newAccount
     }
+
 }

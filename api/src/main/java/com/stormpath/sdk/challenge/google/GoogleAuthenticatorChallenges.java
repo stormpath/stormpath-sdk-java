@@ -58,7 +58,7 @@ public final class GoogleAuthenticatorChallenges extends Challenges {
     }
 
     private static final Class<CreateChallengeRequestBuilder> BUILDER_CLASS =
-            Classes.forName("com.stormpath.sdk.impl.challenge.DefaultCreateChallengeRequestBuilder");
+            Classes.forName("com.stormpath.sdk.impl.challenge.google.DefaultGoogleAuthenticatorCreateChallengeRequestBuilder");
 
     //Prevent instantiation outside of outer class.
     //Use getInstance() to retrieve the singleton instance.
@@ -152,9 +152,9 @@ public final class GoogleAuthenticatorChallenges extends Challenges {
      *
      * @since 1.1.0
      */
-    public static CreateChallengeRequestBuilder<GoogleAuthenticatorChallenge> newCreateRequestFor(GoogleAuthenticatorChallenge challenge) {
-        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, Challenge.class);
-        return (CreateChallengeRequestBuilder<GoogleAuthenticatorChallenge>) Classes.instantiate(ctor, challenge);
+    public static GoogleAuthenticatorCreateChallengeRequestBuilder newCreateRequestFor(GoogleAuthenticatorChallenge challenge) {
+        Constructor ctor = Classes.getConstructor(BUILDER_CLASS, GoogleAuthenticatorChallenge.class);
+        return (GoogleAuthenticatorCreateChallengeRequestBuilder) Classes.instantiate(ctor, challenge);
     }
 
     private static EqualsExpressionFactory newEqualsExpressionFactory(String propName) {

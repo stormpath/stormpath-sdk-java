@@ -18,6 +18,7 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthenticationResultBuilde
 
         this.accessToken = grantAuthenticationToken.getAsAccessToken();
         this.accessTokenString = grantAuthenticationToken.getAccessToken();
+        this.idTokenString = grantAuthenticationToken.getIdToken();
         this.accessTokenHref = grantAuthenticationToken.getAccessTokenHref();
         this.tokenType = grantAuthenticationToken.getTokenType();
         this.expiresIn = Integer.parseInt(grantAuthenticationToken.getExpiresIn());

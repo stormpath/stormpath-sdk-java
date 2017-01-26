@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 public class FacebookCallbackController extends AbstractSocialCallbackController {
 
     @Override
-    protected ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
+    public ProviderAccountRequest getAccountProviderRequest(HttpServletRequest request) {
         String accessToken = ServletUtils.getCleanParam(request, "accessToken");
         return Providers.FACEBOOK.account().setAccessToken(accessToken).build();
     }

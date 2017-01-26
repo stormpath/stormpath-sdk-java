@@ -62,6 +62,7 @@ import com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
 import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
@@ -86,6 +87,7 @@ import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthPolicy;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthTokenRevocator;
 import com.stormpath.sdk.organization.Organization;
@@ -879,6 +881,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     /* @since 1.1.0 */
     public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
         return new DefaultOAuthStormpathSocialGrantRequestAuthenticator(this, getDataStore());
+    }
+
+    /* @since 1.3.1 */
+    public OAuthStormpathFactorChallengeGrantRequestAuthenticator createStormpathFactorChallengeGrantAuthenticator() {
+        return new DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.0.RC7 */

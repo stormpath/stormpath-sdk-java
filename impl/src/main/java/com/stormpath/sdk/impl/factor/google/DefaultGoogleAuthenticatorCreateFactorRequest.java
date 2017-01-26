@@ -28,7 +28,7 @@ public class DefaultGoogleAuthenticatorCreateFactorRequest extends AbstractCreat
     private final boolean createChallenge;
 
     public DefaultGoogleAuthenticatorCreateFactorRequest(GoogleAuthenticatorFactor factor, GoogleAuthenticatorFactorOptions options, boolean createChallenge) {
-        super(factor, options);
+        super(factor, options, createChallenge);
         this.createChallenge = createChallenge;
     }
 }

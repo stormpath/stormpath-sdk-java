@@ -1,11 +1,11 @@
 package com.stormpath.sdk.impl.oauth.authz;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.TokenResponse;
 import org.apache.oltu.oauth2.as.response.OAuthASResponse;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.OAuthResponse;
 import org.apache.oltu.oauth2.common.message.types.TokenType;
+import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,12 +26,14 @@ public class DefaultTokenResponse implements TokenResponse {
 
     private final String applicationHref;
 
-    private final OAuthResponse oAuthResponse;
+    private final JSONObject oAuthResponse;
+    private final String idToken;
 
     private DefaultTokenResponse(Builder builder) {
         accessToken = builder.accessToken;
         expiresIn = builder.expiresIn;
         refreshToken = builder.refreshToken;
+        idToken = builder.idToken;
         scope = builder.scope;
         tokenType = builder.tokenType;
         applicationHref = builder.applicationHref;
@@ -40,16 +42,33 @@ public class DefaultTokenResponse implements TokenResponse {
         Assert.hasText(expiresIn);
         Assert.hasText(applicationHref);
 
-        try {
-            oAuthResponse = builder.tokenResponseBuilder.buildJSONMessage();
-        } catch (OAuthSystemException e) {
-            throw new IllegalStateException("Unexpected error when building Json OAuth response.", e);
+        oAuthResponse = new JSONObject();
+        initOAuthResponse();
+    }
+
+    private void initOAuthResponse() {
+        oAuthResponse.put("token_type", tokenType);
+        oAuthResponse.put("access_token", accessToken);
+        oAuthResponse.put("expires_in", Long.parseLong(expiresIn));
+        if (Strings.hasText(scope)) {
+            oAuthResponse.put("scope", scope);
+        }
+        if (Strings.hasText(refreshToken)) {
+            oAuthResponse.put("refresh_token", refreshToken);
+        }
+        if (Strings.hasText(idToken)) {
+            oAuthResponse.put("id_token", idToken);
         }
     }
 
     @Override
     public String getAccessToken() {
         return accessToken;
+    }
+
+    @Override
+    public String getIdToken() {
+        return idToken;
     }
 
     @Override
@@ -74,7 +93,7 @@ public class DefaultTokenResponse implements TokenResponse {
 
     @Override
     public String toJson() {
-        return oAuthResponse.getBody();
+        return oAuthResponse.toString();
     }
 
     public static Builder tokenType(TokenType tokenType) {
@@ -93,6 +112,7 @@ public class DefaultTokenResponse implements TokenResponse {
         private String scope;
         private String tokenType;
         private String applicationHref;
+        private String idToken;
 
         private OAuthASResponse.OAuthTokenResponseBuilder tokenResponseBuilder;
 
@@ -105,6 +125,11 @@ public class DefaultTokenResponse implements TokenResponse {
         public Builder accessToken(String accessToken) {
             this.accessToken = accessToken;
             tokenResponseBuilder.setAccessToken(accessToken);
+            return this;
+        }
+
+        public Builder idToken(String idToken) {
+            this.idToken = idToken;
             return this;
         }
 
