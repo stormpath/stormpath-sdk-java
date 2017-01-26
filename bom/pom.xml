@@ -7,7 +7,7 @@
     <name>Stormpath Java SDK :: BOM</name>
     <description>Stormpath Bill of Materials</description>
     <packaging>pom</packaging>
-    <version>1.4.1</version>
+    <version>1.4.2-SNAPSHOT</version>
 
     <url>https://github.com/stormpath/stormpath-sdk-java</url>
     <organization>
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</connection>
         <developerConnection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</developerConnection>
         <url>git@github.com:stormpath/stormpath-sdk-java.git</url>
-        <tag>stormpath-sdk-root-1.4.1</tag>
+        <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
