@@ -22,16 +22,10 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.directory.AccountStore;
-import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.directory.PasswordStrength;
-import com.stormpath.sdk.group.Group;
-import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.organization.Organization;
-import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.servlet.account.event.impl.DefaultRegisteredAccountRequestEvent;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authc.impl.TransientAuthenticationResult;
@@ -40,7 +34,9 @@ import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultPasswordStrengthModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.PasswordStrengthModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +65,7 @@ public class RegisterController extends FormController {
     private Saver<AuthenticationResult> authenticationResultSaver;
     private AccountModelFactory accountModelFactory;
     private AccountStoreModelFactory accountStoreModelFactory;
+    private PasswordStrengthModelFactory passwordStrengthModelFactory;
     private ErrorModelFactory errorModelFactory;
     private WebHandler preRegisterHandler;
     private WebHandler postRegisterHandler;
@@ -103,6 +99,10 @@ public class RegisterController extends FormController {
         this.accountStoreModelFactory = accountStoreModelFactory;
     }
 
+    public void setPasswordStrengthModelFactory(PasswordStrengthModelFactory passwordStrengthModelFactory) {
+        this.passwordStrengthModelFactory = passwordStrengthModelFactory;
+    }
+
     public void setErrorModelFactory(ErrorModelFactory errorModelFactory) {
         this.errorModelFactory = errorModelFactory;
     }
@@ -133,6 +133,9 @@ public class RegisterController extends FormController {
         if (this.accountStoreModelFactory == null) {
             this.accountStoreModelFactory = new ExternalAccountStoreModelFactory();
         }
+        if (this.passwordStrengthModelFactory == null) {
+            this.passwordStrengthModelFactory = new DefaultPasswordStrengthModelFactory();
+        }
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new RegisterErrorModelFactory(this.messageSource);
         }
@@ -145,6 +148,7 @@ public class RegisterController extends FormController {
         Assert.notNull(this.postRegisterHandler, "postRegisterHandler cannot be null.");
         Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
         Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
+        Assert.notNull(this.passwordStrengthModelFactory, "passwordStrengthModelFactory cannot be null.");
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
         Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");
     }
@@ -161,7 +165,7 @@ public class RegisterController extends FormController {
             model.put("loginUri", loginUri);
         } else {
             model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
-            model.put("passwordPolicy", getPasswordPolicy(request));
+            model.put("passwordPolicy", passwordStrengthModelFactory.getPasswordPolicy(request));
         }
     }
 
@@ -319,97 +323,5 @@ public class RegisterController extends FormController {
         return result;
     }
 
-    private Map<String, Object> getPasswordPolicy(HttpServletRequest request) {
 
-        String onk = request.getParameter("organizationNameKey");
-
-        PasswordStrength passwordStrength;
-
-        if (Strings.hasText(onk)) {
-             passwordStrength = findPasswordStrengthByOrganization(onk);
-        } else {
-            passwordStrength = getApplicationPasswordStrength(request);
-        }
-
-        if (passwordStrength == null) {
-            return null;
-        }
-
-        return convertPasswordStrengthToMap(passwordStrength);
-    }
-
-    private PasswordStrength getApplicationPasswordStrength(HttpServletRequest request) {
-        AccountStore defaultAccountStore = getApplication(request).getDefaultAccountStore();
-
-        if (defaultAccountStore == null) {
-            return null;
-        }
-
-        final PasswordStrength[] passwordStrength = new PasswordStrength[1];
-        defaultAccountStore.accept(new AccountStoreVisitor() {
-            @Override
-            public void visit(Group group) {
-                passwordStrength[0] = group.getDirectory().getPasswordPolicy().getStrength();
-            }
-
-            @Override
-            public void visit(Directory directory) {
-                passwordStrength[0] = directory.getPasswordPolicy().getStrength();
-            }
-
-            @Override
-            public void visit(Organization organization) {
-                passwordStrength[0] = getOrganizationPasswordStrength(organization);
-            }
-        });
-
-        return passwordStrength[0];
-    }
-
-    private PasswordStrength findPasswordStrengthByOrganization(String onk) {
-        HashMap<String, Object> query = new HashMap<>();
-        query.put("nameKey", onk);
-        OrganizationList organizations = client.getOrganizations(query);
-
-        if (organizations.getSize() != 1) {
-            return null;
-        }
-
-        return getOrganizationPasswordStrength(organizations.single());
-    }
-
-    private PasswordStrength getOrganizationPasswordStrength(Organization organization) {
-        AccountStore organizationDefaultAccountStore = organization.getDefaultAccountStore();
-
-        if (organizationDefaultAccountStore == null) {
-            return null;
-        }
-
-        final PasswordStrength[] passwordStrength = new PasswordStrength[1];
-        organizationDefaultAccountStore.accept(new AccountStoreVisitorAdapter() {
-            @Override
-            public void visit(Group group) {
-                passwordStrength[0] = group.getDirectory().getPasswordPolicy().getStrength();
-            }
-
-            @Override
-            public void visit(Directory directory) {
-                passwordStrength[0] = directory.getPasswordPolicy().getStrength();
-            }
-        });
-
-        return passwordStrength[0];
-    }
-
-    private Map<String, Object> convertPasswordStrengthToMap(PasswordStrength passwordStrength) {
-        AbstractResource abstractResource = (AbstractResource) passwordStrength;
-
-        Map<String, Object> strength = new HashMap<>();
-
-        for (String propertyName : abstractResource.getPropertyDescriptors().keySet()) {
-            strength.put(propertyName, abstractResource.getProperty(propertyName));
-        }
-
-        return strength;
-    }
 }
