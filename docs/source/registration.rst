@@ -655,6 +655,160 @@ The :ref:`i18n` message keys used in the default register view have names prefix
 For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
 
 
+.. _login pre-register-handler:
+
+Pre Register Handler
+--------------------
+
+Want to validate or modify the form data before it’s handled by us? Then this is the handler that you want to use!
+
+#if( $servlet )
+
+To use a ``registerPreHandler``, you need to define a class that implements ``WebHandler`` and reference it in your
+``stormpath.properties`` file.
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 9, 11
+
+    package com.stormpath.sdk.examples.servlet;
+
+    ...
+
+    public class PreRegisterHandler implements WebHandler {
+        private static final Logger log = LoggerFactory.getLogger(PreRegisterHandler.class);
+
+        @Override
+        public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+            log.debug("----> PreRegisterHandler");
+            return true;
+        }
+    }
+
+.. code-block:: properties
+    :caption: stormpath.properties
+
+    stormpath.web.register.preHandler=com.stormpath.sdk.examples.servlet.PreRegisterHandler
+
+#else
+
+To use a ``registerPrehandler``, you need to define a ``Bean`` that returns a ``WebHandler``:
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 5, 7
+
+    @Bean
+    public WebHandler registerPreHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                log.debug("----> PreRegisterHandler");
+                return true;
+            }
+        };
+    }
+
+#end
+
+The ``handle`` method of the ``registerPreHandler`` is entered after the user has entered their registration information, but
+before their registration is completed. This affords the opportunity to validate the information that's been entered and
+(potentially) take alternative action than the default.
+
+If the ``handle`` method returns ``true``, the registration will continue as normal and the appropriate response is returned.
+For instance, ``true`` can be returned from the ``registerPreHandler``, but if validation on the registration fields fail,
+the user will still receive the appropriate error response.
+
+As a general rule of thumb, if the handler returns ``true``, then you would **not** redirect the user to an alternate endpoint.
+If the handler returns ``false``, then you would redirect to an alternate endpoint. If you didn't redirect, the original request
+would terminate without a response.
+
+.. caution::
+
+    It is invalid to both send the user to an alternate endpoint using ``response.sendRedirect("<path>")`` or
+    forward using ``request.getRequestDispatcher("<path>").forward(request, response);`` AND
+    return ``true`` from the handler. You will get an ``IllegalStateException`` as the response will have already been
+    committed because you returned ``true``.
+
+.. _login post-register-handler:
+
+Post Register Handler
+---------------------
+
+Want to run some custom code after a user registers for your site? If so, this is the event you want to handle!
+
+By defining a ``postRegisterHandler`` you’re able to do stuff like:
+
+* Setup Multi-factor authentication for future logins.
+* Send a new user a welcome email.
+* Generate API keys for all new users.
+* Setup Stripe billing.
+* etc.
+
+#if( $servlet )
+
+To use a ``registerPostHandler``, you need to define a class that implements ``WebHandler`` and reference it in your
+``stormpath.properties`` file.
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 9, 11
+
+    package com.stormpath.sdk.examples.servlet;
+
+    ...
+
+    public class PostRegisterHandler implements WebHandler {
+        private static final Logger log = LoggerFactory.getLogger(PostRegisterHandler.class);
+
+        @Override
+        public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+            log.debug("----> PostRegisterHandler");
+            return true;
+        }
+    }
+
+.. code-block:: properties
+    :caption: stormpath.properties
+
+    stormpath.web.register.postHandler=com.stormpath.sdk.examples.servlet.PostRegisterHandler
+
+#else
+
+To use a ``registerPosthandler``, you need to define a ``Bean`` that returns a ``WebHandler``:
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 5, 7
+
+    @Bean
+    public WebHandler registerPostHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                log.debug("----> PostRegisterHandler");
+                return true;
+            }
+        };
+    }
+
+#end
+
+The ``handle`` method of the ``registerPostHandler`` is entered after the user's registration has been processed.
+
+If the ``handle`` method returns ``true``, processing will continue as normal.
+
+As a general rule of thumb, if the handler returns ``true``, then you would **not** redirect the user to an alternate endpoint.
+If the handler returns ``false``, then you would redirect to an alternate endpoint. If you didn't redirect, the original request
+would terminate without a response.
+
+.. caution::
+
+    It is invalid to both send the user to an alternate endpoint us ing ``response.sendRedirect("<path>")`` or
+    forward using ``request.getRequestDispatcher("<path>").forward(request, response);`` AND
+    return ``true`` from the handler. You will get an ``IllegalStateException`` as the response will have already been
+    committed because you returned ``true``.
+
 Events
 ------
 
