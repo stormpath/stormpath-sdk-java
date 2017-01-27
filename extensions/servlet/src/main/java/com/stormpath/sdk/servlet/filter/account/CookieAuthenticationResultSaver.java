@@ -93,10 +93,10 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             String accessToken = accessTokenResult.getTokenResponse().getAccessToken();
             String refreshToken = accessTokenResult.getTokenResponse().getRefreshToken();
 
-            getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret)).set(request, response, accessToken);
+            getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret, accessTokenCookieConfig)).set(request, response, accessToken);
             //Client Credentials auth workflow doesn't contains a refresh token
             if (Strings.hasText(refreshToken)) {
-                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret)).set(request, response, refreshToken);
+                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret, refreshTokenCookieConfig)).set(request, response, refreshToken);
             }
         }
         if (value instanceof TransientAuthenticationResult) {
@@ -121,8 +121,8 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
                 String accessToken = authenticationResult.getAccessTokenString();
                 String refreshToken = authenticationResult.getRefreshTokenString();
 
-                getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret)).set(request, response, accessToken);
-                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret)).set(request, response, refreshToken);
+                getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret, accessTokenCookieConfig)).set(request, response, accessToken);
+                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret, refreshTokenCookieConfig)).set(request, response, refreshToken);
             } catch (UnsupportedEncodingException e) {
                 //Should not happen since UTF-8 should always be a supported encoding, but we logged just in case
                 log.error("Error get the client API Secret", e);
@@ -254,7 +254,13 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
         });
     }
 
-    private int getMaxAge(String token, byte[] clientSecret) {
+    private int getMaxAge(String token, byte[] clientSecret, CookieConfig cookieConfig) {
+        // non-zero indicates override from cookie config
+        if (cookieConfig.getMaxAge() != 0) {
+            return cookieConfig.getMaxAge();
+        }
+
+        // otherwise, use the claims in the JWT to determine maxAge
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(clientSecret).parseClaimsJws(token);
         DateTime issueAt = new DateTime(claimsJws.getBody().getIssuedAt());
         DateTime expiration = new DateTime(claimsJws.getBody().getExpiration());

@@ -496,6 +496,11 @@
       "description": ""
     },
     {
+      "name": "stormpath.web.accessTokenCookie.maxAge",
+      "type": "java.lang.String",
+      "description": "When set to 0 (default) the maxAge will be overwritten with the JWT expiration from the OAuth Policy"
+    },
+    {
       "name": "stormpath.web.refreshTokenCookie.name",
       "type": "java.lang.String",
       "description": "",
@@ -521,6 +526,11 @@
       "name": "stormpath.web.refreshTokenCookie.domain",
       "type": "java.lang.String",
       "description": ""
+    },
+    {
+      "name": "stormpath.web.refreshTokenCookie.maxAge",
+      "type": "java.lang.String",
+      "description": "When set to 0 (default) the maxAge will be overwritten with the JWT expiration from the OAuth Policy"
     },
     {
       "name": "stormpath.web.produces",
