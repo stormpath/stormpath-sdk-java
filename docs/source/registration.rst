@@ -664,7 +664,7 @@ Want to validate or modify the form data before it’s handled by us? Then this 
 
 #if( $servlet )
 
-To use a ``registerPreHandler``, you need to define a class that implements ``WebHandler`` and reference it in your
+To use a pre registration handler, you need to define a class that implements ``WebHandler`` and reference it in your
 ``stormpath.properties`` file.
 
 .. code-block:: java
@@ -715,9 +715,9 @@ The ``handle`` method of the ``registerPreHandler`` is entered after the user ha
 before their registration is completed. This affords the opportunity to validate the information that's been entered and
 (potentially) take alternative action than the default.
 
-If the ``handle`` method returns ``true``, the registration will continue as normal and the appropriate response is returned.
-For instance, ``true`` can be returned from the ``registerPreHandler``, but if validation on the registration fields fail,
-the user will still receive the appropriate error response.
+If you return ``false`` then the Java SDK will not continue the registration flow. This gives you the chance to take
+care of that yourself. If you are only manipulating or reading data before it is sent to the backend but you still want
+the regular registration flow to continue then you need to return ``true``.
 
 As a general rule of thumb, if the handler returns ``true``, then you would **not** redirect the user to an alternate endpoint.
 If the handler returns ``false``, then you would redirect to an alternate endpoint. If you didn't redirect, the original request
@@ -747,7 +747,7 @@ By defining a ``postRegisterHandler`` you’re able to do stuff like:
 
 #if( $servlet )
 
-To use a ``registerPostHandler``, you need to define a class that implements ``WebHandler`` and reference it in your
+To use a post registration handler, you need to define a class that implements ``WebHandler`` and reference it in your
 ``stormpath.properties`` file.
 
 .. code-block:: java

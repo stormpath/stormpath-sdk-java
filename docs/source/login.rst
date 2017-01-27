@@ -104,7 +104,7 @@ Want to validate or modify the form data before it’s handled by us? Then this 
 
 #if( $servlet )
 
-To use a ``loginPreHandler``, you need to define a class that implements ``WebHandler`` and reference it in your
+To use a pre login handler, you need to define a class that implements ``WebHandler`` and reference it in your
 ``stormpath.properties`` file.
 
 .. code-block:: java
@@ -156,13 +156,9 @@ The ``handle`` method of the ``loginPreHandler`` is entered after the user has e
 before they have been authenticated. This affords the opportunity to validate the information that's been entered and
 (potentially) take alternative action than the default.
 
-If the ``handle`` method returns ``true``, the user will be authenticated as normal and the appropriate response is returned.
-For instance, ``true`` can be returned from the ``loginPreHandler``, but if the user's credentials are incorrect, they will
-still receive the error response.
-
-As a general rule of thumb, if the handler returns ``true``, then you would **not** redirect the user to an alternate endpoint.
-If the handler returns ``false``, then you would redirect to an alternate endpoint. If you didn't redirect, the original request
-would terminate without a response.
+If you return ``false`` then the Java SDK will not continue the authentication flow. This gives you the chance to take
+care of that yourself. If you are only manipulating or reading data before it is sent to the backend but you still want
+the regular authentication flow to continue then you need to return ``true``.
 
 .. caution::
 
@@ -186,7 +182,7 @@ Want to run some custom code after a user logs into your site? By defining a ``l
 
 #if( $servlet )
 
-To use a ``loginPostHandler``, you need to define a class that implements ``WebHandler`` and reference it in your
+To use a post login handler, you need to define a class that implements ``WebHandler`` and reference it in your
 ``stormpath.properties`` file.
 
 .. code-block:: java
