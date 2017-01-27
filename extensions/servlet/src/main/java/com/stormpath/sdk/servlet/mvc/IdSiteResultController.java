@@ -20,6 +20,7 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.idsite.AccountResult;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
 import com.stormpath.sdk.idsite.LogoutResult;
@@ -106,7 +107,7 @@ public class IdSiteResultController extends CallbackController {
             idSiteCallbackHandler.addResultListener(resultListener);
         }
 
-        idSiteCallbackHandler.getAccountResult();
+        AccountResult accountResult = idSiteCallbackHandler.getAccountResult();
 
         return viewModel[0];
     }
@@ -126,7 +127,12 @@ public class IdSiteResultController extends CallbackController {
             AuthenticationResult authcResult = new TransientAuthenticationResult(account);
             saveResult(request, response, authcResult);
         }
-        // else - do we need to do anything else?
+
+        if (postRegisterHandler != null) {
+            if (!postRegisterHandler.handle(request, response, account)) {
+                return null;
+            }
+        }
 
         //just redirect to post-register view:
         return new DefaultViewModel(registerNextUri).setRedirect(true);
@@ -135,5 +141,13 @@ public class IdSiteResultController extends CallbackController {
     private RegisteredAccountRequestEvent createRegisteredEvent(HttpServletRequest request,
                                                                 HttpServletResponse response, Account account) {
         return new DefaultRegisteredAccountRequestEvent(request, response, account);
+    }
+
+    public void setPostRegisterHandler(WebHandler postRegisterHandler) {
+        this.postRegisterHandler = postRegisterHandler;
+    }
+
+    public void setPostLoginHandler(WebHandler postLoginHandler) {
+        this.postLoginHandler = postLoginHandler;
     }
 }

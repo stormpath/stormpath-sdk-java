@@ -19,7 +19,6 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.idsite.LogoutResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
@@ -43,6 +42,8 @@ public abstract class CallbackController extends AbstractController {
     protected Saver<AuthenticationResult> authenticationResultSaver;
     protected Publisher<RequestEvent> eventPublisher;
     protected List<SamlResultListener> samlResultListeners = new ArrayList<SamlResultListener>();
+    protected WebHandler postLoginHandler;
+    protected WebHandler postRegisterHandler;
 
     public void setLoginNextUri(String loginNextUri) {
         this.loginNextUri = loginNextUri;
@@ -105,6 +106,10 @@ public abstract class CallbackController extends AbstractController {
         saveResult(request, response, authcResult);
 
         publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));
+
+        if (postLoginHandler != null && !postLoginHandler.handle(request, response, result.getAccount())) {
+            return null;
+        }
 
         return new DefaultViewModel(loginNextUri).setRedirect(true);
     }

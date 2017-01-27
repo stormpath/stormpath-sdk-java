@@ -114,7 +114,9 @@ import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 import com.stormpath.sdk.servlet.mvc.FormController;
 import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.mvc.IdSiteLoginController;
 import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
+import com.stormpath.sdk.servlet.mvc.IdSiteRegisterController;
 import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.JacksonView;
 import com.stormpath.sdk.servlet.mvc.LoginController;
@@ -912,7 +914,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return resolver;
     }
 
-    protected Controller createIdSiteController(String idSiteUri) {
+    protected IdSiteController createIdSiteController(String idSiteUri) {
         IdSiteController controller = new IdSiteController();
         controller.setServerUriResolver(stormpathServerUriResolver());
         controller.setIdSiteUri(idSiteUri);
@@ -965,7 +967,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathLoginController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteLoginUri);
+            IdSiteLoginController controller = new IdSiteLoginController();
+            controller.setServerUriResolver(stormpathServerUriResolver());
+            controller.setIdSiteUri(idSiteLoginUri);
+            controller.setCallbackUri(callbackUri);
+            controller.setAlreadyLoggedInUri(stormpathLoginConfig().getNextUri());
+            controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+            controller.setNextUri(stormpathLoginConfig().getNextUri());
+            controller.setPreLoginHandler(loginPreHandler);
+            controller.init();
+            return controller;
         }
 
         //otherwise standard login controller:
@@ -1097,7 +1108,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathRegisterController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteRegisterUri);
+            IdSiteRegisterController controller = new IdSiteRegisterController();
+            controller.setServerUriResolver(stormpathServerUriResolver());
+            controller.setIdSiteUri(idSiteRegisterUri);
+            controller.setCallbackUri(callbackUri);
+            controller.setAlreadyLoggedInUri(stormpathLoginConfig().getNextUri());
+            controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+            controller.setNextUri(stormpathLoginConfig().getNextUri());
+            controller.setPreRegisterHandler(registerPreHandler);
+            controller.init();
+            return controller;
         }
 
         //otherwise standard registration:
@@ -1206,6 +1226,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (springSecurityIdSiteResultListener != null) {
             controller.addIdSiteResultListener(springSecurityIdSiteResultListener);
         }
+        controller.setPostLoginHandler(loginPostHandler);
+        controller.setPostRegisterHandler(registerPostHandler);
         controller.init();
         return controller;
     }
