@@ -1,5 +1,18 @@
 ## Change Log ##
 
+### 1.5.0 ##
+
+* OAuth2 [revocation](https://tools.ietf.org/html/rfc7009) support has been completed, a new `/oauth/revoke` endpoint has been added
+* Fixed issue where not all of our integrations could be disabled by means of `stormpath.enabled = false` (additionally, this property has more visibility in our documentation now)
+* Fixed issue where not all of our integrations were properly reacting to `stormpath.spring.security.enabled = false`
+* Added support for Pre/Post Login/Register handlers in IDSite
+* Now Spring Boot with Spring Security applications will start properly even if they lack a `WebSecurityConfigurerAdapter` configuration
+* Added support for the `state` token in `grant_type=stormpath_factor_challenge` requests
+* Fixed issue where IDSite and SAML callbacks were not performing to spec
+
+See [1.5.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.5.0+is%3Aclosed)
+
+
 ### 1.4.1 ##
 
 * Fixed problem with HttpClient that caused cookies send by server to be stored and sent in every request. 
