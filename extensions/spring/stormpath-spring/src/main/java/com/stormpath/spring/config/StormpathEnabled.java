@@ -20,14 +20,14 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Returns true if 'stormpath.spring.security.enabled = false'
- *
  * @since 1.5.0
  */
-public class StormpathSpringSecurityDisabled implements Condition {
+public class StormpathEnabled implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return context.getEnvironment().getProperty("stormpath.spring.security.enabled", Boolean.class, Boolean.TRUE).equals(Boolean.FALSE);
+        return context.getEnvironment().getProperty("stormpath.enabled", Boolean.class, Boolean.TRUE);
     }
+
 }
+

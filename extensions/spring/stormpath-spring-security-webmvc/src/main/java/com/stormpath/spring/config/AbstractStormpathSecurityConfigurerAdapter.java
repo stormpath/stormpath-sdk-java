@@ -81,4 +81,7 @@ public abstract class AbstractStormpathSecurityConfigurerAdapter extends Securit
     @Value("#{ @environment['stormpath.web.resendVerification.uri'] ?: '/resendVerification' }")
     protected String resendVerificationUri;
 
+    @Value("#{ @environment['stormpath.web.saml.uri'] ?: '/saml' }")
+    protected String samlUri;
+
 }

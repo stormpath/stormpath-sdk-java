@@ -78,6 +78,8 @@ public interface Config extends Map<String, String> {
 
     ControllerConfig getVerifyConfig();
 
+    ControllerConfig getSamlConfig();
+
     ChangePasswordConfig getChangePasswordConfig();
 
     Saver<AuthenticationResult> getAuthenticationResultSaver();
@@ -108,6 +110,8 @@ public interface Config extends Map<String, String> {
     boolean isLogoutInvalidateHttpSession();
 
     String getAccessTokenUrl();
+
+    String getRevokeTokenUrl();
 
     String getUnauthorizedUrl();
 

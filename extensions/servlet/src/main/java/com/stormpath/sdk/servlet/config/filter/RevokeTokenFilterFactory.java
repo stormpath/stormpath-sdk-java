@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.config;
+package com.stormpath.sdk.servlet.config.filter;
 
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import com.stormpath.sdk.servlet.config.Config;
+import com.stormpath.sdk.servlet.mvc.RevokeTokenController;
 
 /**
- * Returns true if 'stormpath.spring.security.enabled = false'
+ * https://github.com/stormpath/stormpath-sdk-java/issues/1247
  *
  * @since 1.5.0
  */
-public class StormpathSpringSecurityDisabled implements Condition {
+public class RevokeTokenFilterFactory extends ControllerFilterFactory<RevokeTokenController> {
 
     @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return context.getEnvironment().getProperty("stormpath.spring.security.enabled", Boolean.class, Boolean.TRUE).equals(Boolean.FALSE);
+    protected RevokeTokenController newController() {
+        return new RevokeTokenController();
+    }
+
+    @Override
+    protected void configure(RevokeTokenController controller, Config config) throws Exception {
+        controller.setApplicationResolver(config.getApplicationResolver());
     }
 }

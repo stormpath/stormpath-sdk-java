@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.config;
+package autoconfigure;
 
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 /**
- * Returns true if 'stormpath.spring.security.enabled = false'
+ * Disabling Spring Security must also disable Stormpath's Spring Security integration
  *
  * @since 1.5.0
  */
-public class StormpathSpringSecurityDisabled implements Condition {
+@Configuration
+@PropertySource({"classpath:disabledspringsecuritydisablesstormpathss.application.properties"})
+@EnableAutoConfiguration
+public class DisabledSpringSecurityDisablesStormpathSSAutoConfigurationTestApplication {
 
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return context.getEnvironment().getProperty("stormpath.spring.security.enabled", Boolean.class, Boolean.TRUE).equals(Boolean.FALSE);
-    }
 }
+

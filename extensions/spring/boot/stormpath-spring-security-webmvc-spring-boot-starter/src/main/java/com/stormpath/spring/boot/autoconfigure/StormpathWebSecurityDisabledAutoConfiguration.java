@@ -18,6 +18,7 @@ package com.stormpath.spring.boot.autoconfigure;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityDisabledConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -39,20 +40,20 @@ import javax.servlet.Servlet;
 @ConditionalOnClass({Servlet.class, Filter.class, DispatcherServlet.class})
 @ConditionalOnWebApplication
 @AutoConfigureAfter(StormpathWebSecurityAutoConfiguration.class)
+@ConditionalOnExpression("'${stormpath.spring.security.enabled}'=='false'")
 public class StormpathWebSecurityDisabledAutoConfiguration extends AbstractStormpathWebSecurityDisabledConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name="stormpathSecurityConfigurerAdapter")
-    @ConditionalOnProperty(name = "stormpath.spring.security.enabled", havingValue = "false")
     public SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter() {
-        //This bean will only be created if `stormpath.spring.security.enabled` is false
+        //This bean will only be created if our Spring Security integration is disabled
         return super.stormpathSecurityConfigurerAdapter();
     }
 
     @Bean
     @ConditionalOnMissingBean(name="stormpathLogoutHandler")
-    @ConditionalOnProperty(name = "stormpath.spring.security.enabled", havingValue = "false")
     public LogoutHandler stormpathLogoutHandler() {
+        //This bean will only be created if our Spring Security integration is disabled
         return super.stormpathLogoutHandler();
     }
 
