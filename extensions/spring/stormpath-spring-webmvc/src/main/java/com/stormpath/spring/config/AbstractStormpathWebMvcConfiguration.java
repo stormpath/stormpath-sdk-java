@@ -1110,6 +1110,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setPreRegisterHandler(registerPreHandler);
         c.setPostRegisterHandler(registerPostHandler);
         c.setAccountStoreResolver(stormpathAccountStoreResolver());
+        c.setApplicationResolver(stormpathApplicationResolver());
 
         return init(c);
     }
