@@ -110,7 +110,7 @@
     {
       "name": "stormpath.web.authc.savers.cookie.enabled",
       "type": "java.lang.Boolean",
-      "description": "Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie.  To ensure HTTP Sessions (which force server state) are not required, this property is true by default.  The cookie's properties are configurable via the stormpath.web.account.cookie.* properties.",
+      "description": "Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie.  To ensure HTTP Sessions (which force server state) are not required, this property is true by default.  The cookie's properties are configurable via the stormpath.web.accessTokenCookie.* and stormpath.web.refreshTokenCookie. properties.",
       "defaultValue": true
     },
     {
@@ -498,7 +498,7 @@
     {
       "name": "stormpath.web.accessTokenCookie.maxAge",
       "type": "java.lang.String",
-      "description": "When set to 0 (default) the maxAge will be overwritten with the JWT expiration from the OAuth Policy"
+      "description": "When set to 0 (default) the maxAge will be overwritten with the JWT expiration based on the OAuth Policy"
     },
     {
       "name": "stormpath.web.refreshTokenCookie.name",
