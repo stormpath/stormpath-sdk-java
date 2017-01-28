@@ -84,8 +84,8 @@ Remember that the property value is the *name* of a view, and the effective Spri
 
 #end
 
-i18n
-----
+Internationalization (i18n)
+---------------------------
 
 The :ref:`i18n` message keys used in the default login view have names prefixed with ``stormpath.web.login.``:
 
@@ -94,6 +94,155 @@ The :ref:`i18n` message keys used in the default login view have names prefixed 
    :lines: 17-48
 
 For more information on customizing i18n messages and adding bundle files, please see :ref:`i18n`.
+
+.. _login pre-login-handler:
+
+Pre Login Handler
+-----------------
+
+Want to validate or modify the form data before it’s handled by us? Then this is the handler that you want to use!
+
+#if( $servlet )
+
+To use a pre login handler, you need to define a class that implements ``WebHandler`` and reference it in your
+``stormpath.properties`` file.
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 9, 11
+
+    package com.stormpath.sdk.examples.servlet;
+
+    ...
+
+    public class PreLoginHandler implements WebHandler {
+        private static final Logger log = LoggerFactory.getLogger(PreLoginHandler.class);
+
+        @Override
+        public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+            log.debug("----> PreLoginHandler");
+            return true;
+        }
+    }
+
+
+.. code-block:: properties
+    :caption: stormpath.properties
+
+    stormpath.web.login.preHandler=com.stormpath.sdk.examples.servlet.PreLoginHandler
+
+#else
+
+To use a ``loginPrehandler``, you need to define a ``Bean`` that returns a ``WebHandler``:
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 5, 7
+
+    @Bean
+    public WebHandler loginPreHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                log.debug("----> PreLoginHandler");
+                return true;
+            }
+        };
+    }
+
+#end
+
+The ``handle`` method of the ``loginPreHandler`` is entered after the user has entered their email and password, but
+before they have been authenticated. This affords the opportunity to validate the information that's been entered and
+(potentially) take alternative action than the default.
+
+If you return ``false`` then the Java SDK will not continue the authentication flow. This gives you the chance to take
+care of that yourself. If you are only manipulating or reading data before it is sent to the backend but you still want
+the regular authentication flow to continue then you need to return ``true``.
+
+.. caution::
+
+    It is invalid to both send the user to an alternate endpoint using ``response.sendRedirect("<path>")`` or
+    forward using ``request.getRequestDispatcher("<path>").forward(request, response);`` AND
+    return ``true`` from the handler. You will get an ``IllegalStateException`` as the response will have already been
+    committed because you returned ``true``.
+
+.. _login post-login-handler:
+
+Post Login Handler
+------------------
+
+Want to run some custom code after a user logs into your site? By defining a ``loginPostHandler`` you’re able achieve tasks like:
+
+* Funnel users into a multi-factor authentication workflow.
+* Refresh a user’s third-party services.
+* Calculate the last login time of a user.
+* Prompt a user to complete their profile, or setup billing.
+* etc.
+
+#if( $servlet )
+
+To use a post login handler, you need to define a class that implements ``WebHandler`` and reference it in your
+``stormpath.properties`` file.
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 9, 11
+
+    package com.stormpath.sdk.examples.servlet;
+
+    ...
+
+    public class PostLoginHandler implements WebHandler {
+        private static final Logger log = LoggerFactory.getLogger(PostLoginHandler.class);
+
+        @Override
+        public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+            log.debug("----> PostLoginHandler");
+            return true;
+        }
+    }
+
+.. code-block:: properties
+    :caption: stormpath.properties
+
+    stormpath.web.login.postHandler=com.stormpath.sdk.examples.servlet.PostLoginHandler
+
+#else
+
+To use a ``loginPosthandler``, you need to define a ``Bean`` that returns a ``WebHandler``:
+
+.. code-block:: java
+    :linenos:
+    :emphasize-lines: 5, 7
+
+    @Bean
+    public WebHandler loginPostHandler() {
+        return new WebHandler() {
+            @Override
+            public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+                log.debug("----> PostLoginHandler");
+                return true;
+            }
+        };
+    }
+
+#end
+
+The ``handle`` method of the ``loginPostHandler`` is entered after the user has been authenticated.
+
+If the ``handle`` method returns ``true``, processing will proceed as normal.
+
+As a general rule of thumb, if the handler returns ``true``, then you would **not** redirect the user to an alternate endpoint.
+If the handler returns ``false``, then you would redirect to an alternate endpoint. If you didn't redirect, the original request
+would terminate without a response.
+
+.. caution::
+
+    It is invalid to both send the user to an alternate endpoint using ``response.sendRedirect("<path>")`` or
+    forward using ``request.getRequestDispatcher("<path>").forward(request, response);`` AND
+    return ``true`` from the handler. You will get an ``IllegalStateException`` as the response will have already been
+    committed because you returned ``true``.
 
 .. _login events:
 
