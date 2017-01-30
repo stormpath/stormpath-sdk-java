@@ -498,7 +498,7 @@
     {
       "name": "stormpath.web.accessTokenCookie.maxAge",
       "type": "java.lang.Integer",
-      "description": "When set to 0 (default) the maxAge will be set with the JWT expiration based on the OAuth Policy",
+      "description": "Max time in seconds that the cookie will exist. When value is 0 (default) the maxAge will be set with the JWT expiration based on the OAuth Policy",
       "defaultValue": 0
     },
     {
@@ -531,7 +531,7 @@
     {
       "name": "stormpath.web.refreshTokenCookie.maxAge",
       "type": "java.lang.Integer",
-      "description": "When set to 0 (default) the maxAge will be set with the JWT expiration from the OAuth Policy",
+      "description": "Max time in seconds that the cookie will exist. When value is 0 (default) the maxAge will be set with the JWT expiration based on the OAuth Policy",
       "defaultValue": 0
     },
     {
