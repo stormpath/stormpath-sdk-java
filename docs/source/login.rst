@@ -355,7 +355,8 @@ You can control the authentication cookie behavior by setting various ``stormpat
 `domain <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain(java.lang.String)>`_   ``stormpath.web.accessTokenCookie.domain``       ``null``
 `path <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath(java.lang.String)>`_       ``stormpath.web.accessTokenCookie.path``         ``null`` (assumes web app context path)
 `httpOnly <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)>`_        ``stormpath.web.accessTokenCookie.httpOnly``     ``true``
-`secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.accessTokenCookie.secure``       ``null``
+`secure <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setSecure-boolean->`_            ``stormpath.web.accessTokenCookie.secure``       ``null``
+`maxAge <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setMaxAge-int->`_                ``stormpath.web.accessTokenCookie.maxAge``       ``0``
 ============================================================================================================ ================================================ ==========================================================
 
 You need to set the refresh token behavior by setting various ``stormpath.web.refreshTokenCookie.*`` configuration properties:
@@ -367,7 +368,8 @@ You need to set the refresh token behavior by setting various ``stormpath.web.re
 `domain <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setDomain(java.lang.String)>`_   ``stormpath.web.refreshTokenCookie.domain``      ``null``
 `path <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setPath(java.lang.String)>`_       ``stormpath.web.refreshTokenCookie.path``        ``null`` (assumes web app context path)
 `httpOnly <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)>`_        ``stormpath.web.refreshTokenCookie.httpOnly``    ``true``
-`secure <http://docs.oracle.com/javaee/6/api/javax/servlet/SessionCookieConfig.html#setSecure(boolean)>`_    ``stormpath.web.refreshTokenCookie.secure``      ``null``
+`secure <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setSecure-boolean->`_            ``stormpath.web.refreshTokenCookie.secure``      ``null``
+`maxAge <http://docs.oracle.com/javaee/7/api/javax/servlet/http/Cookie.html#setMaxAge-int->`_                ``stormpath.web.refreshTokenCookie.maxAge``       ``0``
 ============================================================================================================ ================================================ ==========================================================
 ]]#
 
@@ -396,6 +398,8 @@ Some notes about the default values:
          return new MySecureResolver(); //implement me
      }
 #end
+
+* The ``stormpath.web.accessTokenCookie.maxAge`` property is set to ``0`` by default. This default value indicates that the expiration of the cookie is set based on the expiration set for the ``OAuth Policy``. If set to any other value (including -1), that value will take precedence over the expiration set for the ``OAuth Policy``.
 
 JWT Creation
 ~~~~~~~~~~~~
