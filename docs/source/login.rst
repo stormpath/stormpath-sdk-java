@@ -250,7 +250,7 @@ Some notes about the default values:
      }
 #end
 
-* The ``stormpath.web.accessTokenCookie.maxAge`` property is set to ``0`` by default. This default value indicates that it will be overwritten based on the expiration set for the ``OAuth Policy`` in the admin console. If set to any other value (including -1), that value will take precedence over the expiration set for the ``OAuth Policy``.
+* The ``stormpath.web.accessTokenCookie.maxAge`` property is set to ``0`` by default. This default value indicates that the expiration of the cookie is set based on the expiration set for the ``OAuth Policy``. If set to any other value (including -1), that value will take precedence over the expiration set for the ``OAuth Policy``.
 
 JWT Creation
 ~~~~~~~~~~~~
