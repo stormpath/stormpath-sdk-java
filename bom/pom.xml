@@ -137,17 +137,6 @@
                 <artifactId>stormpath-zuul-spring-cloud-starter</artifactId>
                 <version>1.5.0-SNAPSHOT</version>
             </dependency>
-            <!--
-                Temporary fix to ensure correct version of Spring Security is in use with the Stormpath SDK
-                This will be removed when Spring Boot 1.5 is released.
-            -->
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-bom</artifactId>
-                <version>4.2.1.RELEASE</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
