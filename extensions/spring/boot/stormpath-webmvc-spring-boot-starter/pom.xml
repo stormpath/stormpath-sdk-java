@@ -75,6 +75,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+            <!--
+                TODO
+                temporary workaround per https://github.com/spring-projects/spring-boot/issues/8136
+                remove after spring boot 1.5.1 is released
+            -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-test-support</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

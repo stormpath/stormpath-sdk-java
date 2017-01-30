@@ -38,7 +38,7 @@
         <bootstrap.version>3.3.7</bootstrap.version>
         <logback.version>1.1.8</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>1.5.0.RC1</spring.boot.version>
+        <spring.boot.version>1.5.0.RELEASE</spring.boot.version>
         <stormpath.angular.version>1.0.0</stormpath.angular.version>
         <webjars.locator.version>0.32</webjars.locator.version>
     </properties>

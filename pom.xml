@@ -102,7 +102,7 @@
         <snakeyaml.version>1.17</snakeyaml.version>
         <servlet.version>3.1.0</servlet.version>
         <spring.version>4.3.5.RELEASE</spring.version>
-        <spring.boot.version>1.5.0.RC1</spring.boot.version>
+        <spring.boot.version>1.5.0.RELEASE</spring.boot.version>
         <spring.cloud.netflix.version>1.2.4.RELEASE</spring.cloud.netflix.version>
         <spring.security.version>4.2.1.RELEASE</spring.security.version>
         <zuul.version>1.3.0</zuul.version>
@@ -121,31 +121,6 @@
         <!-- Sample App Dependencies: only required when running a sample app. Not required by SDK users at runtime: -->
         <jstl.version>1.2</jstl.version>
     </properties>
-
-    <!-- TODO - Begin Temporary: Remove before 1.5.0 release and after Spring Boot 1.5.0.RELEASE -->
-    <!-- TODO - Replace occurrences of 1.5.0.RC1 with 1.5.0.RELEASE -->
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/libs-milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/libs-milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-    <!-- TODO - End Temporary: Remove before 1.5.0 release and after Spring Boot 1.5.0.RELEASE -->
 
     <dependencies>
 
