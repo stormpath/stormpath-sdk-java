@@ -1,5 +1,11 @@
 ## Change Log ##
 
+### 1.5.1 ##
+
+* Removed unnecessary throws in AccountStoreVisitorAdapter
+
+See [1.5.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.5.1+is%3Aclosed)
+
 ### 1.5.0 ##
 
 * Added passwordPolicy to registration json model to support Client API
