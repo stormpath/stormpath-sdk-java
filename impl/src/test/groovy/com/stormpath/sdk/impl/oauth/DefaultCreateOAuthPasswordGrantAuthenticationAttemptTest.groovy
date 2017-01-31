@@ -39,11 +39,12 @@ class DefaultCreateOAuthPasswordGrantAuthenticationAttemptTest {
 
         def propertyDescriptors = defaultCreateGrantAuthAttempt.getPropertyDescriptors()
 
-        assertEquals(propertyDescriptors.size(), 4)
+        assertEquals(propertyDescriptors.size(), 5)
 
         assertTrue(propertyDescriptors.get("username") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("password") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("accountStore") instanceof StringProperty)
+        assertTrue(propertyDescriptors.get("organizationNameKey") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("grant_type") instanceof StringProperty)
     }
 
