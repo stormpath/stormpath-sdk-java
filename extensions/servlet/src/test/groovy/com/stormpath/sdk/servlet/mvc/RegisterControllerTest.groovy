@@ -59,7 +59,7 @@ import static org.testng.Assert.assertNull
 /**
  * @since 1.0.0
  */
-public class RegisterControllerTest {
+class RegisterControllerTest {
 
     WebHandler registerPreHandler
     WebHandler registerPostHandler
@@ -177,7 +177,7 @@ public class RegisterControllerTest {
         verify eventPublisher, registerPreHandler, request, response, client, cacheManager, cache, requestFieldValueResolver, application, account, accountStoreResolver, directory
     }
 
-    @Test(expectedExceptions = [IllegalStateException])
+    @Test
     void testAccountStoreResolverResolvesGroup() {
         RegisterController registerController = new RegisterController(
                 client: client,
