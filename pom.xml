@@ -19,7 +19,7 @@
 
     <groupId>com.stormpath.sdk</groupId>
     <artifactId>stormpath-sdk-root</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Stormpath Java SDK</name>
