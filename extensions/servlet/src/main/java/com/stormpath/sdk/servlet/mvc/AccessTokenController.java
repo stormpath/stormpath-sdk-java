@@ -319,10 +319,11 @@ public class AccessTokenController extends AbstractController {
 
         try {
             Application app = getApplication(request);
+            String state = request.getParameter("state");
             String challenge = request.getParameter("challenge");
             String code = request.getParameter("code");
             OAuthStormpathFactorChallengeGrantRequestAuthentication grantRequestAuthentication =
-                    new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(challenge, code);
+                    new DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(state, challenge, code);
 
             authenticationResult = Authenticators.OAUTH_STORMPATH_FACTOR_CHALLENGE_GRANT_REQUEST_AUTHENTICATOR
                     .forApplication(app)
@@ -368,9 +369,7 @@ public class AccessTokenController extends AbstractController {
                 }
                 else if ("factor_challenge".equals(action)) {
                     exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_STATE);
-                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_ALLOWED_FACTOR_TYPES);
                     exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_FACTOR);
-                    exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_CHALLENGE);
                 }
                 else if ("factor_select".equals(action)) {
                     exposeOAuthErrorProperty(errorMap, defaultError, OAUTH_RESPONSE_FACTORS);

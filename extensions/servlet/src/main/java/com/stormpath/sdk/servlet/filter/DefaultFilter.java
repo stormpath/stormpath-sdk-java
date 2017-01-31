@@ -34,6 +34,7 @@ import com.stormpath.sdk.servlet.config.filter.LoginFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LogoutFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.MeFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.RegisterFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.RevokeTokenFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.SamlFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.SamlResultFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.StaticResourceFilterFactory;
@@ -51,6 +52,7 @@ import javax.servlet.Filter;
 public enum DefaultFilter {
 
     accessToken(ControllerFilter.class, AccessTokenFilterFactory.class),
+    revokeToken(ControllerFilter.class, RevokeTokenFilterFactory.class),
     account(AccountAuthorizationFilter.class, AccountAuthorizationFilterFactory.class),
     anon(AnonymousFilter.class, null),
     authc(AuthenticationFilter.class, AuthenticationFilterFactory.class),

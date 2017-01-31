@@ -114,7 +114,9 @@ import com.stormpath.sdk.servlet.mvc.ExpandsResolver;
 import com.stormpath.sdk.servlet.mvc.ForgotPasswordController;
 import com.stormpath.sdk.servlet.mvc.FormController;
 import com.stormpath.sdk.servlet.mvc.IdSiteController;
+import com.stormpath.sdk.servlet.mvc.IdSiteLoginController;
 import com.stormpath.sdk.servlet.mvc.IdSiteLogoutController;
+import com.stormpath.sdk.servlet.mvc.IdSiteRegisterController;
 import com.stormpath.sdk.servlet.mvc.IdSiteResultController;
 import com.stormpath.sdk.servlet.mvc.JacksonView;
 import com.stormpath.sdk.servlet.mvc.LoginController;
@@ -124,6 +126,7 @@ import com.stormpath.sdk.servlet.mvc.MeController;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
+import com.stormpath.sdk.servlet.mvc.RevokeTokenController;
 import com.stormpath.sdk.servlet.mvc.SamlController;
 import com.stormpath.sdk.servlet.mvc.SamlResultController;
 import com.stormpath.sdk.servlet.mvc.VerifyController;
@@ -156,6 +159,8 @@ import com.stormpath.spring.mvc.LoginControllerConfig;
 import com.stormpath.spring.mvc.LogoutControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
 import com.stormpath.spring.mvc.RegisterControllerConfig;
+import com.stormpath.spring.mvc.SamlControllerConfig;
+import com.stormpath.spring.mvc.RevokeTokenControllerConfig;
 import com.stormpath.spring.mvc.SingleNamedViewResolver;
 import com.stormpath.spring.mvc.SpringMessageSource;
 import com.stormpath.spring.mvc.SpringView;
@@ -543,14 +548,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         AccessTokenControllerConfig accessTokenControllerConfig = stormpathAccessTokenConfig();
         if (accessTokenControllerConfig.isEnabled()) {
+            RevokeTokenControllerConfig revokeTokenControllerConfig = stormpathRevokeTokenConfig();
             addFilter(mgr, stormpathAccessTokenController(), accessTokenControllerConfig.getControllerKey(), accessTokenControllerConfig.getAccessTokenUri());
+            addFilter(mgr, stormpathRevokeTokenController(), revokeTokenControllerConfig.getControllerKey(), revokeTokenControllerConfig.getRevokeTokenUri());
         }
 
         if (idSiteEnabled) {
             addFilter(mgr, stormpathIdSiteResultController(), "idSiteResult", callbackUri);
         }
         if (callbackEnabled) {
-            addFilter(mgr, stormpathSamlController(), "saml", "/saml"); //TODO: why isn't this a configurable uri?
+            addFilter(mgr, stormpathSamlController(), "saml", stormpathSamlConfig().getUri());
             addFilter(mgr, stormpathSamlResultController(), "samlResult", callbackUri);
         }
         if (meEnabled) {
@@ -912,7 +919,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return resolver;
     }
 
-    protected Controller createIdSiteController(String idSiteUri) {
+    protected IdSiteController createIdSiteController(String idSiteUri) {
         IdSiteController controller = new IdSiteController();
         controller.setServerUriResolver(stormpathServerUriResolver());
         controller.setIdSiteUri(idSiteUri);
@@ -965,7 +972,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathLoginController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteLoginUri);
+            IdSiteLoginController controller = new IdSiteLoginController();
+            controller.setServerUriResolver(stormpathServerUriResolver());
+            controller.setIdSiteUri(idSiteLoginUri);
+            controller.setCallbackUri(callbackUri);
+            controller.setAlreadyLoggedInUri(stormpathLoginConfig().getNextUri());
+            controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+            controller.setNextUri(stormpathLoginConfig().getNextUri());
+            controller.setPreLoginHandler(loginPreHandler);
+            controller.init();
+            return controller;
         }
 
         //otherwise standard login controller:
@@ -974,6 +990,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setForgotPasswordUri(stormpathForgotPasswordConfig().getUri());
         c.setVerifyEnabled(stormpathVerifyConfig().isEnabled());
         c.setVerifyUri(stormpathVerifyConfig().getUri());
+        c.setSamlUri(stormpathSamlConfig().getUri());
         c.setRegisterEnabledResolver(stormpathRegisterEnabledResolver());
         c.setRegisterUri(stormpathRegisterConfig().getUri());
         c.setLogoutUri(stormpathLogoutConfig().getUri());
@@ -1097,7 +1114,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathRegisterController() {
 
         if (idSiteEnabled) {
-            return createIdSiteController(idSiteRegisterUri);
+            IdSiteRegisterController controller = new IdSiteRegisterController();
+            controller.setServerUriResolver(stormpathServerUriResolver());
+            controller.setIdSiteUri(idSiteRegisterUri);
+            controller.setCallbackUri(callbackUri);
+            controller.setAlreadyLoggedInUri(stormpathLoginConfig().getNextUri());
+            controller.setIdSiteOrganizationResolver(stormpathIdSiteOrganizationResolver());
+            controller.setNextUri(stormpathLoginConfig().getNextUri());
+            controller.setPreRegisterHandler(registerPreHandler);
+            controller.init();
+            return controller;
         }
 
         //otherwise standard registration:
@@ -1110,6 +1136,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setPreRegisterHandler(registerPreHandler);
         c.setPostRegisterHandler(registerPostHandler);
         c.setAccountStoreResolver(stormpathAccountStoreResolver());
+        c.setApplicationResolver(stormpathApplicationResolver());
 
         return init(c);
     }
@@ -1133,6 +1160,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setAccountStoreResolver(stormpathAccountStoreResolver());
 
         return init(c);
+    }
+
+    public ControllerConfig stormpathSamlConfig() {
+        return new SamlControllerConfig();
     }
 
     public ChangePasswordControllerConfig stormpathChangePasswordConfig() {
@@ -1167,7 +1198,6 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public Controller stormpathAccessTokenController() {
-
         AccessTokenController c = new AccessTokenController();
         c.setEventPublisher(stormpathRequestEventPublisher());
         c.setAccessTokenAuthenticationRequestFactory(stormpathAccessTokenAuthenticationRequestFactory());
@@ -1179,6 +1209,22 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         c.setBasicAuthenticationScheme(stormpathBasicAuthenticationScheme());
         c.setGrantTypeValidator(stormpathGrantTypeStatusValidator());
 
+        return init(c);
+    }
+
+    /**
+     * @since 1.5.0
+     */
+    public RevokeTokenControllerConfig stormpathRevokeTokenConfig() {
+        return new RevokeTokenControllerConfig();
+    }
+
+    /**
+     * @since 1.5.0
+     */
+    public Controller stormpathRevokeTokenController() {
+        RevokeTokenController c = new RevokeTokenController();
+        c.setApplicationResolver(stormpathApplicationResolver());
         return init(c);
     }
 
@@ -1205,6 +1251,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         if (springSecurityIdSiteResultListener != null) {
             controller.addIdSiteResultListener(springSecurityIdSiteResultListener);
         }
+        controller.setPostLoginHandler(loginPostHandler);
+        controller.setPostRegisterHandler(registerPostHandler);
         controller.init();
         return controller;
     }

@@ -61,6 +61,10 @@ public class DefaultAccessTokenAuthenticationRequestFactory implements AccessTok
                 requestBuilder.setAccountStore(accountStore);
             }
 
+            if (request.getParameter("organizationNameKey") != null) {
+                requestBuilder.setOrganizationNameKey(request.getParameter("organizationNameKey"));
+            }
+
             return requestBuilder.build();
         } catch (Exception e){
             throw new OAuthException(OAuthErrorCode.INVALID_REQUEST);

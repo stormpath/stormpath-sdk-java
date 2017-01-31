@@ -23,6 +23,9 @@ public class RefreshTokenCookieProperties implements CookieProperties {
     @Value("#{ @environment['stormpath.web.refreshTokenCookie.secure'] ?: true }")
     protected boolean cookieSecure;
 
+    @Value("#{ @environment['stormpath.web.refreshTokenCookie.maxAge'] ?: 0 }")
+    protected int maxAge;
+
     @Override
     public String getCookieName() {
         return cookieName;
@@ -55,6 +58,6 @@ public class RefreshTokenCookieProperties implements CookieProperties {
 
     @Override
     public int getCookieMaxAge() {
-        return 0;
+        return maxAge;
     }
 }

@@ -45,4 +45,11 @@ public interface OAuthPasswordGrantRequestAuthentication extends OAuthGrantReque
      */
     AccountStore getAccountStore();
 
+    /**
+     * Returns the specific organizationNameKey where the provided credentials will be sought in order to authenticate a request.
+     *
+     * @return the specific organizationNameKey where the provided credentials will be sought in order to authenticate a request.
+     */
+    String getOrganizationNameKey();
+
 }

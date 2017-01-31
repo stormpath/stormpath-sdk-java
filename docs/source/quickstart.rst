@@ -159,7 +159,7 @@ By default, all paths are locked down with Spring Security. Stormpath's Spring S
 Disabling Spring Security
 """""""""""""""""""""""""
 
-If you do not want to use our Spring Security integration, set the following two config properties:
+If you do not want to use our Spring Security integration, set the following config property:
 
 .. code-block:: yaml
 
@@ -169,10 +169,18 @@ If you do not want to use our Spring Security integration, set the following two
        security:
          enabled: false
 
-   # disable Spring Security entirely:
-   security:
-     basic:
-       enabled: false
+.. note::
+
+   Alternatively you can disable Spring Security for good by having the following property in your configuration file:
+
+   .. code-block:: yaml
+
+      # disable Spring Security altogether:
+      security:
+        basic:
+          enabled: false
+
+   This will disable Spring Security along with the Stormpath Spring Security integration.
 
 #end
 
@@ -231,6 +239,13 @@ Any Problems?
 ^^^^^^^^^^^^^
 
 Did you experience any problems with this quickstart?  It might not have worked perfectly for you if:
+
+* There might be some cases in which you want to completely turn Stormpath off. For example, if you do not have an ApiKey in
+  your machine then Stormpath will simply not boot. In those scenarios you can add the following property in the configuration file:
+
+  .. code-block:: properties
+
+     stormpath.enabled = false
 
 #if( $servlet )
 

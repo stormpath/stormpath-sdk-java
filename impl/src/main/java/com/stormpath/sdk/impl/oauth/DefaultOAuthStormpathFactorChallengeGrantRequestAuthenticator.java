@@ -45,6 +45,7 @@ public class DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator exten
 
         OAuthStormpathFactorChallengeGrantAuthenticationAttempt authenticationAttempt = new DefaultOAuthStormpathFactorChallengeGrantAuthenticationAttempt(dataStore);
         authenticationAttempt.setGrantType(authentication.getGrantType());
+        authenticationAttempt.setState(authentication.getState());
         authenticationAttempt.setChallenge(authentication.getChallenge());
         authenticationAttempt.setCode(authentication.getCode());
 

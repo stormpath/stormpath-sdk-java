@@ -1,5 +1,28 @@
 ## Change Log ##
 
+### 1.5.0 ##
+
+* Added passwordPolicy to registration json model to support Client API
+* Upgraded to Spring Boot 1.5.0 as well as upgrading a number of other dependencies to latest versions
+* Allow for configurable `maxAge` setting for access token and refresh token. Default is still based on OAuth Policy, but can be set to an explicit value
+* OAuth2 [revocation](https://tools.ietf.org/html/rfc7009) support has been completed, a new `/oauth/revoke` endpoint has been added
+* Fixed issue where not all of our integrations could be disabled by means of `stormpath.enabled = false` (additionally, this property has more visibility in our documentation now)
+* Fixed issue where not all of our integrations were properly reacting to `stormpath.spring.security.enabled = false`
+* Added support for Pre/Post Login/Register handlers in IDSite
+* Now Spring Boot with Spring Security applications will start properly even if they lack a `WebSecurityConfigurerAdapter` configuration
+* Added support for the `state` token in `grant_type=stormpath_factor_challenge` requests
+* Fixed issue where IDSite and SAML callbacks were not performing to spec
+* Updated SAML IdP code to use `forceAuthn` property to determine if a user has to re-authenticate
+
+See [1.5.0 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.5.0+is%3Aclosed)
+
+
+### 1.4.1 ##
+
+* Fixed problem with HttpClient that caused cookies send by server to be stored and sent in every request. 
+
+See [1.4.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.4.1+is%3Aclosed)
+
 ### 1.4.0 ##
 
 * Refactored Google Authenticator MFA support to streamline and simplify

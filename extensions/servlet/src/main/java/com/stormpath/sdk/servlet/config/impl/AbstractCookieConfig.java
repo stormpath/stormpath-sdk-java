@@ -12,6 +12,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
     protected static final String NAME = "name";
     protected static final String COMMENT = "comment";
     protected static final String DOMAIN = "domain";
+    protected static final String MAX_AGE = "maxAge";
     protected static final String PATH = "path";
     protected static final String SECURE = "secure";
     protected static final String HTTP_ONLY = "httpOnly";
@@ -19,6 +20,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
     protected final String name;
     protected final String comment;
     protected final String domain;
+    protected final int maxAge;
     protected final String path;
     protected final boolean secure;
     protected final boolean httpOnly;
@@ -38,6 +40,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
         Assert.hasText(this.name, NAME + " cannot be null or empty.");
         this.comment = configReader.getString(configKeyFor(COMMENT));
         this.domain = configReader.getString(configKeyFor(DOMAIN));
+        this.maxAge = configReader.getInt(configKeyFor(MAX_AGE));
         this.path = configReader.getString(configKeyFor(PATH));
         this.secure = configReader.getBoolean(configKeyFor(SECURE));
         this.httpOnly = configReader.getBoolean(configKeyFor(HTTP_ONLY));
@@ -46,6 +49,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
     public AbstractCookieConfig(String name,
                                 String comment,
                                 String domain,
+                                int maxAge,
                                 String path,
                                 boolean secure,
                                 boolean httpOnly) {
@@ -53,6 +57,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
         Assert.hasText(this.name, NAME + " cannot be null or empty.");
         this.comment = comment;
         this.domain = domain;
+        this.maxAge = maxAge;
         this.path = path;
         this.secure = secure;
         this.httpOnly = httpOnly;
@@ -62,6 +67,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
         this(cookieProperties.getCookieName(),
                 cookieProperties.getCookieComment(),
                 cookieProperties.getCookieDomain(),
+                cookieProperties.getCookieMaxAge(),
                 cookieProperties.getCookiePath(),
                 cookieProperties.isCookieSecure(),
                 cookieProperties.isCookieHttpOnly());
@@ -88,8 +94,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
 
     @Override
     public int getMaxAge() {
-        //This is actually override in CookieAuthenticationResultSaver since the value actually comes from the Application OAuthPolicy
-        return -1;
+        return maxAge;
     }
 
     @Override

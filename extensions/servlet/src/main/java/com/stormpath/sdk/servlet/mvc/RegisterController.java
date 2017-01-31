@@ -34,7 +34,9 @@ import com.stormpath.sdk.servlet.form.Form;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.http.authc.AccountStoreResolver;
 import com.stormpath.sdk.servlet.mvc.provider.AccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.DefaultPasswordStrengthModelFactory;
 import com.stormpath.sdk.servlet.mvc.provider.ExternalAccountStoreModelFactory;
+import com.stormpath.sdk.servlet.mvc.provider.PasswordStrengthModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +65,7 @@ public class RegisterController extends FormController {
     private Saver<AuthenticationResult> authenticationResultSaver;
     private AccountModelFactory accountModelFactory;
     private AccountStoreModelFactory accountStoreModelFactory;
+    private PasswordStrengthModelFactory passwordStrengthModelFactory;
     private ErrorModelFactory errorModelFactory;
     private WebHandler preRegisterHandler;
     private WebHandler postRegisterHandler;
@@ -96,6 +99,10 @@ public class RegisterController extends FormController {
         this.accountStoreModelFactory = accountStoreModelFactory;
     }
 
+    public void setPasswordStrengthModelFactory(PasswordStrengthModelFactory passwordStrengthModelFactory) {
+        this.passwordStrengthModelFactory = passwordStrengthModelFactory;
+    }
+
     public void setErrorModelFactory(ErrorModelFactory errorModelFactory) {
         this.errorModelFactory = errorModelFactory;
     }
@@ -126,6 +133,9 @@ public class RegisterController extends FormController {
         if (this.accountStoreModelFactory == null) {
             this.accountStoreModelFactory = new ExternalAccountStoreModelFactory();
         }
+        if (this.passwordStrengthModelFactory == null) {
+            this.passwordStrengthModelFactory = new DefaultPasswordStrengthModelFactory();
+        }
         if (this.errorModelFactory == null) {
             this.errorModelFactory = new RegisterErrorModelFactory(this.messageSource);
         }
@@ -138,6 +148,7 @@ public class RegisterController extends FormController {
         Assert.notNull(this.postRegisterHandler, "postRegisterHandler cannot be null.");
         Assert.notNull(this.accountModelFactory, "accountModelFactory cannot be null.");
         Assert.notNull(this.accountStoreModelFactory, "accountStoreModelFactory cannot be null.");
+        Assert.notNull(this.passwordStrengthModelFactory, "passwordStrengthModelFactory cannot be null.");
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
         Assert.notNull(this.accountStoreResolver, "accountStoreResolver cannot be null.");
     }
@@ -154,6 +165,7 @@ public class RegisterController extends FormController {
             model.put("loginUri", loginUri);
         } else {
             model.put("accountStores", accountStoreModelFactory.getAccountStores(request));
+            model.put("passwordPolicy", passwordStrengthModelFactory.getPasswordPolicy(request));
         }
     }
 
@@ -310,4 +322,6 @@ public class RegisterController extends FormController {
 
         return result;
     }
+
+
 }

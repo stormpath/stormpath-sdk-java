@@ -19,12 +19,14 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @since 1.0.RC4
  */
 @Configuration
+@Conditional(StormpathEnabled.class)
 public class StormpathConfiguration extends AbstractStormpathConfiguration {
 
     @Bean

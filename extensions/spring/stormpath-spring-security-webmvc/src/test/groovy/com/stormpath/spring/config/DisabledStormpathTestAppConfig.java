@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2017 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.spring.boot.examples;
+package com.stormpath.spring.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import static com.stormpath.spring.config.StormpathWebSecurityConfigurer.stormpath;
+
 /**
- * @since 1.0.RC8.1
+ * @since 1.5.0
  */
 @Configuration
-public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+@EnableStormpathWebSecurity
+@PropertySource({"classpath:com/stormpath/spring/config/disabledstormpath.application.properties"})
+public class DisabledStormpathTestAppConfig extends WebSecurityConfigurerAdapter {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // Starting with Spring Security 4.2 we do not need to explicitly apply the Stormpath configuration in Spring Boot
-        // any more (note that it is still required in regular Spring)
+        http.apply(stormpath());
     }
+
 }

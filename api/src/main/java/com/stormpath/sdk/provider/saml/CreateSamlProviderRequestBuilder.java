@@ -75,6 +75,14 @@ public interface CreateSamlProviderRequestBuilder {
     CreateSamlProviderRequestBuilder setAttributeStatementMappingRules(AttributeStatementMappingRules attributeStatementMappingRules);
 
     /**
+     * Sets the boolean value for the forceAuthn attribute of the SamlProvider.
+     *
+     * @return this instance for method chaining.
+     * @since 1.5.0
+     */
+    CreateSamlProviderRequestBuilder setForceAuthn(boolean forceAuthn);
+
+    /**
      * Builds a {@link com.stormpath.sdk.provider.CreateProviderRequest} based on the current state of the builder.
      *
      * @return a {@code CreateProviderRequest} instance

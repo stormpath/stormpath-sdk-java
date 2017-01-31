@@ -232,8 +232,7 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
         def accessToken = result.getAccessToken()
 
         expect(httpServletRequest.getHeader("Authorization")).andReturn("Bearer " + accessToken.getJwt())
-        expect(httpServletRequest.getServletContext()).andReturn(servletContext).times(2)
-        expect(servletContext.getAttribute("com.stormpath.sdk.client.Client")).andReturn(client).times(2)
+        expect(httpServletRequest.getAttribute(Application.class.getName())).andReturn(application).times(1)
 
         replay(httpServletRequest, httpServletResponse, servletContext)
 
@@ -243,7 +242,7 @@ class StormpathWebSecurityAutoConfigurationIT extends AbstractTestNGSpringContex
         def logoutRequestEvent = new DefaultLogoutRequestEvent(httpServletRequest, httpServletResponse, account)
         requestEventPublisher.publish(logoutRequestEvent)
         Assert.isTrue(account.getAccessTokens().getSize() == 0)
-        Assert.isTrue(account.getRefreshTokens().getSize() == 0)
+        Assert.isTrue(account.getRefreshTokens().getSize() == 1)
 
         verify(httpServletRequest, httpServletResponse, servletContext)
     }

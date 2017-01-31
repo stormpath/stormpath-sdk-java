@@ -44,6 +44,12 @@ public interface OAuthPasswordGrantAuthenticationAttempt extends Resource {
     void setAccountStore(AccountStore accountStore);
 
     /**
+     * Method used to set the organizationNameKey object that will be used for the token exchange request.
+     * @param organizationNameKey the organizationNameKey that will be used for the token exchange request.
+     */
+    void setOrganizationNameKey(String organizationNameKey);
+
+    /**
      * Method used to set the Authentication Grant Type that will be used for the token exchange request. Currently only "password" grant type is supported for this operation.
      * @param grantType the Authentication Grant Type that will be used for the token exchange request.
      */

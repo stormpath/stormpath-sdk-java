@@ -28,10 +28,11 @@ import java.util.Map;
 public class DefaultOAuthStormpathFactorChallengeGrantAuthenticationAttempt extends AbstractResource implements OAuthStormpathFactorChallengeGrantAuthenticationAttempt {
 
     static final StringProperty GRANT_TYPE = new StringProperty("grant_type");
+    static final StringProperty STATE = new StringProperty("state");
     static final StringProperty CHALLENGE = new StringProperty("challenge");
     static final StringProperty CODE = new StringProperty("code");
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(GRANT_TYPE, CHALLENGE, CODE);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(GRANT_TYPE, STATE, CHALLENGE, CODE);
 
     public DefaultOAuthStormpathFactorChallengeGrantAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -47,6 +48,11 @@ public class DefaultOAuthStormpathFactorChallengeGrantAuthenticationAttempt exte
     }
 
     @Override
+    public void setState(String state) {
+        setProperty(STATE, state);
+    }
+
+    @Override
     public void setChallenge(String challenge) {
         setProperty(CHALLENGE, challenge);
     }
@@ -58,6 +64,10 @@ public class DefaultOAuthStormpathFactorChallengeGrantAuthenticationAttempt exte
 
     public String getGrantType() {
         return getString(GRANT_TYPE);
+    }
+
+    public String getState() {
+        return getString(STATE);
     }
 
     public String getChallenge() {

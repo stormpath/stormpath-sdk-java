@@ -20,8 +20,11 @@ import com.stormpath.sdk.impl.http.QueryString;
 import com.stormpath.sdk.impl.http.Request;
 import com.stormpath.sdk.impl.http.RestException;
 import com.stormpath.sdk.impl.util.RequestUtils;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -30,7 +33,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.params.CoreProtocolPNames;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +46,13 @@ import java.util.Map;
  * @since 0.1
  */
 class HttpClientRequestFactory {
+
+    private final RequestConfig defaultRequestConfig;
+
+    HttpClientRequestFactory(RequestConfig defaultRequestConfig) {
+        Assert.notNull(defaultRequestConfig, "defaultRequestConfig");
+        this.defaultRequestConfig = defaultRequestConfig;
+    }
 
     /**
      * Creates an HttpClient method object based on the specified request and
@@ -84,7 +93,7 @@ class HttpClientRequestFactory {
                 // large amounts of data and want to find out as early as possible if an operation will fail. We
                 // don't want to do this for all operations since it will cause extra latency in the network
                 // interaction.
-                base.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
+                base.setConfig(RequestConfig.copy(defaultRequestConfig).setExpectContinueEnabled(true).build());
 
                 if (previousEntity != null) {
                     ((HttpEntityEnclosingRequestBase)base).setEntity(previousEntity);
@@ -99,6 +108,8 @@ class HttpClientRequestFactory {
             default:
                 throw new IllegalArgumentException("Unrecognized HttpMethod: " + method);
         }
+
+        base.setProtocolVersion(HttpVersion.HTTP_1_1);
 
         applyHeaders(base, request);
 

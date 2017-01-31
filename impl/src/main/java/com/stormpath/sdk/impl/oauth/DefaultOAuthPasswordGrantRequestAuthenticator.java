@@ -46,6 +46,9 @@ public class DefaultOAuthPasswordGrantRequestAuthenticator extends AbstractOAuth
         if (oauthPasswordGrantRequestAuthentication.getAccountStore() != null){
             oauthPasswordGrantAuthenticationAttempt.setAccountStore(oauthPasswordGrantRequestAuthentication.getAccountStore());
         }
+        if (oauthPasswordGrantRequestAuthentication.getOrganizationNameKey() != null) {
+            oauthPasswordGrantAuthenticationAttempt.setOrganizationNameKey(oauthPasswordGrantRequestAuthentication.getOrganizationNameKey());
+        }
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

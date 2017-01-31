@@ -109,6 +109,7 @@
         </div>
         <input type="hidden" id="baseUrl"
                th:value="${#httpServletRequest.scheme + '://' + #httpServletRequest.serverName + ':'+#httpServletRequest.serverPort+#httpServletRequest.contextPath}"/>
+        <input type="hidden" id="samlUri" th:value="@{${samlUri}}"/>
     </div>
 </div>
 

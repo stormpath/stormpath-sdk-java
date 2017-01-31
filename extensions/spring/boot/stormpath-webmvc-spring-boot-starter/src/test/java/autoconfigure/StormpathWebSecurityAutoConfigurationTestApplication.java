@@ -15,13 +15,18 @@
  */
 package autoconfigure;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.mvc.WebHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 /**
@@ -46,4 +51,51 @@ public class StormpathWebSecurityAutoConfigurationTestApplication {
         }
     }
 
+    @Bean
+    public WebHandler registerPreHandler() {
+        return new CustomRegisterPreHandler();
+    }
+
+    @Bean
+    public WebHandler registerPostHandler() {
+        return new CustomRegisterPostHandler();
+    }
+
+    @Bean
+    public WebHandler loginPreHandler() {
+        return new CustomLoginPreHandler();
+    }
+
+    @Bean
+    public WebHandler loginPostHandler() {
+        return new CustomLoginPostHandler();
+    }
+
+    public class CustomRegisterPreHandler implements WebHandler {
+        @Override
+        public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+            return false;
+        }
+    }
+
+    public class CustomRegisterPostHandler implements WebHandler {
+        @Override
+        public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+            return false;
+        }
+    }
+
+    public class CustomLoginPreHandler implements WebHandler {
+        @Override
+        public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+            return false;
+        }
+    }
+
+    public class CustomLoginPostHandler implements WebHandler {
+        @Override
+        public boolean handle(HttpServletRequest request, HttpServletResponse response, Account account) {
+            return false;
+        }
+    }
 }

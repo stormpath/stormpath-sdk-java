@@ -31,9 +31,10 @@ public class DefaultOAuthPasswordGrantAuthenticationAttempt extends AbstractReso
     static final StringProperty LOGIN = new StringProperty("username");
     static final StringProperty PASSWORD = new StringProperty("password");
     static final StringProperty ACCOUNT_STORE_HREF = new StringProperty("accountStore");
+    static final StringProperty ORGANIZATION_NAME_KEY = new StringProperty("organizationNameKey");
     static final StringProperty GRANT_TYPE = new StringProperty("grant_type");
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(LOGIN, PASSWORD, ACCOUNT_STORE_HREF, GRANT_TYPE);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(LOGIN, PASSWORD, ACCOUNT_STORE_HREF, ORGANIZATION_NAME_KEY, GRANT_TYPE);
 
     public DefaultOAuthPasswordGrantAuthenticationAttempt(InternalDataStore dataStore) {
         super(dataStore);
@@ -56,6 +57,11 @@ public class DefaultOAuthPasswordGrantAuthenticationAttempt extends AbstractReso
     @Override
     public void setAccountStore(AccountStore value) {
         setProperty(ACCOUNT_STORE_HREF, value.getHref());
+    }
+
+    @Override
+    public void setOrganizationNameKey(String organizationNameKey) {
+        setProperty(ORGANIZATION_NAME_KEY, organizationNameKey);
     }
 
     public String getLogin() {

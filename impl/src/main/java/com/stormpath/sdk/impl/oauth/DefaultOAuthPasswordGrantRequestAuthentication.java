@@ -27,6 +27,7 @@ public class DefaultOAuthPasswordGrantRequestAuthentication implements OAuthPass
     private final String login;
     private final String password;
     private AccountStore accountStore;
+    private String organizationNameKey;
     private final static String grant_type = "password";
 
     public DefaultOAuthPasswordGrantRequestAuthentication(String login, String password) {
@@ -39,6 +40,11 @@ public class DefaultOAuthPasswordGrantRequestAuthentication implements OAuthPass
 
     public OAuthPasswordGrantRequestAuthentication setAccountStore(AccountStore accountStore) {
         this.accountStore = accountStore;
+        return this;
+    }
+
+    public OAuthPasswordGrantRequestAuthentication setOrganizationNameKey(String organizationNameKey) {
+        this.organizationNameKey = organizationNameKey;
         return this;
     }
 
@@ -55,6 +61,10 @@ public class DefaultOAuthPasswordGrantRequestAuthentication implements OAuthPass
     @Override
     public AccountStore getAccountStore() {
         return accountStore;
+    }
+
+    public String getOrganizationNameKey() {
+        return organizationNameKey;
     }
 
     @Override

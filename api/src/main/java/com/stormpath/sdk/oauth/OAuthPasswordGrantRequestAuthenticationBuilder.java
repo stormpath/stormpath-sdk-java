@@ -47,4 +47,12 @@ public interface OAuthPasswordGrantRequestAuthenticationBuilder extends OAuthReq
      * @return this instance for method chaining.
      */
     OAuthPasswordGrantRequestAuthenticationBuilder setAccountStore(AccountStore accountStore);
+
+    /**
+     * Specifies the target Organization via nameKey to be used for the authentication token creation.
+     *
+     * @param organizationNameKey the sole specific nameKey of the {@link com.stormpath.sdk.organization.Organization organization} where the provided credentials will be sought in order to authenticate this request.
+     * @return this instance for method chaining.
+     */
+    OAuthPasswordGrantRequestAuthenticationBuilder setOrganizationNameKey(String organizationNameKey);
 }
