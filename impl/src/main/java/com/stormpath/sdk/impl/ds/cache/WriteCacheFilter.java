@@ -230,14 +230,9 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             String name = entry.getKey();
             Object value = entry.getValue();
 
-            if (value instanceof Map) {
-                //the value is a resource reference
-                Map<String, ?> nested = (Map<String, ?>) value;
+            Map<String, ?> nested;
 
-                if (Collections.isEmpty(nested) || !nested.containsKey(AbstractResource.HREF_PROP_NAME)) {
-                    //If the map does not have an href key, is not considered a resource.
-                    continue;
-                }
+            if (value instanceof Map && (nested = (Map<String, ?>) value).containsKey(AbstractResource.HREF_PROP_NAME)) {
 
                 Assert.notNull(nested.get(AbstractResource.HREF_PROP_NAME),
                                "Resource references must have an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
