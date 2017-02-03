@@ -27,6 +27,7 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
     private Boolean registrationWorkflowEnabled;
     private PasswordFormat passwordFormat;
     private AccountOptions options;
+    private String organizationNameKey;
 
     public DefaultCreateAccountRequestBuilder(Account account) {
         Assert.notNull(account, "Account cannot be null.");
@@ -57,7 +58,13 @@ public class DefaultCreateAccountRequestBuilder implements CreateAccountRequestB
     }
 
     @Override
+    public CreateAccountRequestBuilder withOrganizationNameKey(String organizationNameKey) throws IllegalArgumentException {
+        this.organizationNameKey = organizationNameKey;
+        return this;
+    }
+
+    @Override
     public CreateAccountRequest build() {
-        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled, this.options).setPasswordFormat(this.passwordFormat);
+        return new DefaultCreateAccountRequest(this.account, this.registrationWorkflowEnabled, this.options, this.organizationNameKey).setPasswordFormat(this.passwordFormat);
     }
 }

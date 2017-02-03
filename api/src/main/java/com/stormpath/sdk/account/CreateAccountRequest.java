@@ -111,4 +111,22 @@ public interface CreateAccountRequest {
      */
     AccountOptions getAccountOptions() throws IllegalStateException;
 
+    /**
+     * Returns {@code true} if the request has specified an organizationNameKey
+     *
+     * @return {@code true} if the request has specified an organizationNameKey
+     *
+     * @since 1.6.0
+     */
+    boolean isOrganizationNameKeySpecified();
+
+    /**
+     * Returns the organizationNameKey to be used in the CreateAccountRequest
+     *
+     * @return organizationNameKey to be used in the CreateAccountRequest
+     *
+     * @since 1.6.0
+     */
+    String getOrganizationNameKey();
+
 }

@@ -32,13 +32,16 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
 
     private final AccountOptions options;
 
+    private final String organizationNameKey;
+
     private PasswordFormat passwordFormat;
 
-    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountOptions options) {
+    public DefaultCreateAccountRequest(Account account, Boolean registrationWorkflowEnabled, AccountOptions options, String organizationNameKey) {
         Assert.notNull(account, "Account cannot be null.");
         this.account = account;
         this.registrationWorkflowEnabled = registrationWorkflowEnabled;
         this.options = options;
+        this.organizationNameKey = organizationNameKey;
     }
 
     public Account getAccount() {
@@ -87,5 +90,15 @@ public class DefaultCreateAccountRequest implements CreateAccountRequest {
             throw new IllegalStateException("accountOptions has not been configured. Use the isAccountOptionsSpecified method to check first before invoking this method.");
         }
         return this.options;
+    }
+
+    @Override
+    public boolean isOrganizationNameKeySpecified() {
+        return this.organizationNameKey != null;
+    }
+
+    @Override
+    public String getOrganizationNameKey() {
+        return organizationNameKey;
     }
 }

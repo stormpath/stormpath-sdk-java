@@ -63,6 +63,13 @@ public interface CreateAccountRequestBuilder {
     CreateAccountRequestBuilder withResponseOptions(AccountOptions options) throws IllegalArgumentException;
 
     /**
+     * Ensures that the account will be created in the organization specified (given that it is mapped to the Application)
+     *
+     * @return the builder instance for method chaining.
+     */
+    CreateAccountRequestBuilder withOrganizationNameKey(String organizationNameKey) throws IllegalArgumentException;
+
+    /**
      * Creates a new {@code CreateAccountRequest} instance based on the current builder state.
      *
      * @return a new {@code CreateAccountRequest} instance based on the current builder state.

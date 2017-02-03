@@ -473,6 +473,10 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
             href += querySeparator + "passwordFormat=" + request.getPasswordFormat();
         }
 
+        if (request.isOrganizationNameKeySpecified()) {
+            href += querySeparator + "organizationNameKey=" + request.getOrganizationNameKey();
+        }
+
         if (request.isAccountOptionsSpecified()) {
             return getDataStore().create(href, account, request.getAccountOptions());
         }
