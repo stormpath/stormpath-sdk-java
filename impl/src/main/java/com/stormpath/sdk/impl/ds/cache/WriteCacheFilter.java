@@ -18,12 +18,9 @@ package com.stormpath.sdk.impl.ds.cache;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.account.DefaultAccount;
-import com.stormpath.sdk.impl.api.ApiKeyParameter;
 import com.stormpath.sdk.impl.ds.CacheMapInitializer;
 import com.stormpath.sdk.impl.ds.DefaultCacheMapInitializer;
 import com.stormpath.sdk.impl.ds.DefaultResourceFactory;
@@ -39,15 +36,14 @@ import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ArrayProperty;
-import com.stormpath.sdk.impl.resource.SetProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.SetProperty;
 import com.stormpath.sdk.impl.util.BaseUrlResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.mail.ModeledEmailTemplate;
 import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.provider.ProviderAccountResult;
@@ -61,11 +57,9 @@ import io.jsonwebtoken.Jwts;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.stormpath.sdk.impl.resource.AbstractResource.HREF_PROP_NAME;
 
@@ -75,7 +69,6 @@ public class WriteCacheFilter extends AbstractCacheFilter {
     private final ReferenceFactory referenceFactory;
     private final CacheMapInitializer cacheMapInitializer;
 
-    private final Set<String> webConfigurationMaps;
 
     public WriteCacheFilter(BaseUrlResolver baseUrlResolver, CacheResolver cacheResolver, boolean collectionCachingEnabled, ReferenceFactory referenceFactory) {
         super(cacheResolver, collectionCachingEnabled);
@@ -84,14 +77,6 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         this.referenceFactory = referenceFactory;
         this.cacheMapInitializer = new DefaultCacheMapInitializer();
         this.baseUrlResolver = baseUrlResolver;
-        this.webConfigurationMaps = new HashSet<>();
-        this.webConfigurationMaps.add("oauth2");
-        this.webConfigurationMaps.add("register");
-        this.webConfigurationMaps.add("login");
-        this.webConfigurationMaps.add("verifyEmail");
-        this.webConfigurationMaps.add("forgotPassword");
-        this.webConfigurationMaps.add("changePassword");
-        this.webConfigurationMaps.add("me");
     }
 
     @Override
@@ -245,27 +230,10 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             String name = entry.getKey();
             Object value = entry.getValue();
 
-            boolean isDefaultModelMap =
-                ModeledEmailTemplate.class.isAssignableFrom(clazz) && name.equals("defaultModel");
+            Map<String, ?> nested;
 
-            boolean isTokenDataMap = (AccessToken.class.isAssignableFrom(clazz) || RefreshToken.class.isAssignableFrom(clazz)) && name.equals("expandedJwt");
+            if (value instanceof Map && (nested = (Map<String, ?>) value).containsKey(AbstractResource.HREF_PROP_NAME)) {
 
-            boolean isWebConfigurationMap = ApplicationWebConfig.class.isAssignableFrom(clazz) && webConfigurationMaps.contains(name);
-
-            boolean isApiEncryptionMetadata = ApiKey.class.isAssignableFrom(clazz) && name.equals(ApiKeyParameter.ENCRYPTION_METADATA.getName());
-
-            // Since defaultModel and Grant Authentication tokens are maps, the DataStore thinks they are Resources. This causes the code to crash later on as Resources
-            // do need to have an href property
-            if (isDefaultModelMap || isTokenDataMap || isWebConfigurationMap) {
-                value = new LinkedHashMap<String, Object>((Map) value);
-            }
-
-            if (value instanceof Map && !isDefaultModelMap && !isTokenDataMap && !isWebConfigurationMap && !isApiEncryptionMetadata) {
-                //the value is a resource reference
-                Map<String, ?> nested = (Map<String, ?>) value;
-
-                Assert.notEmpty(nested, "Resource references are expected to be complex objects with at least an '" +
-                                        AbstractResource.HREF_PROP_NAME + "' property.");
                 Assert.notNull(nested.get(AbstractResource.HREF_PROP_NAME),
                                "Resource references must have an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
 

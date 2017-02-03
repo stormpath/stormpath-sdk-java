@@ -1,5 +1,19 @@
 ## Change Log ##
 
+### 1.5.2 ##
+
+* Added static default page with Logout button for empty Spring Boot projects, such as those created by start.spring.io
+* Updated to Spring Boot 1.5.1 and removed workaround exclusions
+* Fixed runtime bug whereby exception was thrown when dealing with non-resource maps
+
+See [1.5.2 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.5.2+is%3Aclosed)
+
+### 1.5.1 ##
+
+* Removed unnecessary throws in AccountStoreVisitorAdapter
+
+See [1.5.1 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.5.1+is%3Aclosed)
+
 ### 1.5.0 ##
 
 * Added passwordPolicy to registration json model to support Client API
