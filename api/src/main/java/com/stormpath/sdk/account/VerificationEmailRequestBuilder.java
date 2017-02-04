@@ -34,6 +34,14 @@ public interface VerificationEmailRequestBuilder {
     VerificationEmailRequestBuilder setLogin(String usernameOrEmail);
 
     /**
+     * Setter for the account's organizationNameKey information.
+     *
+     * @param organizationNameKey the organizationNameKey where the account lives.
+     * @return this builder instance for method chaining.
+     */
+    VerificationEmailRequestBuilder setOrganizationNameKey(String organizationNameKey);
+
+    /**
      * Setter for the {@link com.stormpath.sdk.directory.AccountStore} where the specified account must be searched. Although
      * this is an optional property it should to be provided when the account's AccountStore is already known since it will
      * speed-up the backend execution time.

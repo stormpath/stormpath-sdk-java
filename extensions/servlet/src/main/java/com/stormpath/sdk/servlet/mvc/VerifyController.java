@@ -230,6 +230,7 @@ public class VerifyController extends FormController {
 
             VerificationEmailRequest verificationEmailRequest = Applications.verificationEmailBuilder()
                     .setLogin(login)
+                    .setOrganizationNameKey(getFieldValueResolver().getValue(request, "organizationNameKey"))
                     .setAccountStore(accountStore)
                     .build();
 

@@ -42,6 +42,13 @@ public interface VerificationEmailRequest {
     String getLogin();
 
     /**
+     * Returns the organizationNameKey.
+     *
+     * @return the organizationNameKey.
+     */
+    String getOrganizationNameKey();
+
+    /**
      * Returns the {@link AccountStore} set.
      *
      * @return The provided AccountStore.

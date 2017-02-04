@@ -33,6 +33,7 @@ public class DefaultVerificationEmailRequest extends AbstractResource implements
 
     // SIMPLE PROPERTIES
     static final StringProperty LOGIN = new StringProperty("login");
+    static final StringProperty ORGANIZATION_NAME_KEY = new StringProperty("organizationNameKey");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
@@ -59,6 +60,16 @@ public class DefaultVerificationEmailRequest extends AbstractResource implements
 
     public VerificationEmailRequest setLogin(String usernameOrEmail) {
         setProperty(LOGIN, usernameOrEmail);
+        return this;
+    }
+
+    @Override
+    public String getOrganizationNameKey() {
+        return getString(ORGANIZATION_NAME_KEY);
+    }
+
+    public VerificationEmailRequest setOrganizationNameKey(String organizationNameKey) {
+        setProperty(ORGANIZATION_NAME_KEY, organizationNameKey);
         return this;
     }
 

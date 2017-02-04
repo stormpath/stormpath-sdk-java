@@ -27,12 +27,19 @@ import com.stormpath.sdk.lang.Strings;
 public class DefaultVerificationEmailRequestBuilder implements VerificationEmailRequestBuilder {
 
     private String login;
+    private String organizationNameKey;
     private AccountStore accountStore;
 
     @Override
     public VerificationEmailRequestBuilder setLogin(String usernameOrEmail) {
         Assert.hasText(usernameOrEmail, "usernameOrEmail cannot be null or empty.");
         this.login = usernameOrEmail;
+        return this;
+    }
+
+    @Override
+    public VerificationEmailRequestBuilder setOrganizationNameKey(String organizationNameKey) {
+        this.organizationNameKey = organizationNameKey;
         return this;
     }
 
@@ -51,6 +58,7 @@ public class DefaultVerificationEmailRequestBuilder implements VerificationEmail
 
         DefaultVerificationEmailRequest verificationEmailRequest = new DefaultVerificationEmailRequest(null);
         verificationEmailRequest.setLogin(login);
+        verificationEmailRequest.setOrganizationNameKey(organizationNameKey);
         if (accountStore != null) {
             verificationEmailRequest.setAccountStore(accountStore);
         }
