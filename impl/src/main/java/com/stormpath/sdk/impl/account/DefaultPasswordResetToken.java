@@ -35,13 +35,14 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
 
     // SIMPLE PROPERTIES
     static final StringProperty EMAIL = new StringProperty("email");
+    static final StringProperty ORGANIZATION_NAME_KEY = new StringProperty("organizationNameKey");
     static final StringProperty PASSWORD = new StringProperty("password");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Account> ACCOUNT = new ResourceReference<Account>("account", Account.class);
     static final ResourceReference<AccountStore> ACCOUNT_STORE = new ResourceReference<AccountStore>("accountStore", AccountStore.class);
 
-    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT_STORE, PASSWORD, ACCOUNT);
+    private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(EMAIL, ACCOUNT_STORE, PASSWORD, ACCOUNT, ORGANIZATION_NAME_KEY);
 
     public DefaultPasswordResetToken(InternalDataStore dataStore) {
         super(dataStore);
@@ -63,6 +64,16 @@ public class DefaultPasswordResetToken extends AbstractResource implements Passw
 
     public PasswordResetToken setEmail(String email) {
         setProperty(EMAIL, email);
+        return this;
+    }
+
+    @Override
+    public String getOrganizationNameKey() {
+        return getString(ORGANIZATION_NAME_KEY);
+    }
+
+    public PasswordResetToken setOrganizationNameKey(String organizationNameKey) {
+        setProperty(ORGANIZATION_NAME_KEY, organizationNameKey);
         return this;
     }
 

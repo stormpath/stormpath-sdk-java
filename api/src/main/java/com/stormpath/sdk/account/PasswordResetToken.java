@@ -24,6 +24,8 @@ public interface PasswordResetToken extends Resource {
 
     String getEmail();
 
+    String getOrganizationNameKey();
+
     Account getAccount();
 
     /**

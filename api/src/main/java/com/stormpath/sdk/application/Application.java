@@ -409,6 +409,32 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
     PasswordResetToken sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException;
 
     /**
+     * Sends a password reset email to an account in the specified {@code Organization} matching the specified
+     * {@code email} address.  If the email does not match an account in the specified Organization, a
+     * ResourceException will be thrown.  If you are unsure of which of the application's mapped account stores might
+     * contain the account, use the more general
+     * {@link #sendPasswordResetEmail(String) sendPasswordResetEmail(String email)} method instead.
+     *
+     * <p>This method is useful if you want to target a specific organization context for multi-tenancy purposes.</p>
+     *
+     * <p>Like the {@link #sendPasswordResetEmail(String)} method, this email merely sends the email that contains
+     * a link that, when clicked, will take the user to a view (web page) that allows them to specify a new password.
+     * When the new password is submitted, the {@link #verifyPasswordResetToken(String)} method is expected to be
+     * called at that time.</p>
+     *
+     * @param email an email address of an Account that may login to the application.
+     * @param organizationNameKey the organizationNameKey expected to contain an account with the specified email address
+     * @return the {@code PasswordResetToken} created for the password reset email sent to the specified {@code email}
+     * @see #sendPasswordResetEmail(String)
+     * @see #verifyPasswordResetToken(String)
+     * @see #resetPassword(String, String)
+     * @throws ResourceException if the specified AccountStore is not mapped to this application or if the email address
+     *                           is not in the specified Account store
+     * @since 1.6.0
+     */
+    PasswordResetToken sendPasswordResetEmail(String email, String organizationNameKey) throws ResourceException;
+
+    /**
      * Verifies a password reset token in a user-clicked link within an email.
      * <p/>
      * <h2>Base Link Configuration</h2>

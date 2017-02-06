@@ -306,21 +306,30 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
 
     @Override
     public PasswordResetToken sendPasswordResetEmail(String email) {
-        PasswordResetToken token = createPasswordResetToken(email, null);
+        PasswordResetToken token = createPasswordResetToken(email, null, null);
         return token;
     }
 
     @Override
     public PasswordResetToken sendPasswordResetEmail(String email, AccountStore accountStore) throws ResourceException {
-        PasswordResetToken token = createPasswordResetToken(email, accountStore);
+        PasswordResetToken token = createPasswordResetToken(email, accountStore, null);
         return token;
     }
 
-    private PasswordResetToken createPasswordResetToken(String email, AccountStore accountStore) {
+    @Override
+    public PasswordResetToken sendPasswordResetEmail(String email, String organizationNameKey) throws ResourceException {
+        PasswordResetToken token = createPasswordResetToken(email, null, organizationNameKey);
+        return token;
+    }
+
+    private PasswordResetToken createPasswordResetToken(String email, AccountStore accountStore, String organizationNameKey) {
         DefaultPasswordResetToken passwordResetToken = (DefaultPasswordResetToken) getDataStore().instantiate(PasswordResetToken.class);
         passwordResetToken.setEmail(email);
         if (accountStore != null) {
             passwordResetToken.setAccountStore(accountStore);
+        }
+        if (organizationNameKey != null) {
+            passwordResetToken.setOrganizationNameKey(organizationNameKey);
         }
         String href = getPasswordResetTokensHref();
         return getDataStore().create(href, passwordResetToken);
