@@ -43,7 +43,7 @@ class DefaultPasswordResetTokenTest {
 
         assertTrue(resourceWithDS instanceof DefaultPasswordResetToken && resourceWithProps instanceof DefaultPasswordResetToken)
         def pd = resourceWithProps.getPropertyDescriptors()
-        assertEquals(pd.size(), 4)
+        assertEquals(pd.size(), 5)
         assertTrue(pd.email instanceof StringProperty)
         assertTrue(pd.account instanceof ResourceReference)
         assertEquals(pd.account.type, Account)
