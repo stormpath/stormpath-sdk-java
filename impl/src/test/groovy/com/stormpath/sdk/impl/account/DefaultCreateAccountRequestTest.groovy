@@ -32,7 +32,7 @@ class DefaultCreateAccountRequestTest {
     @Test
     void testDefault() {
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, null, null)
+        def request = new DefaultCreateAccountRequest(account, null, null, null)
 
         assertSame(request.account, account)
         assertFalse request.isRegistrationWorkflowOptionSpecified()
@@ -42,7 +42,7 @@ class DefaultCreateAccountRequestTest {
     @Test
     void testWorkflowEnabled() {
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, true, null)
+        def request = new DefaultCreateAccountRequest(account, true, null, null)
 
         assertSame(request.account, account)
         assertTrue request.isRegistrationWorkflowOptionSpecified()
@@ -52,7 +52,7 @@ class DefaultCreateAccountRequestTest {
     @Test
     void testWorkflowDisabled() {
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, false, null)
+        def request = new DefaultCreateAccountRequest(account, false, null, null)
 
         assertSame(request.account, account)
         assertTrue request.isRegistrationWorkflowOptionSpecified()
@@ -63,7 +63,7 @@ class DefaultCreateAccountRequestTest {
     void testWorkflowNotSpecifiedButAccessed() {
 
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, null, null)
+        def request = new DefaultCreateAccountRequest(account, null, null, null)
         request.isRegistrationWorkflowEnabled()
     }
 
@@ -71,7 +71,7 @@ class DefaultCreateAccountRequestTest {
     void testAccountCriteria() {
         def account = createStrictMock(Account)
         def criteria = createStrictMock(AccountCriteria)
-        def request = new DefaultCreateAccountRequest(account, null, criteria)
+        def request = new DefaultCreateAccountRequest(account, null, criteria, null)
 
         assertSame(request.account, account)
         assertFalse request.isRegistrationWorkflowOptionSpecified()
@@ -79,10 +79,23 @@ class DefaultCreateAccountRequestTest {
         assertSame(request.accountOptions, criteria)
     }
 
+    @Test
+    void testAccountOrganizationNameKey() {
+        def account = createStrictMock(Account)
+        def criteria = createStrictMock(AccountCriteria)
+        def request = new DefaultCreateAccountRequest(account, null, criteria, "onk")
+
+        assertSame(request.account, account)
+        assertFalse request.isRegistrationWorkflowOptionSpecified()
+        assertTrue request.isAccountOptionsSpecified()
+        assertSame(request.accountOptions, criteria)
+        assertSame(request.organizationNameKey, "onk")
+    }
+
     @Test(expectedExceptions = IllegalStateException)
     void testAccountCriteriaNotSpecifiedButAccessed() {
         def account = createStrictMock(Account)
-        def request = new DefaultCreateAccountRequest(account, null, null)
+        def request = new DefaultCreateAccountRequest(account, null, null, null)
 
         request.getAccountOptions()
     }
