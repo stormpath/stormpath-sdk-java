@@ -154,9 +154,10 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         char querySeparator = '?';
 
         if (request.isRegistrationWorkflowOptionSpecified()) {
-            href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            href += querySeparator + "registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
         }
 
+        //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/1295
         if (request.isPasswordFormatSpecified()) {
             href += querySeparator + "passwordFormat=" + request.getPasswordFormat();
         }
