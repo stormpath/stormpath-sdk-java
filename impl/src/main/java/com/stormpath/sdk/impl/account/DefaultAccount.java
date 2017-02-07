@@ -15,7 +15,16 @@
 */
 package com.stormpath.sdk.impl.account;
 
-import com.stormpath.sdk.account.*;
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.account.AccountCriteria;
+import com.stormpath.sdk.account.AccountLink;
+import com.stormpath.sdk.account.AccountLinkCriteria;
+import com.stormpath.sdk.account.AccountLinkList;
+import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.AccountOptions;
+import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.account.EmailVerificationStatus;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyCriteria;
 import com.stormpath.sdk.api.ApiKeyList;
@@ -24,15 +33,30 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.directory.Directory;
-import com.stormpath.sdk.factor.*;
-import com.stormpath.sdk.factor.sms.CreateSmsFactorRequest;
-import com.stormpath.sdk.group.*;
+import com.stormpath.sdk.factor.CreateFactorRequest;
+import com.stormpath.sdk.factor.Factor;
+import com.stormpath.sdk.factor.FactorCriteria;
+import com.stormpath.sdk.factor.FactorList;
+import com.stormpath.sdk.factor.FactorOptions;
+import com.stormpath.sdk.factor.Factors;
+import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.group.GroupCriteria;
+import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.group.GroupMembership;
+import com.stormpath.sdk.group.GroupMembershipList;
+import com.stormpath.sdk.group.Groups;
 import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
+import com.stormpath.sdk.impl.resource.CollectionReference;
+import com.stormpath.sdk.impl.resource.DateProperty;
+import com.stormpath.sdk.impl.resource.EnumProperty;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessToken;
@@ -257,7 +281,10 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
 
     @Override
     public FactorList getFactors() {
-        return getResourceProperty(FACTORS);
+        FactorList factors = getResourceProperty(FACTORS);
+        // necessary to materialize Challenge to determine type
+        // fixes https://github.com/stormpath/stormpath-sdk-java/issues/1292
+        return getDataStore().getResource(factors.getHref(), FactorList.class, (Criteria)Factors.criteria().withMostRecentChallenge());
     }
 
     @Override
