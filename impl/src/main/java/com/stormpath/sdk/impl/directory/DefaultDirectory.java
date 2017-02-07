@@ -151,8 +151,14 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
         final Account account = request.getAccount();
         String href = getAccounts().getHref();
 
+        char querySeparator = '?';
+
         if (request.isRegistrationWorkflowOptionSpecified()) {
             href += "?registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+        }
+
+        if (request.isPasswordFormatSpecified()) {
+            href += querySeparator + "passwordFormat=" + request.getPasswordFormat();
         }
 
         if (request.isAccountOptionsSpecified()) {
