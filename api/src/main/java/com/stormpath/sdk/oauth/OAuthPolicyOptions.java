@@ -22,9 +22,33 @@ import com.stormpath.sdk.query.Options;
  */
 public interface OAuthPolicyOptions<T> extends Options {
 
+    /**
+     * Ensures that when retrieving an OAuthPolicy, the OAuthPolicy's assigned {@link OAuthPolicy#getScopes()} scopes}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @return this instance for method chaining.
+     */
     T withScopes();
 
+    /**
+     * Ensures that when retrieving an OAuthPolicy, the OAuthPolicy's assigned {@link OAuthPolicy#getScopes()} scopes}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @return this instance for method chaining.
+     */
     T withScopes(int limit);
 
+    /**
+     * Ensures that when retrieving an OAuthPolicy, the OAuthPolicy's assigned {@link OAuthPolicy#getScopes()} scopes}
+     * are also retrieved in the same request.  This enhances performance by leveraging a single request
+     * to retrieve multiple related resources you know you will use.
+     *
+     * @param limit defines the maximum quantity of items to be retrieved when expanding this Collection Resource. Min:1, Max: 100. The default value is 25.
+     * @param offset the zero-based starting index in the entire collection of the first item to return. Default is 0
+     * @return this instance for method chaining.
+     */
     T withScopes(int limit, int offset);
 }

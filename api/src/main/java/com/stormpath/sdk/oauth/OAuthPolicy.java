@@ -114,8 +114,8 @@ public interface OAuthPolicy extends Resource, Saveable {
 
     /**
      * Returns access token attribute mappings.
-     * Open Id provider (OP) would enter any custom mappings used for their internal purposes in this map.
-     * Authorization server would then add all these mappings as part of the access token upon its generation.
+     * <p>Open Id provider (OP) would enter any custom mappings used for their internal purposes in this map.
+     * Authorization server would then add all these mappings as part of the access token upon its generation.</p>
      *
      * @return access token attribute mappings.
      *
@@ -127,8 +127,8 @@ public interface OAuthPolicy extends Resource, Saveable {
      * Sets access token attribute mappings to be inserted into access tokens.
      *
      * @param accessTokenAttributeMap access token attribute mappings to be inserted into access tokens
-     * Open Id provider (OP) would enter any custom mappings used for their internal purposes in this map.
-     * Authorization server would then add all these mappings as part of the access token upon its generation.
+     * <p>Open Id provider (OP) would enter any custom mappings used for their internal purposes in this map.
+     * Authorization server would then add all these mappings as part of the access token upon its generation.</p>
      * @return this instance for method chaining.
      *
      * @since 1.6.0
@@ -137,8 +137,8 @@ public interface OAuthPolicy extends Resource, Saveable {
 
     /**
      * Returns id token attribute mappings.
-     * Open Id provider (OP) would enter any custom mappings used for their internal purposes in this map.
-     * Authorization server would then add all these mappings as part of the id token upon its generation.
+     * <p>Open Id provider (OP) would enter any custom mappings used for their internal purposes in this map.
+     * Authorization server would then add all these mappings as part of the id token upon its generation.</p>
      *
      * @return id token attribute mappings.
      *
@@ -150,8 +150,8 @@ public interface OAuthPolicy extends Resource, Saveable {
      * Sets id token attribute mappings to be inserted into id tokens.
      *
      * @param idTokenAttributeMap id token attribute mappings to be inserted into id tokens
-     * Open Id provider (OP) would enter any custom mappings used for their internal purposes in this map.
-     * Authorization server would then add all these mappings as part of the id token upon its generation.
+     * <p>Open Id provider (OP) would enter any custom mappings used for their internal purposes in this map.
+     * Authorization server would then add all these mappings as part of the id token upon its generation.</p>
      * @return this instance for method chaining.
      *
      * @since 1.6.0
