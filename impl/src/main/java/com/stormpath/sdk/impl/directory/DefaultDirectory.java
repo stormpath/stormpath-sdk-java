@@ -155,6 +155,7 @@ public class DefaultDirectory extends AbstractExtendableInstanceResource impleme
 
         if (request.isRegistrationWorkflowOptionSpecified()) {
             href += querySeparator + "registrationWorkflowEnabled=" + request.isRegistrationWorkflowEnabled();
+            querySeparator = '&';
         }
 
         //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/1295
