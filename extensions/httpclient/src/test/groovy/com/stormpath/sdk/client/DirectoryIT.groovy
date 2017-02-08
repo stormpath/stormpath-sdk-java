@@ -1299,4 +1299,38 @@ class DirectoryIT extends ClientIT {
         assertEquals(authenticationResult.getAccount().getUsername(), username)
     }
 
+    /**
+     * @since 1.5.4
+     */
+    @Test
+    void testBCryptPasswordForAccountCreatedViaDirectoryWithRegistrationWorkflowOverride() {
+        Application application = createTempApp()
+        Directory directory = client.instantiate(Directory)
+        directory.setName(uniquify("JSDK.DirectoryIT.testBCryptPasswordForAccountCreatedViaDirectoryWithRegistrationWorkflowOverride"))
+        directory = client.createDirectory(directory)
+        assertNotNull directory.href
+        deleteOnTeardown(directory)
+
+        application.addAccountStore(directory)
+
+        Account account = client.instantiate(Account.class)
+        String username = "deleteme" + UUID.randomUUID()
+        account.setEmail(username + "@mailinator.com")
+                .setUsername(username)
+                .setGivenName(username)
+                .setSurname(username)
+                .setPassword('$2a$12$PLmHvcbeliNkjIVFyVXg5O.LQfyYtHFm.1vAtj3l7itIP.z0V6OX2') //hash for Pa$sw0rd123
+
+        directory.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).setRegistrationWorkflowEnabled(false).build());
+
+        AuthenticationResult authenticationResult = application.authenticateAccount(
+                UsernamePasswordRequests.builder()
+                        .setUsernameOrEmail(username)
+                        .setPassword('Pa$sw0rd123')
+                        .withResponseOptions(UsernamePasswordRequests.options().withAccount())
+                        .build());
+
+        assertEquals(authenticationResult.getAccount().getUsername(), username)
+    }
+
 }
