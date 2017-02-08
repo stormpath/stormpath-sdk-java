@@ -16,7 +16,9 @@
 package com.stormpath.sdk.client
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.Accounts
+import com.stormpath.sdk.account.EmailVerificationStatus
 import com.stormpath.sdk.account.PasswordFormat
 import com.stormpath.sdk.application.Application
 import com.stormpath.sdk.authc.AuthenticationResult
@@ -1287,14 +1289,14 @@ class DirectoryIT extends ClientIT {
                 .setSurname(username)
                 .setPassword('$2a$12$PLmHvcbeliNkjIVFyVXg5O.LQfyYtHFm.1vAtj3l7itIP.z0V6OX2') //hash for Pa$sw0rd123
 
-        directory.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build());
+        directory.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).build())
 
         AuthenticationResult authenticationResult = application.authenticateAccount(
                 UsernamePasswordRequests.builder()
                         .setUsernameOrEmail(username)
                         .setPassword('Pa$sw0rd123')
                         .withResponseOptions(UsernamePasswordRequests.options().withAccount())
-                        .build());
+                        .build())
 
         assertEquals(authenticationResult.getAccount().getUsername(), username)
     }
@@ -1319,16 +1321,21 @@ class DirectoryIT extends ClientIT {
                 .setUsername(username)
                 .setGivenName(username)
                 .setSurname(username)
+                .setStatus(AccountStatus.ENABLED)
+                .setEmailVerificationStatus(EmailVerificationStatus.VERIFIED)
                 .setPassword('$2a$12$PLmHvcbeliNkjIVFyVXg5O.LQfyYtHFm.1vAtj3l7itIP.z0V6OX2') //hash for Pa$sw0rd123
 
-        directory.createAccount(Accounts.newCreateRequestFor(account).setPasswordFormat(PasswordFormat.MCF).setRegistrationWorkflowEnabled(false).build());
+        directory.createAccount(Accounts.newCreateRequestFor(account)
+                                        .setPasswordFormat(PasswordFormat.MCF)
+                                        .setRegistrationWorkflowEnabled(false)
+                                        .build())
 
         AuthenticationResult authenticationResult = application.authenticateAccount(
                 UsernamePasswordRequests.builder()
                         .setUsernameOrEmail(username)
                         .setPassword('Pa$sw0rd123')
                         .withResponseOptions(UsernamePasswordRequests.options().withAccount())
-                        .build());
+                        .build())
 
         assertEquals(authenticationResult.getAccount().getUsername(), username)
     }
