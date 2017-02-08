@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-tutorials-spring</artifactId>
-        <version>1.5.4-SNAPSHOT</version>
+        <version>1.5.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-tutorials-spring-security-webmvc-the-basics</artifactId>
-    <version>1.5.4-SNAPSHOT</version>
+    <version>1.5.4</version>
 
     <name>Stormpath Java SDK :: Tutorials :: Spring Security WebMVC :: The Basics</name>
     <description>A simple Spring Security Web MVC application with out-of-the-box login and self-service screens!</description>
