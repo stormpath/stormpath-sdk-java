@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 1.5.4 ##
+
+* Fixed a bug whereby Account with MCF password is not properly created via Directory when the RegistrationWorkflow is specified
+
 ### 1.5.3 ##
 
 * Fixed a bug whereby Account with MCF password is not properly created via Directory
