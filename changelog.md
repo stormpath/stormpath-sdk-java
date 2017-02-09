@@ -1,5 +1,16 @@
 ## Change Log ##
 
+### 1.5.4 ##
+
+* Fixed a bug whereby Account with MCF password is not properly created via Directory when the RegistrationWorkflow is specified
+
+### 1.5.3 ##
+
+* Fixed a bug whereby Account with MCF password is not properly created via Directory
+* Fixed a bug whereby Factor.getMostRecentChallenge would materialize the wrong type
+
+See [1.5.3 closed issues](https://github.com/stormpath/stormpath-sdk-java/issues?q=milestone%3A1.5.3+is%3Aclosed)
+
 ### 1.5.2 ##
 
 * Added static default page with Logout button for empty Spring Boot projects, such as those created by start.spring.io

@@ -190,6 +190,7 @@ class DefaultDirectoryTest {
 
         expect(createAccountRequest.getAccount()).andReturn(account)
         expect(createAccountRequest.isRegistrationWorkflowOptionSpecified()).andReturn(false)
+        expect(createAccountRequest.isPasswordFormatSpecified()).andReturn(false)
         expect(createAccountRequest.isAccountOptionsSpecified()).andReturn(true)
         def accountOptions = Accounts.options().withTenant()
         expect(createAccountRequest.getAccountOptions()).andReturn(accountOptions)

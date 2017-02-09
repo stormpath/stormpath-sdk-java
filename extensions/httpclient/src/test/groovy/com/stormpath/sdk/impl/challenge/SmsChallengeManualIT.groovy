@@ -20,8 +20,11 @@ import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.challenge.ChallengeOptions
 import com.stormpath.sdk.challenge.Challenges
 import com.stormpath.sdk.challenge.sms.SmsChallenge
+import com.stormpath.sdk.challenge.sms.SmsChallengeStatus
 import com.stormpath.sdk.client.ClientIT
 import com.stormpath.sdk.directory.Directory
+import com.stormpath.sdk.factor.FactorStatus
+import com.stormpath.sdk.factor.Factors
 import com.stormpath.sdk.factor.sms.SmsFactor
 import com.stormpath.sdk.phone.Phone
 import org.testng.annotations.Test
@@ -30,9 +33,6 @@ import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertTrue
 
-/**
- * @since 1.1.0
- */
 class SmsChallengeManualIT extends ClientIT {
 
     // This test and the next one (testSuccessfulChallengeVerifyChallenge) require an actual phone to complete
@@ -41,7 +41,7 @@ class SmsChallengeManualIT extends ClientIT {
     void testSuccessfulChallengeSendCode() {
 
         // Put your phone number here
-        def phoneNumber = "2016589574"
+        def phoneNumber = "6316068928"
 
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: DirectoryIT.testCreateAndDeleteDirectory")
@@ -52,10 +52,7 @@ class SmsChallengeManualIT extends ClientIT {
                 .setEmail('johndeleteme@testmail.stormpath.com')
                 .setPassword('Changeme1!')
 
-        deleteOnTeardown(account)
-        deleteOnTeardown(dir)
-
-        dir.createAccount(account)
+        account = dir.createAccount(account)
 
         def phone = client.instantiate(Phone)
         phone = phone.setNumber(phoneNumber)
@@ -78,10 +75,9 @@ class SmsChallengeManualIT extends ClientIT {
     void testSuccessfulVerifyChallenge() {
 
         // Paste the value for challenge href retrieved from previous test (testSuccessfulChallengeSendCode) here
-        def href = "https://dev.i.stormpath.com/v1/challenges/5Ybc0WUcv7J0hpgy7UCO4O"
+        def href = "https://api.stormpath.com/v1/challenges/ru7uK2nSiMR3e0C3GEP64"
         // Paste the code you received on your phone by running the previous test (testSuccessfulChallengeSendCode) here
-        def code = "658063"
-
+        def code = "702478"
 
         Challenge challenge = client.getResource(href, SmsChallenge)
         boolean challengeValidated = challenge.validate(code)
@@ -95,5 +91,23 @@ class SmsChallengeManualIT extends ClientIT {
 
         assertNotNull(challenge.getAccount().href)
         assertEquals(challenge.getFactor().getAccount().href, challenge.getAccount().href)
+    }
+
+    // This test proves that the most recent challenge on has status success
+    @Test(enabled = false)
+    void testWaitingForValidation() {
+        // use the href from the first test
+        def accountHref= "https://api.stormpath.com/v1/accounts/X6HHoJdcC65Bf0YY1dfrD"
+        Account account = client.getResource(accountHref, Account)
+        SmsFactor factor = (SmsFactor) account.getFactors().iterator().next()
+
+        // let's get the latest challenge
+        Challenge challenge = factor.getMostRecentChallenge()
+
+        // TODO - With the latest release, this fails
+        // challenge is an instance of GoogleAuthenticatorChallenge
+        assertTrue(challenge instanceof SmsChallenge)
+        SmsChallenge smsChallenge = (SmsChallenge) challenge
+        assertEquals(smsChallenge.status, SmsChallengeStatus.SUCCESS)
     }
 }

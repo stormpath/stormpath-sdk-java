@@ -16,8 +16,10 @@
 package com.stormpath.sdk.impl.challenge
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.challenge.Challenge
 import com.stormpath.sdk.challenge.Challenges
 import com.stormpath.sdk.challenge.sms.SmsChallenge
+import com.stormpath.sdk.challenge.sms.SmsChallengeStatus
 import com.stormpath.sdk.challenge.sms.SmsChallenges
 import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.factor.sms.SmsFactor
@@ -27,6 +29,7 @@ import com.stormpath.sdk.resource.ResourceException
 import org.testng.annotations.Test
 
 import static org.testng.Assert.assertEquals
+import static org.testng.Assert.assertEqualsNoOrder
 import static org.testng.Assert.assertTrue
 
 /**
@@ -35,10 +38,10 @@ import static org.testng.Assert.assertTrue
 class SmsChallengeIT extends AbstractMultiFactorIT {
 
     @Test
-    void testFailedChallenge() {
+    void testFailedChallengeNoCode() {
         Directory dir = client.instantiate(Directory)
         dir.name = uniquify("Java SDK: ${this.getClass().getSimpleName()}.${new Object(){}.getClass().getEnclosingMethod().getName()}")
-        dir = client.currentTenant.createDirectory(dir);
+        dir = client.currentTenant.createDirectory(dir)
         deleteOnTeardown(dir)
         Account account = createTempAccountInDir(dir)
 
@@ -57,8 +60,7 @@ class SmsChallengeIT extends AbstractMultiFactorIT {
         Throwable e = null
         try {
             factor.createChallenge(challenge)
-        }
-        catch(ResourceException re){
+        } catch(ResourceException re){
             e = re
             assertEquals(re.status, 400)
             assertEquals(re.getCode(), 13103)
