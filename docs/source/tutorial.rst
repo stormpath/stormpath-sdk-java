@@ -240,9 +240,13 @@ disable it. That's where the ``application.properties`` files comes in:
     :linenos:
 
     stormpath.spring.security.enabled = false
-    security.basic.enabled = false
 
-The first line disables Stormpath's hooks into Spring Security and the second line disables Spring Security itself.
+That property disables Spring Security and avoids our Spring Security integration to be loaded.
+
+.. note::
+   Alternatively you can disable the Stormpath Spring Security integration while keeping Spring Security enabled. Such setup will allow you
+   to take full control of Spring Security's configuration without having Stormath's integration in the mix. This can be
+   achieved by having `stormpath.spring.security.enabled = false` in your configuration file.
 
 Pretty simple setup, right? In the next section, we'll layer in some flow logic based on logged-in state. And then we
 will refine that to make use of all the Spring Security has to offer in making our lives easier.
@@ -894,6 +898,14 @@ Here's the response:
 As you can see from the examples above, Stormpath provides powerful oauth2 Token Management out-of-the-box using the
 ``/oauth/token`` endpoint. There is no additional coding required on your part to make use of the Token Management
 feature.
+
+#if( $springboot )
+You may notice that there is no class in this part of the tutorial that extends ``WebSecurityConfigurerAdapter``.
+In this particular case, *all* user-defined paths are locked down. This is the default for Spring Security and the
+Stormpath Spring Security integration follows suit.
+
+If you fire up the tutorial app and browse to the home page: http://localhost:8080/, you will be redirected to `/login`.
+#end
 
 .. _wrapping-up:
 

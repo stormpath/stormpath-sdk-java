@@ -150,6 +150,7 @@
                 <c:set var="req" value="${pageContext.request}"/>
                 <input type="hidden" id="baseUrl"
                        value="${req.scheme}://${req.serverName}:${req.serverPort}${req.contextPath}"/>
+                <input type="hidden" id="samlUri" value="${samlUri}"/>
             </div>
         </div>
 

@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-examples</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-examples-spring-boot-web-angular</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
 
     <name>Stormpath Java SDK :: Examples :: Spring Boot + Angular Webapp</name>
     <description>A Spring Boot web application that uses Stormpath.</description>
@@ -36,11 +36,11 @@
         <jdk.version>1.7</jdk.version>
         <angular.ui.router.version>0.3.1</angular.ui.router.version>
         <bootstrap.version>3.3.7</bootstrap.version>
-        <logback.version>1.1.7</logback.version>
+        <logback.version>1.1.8</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>1.4.3.RELEASE</spring.boot.version>
+        <spring.boot.version>1.5.1.RELEASE</spring.boot.version>
         <stormpath.angular.version>1.0.0</stormpath.angular.version>
-        <webjars.locator.version>0.30</webjars.locator.version>
+        <webjars.locator.version>0.32</webjars.locator.version>
     </properties>
 
     <dependencies>

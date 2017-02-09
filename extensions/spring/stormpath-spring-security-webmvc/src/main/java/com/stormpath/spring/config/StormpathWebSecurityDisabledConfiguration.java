@@ -31,12 +31,13 @@ public class StormpathWebSecurityDisabledConfiguration extends AbstractStormpath
 
     @Bean
     public SecurityConfigurerAdapter stormpathSecurityConfigurerAdapter() {
-        //This bean will only be created if `stormpath.spring.security.enabled` is false
+        //This bean will only be created if our Spring Security integration is disabled
         return super.stormpathSecurityConfigurerAdapter();
     }
 
     @Bean
     public LogoutHandler stormpathLogoutHandler() {
+        //This bean will only be created if our Spring Security integration
         return super.stormpathLogoutHandler();
     }
 }

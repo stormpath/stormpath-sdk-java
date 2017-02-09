@@ -36,6 +36,7 @@ public class DefaultCreateSamlProviderRequestBuilder implements CreateSamlProvid
     private String ssoLogoutUrl;
     private String encodedX509SigningCert;
     private String requestSignatureAlgorithm;
+    private boolean forceAuthn;
     private AttributeStatementMappingRules attributeStatementMappingRules;
 
     protected String getConcreteProviderId() {
@@ -77,6 +78,12 @@ public class DefaultCreateSamlProviderRequestBuilder implements CreateSamlProvid
         return this;
     }
 
+    @Override
+    public CreateSamlProviderRequestBuilder setForceAuthn(boolean forceAuthn) {
+        this.forceAuthn = forceAuthn;
+        return this;
+    }
+
     protected CreateProviderRequest doBuild(Map <String, Object> map) {
         DefaultSamlProvider provider = new DefaultSamlProvider(null, map);
 
@@ -84,6 +91,7 @@ public class DefaultCreateSamlProviderRequestBuilder implements CreateSamlProvid
         provider.setRequestSignatureAlgorithm(requestSignatureAlgorithm);
         provider.setSsoLoginUrl(ssoLoginUrl);
         provider.setSsoLogoutUrl(ssoLogoutUrl);
+        provider.setForceAuthn(forceAuthn);
         if (attributeStatementMappingRules != null){
             provider.setAttributeStatementMappingRules(attributeStatementMappingRules);
         }

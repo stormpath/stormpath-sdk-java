@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.provider.saml;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.provider.AbstractProvider;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
+import com.stormpath.sdk.impl.resource.BooleanProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.ResourceReference;
 import com.stormpath.sdk.impl.resource.StringProperty;
@@ -37,6 +38,7 @@ public class DefaultSamlProvider extends AbstractProvider implements SamlProvide
     static final StringProperty SSO_LOGIN_URL = new StringProperty("ssoLoginUrl");
     static final StringProperty SSO_LOGOUT_URL = new StringProperty("ssoLogoutUrl");
     static final StringProperty ENCODED_X509_SIGNING_CERT = new StringProperty("encodedX509SigningCert");
+    static final BooleanProperty FORCE_AUTHN = new BooleanProperty("forceAuthn");
     static final StringProperty REQUEST_SIGNATURE_ALGORITHM = new StringProperty("requestSignatureAlgorithm");
 
     // INSTANCE RESOURCE REFERENCES:
@@ -44,7 +46,7 @@ public class DefaultSamlProvider extends AbstractProvider implements SamlProvide
 
     static final ResourceReference<SamlServiceProviderMetadata> SERVICE_PROVIDER_METADATA  = new ResourceReference<SamlServiceProviderMetadata>("serviceProviderMetadata", SamlServiceProviderMetadata.class);
 
-    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, SSO_LOGIN_URL, SSO_LOGOUT_URL, ENCODED_X509_SIGNING_CERT, REQUEST_SIGNATURE_ALGORITHM, SERVICE_PROVIDER_METADATA, ATTRIBUTE_STATEMENT_MAPPING_RULES);
+    static final Map<String,Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(PROVIDER_ID, CREATED_AT, MODIFIED_AT, SSO_LOGIN_URL, SSO_LOGOUT_URL, ENCODED_X509_SIGNING_CERT, REQUEST_SIGNATURE_ALGORITHM, FORCE_AUTHN, SERVICE_PROVIDER_METADATA, ATTRIBUTE_STATEMENT_MAPPING_RULES);
 
     public DefaultSamlProvider(InternalDataStore dataStore) {
         super(dataStore);
@@ -85,6 +87,11 @@ public class DefaultSamlProvider extends AbstractProvider implements SamlProvide
     }
 
     @Override
+    public boolean getForceAuthn() {
+        return getBoolean(FORCE_AUTHN);
+    }
+
+    @Override
     public void setAttributeStatementMappingRules(AttributeStatementMappingRules attributeStatementMappingRules) {
         Assert.notNull(attributeStatementMappingRules, "attributeStatementMappingRules cannot be null or empty.");
         setProperty(ATTRIBUTE_STATEMENT_MAPPING_RULES, attributeStatementMappingRules);
@@ -116,5 +123,10 @@ public class DefaultSamlProvider extends AbstractProvider implements SamlProvide
     public void setRequestSignatureAlgorithm(String requestSignatureAlgorithm) {
         Assert.notNull(requestSignatureAlgorithm, "requestSignatureAlgorithm cannot be null or empty.");
         setProperty(REQUEST_SIGNATURE_ALGORITHM, requestSignatureAlgorithm);
+    }
+
+    @Override
+    public void setForceAuthn(boolean forceAuthn) {
+        setProperty(FORCE_AUTHN, forceAuthn);
     }
 }

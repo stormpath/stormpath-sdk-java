@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>stormpath-sdk-examples</artifactId>
     <groupId>com.stormpath.sdk</groupId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <name>Stormpath Java SDK :: Examples</name>
     <packaging>pom</packaging>
 
@@ -50,7 +50,7 @@
         <groovy.version>2.4.7</groovy.version>
         <testng.version>6.9.10</testng.version>
         <restassured.version>2.9.0</restassured.version>
-        <slf4j.version>1.7.21</slf4j.version>
+        <slf4j.version>1.7.22</slf4j.version>
         <gmavenplus.version>1.5</gmavenplus.version>
         <skipITs>true</skipITs>
     </properties>

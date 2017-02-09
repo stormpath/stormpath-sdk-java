@@ -50,6 +50,7 @@ public class LoginController extends FormController {
     private String verifyUri;
     private String registerUri;
     private String logoutUri;
+    private String samlUri;
     private boolean verifyEnabled = true;
     private boolean forgotPasswordEnabled = true;
     private boolean idSiteEnabled;
@@ -77,6 +78,10 @@ public class LoginController extends FormController {
 
     public void setLogoutUri(String logoutUri) {
         this.logoutUri = logoutUri;
+    }
+
+    public void setSamlUri(String samlUri) {
+        this.samlUri = samlUri;
     }
 
     public void setVerifyEnabled(boolean verifyEnabled) {
@@ -149,6 +154,7 @@ public class LoginController extends FormController {
         Assert.hasText(this.registerUri, "registerUri property cannot be null or empty.");
         Assert.notNull(this.registerEnabledResolver, "registerEnabledResolver cannot be null.");
         Assert.hasText(this.logoutUri, "logoutUri property cannot be null or empty.");
+        Assert.hasText(this.samlUri, "samlUri property cannot be null or empty.");
         Assert.notNull(this.authenticationResultSaver, "authenticationResultSaver property cannot be null.");
         Assert.notNull(this.errorModelFactory, "errorModelFactory cannot be null.");
         Assert.notNull(this.preLoginHandler, "preLoginHandler cannot be null.");
@@ -193,6 +199,7 @@ public class LoginController extends FormController {
             model.put("verifyUri", verifyUri);
             model.put("registerEnabled", registerEnabledResolver.get(request, response));
             model.put("registerUri", registerUri);
+            model.put("samlUri", samlUri);
             model.put("oauthStateToken", UUID.randomUUID().toString());
             String status = request.getParameter("status");
             if (status != null) {

@@ -82,7 +82,7 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
-        if (stormpathEnabled) {
+        if (stormpathEnabled) { /// we only need the configurer Stormpath is enabled
             stormpathSecurityConfigurerAdapter.init(http);
         }
     }

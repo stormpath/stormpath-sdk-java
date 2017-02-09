@@ -26,15 +26,13 @@ import com.stormpath.sdk.servlet.util.SubdomainResolver;
 /**
  * @since 1.0.0
  */
-public abstract class IDSiteFilterFactory extends ControllerFilterFactory<IdSiteController> {
+public abstract class AbstractIDSiteFilterFactory<T extends IdSiteController> extends ControllerFilterFactory<T> {
 
     @Override
-    protected IdSiteController newController() {
-        return new IdSiteController();
-    }
+    protected abstract T newController();
 
     @Override
-    protected void configure(IdSiteController controller, Config config) throws Exception {
+    protected void configure(T controller, Config config) throws Exception {
 
         SubdomainResolver subdomainResolver = new SubdomainResolver();
         subdomainResolver.setBaseDomainName(config.get("stormpath.web.application.domain"));
@@ -58,5 +56,5 @@ public abstract class IDSiteFilterFactory extends ControllerFilterFactory<IdSite
         doConfigure(controller, config);
     }
 
-    public abstract void doConfigure(IdSiteController controller, Config config);
+    public abstract void doConfigure(T controller, Config config);
 }

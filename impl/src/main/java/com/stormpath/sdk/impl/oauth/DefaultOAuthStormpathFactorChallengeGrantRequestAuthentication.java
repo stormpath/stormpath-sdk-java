@@ -16,6 +16,7 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthentication;
 
@@ -25,15 +26,24 @@ import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthentication;
 public class DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication implements OAuthStormpathFactorChallengeGrantRequestAuthentication {
     private final static String grant_type = "stormpath_factor_challenge";
 
+    private String state;
     private String challenge;
     private String code;
 
-    public DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(String challenge, String code) {
-        Assert.hasText(challenge, "challenge cannot be null or empty.");
+    public DefaultOAuthStormpathFactorChallengeGrantRequestAuthentication(String state, String challenge, String code) {
+        if (!Strings.hasText(state)) {
+            Assert.hasText(challenge, "either state or challenge must be provided.");
+        }
         Assert.hasText(code, "code cannot be null or empty.");
 
+        this.state = state;
         this.challenge = challenge;
         this.code = code;
+    }
+
+    @Override
+    public String getState() {
+        return state;
     }
 
     @Override

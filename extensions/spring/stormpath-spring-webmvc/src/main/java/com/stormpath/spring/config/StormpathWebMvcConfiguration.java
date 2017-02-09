@@ -62,8 +62,10 @@ import com.stormpath.sdk.servlet.util.GrantTypeValidator;
 import com.stormpath.spring.mvc.AccessTokenControllerConfig;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
+import com.stormpath.spring.mvc.RevokeTokenControllerConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -82,6 +84,7 @@ import java.util.Locale;
  * @since 1.0.RC4
  */
 @Configuration
+@Conditional({StormpathWebEnabled.class, StormpathEnabled.class})
 public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfiguration
     implements ServletContextAware, InitializingBean {
 
@@ -460,6 +463,15 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathAccessTokenController();
     }
 
+    /**
+     * @since 1.5.0
+     */
+    @Bean
+    @Override
+    public Controller stormpathRevokeTokenController() {
+        return super.stormpathRevokeTokenController();
+    }
+
     @Bean
     @Override
     public Controller stormpathMeController() {
@@ -572,6 +584,15 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
         return super.stormpathVerifyConfig();
     }
 
+    /**
+     * @since 1.5.0
+     */
+    @Bean
+    @Override
+    public ControllerConfig stormpathSamlConfig() {
+        return super.stormpathSamlConfig();
+    }
+
     @Bean
     @Override
     public ChangePasswordControllerConfig stormpathChangePasswordConfig() {
@@ -591,6 +612,15 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
     @Override
     public AccessTokenControllerConfig stormpathAccessTokenConfig(){
         return super.stormpathAccessTokenConfig();
+    }
+
+    /**
+     * @since 1.5.0
+     */
+    @Bean
+    @Override
+    public RevokeTokenControllerConfig stormpathRevokeTokenConfig() {
+        return super.stormpathRevokeTokenConfig();
     }
 
     /**

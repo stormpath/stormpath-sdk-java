@@ -508,10 +508,13 @@ public class DefaultDataStore implements InternalDataStore {
         Map<String, Object> treeMap = new TreeMap<String, Object>(bodyData);
         try {
             for (Map.Entry<String,Object> entry : treeMap.entrySet()) {
+                Object value = entry.getValue();
+                if (value != null) {
                     if (builder.length() > 0) {
                         builder.append(APPEND_PARAM_CHAR);
                     }
-                    builder.append(String.format("%s=%s", URLEncoder.encode(entry.getKey(), "UTF-8"), URLEncoder.encode(entry.getValue().toString(), "UTF-8")));
+                    builder.append(String.format("%s=%s", URLEncoder.encode(entry.getKey(), "UTF-8"), URLEncoder.encode(value.toString(), "UTF-8")));
+                }
             }
         } catch (UnsupportedEncodingException e){
             log.trace("Body content could not be properly encoded");

@@ -110,7 +110,7 @@
     {
       "name": "stormpath.web.authc.savers.cookie.enabled",
       "type": "java.lang.Boolean",
-      "description": "Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie.  To ensure HTTP Sessions (which force server state) are not required, this property is true by default.  The cookie's properties are configurable via the stormpath.web.account.cookie.* properties.",
+      "description": "Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie.  To ensure HTTP Sessions (which force server state) are not required, this property is true by default.  The cookie's properties are configurable via the stormpath.web.accessTokenCookie.* and stormpath.web.refreshTokenCookie. properties.",
       "defaultValue": true
     },
     {
@@ -322,6 +322,12 @@
       "defaultValue": "stormpath/verify"
     },
     {
+      "name": "stormpath.web.saml.uri",
+      "type": "java.lang.String",
+      "description": "The context-relative path to the saml starting point. When a user clicks a SAML button on the Login view (which is present because you've mapped a Stormpath SAML Directory to your Application), the SAML SP initiated workflow will start from this path",
+      "defaultValue": "/saml"
+    },
+    {
       "name": "stormpath.web.logout.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether or not the Stormpath logout controller is enabled.",
@@ -385,6 +391,12 @@
       "name": "stormpath.web.oauth2.origin.authorizer.originUris",
       "type": "java.lang.String",
       "description": "This is only used for additional origin URIs that don't already match the server URI."
+    },
+    {
+      "name": "stormpath.web.oauth2.revoke.uri",
+      "type": "java.lang.String",
+      "description": "The context-relative path an HTTP client may POST to in order to revoke access and refresh tokens.",
+      "defaultValue": "/oauth/revoke"
     },
     {
       "name": "stormpath.web.idSite.enabled",
@@ -484,6 +496,12 @@
       "description": ""
     },
     {
+      "name": "stormpath.web.accessTokenCookie.maxAge",
+      "type": "java.lang.Integer",
+      "description": "Max time in seconds that the cookie will exist. When value is 0 (default) the maxAge will be set with the JWT expiration based on the OAuth Policy",
+      "defaultValue": 0
+    },
+    {
       "name": "stormpath.web.refreshTokenCookie.name",
       "type": "java.lang.String",
       "description": "",
@@ -509,6 +527,12 @@
       "name": "stormpath.web.refreshTokenCookie.domain",
       "type": "java.lang.String",
       "description": ""
+    },
+    {
+      "name": "stormpath.web.refreshTokenCookie.maxAge",
+      "type": "java.lang.Integer",
+      "description": "Max time in seconds that the cookie will exist. When value is 0 (default) the maxAge will be set with the JWT expiration based on the OAuth Policy",
+      "defaultValue": 0
     },
     {
       "name": "stormpath.web.produces",

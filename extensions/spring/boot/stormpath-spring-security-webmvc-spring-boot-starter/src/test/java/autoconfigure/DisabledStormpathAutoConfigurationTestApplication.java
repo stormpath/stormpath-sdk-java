@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Stormpath, Inc.
+ * Copyright 2017 Stormpath, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stormpath.tutorial.config;
+package autoconfigure;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * @since 1.0.RC8.3
+ * @since 1.5.0
  */
 @Configuration
-public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+@EnableAutoConfiguration
+@PropertySource({"classpath:disabledstormpath.application.properties"})
+public class DisabledStormpathAutoConfigurationTestApplication extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     }
 
 }
+

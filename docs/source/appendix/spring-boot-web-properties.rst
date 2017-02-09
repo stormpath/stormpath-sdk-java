@@ -14,7 +14,7 @@ stormpath.web.authc.savers.cookie.enabled
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``true``
 
-Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie. This property is true by default.  The cookie's properties are configurable via the stormpath.web.account.cookie.* properties.
+Controls if a successful authentication should be reflected on future HTTP requests by using a digitally-signed account identity cookie. This property is true by default.  The cookie's properties are configurable via the stormpath.web.accessTokenCookie.* and stormpath.web.refreshTokenCookie.* properties.
 
 stormpath.web.request.remoteUser.strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -387,6 +387,10 @@ stormpath.web.accessTokenCookie.domain
 **Default Value:** ``null``
 
 
+stormpath.web.accessTokenCookie.maxAge
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``0``
+
 
 stormpath.web.refreshTokenCookie.name
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -416,6 +420,10 @@ stormpath.web.refreshTokenCookie.domain
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Default Value:** ``null``
 
+
+stormpath.web.refreshTokenCookie.maxAge
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Default Value:** ``0``
 
 
 stormpath.web.produces

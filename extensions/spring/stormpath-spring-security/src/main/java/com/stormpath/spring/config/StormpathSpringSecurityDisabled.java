@@ -20,7 +20,9 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * @since 1.3.0
+ * Returns true if 'stormpath.spring.security.enabled = false'
+ *
+ * @since 1.5.0
  */
 public class StormpathSpringSecurityDisabled implements Condition {
 

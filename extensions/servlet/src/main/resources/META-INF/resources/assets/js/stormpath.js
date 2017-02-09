@@ -46,6 +46,10 @@ function baseUrl() {
     return $('#baseUrl').val();
 }
 
+function samlUri() {
+    return $('#samlUri').val();
+}
+
 function linkedinLogin(clientId, scope) {
     scope = scope || 'r_emailaddress r_basicprofile';
     window.location.replace(
@@ -91,7 +95,7 @@ function githubLogin(clientId, scope) {
 }
 
 function samlLogin(href) {
-    window.location.replace(buildUrl(baseUrl() + '/saml', {'href': href}));
+    window.location.replace(buildUrl(baseUrl() + samlUri(), {'href': href}));
 }
 
 function facebookLogin(appId, scope) {

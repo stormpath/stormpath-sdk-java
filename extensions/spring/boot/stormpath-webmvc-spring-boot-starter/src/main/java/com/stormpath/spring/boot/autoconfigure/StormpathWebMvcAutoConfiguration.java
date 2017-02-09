@@ -67,6 +67,7 @@ import com.stormpath.spring.config.StormpathMessageSourceConfiguration;
 import com.stormpath.spring.mvc.AccessTokenControllerConfig;
 import com.stormpath.spring.mvc.ChangePasswordControllerConfig;
 import com.stormpath.spring.mvc.MessageContextRegistrar;
+import com.stormpath.spring.mvc.RevokeTokenControllerConfig;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -500,6 +501,16 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
         return super.stormpathAccessTokenController();
     }
 
+    /**
+     * @since 1.5.0
+     */
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathRevokeTokenController")
+    @Override
+    public Controller stormpathRevokeTokenController() {
+        return super.stormpathRevokeTokenController();
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public AccessTokenAuthenticationRequestFactory stormpathAccessTokenAuthenticationRequestFactory() {
@@ -675,12 +686,32 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     /**
+     *
+     * @since 1.5.0
+     */
+    @Bean
+    @ConditionalOnMissingBean(name = "stormpathSamlConfig")
+    public ControllerConfig stormpathSamlConfig() {
+        return super.stormpathSamlConfig();
+    }
+
+    /**
      * @since 1.2.0
      */
     @Bean
     @ConditionalOnMissingBean(name = "stormpathAccessTokenConfig")
     public AccessTokenControllerConfig stormpathAccessTokenConfig() {
         return super.stormpathAccessTokenConfig();
+    }
+
+    /**
+     * @since 1.5.0
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @Override
+    public RevokeTokenControllerConfig stormpathRevokeTokenConfig() {
+        return super.stormpathRevokeTokenConfig();
     }
 
     /**

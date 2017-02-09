@@ -21,7 +21,7 @@ import com.stormpath.sdk.servlet.mvc.IdSiteController;
 /**
  * @since 1.0.0
  */
-public class IDSiteForgotFilterFactory extends IDSiteFilterFactory {
+public class IDSiteForgotFilterFactory extends AbstractIDSiteFilterFactory<IdSiteController> {
 
     @Override
     protected IdSiteController newController() {
