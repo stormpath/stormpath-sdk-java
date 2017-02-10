@@ -40,7 +40,7 @@ class DefaultOAuthPolicyTest {
         OAuthPolicy passwordPolicy = new DefaultOAuthPolicy(createStrictMock(InternalDataStore))
 
         def propertyDescriptors = passwordPolicy.getPropertyDescriptors()
-        assertEquals(propertyDescriptors.size(), 5)
+        assertEquals(propertyDescriptors.size(), 9)
 
         assertTrue(propertyDescriptors.get("accessTokenTtl") instanceof StringProperty)
         assertTrue(propertyDescriptors.get("refreshTokenTtl") instanceof StringProperty)
