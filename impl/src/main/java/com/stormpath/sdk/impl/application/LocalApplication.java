@@ -16,6 +16,14 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
+import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus;
+import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
+import com.stormpath.sdk.application.webconfig.ForgotPasswordConfig;
+import com.stormpath.sdk.application.webconfig.LoginConfig;
+import com.stormpath.sdk.application.webconfig.MeConfig;
+import com.stormpath.sdk.application.webconfig.Oauth2Config;
+import com.stormpath.sdk.application.webconfig.RegisterConfig;
+import com.stormpath.sdk.application.webconfig.VerifyEmailConfig;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
@@ -28,6 +36,7 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
+import com.stormpath.sdk.impl.application.webconfig.DefaultApplicationWebConfig;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
@@ -337,7 +346,110 @@ public class LocalApplication extends AbstractResource implements Application {
 
     @Override
     public ApplicationWebConfig getWebConfig() {
-        return null;
+//        return null;
+
+        return new ApplicationWebConfig() {
+            @Override
+            public void save() {
+                throw new UnsupportedOperationException("save() method hasn't been implemented.");
+            }
+
+            @Override
+            public String getHref() {
+                throw new UnsupportedOperationException("getHref() method hasn't been implemented.");
+            }
+
+            @Override
+            public Date getCreatedAt() {
+                throw new UnsupportedOperationException("getCreatedAt() method hasn't been implemented.");
+            }
+
+            @Override
+            public Date getModifiedAt() {
+                throw new UnsupportedOperationException("getModifiedAt() method hasn't been implemented.");
+            }
+
+            @Override
+            public String getDomainName() {
+                throw new UnsupportedOperationException("getDomainName() method hasn't been implemented.");
+            }
+
+            @Override
+            public String getDnsLabel() {
+                throw new UnsupportedOperationException("getDnsLabel() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApplicationWebConfig setDnsLabel(String dnsLabel) {
+                throw new UnsupportedOperationException("setDnsLabel() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApplicationWebConfigStatus getStatus() {
+                throw new UnsupportedOperationException("getStatus() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApplicationWebConfig setStatus(ApplicationWebConfigStatus status) {
+                throw new UnsupportedOperationException("setStatus() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApiKey getSigningApiKey() {
+                throw new UnsupportedOperationException("getSigningApiKey() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApplicationWebConfig setSigningApiKey(ApiKey apiKey) {
+                throw new UnsupportedOperationException("setSigningApiKey() method hasn't been implemented.");
+            }
+
+            @Override
+            public Oauth2Config getOAuth2() {
+                throw new UnsupportedOperationException("getOAuth2() method hasn't been implemented.");
+            }
+
+            @Override
+            public RegisterConfig getRegister() {
+                throw new UnsupportedOperationException("getRegister() method hasn't been implemented.");
+            }
+
+            @Override
+            public LoginConfig getLogin() {
+                throw new UnsupportedOperationException("getLogin() method hasn't been implemented.");
+            }
+
+            @Override
+            public VerifyEmailConfig getVerifyEmail() {
+                throw new UnsupportedOperationException("getVerifyEmail() method hasn't been implemented.");
+            }
+
+            @Override
+            public ForgotPasswordConfig getForgotPassword() {
+                throw new UnsupportedOperationException("getForgotPassword() method hasn't been implemented.");
+            }
+
+            @Override
+            public ChangePasswordConfig getChangePassword() {
+                throw new UnsupportedOperationException("getChangePassword() method hasn't been implemented.");
+            }
+
+            @Override
+            public MeConfig getMe() {
+                throw new UnsupportedOperationException("getMe() method hasn't been implemented.");
+            }
+
+            @Override
+            public Application getApplication() {
+                throw new UnsupportedOperationException("getApplication() method hasn't been implemented.");
+            }
+
+            @Override
+            public Tenant getTenant() {
+                throw new UnsupportedOperationException("getTenant() method hasn't been implemented.");
+            }
+        };
+
         //throw new UnsupportedOperationException("getWebConfig() method hasn't been implemented.");
     }
 

@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.directory;
 
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;

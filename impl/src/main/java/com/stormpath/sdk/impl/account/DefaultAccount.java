@@ -49,6 +49,7 @@ import com.stormpath.sdk.impl.api.DefaultApiKey;
 import com.stormpath.sdk.impl.api.DefaultApiKeyOptions;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.group.DefaultGroupMembership;
+import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
 import com.stormpath.sdk.impl.provider.IdentityProviderType;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
@@ -141,7 +142,7 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     }
 
     public DefaultAccount(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+        super(dataStore, new OktaUserAccountConverter().toAccount(properties));
     }
 
     @Override
