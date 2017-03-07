@@ -16,18 +16,16 @@
 package com.stormpath.sdk.servlet.mvc;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.OAuthRequests;
-import com.stormpath.sdk.oauth.OAuthRevocationRequest;
-import com.stormpath.sdk.oauth.OAuthRevocationRequestBuilder;
-import com.stormpath.sdk.oauth.OAuthTokenRevocators;
-import com.stormpath.sdk.oauth.TokenTypeHint;
+import com.stormpath.sdk.oauth.*;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
 import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.http.MediaType;
+import com.stormpath.sdk.servlet.http.Saver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +44,18 @@ public class RevokeTokenController extends AbstractController {
     private final static String TOKEN = "token";
     private final static String TOKEN_TYPE_HINT = "token_type_hint";
 
+    private Saver<AuthenticationResult> authenticationResultSaver;
+
     public void init() {
     }
 
     @Override
     public boolean isNotAllowedIfAuthenticated() {
         return false;
+    }
+
+    public void setAuthenticationResultSaver(Saver<AuthenticationResult> authenticationResultSaver) {
+        this.authenticationResultSaver = authenticationResultSaver;
     }
 
     @Override
@@ -95,6 +99,8 @@ public class RevokeTokenController extends AbstractController {
             }
 
             this.revoke(getApplication(request), builder.setToken(token).build());
+
+            authenticationResultSaver.set(request, response, null);
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setHeader("Content-Length", "0");
