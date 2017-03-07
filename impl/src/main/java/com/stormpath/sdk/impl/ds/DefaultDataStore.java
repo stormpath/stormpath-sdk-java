@@ -16,9 +16,11 @@
 package com.stormpath.sdk.impl.ds;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.api.ApiKeyResolver;
+import com.stormpath.sdk.impl.application.LocalApplication;
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
@@ -234,8 +236,14 @@ public class DefaultDataStore implements InternalDataStore {
        Resource Retrieval
        ===================================================================== */
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
+
+        if ("local".equalsIgnoreCase(href) && clazz.isAssignableFrom(Application.class)) {
+            return (T) new LocalApplication(this);
+        }
+
         return getResource(href, clazz, (Map<String, Object>) null);
     }
 

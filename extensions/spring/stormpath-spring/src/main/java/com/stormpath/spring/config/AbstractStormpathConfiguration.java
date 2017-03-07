@@ -44,7 +44,7 @@ public abstract class AbstractStormpathConfiguration {
 
     private static final String APP_HREF_ERROR =
         "A 'stormpath.application.href' property value must be configured if you have more than one application " +
-        "registered in Stormpath.";
+            "registered in Stormpath.";
 
     @Autowired(required = false)
     protected CacheManager cacheManager;
@@ -139,6 +139,10 @@ public abstract class AbstractStormpathConfiguration {
 
         Client client = stormpathClient();
 
+        if (oktaEnabled) {
+            return client.getResource("local", Application.class);
+        }
+
         if (Strings.hasText(applicationHref)) {
             return client.getResource(applicationHref, Application.class);
         }
@@ -174,7 +178,7 @@ public abstract class AbstractStormpathConfiguration {
 
         //otherwise no Spring CacheManager - create a default:
         return Caches.newCacheManager().withDefaultTimeToLive(1, TimeUnit.HOURS)
-                     .withDefaultTimeToIdle(1, TimeUnit.HOURS).build();
+            .withDefaultTimeToIdle(1, TimeUnit.HOURS).build();
     }
 
     protected Proxy resolveProxy() {
@@ -197,18 +201,15 @@ public abstract class AbstractStormpathConfiguration {
     public Client stormpathClient() {
 
         ClientBuilder builder = Clients.builder()
-                                       .setApiKey(stormpathClientApiKey())
-                                       .setCacheManager(stormpathCacheManager());
+            .setApiKey(stormpathClientApiKey())
+            .setCacheManager(stormpathCacheManager());
 
         if (oktaEnabled) {
+
+            //authc scheme:
             authenticationScheme = AuthenticationScheme.SSWS;
-        }
 
-        if (authenticationScheme != null) {
-            builder.setAuthenticationScheme(authenticationScheme);
-        }
-
-        if (oktaEnabled) {
+            //base url checks:
             Assert.hasText(baseUrl, "When okta.enabled is true, stormpath.client.baseUrl " +
                 "must be configured with your Okta Organization Base URL");
             String append = null;
@@ -221,6 +222,10 @@ public abstract class AbstractStormpathConfiguration {
             if (append != null) {
                 baseUrl += append;
             }
+        }
+
+        if (authenticationScheme != null) {
+            builder.setAuthenticationScheme(authenticationScheme);
         }
 
         if (Strings.hasText(baseUrl)) {

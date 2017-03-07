@@ -16,9 +16,11 @@
 package com.stormpath.sdk.impl.resource;
 
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -284,5 +286,32 @@ public abstract class AbstractCollectionResource<T extends Resource> extends Abs
         public Collection<T> getItems() {
             return this.items;
         }
+    }
+
+    public static final <T extends Resource, R extends CollectionResource<T>> R emptyCollectionResource(InternalDataStore internalDataStore, Class<R> implClass) {
+        List<T> emptyList = Collections.emptyList();
+
+        Map<String, Object> properties = new LinkedHashMap<>();
+        properties.put(LIMIT.getName(), 100);
+        properties.put(OFFSET.getName(), 0);
+        properties.put(SIZE.getName(), 0);
+        properties.put(ITEMS_PROPERTY_NAME, emptyList);
+
+        Constructor<R> ctor = Classes.getConstructor(implClass, InternalDataStore.class, Map.class);
+        return Classes.instantiate(ctor, internalDataStore, properties);
+    }
+
+    public static final <T extends Resource, R extends CollectionResource<T>> R singletonCollectionResource(InternalDataStore internalDataStore, Class<R> implClass, T item) {
+
+        List<T> singletonList = Collections.singletonList(item);
+
+        Map<String, Object> properties = new LinkedHashMap<>();
+        properties.put(LIMIT.getName(), 100);
+        properties.put(OFFSET.getName(), 0);
+        properties.put(SIZE.getName(), 1);
+        properties.put(ITEMS_PROPERTY_NAME, singletonList);
+
+        Constructor<R> ctor = Classes.getConstructor(implClass, InternalDataStore.class, Map.class);
+        return Classes.instantiate(ctor, internalDataStore, properties);
     }
 }
