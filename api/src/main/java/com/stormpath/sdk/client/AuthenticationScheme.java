@@ -24,19 +24,21 @@ import com.stormpath.sdk.lang.Assert;
  * outgoing HTTP requests is modified and thus causing communication issues. For example, for Google App Engine you
  * need to set {@link AuthenticationScheme#BASIC} in order for your code to properly communicate with Stormpath API server.
  * </pre>
- * There are currently two authentication schemes available: <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
- * Basic Authentication</a> and <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">Digest Authentication</a>
+ * There are currently three authentication schemes available: <a href="http://docs.stormpath.com/rest/product-guide/#authentication-basic">HTTP
+ * Basic Authentication</a>, <a href="http://docs.stormpath.com/rest/product-guide/#authentication-digest">SAUTHC1 Digest Authentication</a>,
+ * and SSWS (Okta session bearer token).
  *
  * @since 0.9.3
  */
 public enum AuthenticationScheme {
 
     BASIC("com.stormpath.sdk.impl.http.authc.BasicRequestAuthenticator"), //HTTP Basic Authentication
-    SAUTHC1("com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator"); //Digest Authentication
+    SAUTHC1("com.stormpath.sdk.impl.http.authc.SAuthc1RequestAuthenticator"), //Digest Authentication
+    SSWS("com.stormpath.sdk.impl.http.authc.SswsAuthenticator"); //SSWS Authentication
 
     private final String requestAuthenticatorClassName;
 
-    private AuthenticationScheme(String requestAuthenticatorClassName) {
+    AuthenticationScheme(String requestAuthenticatorClassName) {
         Assert.notNull(requestAuthenticatorClassName, "requestAuthenticatorClassName cannot be null");
         this.requestAuthenticatorClassName = requestAuthenticatorClassName;
     }

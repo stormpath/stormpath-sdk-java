@@ -25,6 +25,7 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
 import com.stormpath.sdk.client.Proxy;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.spring.cache.SpringCacheManager;
 import org.springframework.beans.factory.BeanCreationException;
@@ -90,7 +91,22 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['stormpath.client.authenticationScheme'] }")
     protected AuthenticationScheme authenticationScheme;
 
+    @Value("#{ @environment['okta.enabled'] ?: true }")
+    protected boolean oktaEnabled;
+
+    @Value("#{ @environment['okta.api.token'] }")
+    protected String oktaApiToken;
+
     public ApiKey stormpathClientApiKey() {
+
+        if (oktaEnabled) {
+            Assert.hasText(oktaApiToken, "When okta.enabled is true, the okta.api.token " +
+                "property must be specified with a valid Okta API Token value.");
+            return ApiKeys.builder()
+                .setId(baseUrl) //not really necessary, but what the heck, why not
+                .setSecret(oktaApiToken)
+                .build();
+        }
 
         ApiKeyBuilder builder = ApiKeys.builder();
 
@@ -184,8 +200,27 @@ public abstract class AbstractStormpathConfiguration {
                                        .setApiKey(stormpathClientApiKey())
                                        .setCacheManager(stormpathCacheManager());
 
+        if (oktaEnabled) {
+            authenticationScheme = AuthenticationScheme.SSWS;
+        }
+
         if (authenticationScheme != null) {
             builder.setAuthenticationScheme(authenticationScheme);
+        }
+
+        if (oktaEnabled) {
+            Assert.hasText(baseUrl, "When okta.enabled is true, stormpath.client.baseUrl " +
+                "must be configured with your Okta Organization Base URL");
+            String append = null;
+            if (baseUrl.endsWith("/")) {
+                baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+            }
+            if (baseUrl.endsWith(".com")) {
+                append = "/api/v1";
+            }
+            if (append != null) {
+                baseUrl += append;
+            }
         }
 
         if (Strings.hasText(baseUrl)) {
