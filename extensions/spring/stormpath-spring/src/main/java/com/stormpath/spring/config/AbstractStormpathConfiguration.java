@@ -149,6 +149,7 @@ public abstract class AbstractStormpathConfiguration {
                 name = "Application";
             }
             application.setName(name);
+            return application;
         }
 
         if (Strings.hasText(applicationHref)) {
