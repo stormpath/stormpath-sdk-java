@@ -70,6 +70,9 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['stormpath.application.href'] }")
     protected String applicationHref;
 
+    @Value("#{ @environment['stormpath.application.name'] }")
+    protected String applicationName;
+
     @Value("#{ @environment['stormpath.client.cacheManager.enabled'] ?: true }")
     protected boolean cachingEnabled;
 
@@ -140,7 +143,12 @@ public abstract class AbstractStormpathConfiguration {
         Client client = stormpathClient();
 
         if (oktaEnabled) {
-            return client.getResource("local", Application.class);
+            Application application = client.getResource("local", Application.class);
+            String name = applicationName;
+            if (!Strings.hasText(name)) {
+                name = "Application";
+            }
+            application.setName(name);
         }
 
         if (Strings.hasText(applicationHref)) {

@@ -54,6 +54,8 @@ public class LocalApplication extends AbstractResource implements Application {
 
     private final ApplicationAccountStoreMappingList applicationAccountStoreMappingList;
 
+    private String name;
+
     public LocalApplication(InternalDataStore dataStore) {
         this(dataStore, new LinkedHashMap<String, Object>());
     }
@@ -114,12 +116,13 @@ public class LocalApplication extends AbstractResource implements Application {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("getName() method hasn't been implemented.");
+        return this.name;
     }
 
     @Override
     public Application setName(String name) {
-        throw new UnsupportedOperationException("setName() method hasn't been implemented.");
+        this.name = name;
+        return this;
     }
 
     @Override

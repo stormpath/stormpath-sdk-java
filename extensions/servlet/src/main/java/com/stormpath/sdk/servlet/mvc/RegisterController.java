@@ -226,7 +226,10 @@ public class RegisterController extends FormController {
         value = form.getFieldValue("surname");
         account.setSurname(value != null ? value : "UNKNOWN");
 
-        account.getCustomData().putAll(getCustomData(req, form));
+        Map<String,?> customData = getCustomData(req, form);
+        if (customData != null && !customData.isEmpty()) {
+            account.getCustomData().putAll(customData);
+        }
 
         //Get the Stormpath Application instance corresponding to this web app:
         Application app = ApplicationResolver.INSTANCE.getApplication(req);
