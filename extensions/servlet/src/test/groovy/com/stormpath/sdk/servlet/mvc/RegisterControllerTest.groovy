@@ -118,7 +118,6 @@ class RegisterControllerTest {
         expect(registerPreHandler.handle(request, response, account)).andReturn true
         expect(account.setGivenName("UNKNOWN")).andReturn account
         expect(account.setSurname("UNKNOWN")).andReturn account
-        expect(account.getCustomData()).andReturn customData
         expect(directory.createAccount(account)).andReturn account
         expect(eventPublisher.publish(anyObject()))
 
@@ -159,7 +158,6 @@ class RegisterControllerTest {
         expect(account.setSurname("UNKNOWN")).andReturn account
         expect(account.getStatus()).andReturn AccountStatus.UNVERIFIED
         expect(account.getHref()).andReturn HREF
-        expect(account.getCustomData()).andReturn customData
         expect(directory.createAccount(account)).andReturn account
         expect(eventPublisher.publish(anyObject()))
 
@@ -196,7 +194,6 @@ class RegisterControllerTest {
         expect(registerPreHandler.handle(request, response, account)).andReturn true
         expect(account.setGivenName("UNKNOWN")).andReturn account
         expect(account.setSurname("UNKNOWN")).andReturn account
-        expect(account.getCustomData()).andReturn customData
         expect(directory.createAccount(account)).andReturn account
         expect(eventPublisher.publish(anyObject()))
 
@@ -231,7 +228,6 @@ class RegisterControllerTest {
         expect(registerPreHandler.handle(request, response, account)).andReturn true
         expect(account.setGivenName("UNKNOWN")).andReturn account
         expect(account.setSurname("UNKNOWN")).andReturn account
-        expect(account.getCustomData()).andReturn customData
         expect(organization.createAccount(account)).andReturn account
         expect(eventPublisher.publish(anyObject()))
 
@@ -266,7 +262,6 @@ class RegisterControllerTest {
         expect(registerPreHandler.handle(request, response, account)).andReturn true
         expect(account.setGivenName("UNKNOWN")).andReturn account
         expect(account.setSurname("UNKNOWN")).andReturn account
-        expect(account.getCustomData()).andReturn customData
         expect(application.createAccount(account)).andReturn account
         expect(eventPublisher.publish(anyObject()))
 
@@ -300,7 +295,6 @@ class RegisterControllerTest {
         expect(registerPreHandler.handle(request, response, account)).andReturn false
         expect(account.setGivenName("UNKNOWN")).andReturn account
         expect(account.setSurname("UNKNOWN")).andReturn account
-        expect(account.getCustomData()).andReturn customData
 
         replay eventPublisher, registerPreHandler, request, response, client, requestFieldValueResolver, application, account, accountStoreResolver
 
@@ -329,7 +323,6 @@ class RegisterControllerTest {
         expect(accountStoreResolver.getAccountStore(request, response)).andReturn null
         expect(account.setGivenName("UNKNOWN")).andReturn account
         expect(account.setSurname("UNKNOWN")).andReturn account
-        expect(account.getCustomData()).andReturn customData
         expect(application.createAccount(account)).andReturn account
         expect(registerPostHandler.handle(request, response, account)).andReturn true
         expect(eventPublisher.publish(anyObject()))
@@ -364,7 +357,6 @@ class RegisterControllerTest {
         expect(accountStoreResolver.getAccountStore(request, response)).andReturn null
         expect(account.setGivenName("UNKNOWN")).andReturn account
         expect(account.setSurname("UNKNOWN")).andReturn account
-        expect(account.getCustomData()).andReturn customData
         expect(application.createAccount(account)).andReturn account
         expect(registerPostHandler.handle(request, response, account)).andReturn false
         expect(eventPublisher.publish(anyObject()))
