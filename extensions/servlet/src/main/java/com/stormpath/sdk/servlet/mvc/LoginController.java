@@ -174,11 +174,11 @@ public class LoginController extends FormController {
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
 
-        final List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
+//        final List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
 
         // 748: If stormpath.web.idSite.enabled is false and stormpath.web.callback.enabled is false AND
         // there are SAML directories mapped to the application, that is a configuration error.
-        if (!idSiteEnabled && !callbackEnabled && containsSaml(accountStores)) {
+        if (!idSiteEnabled && !callbackEnabled ) { // && containsSaml(accountStores)) {
             String errorMsg = "ID Site is disabled and callbacks are disabled, yet this application has SAML directories. Please enable callbacks or remove SAML directories.";
             log.warn(errorMsg);
             if (errors == null) {
@@ -190,7 +190,7 @@ public class LoginController extends FormController {
             }
         }
 
-        model.put("accountStores", accountStores);
+//        model.put("accountStores", accountStores);
 
         if (isHtmlPreferred(request, response)) {
             model.put("forgotPasswordEnabled", forgotPasswordEnabled);
