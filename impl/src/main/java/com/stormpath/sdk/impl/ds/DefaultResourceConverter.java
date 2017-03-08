@@ -16,8 +16,10 @@
 
 package com.stormpath.sdk.impl.ds;
 
+import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.impl.authc.BasicLoginAttempt;
+import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.ReferenceFactory;
 import com.stormpath.sdk.lang.Assert;
@@ -68,6 +70,11 @@ public class DefaultResourceConverter implements ResourceConverter {
             Object value = resource.getProperty(propName);
             value = toMapValue(resource, propName, value, partialUpdate);
             props.put(propName, value);
+        }
+
+        // Convert Stormpath Account to Okta User map
+        if (resource instanceof Account) {
+            props = new LinkedHashMap<>(new OktaUserAccountConverter().toUser(props));
         }
 
         return props;

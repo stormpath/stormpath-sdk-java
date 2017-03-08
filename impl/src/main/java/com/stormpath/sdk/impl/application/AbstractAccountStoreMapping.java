@@ -19,9 +19,11 @@ import com.stormpath.sdk.accountStoreMapping.AccountStoreMapping;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.Group;
+import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.*;
 import com.stormpath.sdk.organization.Organization;
+import com.stormpath.sdk.resource.Resource;
 
 import java.util.Map;
 
@@ -57,17 +59,30 @@ public abstract class AbstractAccountStoreMapping<T extends AccountStoreMapping>
             accountStore = getDataStore().getResource(href, Group.class);
         } else if (href.contains("/organizations/")){
             accountStore = getDataStore().getResource(href, Organization.class);
+        } else if (href.contains("/api/v1")){
+            accountStore = new OktaDirectory(getDataStore());
         }
         return accountStore;
     }
 
     private String getAccountStoreHref() {
-        Map<String, String> map = (Map<String, String>) getProperty(ACCOUNT_STORE.getName());
-        String href = null;
-        if (map != null && !map.isEmpty()) {
-            href = map.get(HREF_PROP_NAME);
+        Object accountStoreRaw = getProperty(ACCOUNT_STORE.getName());
+
+        if (accountStoreRaw instanceof Map) {
+            Map<String, String> map = (Map<String, String>) accountStoreRaw;
+            String href = null;
+            if (map != null && !map.isEmpty()) {
+                href = map.get(HREF_PROP_NAME);
+            }
+            return href;
         }
-        return href;
+
+        if (accountStoreRaw instanceof Resource) {
+            return ((Resource) accountStoreRaw).getHref();
+        }
+        else {
+            throw new UnsupportedOperationException("Could not find 'href' for account store.");
+        }
     }
 
     public AccountStoreMapping setAccountStore(AccountStore accountStore) {

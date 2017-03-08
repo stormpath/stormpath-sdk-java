@@ -371,7 +371,7 @@ public class LocalApplication extends AbstractResource implements Application {
 
             @Override
             public String getDomainName() {
-                throw new UnsupportedOperationException("getDomainName() method hasn't been implemented.");
+                return "hack";
             }
 
             @Override
@@ -386,7 +386,7 @@ public class LocalApplication extends AbstractResource implements Application {
 
             @Override
             public ApplicationWebConfigStatus getStatus() {
-                throw new UnsupportedOperationException("getStatus() method hasn't been implemented.");
+                return ApplicationWebConfigStatus.ENABLED;
             }
 
             @Override
@@ -416,7 +416,19 @@ public class LocalApplication extends AbstractResource implements Application {
 
             @Override
             public LoginConfig getLogin() {
-                throw new UnsupportedOperationException("getLogin() method hasn't been implemented.");
+                return new LoginConfig() {
+                    private boolean enabled = true;
+                    @Override
+                    public LoginConfig setEnabled(Boolean enabled) {
+                         this.enabled = enabled;
+                         return this;
+                    }
+
+                    @Override
+                    public Boolean isEnabled() {
+                        return enabled;
+                    }
+                };
             }
 
             @Override

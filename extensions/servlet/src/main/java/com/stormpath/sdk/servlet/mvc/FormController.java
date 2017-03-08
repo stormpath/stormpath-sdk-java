@@ -232,6 +232,7 @@ public abstract class FormController extends AbstractController {
             validate(request, response, form);
             return onValidSubmit(request, response, form);
         } catch (Exception e) {
+            log.warn("Failure to post", e);
             return onErrorSubmit(request, response, form, e);
         }
     }

@@ -3,6 +3,7 @@ package com.stormpath.sdk.impl.okta;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Objects;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.okta.UserStatus;
 
 import java.util.LinkedHashMap;
@@ -18,7 +19,7 @@ public class OktaUserAccountConverter {
     /*
     Stormpath Account field     | Okta User field
    -----------------------------|--------------------------------
-    href                        | <generated>
+    href                        | _links.self.href
     username                    | profile.login
     email                       | profile.email
     password                    | credentials.password.value
@@ -99,6 +100,15 @@ public class OktaUserAccountConverter {
             accountMap.put("status", fromUserStatus(userMap.get("status")));
         }
 
+        // _links.self.href -> href
+        Map<String, Object> linksMap = (Map<String, Object>) userMap.get("_links");
+        if (!Collections.isEmpty(linksMap)) {
+            Map<String, Object> self = (Map<String, Object>) linksMap.get("self");
+            if (!Collections.isEmpty(self)) {
+                nullSafePut(accountMap, "href", self.get("href"));
+            }
+        }
+
         // pretty sure this logic is NOT needed when mapping User -> Account
 //        Map<String, Object> credentialsMap = (Map<String, Object>) userMap.get("credentials");
 //        if (!Collections.isEmpty(profileMap)) {
@@ -117,12 +127,16 @@ public class OktaUserAccountConverter {
         Map<String, Object> profileMap = new LinkedHashMap<>();
         userMap.put("profile", profileMap);
 
-        nullSafePut(userMap, "login", accountMap.get("username"));
-        nullSafePut(userMap, "email", accountMap.get("email"));
+        String username = (String) accountMap.get("username");
+        if (!Strings.hasText(username)) {
+            username = (String) accountMap.get("email");
+        }
+        nullSafePut(profileMap, "login", username);
+        nullSafePut(profileMap, "email", accountMap.get("email"));
 
-        nullSafePut(userMap, "firstName", accountMap.get("givenName"));
-        nullSafePut(userMap, "middleName", accountMap.get("middleName"));
-        nullSafePut(userMap, "lastName", accountMap.get("surname"));
+        nullSafePut(profileMap, "firstName", accountMap.get("givenName"));
+        nullSafePut(profileMap, "middleName", accountMap.get("middleName"));
+        nullSafePut(profileMap, "lastName", accountMap.get("surname"));
 //        nullSafePut(userMap, "displayName", accountMap.get("fullName")); // generated field from Stormpath
         nullSafePut(userMap, "created", accountMap.get("createdAt"));
         nullSafePut(userMap, "lastUpdated", accountMap.get("modifiedAt"));
@@ -140,7 +154,9 @@ public class OktaUserAccountConverter {
         }
 
         // custom data, just drop it in profile map
-        profileMap.putAll((Map<String, Object>)accountMap.get("customData"));
+        if (accountMap.containsKey("customData")) {
+            profileMap.putAll((Map<String, Object>) accountMap.get("customData"));
+        }
 
         return userMap;
     }
