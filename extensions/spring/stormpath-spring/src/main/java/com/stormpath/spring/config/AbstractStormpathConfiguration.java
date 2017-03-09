@@ -24,6 +24,7 @@ import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
+import com.stormpath.sdk.client.DefaultPairedApiKey;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -99,6 +100,9 @@ public abstract class AbstractStormpathConfiguration {
 
     @Value("#{ @environment['okta.api.token'] }")
     protected String oktaApiToken;
+
+    @Value("#{ @environment['okta.application.id'] }")
+    protected String oktaApplicationId;
 
     public ApiKey stormpathClientApiKey() {
 
@@ -207,10 +211,16 @@ public abstract class AbstractStormpathConfiguration {
         return proxy;
     }
 
+    public ApiKey oktaOidcClientApiKey() {
+        //Brian:
+        return ApiKeys.builder().setId("foo").setSecret("bar").build();
+    }
+
     public Client stormpathClient() {
 
+        ApiKey apiKey = stormpathClientApiKey();
+
         ClientBuilder builder = Clients.builder()
-            .setApiKey(stormpathClientApiKey())
             .setCacheManager(stormpathCacheManager());
 
         if (oktaEnabled) {
@@ -231,6 +241,11 @@ public abstract class AbstractStormpathConfiguration {
             if (append != null) {
                 baseUrl += append;
             }
+
+            apiKey = new DefaultPairedApiKey(apiKey, oktaOidcClientApiKey());
+
+        } else {
+            builder.setApiKey(stormpathClientApiKey());
         }
 
         if (authenticationScheme != null) {
