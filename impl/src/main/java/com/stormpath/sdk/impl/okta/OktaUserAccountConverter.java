@@ -143,14 +143,14 @@ public class OktaUserAccountConverter {
         nullSafePut(userMap, "passwordChanged", accountMap.get("passwordModifiedAt"));
 
         // credentials
-        if (userMap.containsKey("password")) {
+        if (accountMap.containsKey("password")) {
 
             Map<String, Object> credentialsMap = new LinkedHashMap<>();
             Map<String, Object> passwordMap = new LinkedHashMap<>();
 
             userMap.put("credentials", credentialsMap);
             credentialsMap.put("password", passwordMap);
-            passwordMap.put("value", userMap.get("password"));
+            passwordMap.put("value", accountMap.get("password"));
         }
 
         // custom data, just drop it in profile map
