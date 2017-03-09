@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.okta.ClientApiKeyResolver;
 import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
@@ -99,6 +100,9 @@ public abstract class AbstractStormpathConfiguration {
 
     @Value("#{ @environment['okta.api.token'] }")
     protected String oktaApiToken;
+
+    @Value("#{ @environment['okta.application.id'] }")
+    protected String oktaApplicationId;
 
     public ApiKey stormpathClientApiKey() {
 
