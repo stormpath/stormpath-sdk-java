@@ -91,8 +91,8 @@ public class OktaUserAccountConverter {
             nullSafePut(accountMap, "customData", trimMap(profileMap, "login", "email", "firstName", "middleName", "lastName"));
         }
 
-        nullSafePut(accountMap, "createdAt", profileMap.get("created"));
-        nullSafePut(accountMap, "modifiedAt", profileMap.get("lastUpdated"));
+        nullSafePut(accountMap, "createdAt", userMap.get("created"));
+        nullSafePut(accountMap, "modifiedAt", userMap.get("lastUpdated"));
         nullSafePut(accountMap, "passwordModifiedAt", profileMap.get("passwordChanged"));
 
         // UserStatus -> AccountStatus enum conversion

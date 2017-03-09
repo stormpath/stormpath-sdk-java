@@ -10,6 +10,7 @@ import com.stormpath.sdk.resource.Resource
 import org.easymock.Capture
 import org.easymock.EasyMock
 import org.easymock.IAnswer
+import org.joda.time.Instant
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.anyObject
@@ -42,6 +43,7 @@ class OktaUserAccountConverterTest {
             statusChanged    : "2017-03-06T18:32:12.000Z",
             lastLogin        : "2017-03-06T18:32:12.000Z",
             lastUpdated      : "2017-03-06T22:16:30.000Z",
+            created          : "2017-03-06T22:16:30.000Z",
             passwordChanged  : "2017-03-06T18:32:12.000Z",
             credentials      : [],
             password         : [],
@@ -64,7 +66,7 @@ class OktaUserAccountConverterTest {
         ]
 
         // convert Account map
-//        def accountMap = new OktaUserAccountConverter().toAccount(userMap)
+        //def accountMap = new OktaUserAccountConverter().toAccount(userMap)
 
         // create Account object
         def internalDataStore = createStrictMock(InternalDataStore)
@@ -80,10 +82,11 @@ class OktaUserAccountConverterTest {
         def account = new DefaultAccount(internalDataStore, userMap)
 
         // validate
-//        verify internalDataStore
+        // verify internalDataStore
         assertThat account.givenName, is("Joe")
         assertThat account.customData, allOf(hasEntry("myCustomAttribute", "foobar"))
-
+        assertThat account.createdAt, is(Instant.parse("2017-03-06T22:16:30.000Z").toDate())
+        assertThat account.modifiedAt, is(Instant.parse("2017-03-06T22:16:30.000Z").toDate())
 
     }
 
