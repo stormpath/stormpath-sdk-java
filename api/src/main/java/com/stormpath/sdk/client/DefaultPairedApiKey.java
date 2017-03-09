@@ -8,18 +8,16 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.tenant.Tenant;
 
 /**
- * Created by lhazlewood on 3/9/17.
+ * For Okta authentication against both the REST API endpoints and the OIDC endpoints.
  */
 public class DefaultPairedApiKey implements PairedApiKey {
 
     private final ApiKey primary;
     private ApiKey secondary;
 
-    public DefaultPairedApiKey(ApiKey primary, ApiKey secondary) {
+    public DefaultPairedApiKey(ApiKey primary) {
         Assert.notNull(primary, "primary ApiKey cannot be null.");
-        Assert.notNull(secondary, "secondary ApiKey cannot be null.");
         this.primary = primary;
-        this.secondary = secondary;
     }
 
     @Override

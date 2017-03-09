@@ -26,12 +26,14 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.ClientBuilder;
 import com.stormpath.sdk.client.Clients;
 import com.stormpath.sdk.client.DefaultPairedApiKey;
+import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.spring.cache.SpringCacheManager;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.io.Resource;
@@ -110,10 +112,13 @@ public abstract class AbstractStormpathConfiguration {
         if (oktaEnabled) {
             Assert.hasText(oktaApiToken, "When okta.enabled is true, the okta.api.token " +
                 "property must be specified with a valid Okta API Token value.");
-            return ApiKeys.builder()
+
+            ApiKey primary = ApiKeys.builder()
                 .setId(baseUrl) //not really necessary, but what the heck, why not
                 .setSecret(oktaApiToken)
                 .build();
+
+            return new DefaultPairedApiKey(primary);
         }
 
         ApiKeyBuilder builder = ApiKeys.builder();
@@ -141,6 +146,17 @@ public abstract class AbstractStormpathConfiguration {
         }
 
         return builder.build();
+    }
+
+    @Autowired
+    public void oktaOidcClientApiKey(@Qualifier("stormpathClientApiKey") ApiKey stormpathClientApiKey) {
+
+        //TODO: lookup client credentials
+        ApiKey secondary = null;
+
+        if (oktaEnabled) {
+            ((PairedApiKey)stormpathClientApiKey).setSecondaryApiKey(secondary);
+        }
     }
 
     public Application stormpathApplication() {
@@ -212,16 +228,10 @@ public abstract class AbstractStormpathConfiguration {
         return proxy;
     }
 
-    public ApiKey oktaOidcClientApiKey() {
-        //Brian:
-        return ApiKeys.builder().setId("foo").setSecret("bar").build();
-    }
-
     public Client stormpathClient() {
 
-        ApiKey apiKey = stormpathClientApiKey();
-
         ClientBuilder builder = Clients.builder()
+            .setApiKey(stormpathClientApiKey())
             .setCacheManager(stormpathCacheManager());
 
         if (oktaEnabled) {
@@ -242,11 +252,6 @@ public abstract class AbstractStormpathConfiguration {
             if (append != null) {
                 baseUrl += append;
             }
-
-            apiKey = new DefaultPairedApiKey(apiKey, oktaOidcClientApiKey());
-
-        } else {
-            builder.setApiKey(stormpathClientApiKey());
         }
 
         if (authenticationScheme != null) {
