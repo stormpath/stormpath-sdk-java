@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.okta.ClientApiKeyResolver;
 import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;
