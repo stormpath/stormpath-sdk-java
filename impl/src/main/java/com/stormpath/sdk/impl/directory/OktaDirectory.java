@@ -11,7 +11,10 @@ import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryOptions;
 import com.stormpath.sdk.directory.DirectoryStatus;
+import com.stormpath.sdk.directory.OktaPasswordPolicy;
 import com.stormpath.sdk.directory.PasswordPolicy;
+import com.stormpath.sdk.directory.OktaPasswordPolicyList;
+import com.stormpath.sdk.directory.PasswordStrength;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
@@ -21,6 +24,9 @@ import com.stormpath.sdk.impl.provider.OktaProvider;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.mail.EmailStatus;
+import com.stormpath.sdk.mail.ModeledEmailTemplateList;
+import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria;
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList;
 import com.stormpath.sdk.organization.OrganizationCriteria;
@@ -187,7 +193,10 @@ public class OktaDirectory extends AbstractResource implements Directory {
 
     @Override
     public PasswordPolicy getPasswordPolicy() {
-        throw new UnsupportedOperationException("Not implemented.");
+        String passwordPolicyHref = getHref() + "/policies?type=PASSWORD";
+        OktaPasswordPolicyList policies = getDataStore().getResource(passwordPolicyHref, OktaPasswordPolicyList.class);
+        OktaPasswordPolicy oktaPasswordPolicy = policies.single();
+        return transformOktaPasswordPolicy(oktaPasswordPolicy);
     }
 
     @Override
@@ -233,5 +242,79 @@ public class OktaDirectory extends AbstractResource implements Directory {
     @Override
     public Schema getAccountSchema() {
         throw new UnsupportedOperationException("Not implemented.");
+    }
+
+    @SuppressWarnings("unchecked")
+    private PasswordPolicy transformOktaPasswordPolicy(OktaPasswordPolicy oktaPasswordPolicy) {
+        final Map<String, Object> strengthMap = (Map<String, Object>)
+            ((Map<String, Object>)oktaPasswordPolicy.getSettings().get("password")).get("complexity");
+        PasswordPolicy ret = new PasswordPolicy() {
+            @Override
+            public int getResetTokenTtlHours() {
+                return 0;
+            }
+
+            @Override
+            public PasswordPolicy setResetTokenTtlHours(int resetTokenTtl) {
+                return null;
+            }
+
+            @Override
+            public EmailStatus getResetEmailStatus() {
+                return null;
+            }
+
+            @Override
+            public PasswordPolicy setResetEmailStatus(EmailStatus status) {
+                return null;
+            }
+
+            @Override
+            public EmailStatus getResetSuccessEmailStatus() {
+                return null;
+            }
+
+            @Override
+            public PasswordPolicy setResetSuccessEmailStatus(EmailStatus status) {
+                return null;
+            }
+
+            @Override
+            public PasswordStrength getStrength() {
+                PasswordStrength p =  new DefaultPasswordStrength(getDataStore());
+
+                p.setMinLength((Integer) strengthMap.get("minLength"));
+                p.setMinLowerCase((Integer) strengthMap.get("minLowerCase"));
+                p.setMinUpperCase((Integer) strengthMap.get("minUpperCase"));
+                p.setMinNumeric((Integer) strengthMap.get("minNumber"));
+                p.setMinSymbol((Integer) strengthMap.get("minSymbol"));
+                p.setMaxLength(1024);
+                p.setMinDiacritic(0);
+                p.setPreventReuse(0);
+
+                return p;
+            }
+
+            @Override
+            public ModeledEmailTemplateList getResetEmailTemplates() {
+                return null;
+            }
+
+            @Override
+            public UnmodeledEmailTemplateList getResetSuccessEmailTemplates() {
+                return null;
+            }
+
+            @Override
+            public String getHref() {
+                return "local";
+            }
+
+            @Override
+            public void save() {
+
+            }
+        };
+        return ret;
     }
 }
