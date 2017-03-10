@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.application.okta.ApplicationCredentials;
 import com.stormpath.sdk.application.okta.ClientApiKeyResolver;
 import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.AuthenticationScheme;
@@ -151,10 +152,21 @@ public abstract class AbstractStormpathConfiguration {
     @Autowired
     public void oktaOidcClientApiKey(@Qualifier("stormpathClientApiKey") ApiKey stormpathClientApiKey) {
 
-        //TODO: lookup client credentials
-        ApiKey secondary = null;
-
         if (oktaEnabled) {
+            Assert.hasText(oktaApplicationId, "When okta.enabled is true, okta.application.id " +
+                    "must be configured with your Okta Application ID. This can be found in the URL when accessing " +
+                    "you application in a browser.");
+
+            Client client = stormpathClient();
+
+            String applicationCredentialsHref = "/internal/apps/" + oktaApplicationId + "/settings/clientcreds";
+            ApplicationCredentials applicationCredentials = client.getResource(applicationCredentialsHref, ApplicationCredentials.class);
+
+            ApiKey secondary = ApiKeys.builder()
+                    .setId(applicationCredentials.getClientId())
+                    .setSecret(applicationCredentials.getClientSecret())
+                    .build();
+
             ((PairedApiKey)stormpathClientApiKey).setSecondaryApiKey(secondary);
         }
     }
