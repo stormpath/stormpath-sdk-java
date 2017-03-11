@@ -246,6 +246,7 @@ public class OktaDirectory extends AbstractResource implements Directory {
 
     @SuppressWarnings("unchecked")
     private PasswordPolicy transformOktaPasswordPolicy(OktaPasswordPolicy oktaPasswordPolicy) {
+        // ref: http://developer.okta.com/docs/api/resources/policy.html#GroupPasswordPolicy
         final Map<String, Object> strengthMap = (Map<String, Object>)
             ((Map<String, Object>)oktaPasswordPolicy.getSettings().get("password")).get("complexity");
         PasswordPolicy ret = new PasswordPolicy() {
