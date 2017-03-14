@@ -44,9 +44,10 @@ case "$OPTION" in
         ;;
     run)
         SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
+        CI_DIR_CONTENTS=`ls $SCRIPT_DIR/ci`
+        echo "CI DIR Contents:"
         if [ -e "$SCRIPT_DIR/ci/stormpath_env.sh" ]; then
           source ${SCRIPT_DIR}/ci/stormpath_env.sh
-          export STORMPATH_APPLICATION_HREF=$STORMPATH_TEST_APPLICATION_HREF
         fi
         PROFILE=${OPTION_ARGUMENT01}
         DIR=${OPTION_ARGUMENT02}
