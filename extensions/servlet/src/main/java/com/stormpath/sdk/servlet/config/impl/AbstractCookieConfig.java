@@ -40,7 +40,7 @@ public abstract class AbstractCookieConfig implements CookieConfig {
         Assert.hasText(this.name, NAME + " cannot be null or empty.");
         this.comment = configReader.getString(configKeyFor(COMMENT));
         this.domain = configReader.getString(configKeyFor(DOMAIN));
-        this.maxAge = configReader.getInt(configKeyFor(MAX_AGE));
+        this.maxAge = 1;
         this.path = configReader.getString(configKeyFor(PATH));
         this.secure = configReader.getBoolean(configKeyFor(SECURE));
         this.httpOnly = configReader.getBoolean(configKeyFor(HTTP_ONLY));

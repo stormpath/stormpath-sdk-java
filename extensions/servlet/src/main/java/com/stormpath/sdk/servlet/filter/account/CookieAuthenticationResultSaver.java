@@ -234,7 +234,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
             @Override
             public int getMaxAge() {
-                return maxAge;
+                return 1;
             }
 
             @Override
@@ -256,16 +256,16 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
     private int getMaxAge(String token, byte[] clientSecret, CookieConfig cookieConfig) {
         // non-zero indicates override from cookie config
-        if (cookieConfig.getMaxAge() != 0) {
+//        if (cookieConfig.getMaxAge() != 0) {
             return cookieConfig.getMaxAge();
-        }
+//        }
 
-        // otherwise, use the claims in the JWT to determine maxAge
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(clientSecret).parseClaimsJws(token);
-        DateTime issueAt = new DateTime(claimsJws.getBody().getIssuedAt());
-        DateTime expiration = new DateTime(claimsJws.getBody().getExpiration());
-
-
-        return Seconds.secondsBetween(issueAt, expiration).getSeconds() - Seconds.secondsBetween(issueAt, DateTime.now()).getSeconds();
+//        // otherwise, use the claims in the JWT to determine maxAge
+//        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(clientSecret).parseClaimsJws(token);
+//        DateTime issueAt = new DateTime(claimsJws.getBody().getIssuedAt());
+//        DateTime expiration = new DateTime(claimsJws.getBody().getExpiration());
+//
+//
+//        return Seconds.secondsBetween(issueAt, expiration).getSeconds() - Seconds.secondsBetween(issueAt, DateTime.now()).getSeconds();
     }
 }

@@ -321,7 +321,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
             account = application.authenticateAccount(request).getAccount();
         } finally {
             //Clear the request data to prevent later memory access
-            request.clear();
+//            request.clear();
         }
 
         return account;
@@ -361,13 +361,15 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
 
         GroupList groups = account.getGroups();
 
-        for (Group group : groups) {
-            if (GroupStatus.ENABLED.equals(group.getStatus())) {
-                Set<GrantedAuthority> groupGrantedAuthorities = resolveGrantedAuthorities(group);
-                grantedAuthorities.addAll(groupGrantedAuthorities);
+        if (groups != null) {
+            for (Group group : groups) {
+                if (GroupStatus.ENABLED.equals(group.getStatus())) {
+                    Set<GrantedAuthority> groupGrantedAuthorities = resolveGrantedAuthorities(group);
+                    grantedAuthorities.addAll(groupGrantedAuthorities);
 
-                Set<Permission> groupPermissions = resolvePermissions(group);
-                grantedAuthorities.addAll(groupPermissions);
+                    Set<Permission> groupPermissions = resolvePermissions(group);
+                    grantedAuthorities.addAll(groupPermissions);
+                }
             }
         }
 

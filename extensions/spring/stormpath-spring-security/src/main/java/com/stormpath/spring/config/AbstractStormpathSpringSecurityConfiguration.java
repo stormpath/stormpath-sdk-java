@@ -25,9 +25,11 @@ import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolv
 import com.stormpath.spring.security.provider.GroupCustomDataPermissionResolver;
 import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.GroupPermissionResolver;
+import com.stormpath.spring.security.provider.OktaAuthenticationProvider;
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider;
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -38,6 +40,9 @@ import java.util.Arrays;
  * @since 1.0.RC5
  */
 public abstract class AbstractStormpathSpringSecurityConfiguration {
+
+    @Value("#{ @environment['okta.enabled'] ?: true }")
+    protected boolean oktaEnabled;
 
     @Autowired
     private Application application;
@@ -64,7 +69,17 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
 
     public AuthenticationProvider stormpathAuthenticationProvider() {
 
-        StormpathAuthenticationProvider provider = new StormpathAuthenticationProvider(application);
+        StormpathAuthenticationProvider provider;
+
+        System.out.println("LOOOK WTF: "+ oktaEnabled);
+
+        if (oktaEnabled) {
+            provider = new OktaAuthenticationProvider(application);
+        }
+        else {
+            provider = new StormpathAuthenticationProvider(application);
+        }
+
         provider.setGroupGrantedAuthorityResolver(stormpathGroupGrantedAuthorityResolver());
         provider.setGroupPermissionResolver(stormpathGroupPermissionResolver());
         provider.setAccountGrantedAuthorityResolver(stormpathAccountGrantedAuthorityResolver());

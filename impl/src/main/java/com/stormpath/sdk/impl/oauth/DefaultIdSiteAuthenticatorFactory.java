@@ -17,8 +17,14 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.oauth.IdSiteAuthenticator;
 import com.stormpath.sdk.oauth.IdSiteAuthenticatorFactory;
+import com.stormpath.sdk.resource.Resource;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @since 1.0.RC8.2
@@ -27,6 +33,25 @@ public class DefaultIdSiteAuthenticatorFactory implements IdSiteAuthenticatorFac
 
     @Override
     public IdSiteAuthenticator forApplication(Application application) {
-        return ((DefaultApplication) application).createIdSiteAuthenticator();
+
+        if (application instanceof DefaultApplication) {
+            return ((DefaultApplication) application).createIdSiteAuthenticator();
+        }
+
+        // FIXME: ugly ugly ugly
+        try {
+            Method dataStoreMethod = AbstractResource.class.getDeclaredMethod("getDataStore");
+            dataStoreMethod.setAccessible(true);
+            InternalDataStore internalDataStore = (InternalDataStore) dataStoreMethod.invoke(application);
+
+            return new DefaultIdSiteAuthenticator(application, internalDataStore);
+
+        } catch (NoSuchMethodException e) {
+            throw new UnsupportedOperationException("Could not get access to Application's 'dataStore'", e);
+        } catch (IllegalAccessException e) {
+            throw new UnsupportedOperationException("Could not get access to Application's 'dataStore'", e);
+        } catch (InvocationTargetException e) {
+            throw new UnsupportedOperationException("Could not get access to Application's 'dataStore'", e);
+        }
     }
 }

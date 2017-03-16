@@ -130,7 +130,7 @@ public class OktaDirectory extends AbstractResource implements Directory {
 
     @Override
     public Account createAccount(CreateAccountRequest request) {
-        String usersHref = getHref() + "/users";
+        String usersHref = getHref() + "/api/v1/users";
         final Account account = request.getAccount();
         return getDataStore().create(usersHref, account);
     }

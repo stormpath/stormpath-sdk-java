@@ -21,6 +21,7 @@ import com.stormpath.sdk.servlet.csrf.CsrfTokenManager;
 import com.stormpath.sdk.servlet.filter.account.AccountResolverFilter;
 import com.stormpath.sdk.servlet.mvc.ErrorModelFactory;
 import com.stormpath.spring.config.AbstractStormpathWebSecurityConfiguration;
+import com.stormpath.spring.config.StormpathLoginSuccessHandler;
 import com.stormpath.spring.filter.ContentNegotiationSpringSecurityAuthenticationFilter;
 import com.stormpath.spring.filter.StormpathSecurityContextPersistenceFilter;
 import com.stormpath.spring.filter.StormpathWrapperFilter;
@@ -42,6 +43,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -66,7 +68,11 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnMissingBean(name="stormpathAuthenticationSuccessHandler")
     @Override
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
-        return super.stormpathAuthenticationSuccessHandler();
+        StormpathLoginSuccessHandler loginSuccessHandler = new StormpathLoginSuccessHandler(client, authenticationResultSaver, produces);
+        loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
+        loginSuccessHandler.setTargetUrlParameter("next");
+        loginSuccessHandler.setRequestCache(new NullRequestCache());
+        return loginSuccessHandler;
     }
 
     @Bean

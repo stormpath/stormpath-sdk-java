@@ -26,6 +26,7 @@ import com.stormpath.sdk.application.webconfig.RegisterConfig;
 import com.stormpath.sdk.application.webconfig.VerifyEmailConfig;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
@@ -37,6 +38,9 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.application.webconfig.DefaultApplicationWebConfig;
+import com.stormpath.sdk.impl.authc.AuthenticationRequestDispatcher;
+import com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequest;
+import com.stormpath.sdk.impl.authc.OktaAuthNAuthenticator;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
@@ -231,7 +235,11 @@ public class LocalApplication extends AbstractResource implements Application {
 
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException {
-        throw new UnsupportedOperationException("authenticateAccount() method hasn't been implemented.");
+//        throw new UnsupportedOperationException("authenticateAccount() method hasn't been implemented.");
+
+        AuthenticationResult result = new OktaAuthNAuthenticator(getDataStore()).authenticate((DefaultUsernamePasswordRequest)request);
+
+        return result;
     }
 
     @Override
