@@ -71,8 +71,6 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
 
         StormpathAuthenticationProvider provider;
 
-        System.out.println("LOOOK WTF: "+ oktaEnabled);
-
         if (oktaEnabled) {
             provider = new OktaAuthenticationProvider(application);
         }

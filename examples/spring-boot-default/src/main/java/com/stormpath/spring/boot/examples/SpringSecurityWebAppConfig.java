@@ -114,40 +114,4 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/restricted").fullyAuthenticated()
             .antMatchers("/**").permitAll();
     }
-
-    @Bean(name = "stormpathAuthenticationProvider" )
-    public AuthenticationProvider stormpathAuthenticationProvider(final Application application,
-                                                                  GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver,
-                                                                  GroupPermissionResolver stormpathGroupPermissionResolver,
-                                                                  AccountGrantedAuthorityResolver stormpathAccountGrantedAuthorityResolver,
-                                                                  AccountPermissionResolver stormpathAccountPermissionResolver,
-                                                                  AuthenticationTokenFactory stormpathAuthenticationTokenFactory) {
-
-        StormpathAuthenticationProvider provider = new OktaAuthenticationProvider(application);
-        provider.setGroupGrantedAuthorityResolver(stormpathGroupGrantedAuthorityResolver);
-        provider.setGroupPermissionResolver(stormpathGroupPermissionResolver);
-        provider.setAccountGrantedAuthorityResolver(stormpathAccountGrantedAuthorityResolver);
-        provider.setAccountPermissionResolver(stormpathAccountPermissionResolver);
-        provider.setAuthenticationTokenFactory(stormpathAuthenticationTokenFactory);
-
-        return provider;
-    }
-
-    @Bean(name = "stormpathAuthenticationSuccessHandler" )
-    public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
-
-        StormpathLoginSuccessHandler loginSuccessHandler = new OktaLoginSuccessHandler(client, authenticationResultSaver, produces);
-
-        loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
-        loginSuccessHandler.setTargetUrlParameter("next");
-        loginSuccessHandler.setRequestCache(new NullRequestCache());
-        return loginSuccessHandler;
-    }
-
-    @Bean(name = "stormpathJwtAccountResolver")
-    public JwtAccountResolver stormpathJwtAccountResolver(Client client) {
-
-        return new OktaJwtAccountResolver(new OktaSigningKeyResolver(client.getDataStore()));
-    }
-
 }

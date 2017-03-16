@@ -68,11 +68,7 @@ public class StormpathWebSecurityAutoConfiguration extends AbstractStormpathWebS
     @ConditionalOnMissingBean(name="stormpathAuthenticationSuccessHandler")
     @Override
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
-        StormpathLoginSuccessHandler loginSuccessHandler = new StormpathLoginSuccessHandler(client, authenticationResultSaver, produces);
-        loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
-        loginSuccessHandler.setTargetUrlParameter("next");
-        loginSuccessHandler.setRequestCache(new NullRequestCache());
-        return loginSuccessHandler;
+        return super.stormpathAuthenticationSuccessHandler();
     }
 
     @Bean
