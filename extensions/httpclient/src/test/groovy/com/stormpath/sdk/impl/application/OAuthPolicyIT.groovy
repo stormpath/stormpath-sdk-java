@@ -16,21 +16,14 @@
 package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.client.ClientIT
-import com.stormpath.sdk.impl.resource.AbstractResource
-import com.stormpath.sdk.oauth.OAuthPolicies
 import com.stormpath.sdk.oauth.OAuthPolicy
-import com.stormpath.sdk.oauth.OAuthPolicyOptions
 import com.stormpath.sdk.oauth.openidconnect.Scope
 import com.stormpath.sdk.oauth.openidconnect.ScopeList
 import org.testng.annotations.Test
 
-import java.lang.reflect.Field
-
 import static org.testng.Assert.assertEquals
 import static org.testng.Assert.assertNotNull
 import static org.testng.Assert.assertFalse
-import static org.testng.Assert.assertTrue
-
 /**
  * @since 1.6.0
  */
@@ -75,30 +68,19 @@ class OAuthPolicyIT extends ClientIT {
     @Test
     void testPolicyExpandOnScopes(){
         def app = createTempApp()
-        def policyHref = app.getOAuthPolicy().href
+        def policyHref = app.getOAuthPolicy().href+"?expand=scopes"
 
-        OAuthPolicyOptions options = OAuthPolicies.options().withScopes()
+        def oauthPolicy = client.getResource(policyHref, OAuthPolicy.class)
+        assertNotNull oauthPolicy
+        assertNotNull oauthPolicy.href
 
-        assertNotNull options
-        assertEquals options.expansions.size(), 1
-
-        options = OAuthPolicies.options().withScopes(10)
-
-        assertNotNull options
-        assertEquals options.expansions.size(), 1
-
-        options = OAuthPolicies.options().withScopes(10,0)
-
-        assertNotNull options
-        assertEquals options.expansions.size(), 1
-
-        def retrieved = client.getResource(policyHref, OAuthPolicy.class, options)
-        Map policyProperties = getValue(AbstractResource, retrieved, "properties")
-        def scopes = policyProperties.get("scopes").size()
-        assertTrue scopes == 5
-        assertTrue policyProperties.get("scopes").items.get(0).name != null
-        assertTrue policyProperties.get("scopes").items.get(1).name != null
-        assertTrue policyProperties.get("scopes").items.get(2).name != null
+        assertEquals(oauthPolicy.scopes.size, 3)
+        assertNotNull(oauthPolicy.scopes.asList().get(0).href)
+        assertNotNull(oauthPolicy.scopes.asList().get(0).name)
+        assertNotNull(oauthPolicy.scopes.asList().get(1).href)
+        assertNotNull(oauthPolicy.scopes.asList().get(1).name)
+        assertNotNull(oauthPolicy.scopes.asList().get(2).href)
+        assertNotNull(oauthPolicy.scopes.asList().get(2).name)
     }
 
     @Test
@@ -195,11 +177,5 @@ class OAuthPolicyIT extends ClientIT {
         assertEquals(items[0].name, "updatedName1")
         assertEquals(items[1].name, "updatedName2")
         assertEquals(items[2].name, "updatedName3")
-    }
-
-    private Object getValue(Class clazz, Object object, String fieldName) {
-        Field field = clazz.getDeclaredField(fieldName)
-        field.setAccessible(true)
-        return field.get(object)
     }
 }

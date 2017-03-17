@@ -27,7 +27,7 @@ import java.util.Map;
  * A Scope resource is used to configure different openid connect scopes
  * with an {@link OAuthPolicy OAuthPolicy}
  *
- * @since 1.6.0
+ * @since 1.0.RC7
  */
 public interface Scope extends Resource, Saveable, Deletable, Auditable {
     /**
