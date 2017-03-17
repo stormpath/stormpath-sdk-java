@@ -33,5 +33,6 @@ public class RevokeTokenFilterFactory extends ControllerFilterFactory<RevokeToke
     @Override
     protected void configure(RevokeTokenController controller, Config config) throws Exception {
         controller.setApplicationResolver(config.getApplicationResolver());
+        controller.setAuthenticationResultSaver(config.getAuthenticationResultSaver());
     }
 }

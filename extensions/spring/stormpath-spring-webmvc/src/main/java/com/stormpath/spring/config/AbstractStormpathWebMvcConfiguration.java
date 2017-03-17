@@ -1225,6 +1225,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathRevokeTokenController() {
         RevokeTokenController c = new RevokeTokenController();
         c.setApplicationResolver(stormpathApplicationResolver());
+        c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         return init(c);
     }
 
