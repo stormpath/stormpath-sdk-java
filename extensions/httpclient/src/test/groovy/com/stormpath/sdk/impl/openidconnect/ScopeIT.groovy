@@ -87,8 +87,7 @@ class ScopeIT extends ClientIT {
         assertNotNull(scope.getOAuthPolicy().href)
     }
 
-    // todo - currently failing against production @mrafiei
-    @Test(enabled = false)
+    @Test
     void testUpdateScope() {
         def app = createTempApp()
         assertNotNull app.getOAuthPolicy().href

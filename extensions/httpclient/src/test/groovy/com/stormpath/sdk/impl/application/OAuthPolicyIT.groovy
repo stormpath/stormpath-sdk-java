@@ -109,8 +109,7 @@ class OAuthPolicyIT extends ClientIT {
         //getDeletedResourceError(identityProvider.href, SamlIdentityProvider)
     }
 
-    // todo - currently failing against production @mrafiei
-    @Test(enabled = false)
+    @Test
     void testRetrieveAndUpdateOAuthPolicy() {
         def app = createTempApp()
 
