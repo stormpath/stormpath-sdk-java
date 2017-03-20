@@ -14,8 +14,15 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthenticator extends Abst
 
     private final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
+    private final String oauthTokenPath;
+
     public DefaultOAuthClientCredentialsGrantRequestAuthenticator(Application application, DataStore dataStore) {
+        this(application, dataStore, OAUTH_TOKEN_PATH);
+    }
+
+    public DefaultOAuthClientCredentialsGrantRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath) {
         super(application, dataStore);
+        this.oauthTokenPath = oauthTokenPath;
     }
 
     @Override
@@ -32,7 +39,7 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthenticator extends Abst
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, oAuthClientCredentialsGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
+        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + oauthTokenPath, oAuthClientCredentialsGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthClientCredentialsGrantRequestAuthenticationResultBuilder(grantResult);
 

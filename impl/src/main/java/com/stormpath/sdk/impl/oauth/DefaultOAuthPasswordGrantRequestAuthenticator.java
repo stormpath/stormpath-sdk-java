@@ -29,8 +29,15 @@ public class DefaultOAuthPasswordGrantRequestAuthenticator extends AbstractOAuth
 
     final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
+    private final String oauthTokenPath;
+
     public DefaultOAuthPasswordGrantRequestAuthenticator(Application application, DataStore dataStore) {
+        this(application, dataStore, OAUTH_TOKEN_PATH);
+    }
+
+    public DefaultOAuthPasswordGrantRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath) {
         super(application, dataStore);
+        this.oauthTokenPath = oauthTokenPath;
     }
 
     @Override
@@ -39,17 +46,19 @@ public class DefaultOAuthPasswordGrantRequestAuthenticator extends AbstractOAuth
         Assert.isInstanceOf(OAuthPasswordGrantRequestAuthentication.class, authenticationRequest, "authenticationRequest must be an instance of PasswordGrantRequest.");
         OAuthPasswordGrantRequestAuthentication oauthPasswordGrantRequestAuthentication = (OAuthPasswordGrantRequestAuthentication) authenticationRequest;
 
-        OAuthPasswordGrantAuthenticationAttempt oauthPasswordGrantAuthenticationAttempt = new DefaultOAuthPasswordGrantAuthenticationAttempt(dataStore);
+        DefaultOAuthPasswordGrantAuthenticationAttempt oauthPasswordGrantAuthenticationAttempt = new DefaultOAuthPasswordGrantAuthenticationAttempt(dataStore);
         oauthPasswordGrantAuthenticationAttempt.setLogin(oauthPasswordGrantRequestAuthentication.getLogin());
         oauthPasswordGrantAuthenticationAttempt.setPassword(oauthPasswordGrantRequestAuthentication.getPassword());
         oauthPasswordGrantAuthenticationAttempt.setGrantType(oauthPasswordGrantRequestAuthentication.getGrantType());
         if (oauthPasswordGrantRequestAuthentication.getAccountStore() != null){
             oauthPasswordGrantAuthenticationAttempt.setAccountStore(oauthPasswordGrantRequestAuthentication.getAccountStore());
         }
+        oauthPasswordGrantAuthenticationAttempt.setProperty("scope", "offline_access");
+
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, oauthPasswordGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
+        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + oauthTokenPath, oauthPasswordGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthGrantRequestAuthenticationResultBuilder(grantResult);
         return builder.build();

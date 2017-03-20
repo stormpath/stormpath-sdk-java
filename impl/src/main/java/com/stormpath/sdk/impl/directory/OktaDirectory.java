@@ -193,7 +193,7 @@ public class OktaDirectory extends AbstractResource implements Directory {
 
     @Override
     public PasswordPolicy getPasswordPolicy() {
-        String passwordPolicyHref = getHref() + "/policies?type=PASSWORD";
+        String passwordPolicyHref = getHref() + "/api/v1/policies?type=PASSWORD";
         OktaPasswordPolicyList policies = getDataStore().getResource(passwordPolicyHref, OktaPasswordPolicyList.class);
         OktaPasswordPolicy oktaPasswordPolicy = policies.single();
         return transformOktaPasswordPolicy(oktaPasswordPolicy);

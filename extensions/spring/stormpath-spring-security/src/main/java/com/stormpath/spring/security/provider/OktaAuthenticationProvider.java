@@ -39,7 +39,12 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
                 account = ((ProviderAuthenticationToken) authentication).getAccount();
                 returnToken = authentication;
 
-            } else {
+            }
+            else if (authentication instanceof JwtProviderAuthenticationToken) {
+                // FIXME: validate / exchange token
+                return authentication;
+            }
+            else {
 
                 AuthenticationRequest request = createAuthenticationRequest(authentication);
 
@@ -74,4 +79,14 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
 
         return returnToken;
     }
+
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        if (super.supports(authentication)) return true;
+        if (JwtProviderAuthenticationToken.class.isAssignableFrom(authentication)) return true;
+        return false;
+    }
+
+
 }

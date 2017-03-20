@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.application.OAuthApplication;
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticatorFactory;
 
@@ -27,6 +27,6 @@ public class DefaultOAuthBearerRequestAuthenticatorFactory implements OAuthBeare
 
     @Override
     public OAuthBearerRequestAuthenticator forApplication(Application application) {
-        return ((DefaultApplication) application).createJwtAuthenticator();
+        return ((OAuthApplication) application).createJwtAuthenticator();
     }
 }

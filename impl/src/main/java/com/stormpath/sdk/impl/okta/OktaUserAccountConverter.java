@@ -68,7 +68,7 @@ public class OktaUserAccountConverter {
 
     */
 
-    public Map<String, Object> toAccount(Map<String, Object> userMap) {
+    public Map<String, Object> toAccount(Map<String, Object> userMap, String baseUrl) {
 
         // quick hack to make existing tests work.
         // if the UserMap does NOT contain an 'id' field, just assume the map is already an account.
@@ -77,6 +77,7 @@ public class OktaUserAccountConverter {
         }
 
         Map<String, Object> accountMap = new LinkedHashMap<>();
+        nullSafePut(accountMap, "href", baseUrl + "/api/v1/users/" + userMap.get("id")); // TODO use stop putting /api/v1 all over the place
         Map<String, Object> profileMap = (Map<String, Object>) userMap.get("profile");
 
         if (!Collections.isEmpty(profileMap)) {

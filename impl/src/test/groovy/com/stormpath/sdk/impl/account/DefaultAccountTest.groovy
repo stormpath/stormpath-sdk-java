@@ -44,6 +44,7 @@ import com.stormpath.sdk.oauth.RefreshTokenList
 import com.stormpath.sdk.phone.PhoneList
 import com.stormpath.sdk.provider.ProviderData
 import com.stormpath.sdk.tenant.Tenant
+import org.easymock.Capture
 import org.testng.annotations.Test
 
 import java.text.DateFormat
@@ -112,30 +113,9 @@ class DefaultAccountTest {
                           modifiedAt: "2015-02-01T12:00:00Z"]
 
         def internalDataStore = createStrictMock(InternalDataStore)
-        def defaultAccount = new DefaultAccount(internalDataStore, properties)
+        def accountCapture = new Capture<Account>()
 
-        assertFalse(defaultAccount.isPrintableProperty("password"))
-        assertNull(defaultAccount.getStatus())
-
-        defaultAccount = defaultAccount.setUsername("pacoman")
-            .setEmail("some@testmail.stormpath.com")
-            .setSurname("Smuk")
-            .setMiddleName("Ben")
-            .setGivenName("Mel")
-            .setStatus(AccountStatus.DISABLED)
-            .setPassword("superPass0rd")
-
-        DateFormat df = new ISO8601DateFormat();
-
-        assertEquals(defaultAccount.getUsername(), "pacoman")
-        assertEquals(defaultAccount.getEmail(), "some@testmail.stormpath.com")
-        assertEquals(defaultAccount.getSurname(), "Smuk")
-        assertEquals(defaultAccount.getMiddleName(), "Ben")
-        assertEquals(defaultAccount.getGivenName(), "Mel")
-        assertEquals(defaultAccount.getStatus(), AccountStatus.DISABLED)
-        assertEquals(defaultAccount.getFullName(), "Mel Ben Smuk")
-        assertEquals(df.format(defaultAccount.getCreatedAt()), "2015-01-01T00:00:00Z")
-        assertEquals(df.format(defaultAccount.getModifiedAt()), "2015-02-01T12:00:00Z")
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com/v1")
 
         expect(internalDataStore.instantiate(EmailVerificationToken, properties.emailVerificationToken)).
                 andReturn(new DefaultEmailVerificationToken(internalDataStore, properties.emailVerificationToken))
@@ -183,7 +163,7 @@ class DefaultAccountTest {
         expect(internalDataStore.getResource(properties.providerData.href, ProviderData.class, "providerId", IdentityProviderType.IDENTITY_PROVIDERDATA_CLASS_MAP))
                 .andReturn(new DefaultProviderData(internalDataStore, properties.providerData))
 
-        expect(internalDataStore.delete(defaultAccount))
+        expect(internalDataStore.delete(capture(accountCapture)))
 
         def groupMembership =  new DefaultGroupMembership(internalDataStore)
         def group = createStrictMock(Group)
@@ -198,6 +178,31 @@ class DefaultAccountTest {
         expect(internalDataStore.create(eq("/accountLinks"), same(accountLink))).andReturn(accountLink)
 
         replay internalDataStore, groupCriteria, group, linkedAccountsCriteria, otherAccount, accountLinksCriteria
+
+        def defaultAccount = new DefaultAccount(internalDataStore, properties)
+
+        assertFalse(defaultAccount.isPrintableProperty("password"))
+        assertNull(defaultAccount.getStatus())
+
+        defaultAccount = defaultAccount.setUsername("pacoman")
+                .setEmail("some@testmail.stormpath.com")
+                .setSurname("Smuk")
+                .setMiddleName("Ben")
+                .setGivenName("Mel")
+                .setStatus(AccountStatus.DISABLED)
+                .setPassword("superPass0rd")
+
+        DateFormat df = new ISO8601DateFormat();
+
+        assertEquals(defaultAccount.getUsername(), "pacoman")
+        assertEquals(defaultAccount.getEmail(), "some@testmail.stormpath.com")
+        assertEquals(defaultAccount.getSurname(), "Smuk")
+        assertEquals(defaultAccount.getMiddleName(), "Ben")
+        assertEquals(defaultAccount.getGivenName(), "Mel")
+        assertEquals(defaultAccount.getStatus(), AccountStatus.DISABLED)
+        assertEquals(defaultAccount.getFullName(), "Mel Ben Smuk")
+        assertEquals(df.format(defaultAccount.getCreatedAt()), "2015-01-01T00:00:00Z")
+        assertEquals(df.format(defaultAccount.getModifiedAt()), "2015-02-01T12:00:00Z")
 
         def resource = defaultAccount.getEmailVerificationToken()
         assertTrue(resource instanceof DefaultEmailVerificationToken && resource.getHref().equals(properties.emailVerificationToken.href))
@@ -258,6 +263,7 @@ class DefaultAccountTest {
         defaultAccount.link(otherAccount)
 
         verify internalDataStore, groupCriteria, group, linkedAccountsCriteria, otherAccount
+        assertEquals accountCapture.value, defaultAccount
     }
 
     @Test
@@ -279,9 +285,10 @@ class DefaultAccountTest {
         ]
 
 
-        def internalDataStore = createStrictMock(InternalDataStore)
-        def defaultAccount = new DefaultAccount(internalDataStore, properties)
+        def internalDataStore = createMock(InternalDataStore)
         def mockGroup = createStrictMock(Group)
+
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com/v1")
 
         expect(internalDataStore.instantiate(GroupList, properties.groups)).andReturn(new DefaultGroupList(internalDataStore, properties.groups))
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
@@ -336,6 +343,9 @@ class DefaultAccountTest {
         expect(internalDataStore.instantiate(Group, groupValues)).andReturn(mockGroup)
 
         replay internalDataStore, mockGroup
+
+
+        def defaultAccount = new DefaultAccount(internalDataStore, properties)
 
         assertFalse(defaultAccount.isMemberOfGroup(groupName.substring(0, groupName.length()-2) + "*")) //fooNa*
         assertFalse(defaultAccount.isMemberOfGroup("*" + groupName.toUpperCase() + "*")) //*FOONAME*
@@ -441,6 +451,8 @@ class DefaultAccountTest {
         def applicationList = createStrictMock(ApplicationList)
         def map = createStrictMock(Map)
         def applicationCriteria = createStrictMock(ApplicationCriteria)
+
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com/v1").any()
 
         //getApplications()
         expect(internalDataStore.instantiate(ApplicationList, properties.applications)).andReturn(applicationList)

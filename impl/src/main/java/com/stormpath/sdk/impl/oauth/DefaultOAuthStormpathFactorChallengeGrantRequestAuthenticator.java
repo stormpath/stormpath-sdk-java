@@ -33,8 +33,15 @@ public class DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator exten
 
     private final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
+    private final String oauthTokenPath;
+
     public DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator(Application application, DataStore dataStore) {
+        this(application, dataStore, OAUTH_TOKEN_PATH);
+    }
+
+    public DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath) {
         super(application, dataStore);
+        this.oauthTokenPath = oauthTokenPath;
     }
 
     @Override
@@ -52,7 +59,7 @@ public class DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator exten
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, authenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
+        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + oauthTokenPath, authenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthGrantRequestAuthenticationResultBuilder(grantResult);
 

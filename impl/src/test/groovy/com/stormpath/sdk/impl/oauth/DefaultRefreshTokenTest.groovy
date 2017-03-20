@@ -26,6 +26,7 @@ import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
 import com.stormpath.sdk.impl.tenant.DefaultTenant
 import com.stormpath.sdk.tenant.Tenant
+import org.easymock.IAnswer
 import org.testng.annotations.Test
 
 import java.text.DateFormat
@@ -78,7 +79,13 @@ class DefaultRefreshTokenTest {
         assertEquals(df.format(defaultRefreshToken.getCreatedAt()), "2015-01-01T00:00:00Z", properties.created_at)
 
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
-        expect(internalDataStore.instantiate(Account, properties.account)).andReturn(new DefaultAccount(internalDataStore, properties.account))
+        expect(internalDataStore.instantiate(Account, properties.account)).andAnswer(new IAnswer<Account>() {
+            @Override
+            Account answer() throws Throwable {
+                return new DefaultAccount(internalDataStore, properties.account)
+            }
+        })
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com/v1")
         expect(internalDataStore.instantiate(Application, properties.application)).andReturn(new DefaultApplication(internalDataStore, properties.application))
 
         replay internalDataStore

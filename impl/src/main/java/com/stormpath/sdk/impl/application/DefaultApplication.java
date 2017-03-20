@@ -33,6 +33,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.application.OAuthApplication;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
@@ -117,7 +118,7 @@ import java.util.Set;
 import static com.stormpath.sdk.impl.api.ApiKeyParameter.ID;
 
 /** @since 0.2 */
-public class DefaultApplication extends AbstractExtendableInstanceResource implements Application {
+public class DefaultApplication extends AbstractExtendableInstanceResource implements Application, OAuthApplication {
 
     private static final String OAUTH_REQUEST_AUTHENTICATOR_FQCN =
         "com.stormpath.sdk.impl.oauth.authc.DefaultOAuthRequestAuthenticator";
@@ -874,31 +875,37 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     /* @since 1.0.0 */
+    @Override
     public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
         return new DefaultOAuthClientCredentialsGrantRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.1.0 */
+    @Override
     public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
         return new DefaultOAuthStormpathSocialGrantRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.3.1 */
+    @Override
     public OAuthStormpathFactorChallengeGrantRequestAuthenticator createStormpathFactorChallengeGrantAuthenticator() {
         return new DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.0.RC7 */
+    @Override
     public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
         return new DefaultOAuthPasswordGrantRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.0.RC7 */
+    @Override
     public OAuthRefreshTokenRequestAuthenticator createRefreshGrantAuthenticator() {
         return new DefaultOAuthRefreshTokenRequestAuthenticator(this, getDataStore());
     }
 
     /* @since 1.0.RC7 */
+    @Override
     public OAuthBearerRequestAuthenticator createJwtAuthenticator() {
         return new DefaultOAuthBearerRequestAuthenticator(this, getDataStore());
     }
@@ -908,6 +915,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
         return new DefaultIdSiteAuthenticator(this, getDataStore());
     }
 
+    @Override
     public OAuthTokenRevocator createOAuhtTokenRevocator() {
         return new DefaultOAuthTokenRevocator(this, getDataStore());
     }

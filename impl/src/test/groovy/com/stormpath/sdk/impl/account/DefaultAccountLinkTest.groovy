@@ -21,6 +21,7 @@ import com.stormpath.sdk.account.AccountLink
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.DateProperty
 import com.stormpath.sdk.impl.resource.ResourceReference
+import org.easymock.IAnswer
 import org.testng.annotations.Test
 
 import java.text.DateFormat
@@ -60,11 +61,21 @@ public class DefaultAccountLinkTest {
 
         AccountLink accountLink = new DefaultAccountLink(internalDataStore, properties)
 
-        expect(internalDataStore.instantiate(Account, properties.leftAccount)).
-                andReturn(new DefaultAccount(internalDataStore, properties.leftAccount))
+        expect(internalDataStore.instantiate(Account, properties.leftAccount)).andAnswer( new IAnswer<Account>() {
+            @Override
+            Account answer() throws Throwable {
+                new DefaultAccount(internalDataStore, properties.leftAccount)
+            }
+        })
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com/v1")
 
-        expect(internalDataStore.instantiate(Account, properties.rightAccount)).
-                andReturn(new DefaultAccount(internalDataStore, properties.rightAccount))
+        expect(internalDataStore.instantiate(Account, properties.rightAccount)).andAnswer( new IAnswer<Account>() {
+                @Override
+                Account answer() throws Throwable {
+                    new DefaultAccount(internalDataStore, properties.rightAccount)
+                }
+        })
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com/v1")
 
         replay internalDataStore
 

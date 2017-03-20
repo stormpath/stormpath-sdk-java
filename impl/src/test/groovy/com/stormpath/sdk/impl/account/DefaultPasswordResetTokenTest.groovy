@@ -21,6 +21,8 @@ import com.stormpath.sdk.directory.Directory
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.resource.ResourceReference
 import com.stormpath.sdk.impl.resource.StringProperty
+import org.easymock.Capture
+import org.easymock.IAnswer
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -34,12 +36,13 @@ class DefaultPasswordResetTokenTest {
     @Test
     void testAll() {
 
-        def internalDataStore = createStrictMock(InternalDataStore)
+        def internalDataStore = createMock(InternalDataStore)
 
         def resourceWithDS = new DefaultPasswordResetToken(internalDataStore)
         def resourceWithProps = new DefaultPasswordResetToken(internalDataStore,
                 [href: "https://api.stormpath.com/v1/applications/WpM9nyZ2Tb67hbRvLk9KA/passwordResetTokens/j6HqguWPo98YXM2xmcOUShw",
                  account: [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]])
+        def accountCapture = new Capture<Account>()
 
         assertTrue(resourceWithDS instanceof DefaultPasswordResetToken && resourceWithProps instanceof DefaultPasswordResetToken)
         def pd = resourceWithProps.getPropertyDescriptors()
@@ -54,9 +57,18 @@ class DefaultPasswordResetTokenTest {
         resourceWithDS.setEmail("some@testmail.stormpath.com")
         assertEquals(resourceWithDS.getEmail(), "some@testmail.stormpath.com")
 
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com/v1")
+
         def innerProperties = [href: "https://api.stormpath.com/v1/accounts/nfoweurj9824urnou"]
-        def account = new DefaultAccount(internalDataStore, innerProperties)
-        expect(internalDataStore.instantiate(Account, innerProperties)).andReturn(account)
+
+        expect(internalDataStore.instantiate(Account, innerProperties)).andAnswer(new IAnswer<Account>() {
+            @Override
+            Account answer() throws Throwable {
+                def account = new DefaultAccount(internalDataStore, innerProperties)
+                accountCapture.setValue(account)
+                return account
+            }
+        })
 
         def accountStore = createStrictMock(Directory)
         def accountStoreHref = 'https://api.stormpath.com/v1/directories/dir123'
@@ -70,7 +82,7 @@ class DefaultPasswordResetTokenTest {
         resourceWithDS.setAccountStore(accountStore)
         assertEquals(resourceWithDS.dirtyProperties.accountStore.href, accountStoreHref)
 
-        assertSame(resourceWithProps.account, account)
+        assertSame(resourceWithProps.account, accountCapture.value)
 
         verify internalDataStore, accountStore
     }

@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.application.OAuthApplication;
 import com.stormpath.sdk.oauth.OAuthTokenRevocator;
 import com.stormpath.sdk.oauth.OAuthTokenRevocatorFactory;
 
@@ -26,6 +26,6 @@ import com.stormpath.sdk.oauth.OAuthTokenRevocatorFactory;
 public class DefaultOAuthTokenRevocatorFactory implements OAuthTokenRevocatorFactory {
 
     public OAuthTokenRevocator forApplication(Application application) {
-        return ((DefaultApplication) application).createOAuhtTokenRevocator();
+        return ((OAuthApplication) application).createOAuhtTokenRevocator();
     }
 }

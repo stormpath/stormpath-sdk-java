@@ -15,6 +15,7 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.application.OAuthApplication;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus;
 import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
@@ -43,10 +44,26 @@ import com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequest;
 import com.stormpath.sdk.impl.authc.OktaAuthNAuthenticator;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.oauth.IdSiteAuthenticator;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthPolicy;
+import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthTokenRevocator;
 import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
@@ -61,7 +78,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LocalApplication extends AbstractResource implements Application {
+public class LocalApplication extends AbstractResource implements Application, OAuthApplication {
 
     private final Directory OKTA_TENANT_DIR;
 
@@ -521,5 +538,45 @@ public class LocalApplication extends AbstractResource implements Application {
     @Override
     public void setDefaultGroupStore(AccountStore accountStore) {
         throw new UnsupportedOperationException("setDefaultGroupStore() method hasn't been implemented.");
+    }
+
+
+    @Override
+    public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
+        return new DefaultOAuthClientCredentialsGrantRequestAuthenticator(this, getDataStore(), "oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
+        return new DefaultOAuthStormpathSocialGrantRequestAuthenticator(this, getDataStore(), "oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthStormpathFactorChallengeGrantRequestAuthenticator createStormpathFactorChallengeGrantAuthenticator() {
+        return new DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator(this, getDataStore(), "oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
+        return new DefaultOAuthPasswordGrantRequestAuthenticator(this, getDataStore(), "oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthRefreshTokenRequestAuthenticator createRefreshGrantAuthenticator() {
+        return new DefaultOAuthRefreshTokenRequestAuthenticator(this, getDataStore(), "oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthBearerRequestAuthenticator createJwtAuthenticator() {
+        return new DefaultOAuthBearerRequestAuthenticator(this, getDataStore());
+    }
+
+    public IdSiteAuthenticator createIdSiteAuthenticator() {
+        return new DefaultIdSiteAuthenticator(this, getDataStore(), "oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthTokenRevocator createOAuhtTokenRevocator() {
+        return new DefaultOAuthTokenRevocator(this, getDataStore(), "oauth2/v1/token");
     }
 }
