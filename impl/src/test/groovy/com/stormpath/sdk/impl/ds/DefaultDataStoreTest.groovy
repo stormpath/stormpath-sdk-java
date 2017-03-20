@@ -390,8 +390,9 @@ class DefaultDataStoreTest {
         expect(response.hasBody()).andReturn(true)
         expect(response.getBody()).andReturn(providerAccountResponseIS)
         expect(response.getHttpStatus()).andReturn(201)
+        expect(baseUrlResolver.getBaseUrl()).andReturn("https://api.stormpath.com")
 
-        replay(requestExecutor, response)
+        replay(requestExecutor, response, baseUrlResolver)
 
         def cache = Caches.newCacheManager()
                 .withDefaultTimeToIdle(1, TimeUnit.HOURS)
@@ -410,7 +411,7 @@ class DefaultDataStoreTest {
 
         assertEquals(defaultDataStore.cacheManager.caches.size(), 1)
 
-        verify(requestExecutor, response)
+        verify(requestExecutor, response, baseUrlResolver)
     }
 
     //@since 1.0.0

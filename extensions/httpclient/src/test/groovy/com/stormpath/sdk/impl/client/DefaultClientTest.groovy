@@ -75,8 +75,9 @@ class DefaultClientTest {
         expect(proxy.getHost()).andReturn("192.168.2.110")
         expect(proxy.getPort()).andReturn(777)
         expect(proxy.isAuthenticationRequired()).andReturn(false)
+        expect(baseUrlResolver.getBaseUrl()).andReturn("https://api.example.com/")
 
-        replay(apiKeyCredentials, proxy, cacheManager)
+        replay(apiKeyCredentials, proxy, cacheManager, baseUrlResolver)
 
         Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, proxy, cacheManager, authcScheme, null, connectionTimeout)
 
@@ -84,7 +85,7 @@ class DefaultClientTest {
         assertEquals(client.dataStore.requestExecutor.httpClient.defaultConfig.socketTimeout, connectionTimeout * 1000)
         assertEquals(client.dataStore.requestExecutor.httpClient.defaultConfig.connectTimeout, connectionTimeout * 1000)
 
-        verify(apiKeyCredentials, proxy, cacheManager)
+        verify(apiKeyCredentials, proxy, cacheManager, baseUrlResolver)
     }
 
     @Test
@@ -130,7 +131,10 @@ class DefaultClientTest {
         def apiKeyResolver = createStrictMock(ApiKeyResolver)
         def baseUrlResolver = createStrictMock(BaseUrlResolver)
         def authcScheme = AuthenticationScheme.SAUTHC1
-        def cacheManager = Caches.newDisabledCacheManager();
+        def cacheManager = Caches.newDisabledCacheManager()
+
+        expect(baseUrlResolver.getBaseUrl()).andReturn("https://api.example.com/")
+        replay baseUrlResolver
 
         Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, cacheManager , authcScheme, null,  20000)
 
@@ -199,7 +203,9 @@ class DefaultClientTest {
         expect(response.getBody()).andReturn(is01AfterSave)
         expect(response.getHttpStatus()).andReturn(200)
 
-        replay requestExecutor, response, resourceFactory
+        expect(baseUrlResolver.getBaseUrl()).andReturn("https://api.example.com/")
+
+        replay requestExecutor, response, resourceFactory, baseUrlResolver
 
         //Let's start
         def client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newDisabledCacheManager(), null, null, 20000)
@@ -229,7 +235,7 @@ class DefaultClientTest {
         assertEquals(account02.dirtyProperties, Collections.emptyMap())
         assertSame(propertiesField.get(account01), propertiesField.get(account02))
 
-        verify requestExecutor, response, resourceFactory
+        verify requestExecutor, response, resourceFactory, baseUrlResolver
     }
 
     //@since 1.0.RC3
@@ -319,8 +325,10 @@ class DefaultClientTest {
 
         expect(tenantResolver.getCurrentTenant()).andReturn(tenant).times(11)
 
+        expect(baseUrlResolver.getBaseUrl()).andReturn("https://api.example.com/")
+
         replay(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
-                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account, tenantResolver)
+                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account, tenantResolver, baseUrlResolver)
 
         Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, null, Caches.newDisabledCacheManager(), null, null, 20000, tenantResolver)
         setNewValue(client, "dataStore", dataStore)
@@ -337,7 +345,7 @@ class DefaultClientTest {
         assertSame(client.verifyAccountEmail(token), account)
 
         verify(apiKeyCredentials, dataStore, tenant, application, returnedApplication, createApplicationRequest, applicationList,
-                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account, tenantResolver)
+                map, applicationCriteria, directory, returnedDir, createDirectoryRequest, directoryList, directoryCriteria, account, tenantResolver, baseUrlResolver)
     }
 
     /**
@@ -364,14 +372,16 @@ class DefaultClientTest {
         expect(proxy.getPort()).andReturn(777)
         expect(proxy.isAuthenticationRequired()).andReturn(false)
 
-        replay(apiKeyCredentials, proxy, cacheManager, tenantResolver)
+        expect(baseUrlResolver.getBaseUrl()).andReturn("https://api.example.com/")
+
+        replay(apiKeyCredentials, proxy, cacheManager, tenantResolver, baseUrlResolver)
 
         Client client = new DefaultClient(apiKeyCredentials, apiKeyResolver, baseUrlResolver, proxy, cacheManager, authcScheme, null, connectionTimeout, tenantResolver)
 
         assertEquals(client.getCurrentTenant(), tenant)
         assertEquals(client.getCurrentTenant(tenantOptions), tenant)
 
-        verify(apiKeyCredentials, proxy, cacheManager, tenantResolver)
+        verify(apiKeyCredentials, proxy, cacheManager, tenantResolver, baseUrlResolver)
     }
 
     /**
