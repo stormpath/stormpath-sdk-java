@@ -59,11 +59,14 @@ public class ExternalAccountStoreModelFactory implements AccountStoreModelFactor
         AccountStoreModelVisitor visitor =
                 new AccountStoreModelVisitor(accountStores, getAuthorizeBaseUri(request, app.getWebConfig()));
 
-        for (ApplicationAccountStoreMapping mapping : mappings) {
+        // TODO - if introduced for Okta. Need to deal with for real when we add social support
+        if (mappings.getHref() != null) {
+            for (ApplicationAccountStoreMapping mapping : mappings) {
 
-            final AccountStore accountStore = mapping.getAccountStore();
+                final AccountStore accountStore = mapping.getAccountStore();
 
-            accountStore.accept(visitor);
+                accountStore.accept(visitor);
+            }
         }
 
         return visitor.getAccountStores();
