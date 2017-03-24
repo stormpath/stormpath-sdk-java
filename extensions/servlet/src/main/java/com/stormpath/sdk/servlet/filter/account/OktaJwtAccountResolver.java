@@ -2,6 +2,7 @@ package com.stormpath.sdk.servlet.filter.account;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class OktaJwtAccountResolver implements JwtAccountResolver {
 
-    final private SigningKeyResolver signingKeyResolver;
+    private final SigningKeyResolver signingKeyResolver;
 
     public OktaJwtAccountResolver(SigningKeyResolver signingKeyResolver) {
         this.signingKeyResolver = signingKeyResolver;
@@ -36,7 +37,7 @@ public class OktaJwtAccountResolver implements JwtAccountResolver {
             return null;
         }
 
-        String accountHref = "/api/v1/users/" + claims.get("uid");
+        String accountHref = OktaApiPaths.USERS + claims.get("uid");
 
         //will hit the cache:
         return client.getResource(accountHref, Account.class);

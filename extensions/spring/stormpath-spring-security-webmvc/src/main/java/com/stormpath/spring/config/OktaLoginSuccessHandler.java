@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class OktaLoginSuccessHandler extends StormpathLoginSuccessHandler {
 
-    final private Saver<AuthenticationResult> authenticationResultSaver;
+    private final Saver<AuthenticationResult> authenticationResultSaver;
 
     public OktaLoginSuccessHandler(Client client, Saver<AuthenticationResult> saver, String produces) {
         super(client, saver, produces);

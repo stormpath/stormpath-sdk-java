@@ -22,7 +22,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
-import com.stormpath.sdk.impl.application.okta.OktaSigningKeyResolver;
+import com.stormpath.sdk.impl.application.okta.DefaultOktaSigningKeyResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
@@ -809,7 +809,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public JwtAccountResolver stormpathJwtAccountResolver() {
         if (oktaEnabled) {
-            return new OktaJwtAccountResolver(new OktaSigningKeyResolver(client.getDataStore()));
+            return new OktaJwtAccountResolver(new DefaultOktaSigningKeyResolver(client.getDataStore()));
         }
         else {
             return new DefaultJwtAccountResolver(stormpathJwtSigningKeyResolver());

@@ -74,7 +74,7 @@ public class DefaultResourceConverter implements ResourceConverter {
 
         // Convert Stormpath Account to Okta User map
         if (resource instanceof Account) {
-            props = new LinkedHashMap<>(new OktaUserAccountConverter().toUser(props));
+            props = new LinkedHashMap<>(OktaUserAccountConverter.toUser(props));
         }
 
         return props;

@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class OktaAuthenticationProvider extends StormpathAuthenticationProvider {
 
-    final private Application application;
+    private final Application application;
 
     public OktaAuthenticationProvider(Application application) {
         super(application);
@@ -35,10 +35,7 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
 
         try {
             if (authentication instanceof ProviderAuthenticationToken) {
-
-                account = ((ProviderAuthenticationToken) authentication).getAccount();
                 returnToken = authentication;
-
             }
             else if (authentication instanceof JwtProviderAuthenticationToken) {
                 // FIXME: validate / exchange token
@@ -57,7 +54,7 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
 
                 } finally {
                     //Clear the request data to prevent later memory access
-//                            request.clear();
+                    request.clear();
                 }
 
             }
@@ -70,11 +67,6 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
                 msg = "Invalid login or password.";
             }
             throw new AuthenticationServiceException(msg, e);
-        }
-
-        if (returnToken == null) {
-            UserDetails userDetails = new User(account.getHref(), "", getGrantedAuthorities(account));
-            returnToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         }
 
         return returnToken;

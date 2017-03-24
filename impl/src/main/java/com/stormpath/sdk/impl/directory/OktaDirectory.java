@@ -20,6 +20,7 @@ import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.impl.provider.OktaProvider;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
@@ -136,7 +137,7 @@ public class OktaDirectory extends AbstractResource implements Directory {
 
     @Override
     public Account createAccount(CreateAccountRequest request) {
-        String usersHref = getHref() + "/api/v1/users";
+        String usersHref = getHref() + OktaApiPaths.USERS;
         final Account account = request.getAccount();
         return getDataStore().create(usersHref, account);
     }
@@ -193,7 +194,7 @@ public class OktaDirectory extends AbstractResource implements Directory {
 
     @Override
     public PasswordPolicy getPasswordPolicy() {
-        String passwordPolicyHref = getHref() + "/api/v1/policies?type=PASSWORD";
+        String passwordPolicyHref = getHref() + OktaApiPaths.API_V1 + "policies?type=PASSWORD";
         OktaPasswordPolicyList policies = getDataStore().getResource(passwordPolicyHref, OktaPasswordPolicyList.class);
         OktaPasswordPolicy oktaPasswordPolicy = policies.single();
         return transformOktaPasswordPolicy(oktaPasswordPolicy);

@@ -20,7 +20,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.api.ApiKeyResolver;
-import com.stormpath.sdk.impl.application.LocalApplication;
+import com.stormpath.sdk.impl.application.okta.OktaApplication;
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
@@ -66,7 +66,6 @@ import com.stormpath.sdk.resource.Saveable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -251,7 +250,7 @@ public class DefaultDataStore implements InternalDataStore {
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
 
         if ("local".equalsIgnoreCase(href) && clazz.isAssignableFrom(Application.class)) {
-            return (T) new LocalApplication(this);
+            return (T) new OktaApplication(this);
         }
 
         return getResource(href, clazz, (Map<String, Object>) null);
