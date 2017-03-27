@@ -16,6 +16,8 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.OAuthApplication;
+import com.stormpath.sdk.application.okta.OktaForgotPasswordRequest;
+import com.stormpath.sdk.application.okta.OktaForgotPasswordResult;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus;
 import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
@@ -51,6 +53,7 @@ import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticator
 import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
+import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
@@ -231,7 +234,16 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     @Override
     public PasswordResetToken sendPasswordResetEmail(String email) throws ResourceException {
-        throw new UnsupportedOperationException("sendPasswordResetEmail() method hasn't been implemented.");
+
+        OktaForgotPasswordRequest request = getDataStore().instantiate(OktaForgotPasswordRequest.class);
+        request.setUsername(email);
+        request.setFactorType("EMAIL");
+        request.setRelayState("/");
+
+        OktaForgotPasswordResult result = getDataStore().create(OktaApiPaths.PASSWORD_RECOVERY, request, OktaForgotPasswordResult.class);
+
+        return null;
+
     }
 
     @Override
