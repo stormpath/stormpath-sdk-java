@@ -21,6 +21,7 @@ import com.stormpath.sdk.servlet.config.ConfigResolver;
 import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
+import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 
@@ -39,10 +40,12 @@ public class CookieAuthenticationResultSaverFactory extends ConfigSingletonFacto
         CookieConfig accessTokenCookieConfig = config.getAccessTokenCookieConfig();
         CookieConfig refreshTokenCookieConfig = config.getRefreshTokenCookieConfig();
         Resolver<Boolean> secureCookieRequired = config.getInstance(COOKIE_SECURE_RESOLVER);
+        JwtSigningKeyResolver signingKeyResolver = config.getInstance(JwtSigningKeyResolver.class.getName()); // TODO: does this work?
         return new CookieAuthenticationResultSaver(
                 accessTokenCookieConfig,
                 refreshTokenCookieConfig,
-                secureCookieRequired
+                secureCookieRequired,
+                signingKeyResolver
         );
     }
 }

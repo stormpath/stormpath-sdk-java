@@ -169,6 +169,8 @@ import com.stormpath.spring.mvc.SpringView;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import com.stormpath.spring.mvc.VerifyControllerConfig;
 import com.stormpath.spring.util.SpringPatternMatcher;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -212,6 +214,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -755,7 +758,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             return new CookieAuthenticationResultSaver(
                 stormpathAccessTokenCookieConfig(),
                 stormpathRefreshTokenCookieConfig(),
-                stormpathSecureResolver()
+                stormpathSecureResolver(),
+                stormpathJwtSigningKeyResolver()
             );
         }
 
@@ -789,7 +793,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public JwtSigningKeyResolver stormpathJwtSigningKeyResolver() {
-        return new JwtTokenSigningKeyResolver();
+        if (oktaEnabled) {
+            return new JwtSigningKeyResolver() {
+                @Override
+                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result, SignatureAlgorithm alg) {
+                    throw new UnsupportedOperationException("getSigningKey() is not supported");
+                }
+
+                @Override
+                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims) {
+                    return client.instantiate(OktaSigningKeyResolver.class).resolveSigningKey(jwsHeader, claims);
+                }
+            };
+        } else {
+            return new JwtTokenSigningKeyResolver();
+        }
     }
 
     public RequestEventListener stormpathRequestEventListener() {

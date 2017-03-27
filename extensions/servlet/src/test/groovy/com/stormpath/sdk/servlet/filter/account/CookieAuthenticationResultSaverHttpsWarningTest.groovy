@@ -11,6 +11,7 @@ import org.testng.annotations.Test
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+import static org.easymock.EasyMock.createMock
 import static org.easymock.EasyMock.expect
 import static org.easymock.EasyMock.isA
 import static org.easymock.EasyMock.isNull
@@ -41,7 +42,7 @@ class CookieAuthenticationResultSaverHttpsWarningTest extends PowerMockTestCase 
         HttpServletRequest request = createMock(HttpServletRequest.class)
         CookieConfig accessTokenConfig = createMock(CookieConfig.class)
         CookieConfig refreshTokenConfig = createMock(CookieConfig.class)
-
+        JwtSigningKeyResolver signingKeyResolver = createMock(JwtSigningKeyResolver.class)
         def resolver = createMock(Resolver.class)
 
         expect(accessTokenConfig.isSecure()).andReturn(true)
@@ -50,13 +51,13 @@ class CookieAuthenticationResultSaverHttpsWarningTest extends PowerMockTestCase 
         expect(log.warn(isA(String)))
 
         replay LoggerFactory.class
-        replay log, request, accessTokenConfig, refreshTokenConfig, resolver
+        replay log, request, accessTokenConfig, refreshTokenConfig, resolver, signingKeyResolver
 
-        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver)
+        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver, signingKeyResolver)
         assertFalse saver.isCookieSecure(request, accessTokenConfig)
 
         verify LoggerFactory.class
-        verify log, request, accessTokenConfig, refreshTokenConfig, resolver
+        verify log, request, accessTokenConfig, refreshTokenConfig, resolver, signingKeyResolver
         reset LoggerFactory.class
     }
 }
