@@ -24,9 +24,9 @@ import java.security.spec.RSAPublicKeySpec;
 public class DefaultOktaSigningKeyResolver implements OktaSigningKeyResolver {
 
 
-    private final DataStore dataStore;
+    private final InternalDataStore dataStore;
 
-    public DefaultOktaSigningKeyResolver(DataStore dataStore) {
+    public DefaultOktaSigningKeyResolver(InternalDataStore dataStore) {
         this.dataStore = dataStore;
     }
 
