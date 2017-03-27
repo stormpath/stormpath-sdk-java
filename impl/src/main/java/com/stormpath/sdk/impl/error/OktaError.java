@@ -21,6 +21,7 @@ import com.stormpath.sdk.impl.resource.IntegerProperty;
 import com.stormpath.sdk.impl.resource.ListProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Collections;
 
 import java.io.Serializable;
 import java.util.List;
@@ -38,9 +39,10 @@ public class OktaError extends AbstractResource implements Error, Serializable {
     static final StringProperty ERROR_SUMMARY = new StringProperty("errorSummary");
     static final ListProperty ERROR_CAUSES = new ListProperty("errorCauses");
     static final StringProperty ERROR_ID = new StringProperty("errorId");
+    static final StringProperty ERROR = new StringProperty("error");
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-        STATUS, ERROR_CODE, ERROR_SUMMARY, ERROR_CAUSES, ERROR_ID
+        STATUS, ERROR_CODE, ERROR_SUMMARY, ERROR_CAUSES, ERROR_ID, ERROR
     );
 
     public OktaError(Map<String, Object> body) {
@@ -70,18 +72,21 @@ public class OktaError extends AbstractResource implements Error, Serializable {
     @Override
     @SuppressWarnings("unchecked")
     public String getMessage() {
-        List causes = getListProperty(ERROR_CAUSES.getName());
-        return ((Map<String, String>)causes.get(0)).get("errorSummary");
+        return getString(ERROR);
     }
 
     @Override
     public String getDeveloperMessage() {
-        return "";
+        return getString(ERROR);
     }
 
     @Override
     public String getMoreInfo() {
-        return getString(ERROR_SUMMARY);
+        List causes = getListProperty(ERROR_CAUSES.getName());
+        if (!Collections.isEmpty(causes)) {
+            return ((Map<String, String>) causes.get(0)).get("errorSummary");
+        }
+        return getDeveloperMessage();
     }
 
     @Override

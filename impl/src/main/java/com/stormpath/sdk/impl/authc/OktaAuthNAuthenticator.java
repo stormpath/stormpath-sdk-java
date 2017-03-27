@@ -7,6 +7,7 @@ import com.stormpath.sdk.application.okta.OktaTokenResponse;
 import com.stormpath.sdk.application.okta.OktaTokenRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
+import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.impl.application.okta.DefaultOktaSigningKeyResolver;
 import com.stormpath.sdk.impl.application.okta.OktaSigningKeyResolver;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -14,11 +15,13 @@ import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.resource.ResourceException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SigningKeyResolver;
+import org.omg.CORBA.DynAnyPackage.Invalid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,17 +49,7 @@ public class OktaAuthNAuthenticator {
 
     public AuthenticationResult authenticate(DefaultUsernamePasswordRequest request) {
 
-        // hit the oauth token endpoint
-        OktaTokenRequest tokenRequest = this.dataStore.instantiate(OktaTokenRequest.class)
-                .setPassword(new String(request.getCredentials()))
-                .setUsername(request.getPrincipals())
-                .setGrantType("password")
-                .setScope("offline_access");
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        final OktaTokenResponse oktaTokenResponse = this.dataStore.create("/oauth2/v1/token", tokenRequest, OktaTokenResponse.class, httpHeaders);
+        final OktaTokenResponse oktaTokenResponse = doAuthRequest(request);
 
         // validate the key we just received
         SigningKeyResolver keyResolver = dataStore.instantiate(OktaSigningKeyResolver.class);
@@ -88,10 +81,7 @@ public class OktaAuthNAuthenticator {
 
             @Override
             public ApiKey getApiKey() {
-                return ApiKeys.builder()
-                        .setId("foobar")
-                        .setSecret("barfoo")
-                        .build();
+                return null;
             }
 
             @Override
@@ -109,6 +99,58 @@ public class OktaAuthNAuthenticator {
                 return null;
             }
         };
+    }
+
+    private OktaTokenResponse doAuthRequest(DefaultUsernamePasswordRequest request) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // hit the oauth token endpoint
+        OktaTokenRequest tokenRequest = this.dataStore.instantiate(OktaTokenRequest.class)
+                .setPassword(new String(request.getCredentials()))
+                .setUsername(request.getPrincipals())
+                .setGrantType("password")
+                .setScope("offline_access");
+
+        try {
+
+            return this.dataStore.create("/oauth2/v1/token", tokenRequest, OktaTokenResponse.class, httpHeaders);
+        }
+        catch (final ResourceException e) {
+
+            throw  new ResourceException(new Error() {
+                @Override
+                public int getStatus() {
+                    return e.getStatus();
+                }
+
+                @Override
+                public int getCode() {
+                    return 0;
+                }
+
+                @Override
+                public String getMessage() {
+                    // TODO: i18n, configure error handler for this type of message?
+                    return "Invalid username or password.";
+                }
+
+                @Override
+                public String getDeveloperMessage() {
+                    return e.getDeveloperMessage();
+                }
+
+                @Override
+                public String getMoreInfo() {
+                    return e.getMoreInfo();
+                }
+
+                @Override
+                public String getRequestId() {
+                    return e.getRequestId();
+                }
+            });
+        }
     }
 
 }

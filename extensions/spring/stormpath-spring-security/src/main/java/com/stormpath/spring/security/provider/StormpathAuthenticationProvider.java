@@ -321,7 +321,7 @@ public class StormpathAuthenticationProvider implements AuthenticationProvider {
             account = application.authenticateAccount(request).getAccount();
         } finally {
             //Clear the request data to prevent later memory access
-//            request.clear();
+            request.clear();
         }
 
         return account;
