@@ -3,17 +3,17 @@ package com.stormpath.spring.security.provider;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.token.JwtProviderAuthenticationToken;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  *
@@ -21,10 +21,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class OktaAuthenticationProvider extends StormpathAuthenticationProvider {
 
     private final Application application;
+    private final Client client;
 
-    public OktaAuthenticationProvider(Application application) {
+    public OktaAuthenticationProvider(Application application, Client client) {
         super(application);
         this.application = application;
+        this.client = client;
     }
 
     @Override
@@ -38,7 +40,9 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
                 returnToken = authentication;
             }
             else if (authentication instanceof JwtProviderAuthenticationToken) {
-                // FIXME: validate / exchange token
+                // TODO: add tests around this flow
+                OktaAuthNAuthenticator authNAuthenticator = client.instantiate(OktaAuthNAuthenticator.class);
+                authNAuthenticator.assertValidAccessToken(((JwtProviderAuthenticationToken) authentication).getAccessToken());
                 return authentication;
             }
             else {
@@ -72,13 +76,10 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
         return returnToken;
     }
 
-
     @Override
     public boolean supports(Class<?> authentication) {
         if (super.supports(authentication)) return true;
         if (JwtProviderAuthenticationToken.class.isAssignableFrom(authentication)) return true;
         return false;
     }
-
-
 }

@@ -16,6 +16,8 @@
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver;
 import com.stormpath.spring.security.provider.AccountGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.AccountPermissionResolver;
@@ -47,6 +49,9 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
     @Autowired
     private Application application;
 
+    @Autowired
+    private Client client;
+
     public GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver() {
         return new DefaultGroupGrantedAuthorityResolver();
     }
@@ -72,7 +77,7 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
         StormpathAuthenticationProvider provider;
 
         if (oktaEnabled) {
-            provider = new OktaAuthenticationProvider(application);
+            provider = new OktaAuthenticationProvider(application, client);
         }
         else {
             provider = new StormpathAuthenticationProvider(application);

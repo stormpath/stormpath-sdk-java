@@ -32,25 +32,6 @@ public class DefaultIdSiteAuthenticatorFactory implements IdSiteAuthenticatorFac
 
     @Override
     public IdSiteAuthenticator forApplication(Application application) {
-
-        if (application instanceof OAuthApplication) {
-            return ((OAuthApplication) application).createIdSiteAuthenticator();
-        }
-
-        // FIXME: ugly ugly ugly
-        try {
-            Method dataStoreMethod = AbstractResource.class.getDeclaredMethod("getDataStore");
-            dataStoreMethod.setAccessible(true);
-            InternalDataStore internalDataStore = (InternalDataStore) dataStoreMethod.invoke(application);
-
-            return new DefaultIdSiteAuthenticator(application, internalDataStore);
-
-        } catch (NoSuchMethodException e) {
-            throw new UnsupportedOperationException("Could not get access to Application's 'dataStore'", e);
-        } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException("Could not get access to Application's 'dataStore'", e);
-        } catch (InvocationTargetException e) {
-            throw new UnsupportedOperationException("Could not get access to Application's 'dataStore'", e);
-        }
+        return ((OAuthApplication) application).createIdSiteAuthenticator();
     }
 }

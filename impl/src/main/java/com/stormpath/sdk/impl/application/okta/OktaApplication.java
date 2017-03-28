@@ -42,7 +42,7 @@ import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.application.DefaultApplicationAccountStoreMapping;
 import com.stormpath.sdk.impl.application.DefaultApplicationAccountStoreMappingList;
 import com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequest;
-import com.stormpath.sdk.impl.authc.OktaAuthNAuthenticator;
+import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
@@ -264,7 +264,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException {
 
-        return new OktaAuthNAuthenticator(getDataStore()).authenticate((DefaultUsernamePasswordRequest)request);
+        return new DefaultOktaAuthNAuthenticator(getDataStore()).authenticate((DefaultUsernamePasswordRequest)request);
     }
 
     @Override

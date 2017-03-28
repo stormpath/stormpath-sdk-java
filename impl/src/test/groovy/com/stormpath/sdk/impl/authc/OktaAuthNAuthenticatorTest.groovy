@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.*
 import static org.hamcrest.MatcherAssert.*
 
 /**
- * Tests for {@link OktaAuthNAuthenticator}.
+ * Tests for {@link DefaultOktaAuthNAuthenticator}.
  */
 class OktaAuthNAuthenticatorTest {
 
@@ -69,7 +69,7 @@ class OktaAuthNAuthenticatorTest {
 
         replay mockDataStore, oktaTokenRequest, oktaTokenResponse, signingKeyResolver
 
-        def authResult = new OktaAuthNAuthenticator(mockDataStore).authenticate(authRequest)
+        def authResult = new DefaultOktaAuthNAuthenticator(mockDataStore).authenticate(authRequest)
         assertThat authResult.getHref(), nullValue()
         assertThat authResult.getAccount(), sameInstance(account)
 
