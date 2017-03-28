@@ -32,6 +32,7 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
+import com.stormpath.sdk.servlet.application.okta.OktaJwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
@@ -827,7 +828,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public JwtAccountResolver stormpathJwtAccountResolver() {
         if (oktaEnabled) {
-            return new OktaJwtAccountResolver(client.instantiate(OktaSigningKeyResolver.class));
+            return new OktaJwtAccountResolver(new OktaJwtSigningKeyResolver(client.getDataStore()));
         }
         else {
             return new DefaultJwtAccountResolver(stormpathJwtSigningKeyResolver());

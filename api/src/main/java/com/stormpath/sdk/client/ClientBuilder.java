@@ -222,6 +222,7 @@ public interface ClientBuilder {
     String DEFAULT_CLIENT_PROXY_HOST_PROPERTY_NAME = "stormpath.client.proxy.host";
     String DEFAULT_CLIENT_PROXY_USERNAME_PROPERTY_NAME = "stormpath.client.proxy.username";
     String DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME = "stormpath.client.proxy.password";
+    String DEFAULT_OKTA_ENABLED_PROPERTY_NAME = "okta.enabled";
 
     /**
      * Allows specifying an {@code ApiKey} instance directly instead of relying on the

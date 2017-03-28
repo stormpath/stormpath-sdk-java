@@ -40,7 +40,7 @@ public class CookieAuthenticationResultSaverFactory extends ConfigSingletonFacto
         CookieConfig accessTokenCookieConfig = config.getAccessTokenCookieConfig();
         CookieConfig refreshTokenCookieConfig = config.getRefreshTokenCookieConfig();
         Resolver<Boolean> secureCookieRequired = config.getInstance(COOKIE_SECURE_RESOLVER);
-        JwtSigningKeyResolver signingKeyResolver = config.getInstance(JwtSigningKeyResolver.class.getName()); // TODO: does this work?
+        JwtSigningKeyResolver signingKeyResolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
         return new CookieAuthenticationResultSaver(
                 accessTokenCookieConfig,
                 refreshTokenCookieConfig,

@@ -21,19 +21,20 @@ import com.stormpath.sdk.servlet.config.ConfigSingletonFactory;
 import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
-import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
+import com.stormpath.sdk.servlet.filter.account.OktaJwtAccountResolver;
 
 import javax.servlet.ServletContext;
 
 /**
- * @since 1.0.RC3
+ *
  */
-public class JwtAccountResolverFactory extends ConfigSingletonFactory<JwtAccountResolver> {
+public class OktaJwtAccountResolverFactory extends ConfigSingletonFactory<JwtAccountResolver> {
 
     @Override
     protected JwtAccountResolver createInstance(ServletContext servletContext) throws Exception {
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
-        return new DefaultJwtAccountResolver(resolver);
+
+        return new OktaJwtAccountResolver(resolver);
     }
 }
