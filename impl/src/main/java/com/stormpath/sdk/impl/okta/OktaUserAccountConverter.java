@@ -1,6 +1,7 @@
 package com.stormpath.sdk.impl.okta;
 
 import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Objects;
 import com.stormpath.sdk.lang.Strings;
@@ -139,13 +140,11 @@ public final class OktaUserAccountConverter {
         }
 
         // _links.self.href -> href
-        Map<String, Object> linksMap = getPropertyMap(userMap,OKTA_LINKS);
-        if (!Collections.isEmpty(linksMap)) {
-            Map<String, Object> self = getPropertyMap(linksMap, OKTA_SELF);
-            if (!Collections.isEmpty(self)) {
-                nullSafePut(accountMap, STORMPATH_HREF, self.get(OKTA_HREF));
-            }
-        }
+        nullSafePut(accountMap, STORMPATH_HREF, getOktaHref(userMap));
+
+        Map<String, Object> groupsMap = new LinkedHashMap<>();
+        groupsMap.put(STORMPATH_HREF, accountMap.get(STORMPATH_HREF) + "/groups");
+        accountMap.put("groups", groupsMap);
 
         return accountMap;
     }
@@ -187,6 +186,19 @@ public final class OktaUserAccountConverter {
         }
 
         return userMap;
+    }
+
+    private static String getOktaHref(Map<String, Object> properties) {
+
+        // _links.self.href -> href
+        Map<String, Object> linksMap = getPropertyMap(properties,OKTA_LINKS);
+        if (!Collections.isEmpty(linksMap)) {
+            Map<String, Object> self = getPropertyMap(linksMap, OKTA_SELF);
+            if (!Collections.isEmpty(self)) {
+                return (String) self.get(OKTA_HREF);
+            }
+        }
+        return null;
     }
 
     private static String buildFullName(Object firstName, Object lastName) {
@@ -258,4 +270,32 @@ public final class OktaUserAccountConverter {
 
         return result;
     }
+
+    public static Map<String, Object> toStormpathGroup(Map<String, Object> oktaGroup) {
+
+        if (Collections.isEmpty(oktaGroup) || !oktaGroup.containsKey(OKTA_PROFILE)) {
+            return oktaGroup;
+        }
+
+        Map<String, Object> stormpathGroup = new LinkedHashMap<>();
+
+        nullSafePut(stormpathGroup, STORMPATH_CREATED_AT, oktaGroup.get(OKTA_CREATED));
+        nullSafePut(stormpathGroup, STORMPATH_MODIFIED_AT, oktaGroup.get(OKTA_LAST_UPDATED));
+
+        stormpathGroup.put(STORMPATH_STATUS, "ENABLED");
+
+        Map<String, Object> profile = getPropertyMap(oktaGroup, OKTA_PROFILE);
+        if (!Collections.isEmpty(profile)) {
+            nullSafePut(stormpathGroup, "name", profile.get("name"));
+            nullSafePut(stormpathGroup, "description", profile.get("description"));
+        }
+
+        // _links.self.href -> href
+        nullSafePut(stormpathGroup, STORMPATH_HREF, "/api/v1/groups/" + oktaGroup.get("id"));
+
+        stormpathGroup.put(STORMPATH_CUSTOM_DATA, new LinkedHashMap<String, Object>());
+
+        return stormpathGroup;
+    }
+
 }

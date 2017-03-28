@@ -23,6 +23,7 @@ import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.group.*;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
 import com.stormpath.sdk.impl.resource.AbstractExtendableInstanceResource;
 import com.stormpath.sdk.impl.resource.CollectionReference;
 import com.stormpath.sdk.impl.resource.Property;
@@ -64,7 +65,7 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
     }
 
     public DefaultGroup(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+        super(dataStore, OktaUserAccountConverter.toStormpathGroup(properties));
     }
 
     @Override
