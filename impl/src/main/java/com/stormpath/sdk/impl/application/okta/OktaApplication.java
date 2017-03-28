@@ -75,7 +75,10 @@ import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
 import com.stormpath.sdk.saml.SamlPolicy;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +87,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     private final Directory OKTA_TENANT_DIR;
 
-    private final ApplicationAccountStoreMappingList applicationAccountStoreMappingList;
+    private final ApplicationAccountStoreMappingCollectionBackedList applicationAccountStoreMappingList;
 
     private String name;
 
@@ -101,9 +104,14 @@ public class OktaApplication extends AbstractResource implements Application, OA
         mappingProperties.put("application", this);
         mappingProperties.put("accountStore", OKTA_TENANT_DIR);
 
-        ApplicationAccountStoreMapping mapping = new DefaultApplicationAccountStoreMapping(dataStore, mappingProperties);
-
-        applicationAccountStoreMappingList = AbstractCollectionResource.singletonCollectionResource(dataStore, DefaultApplicationAccountStoreMappingList.class, mapping);
+        ApplicationAccountStoreMapping mapping = new DefaultApplicationAccountStoreMapping(dataStore, mappingProperties) {
+            @Override
+            public AccountStore getAccountStore() {
+                return OKTA_TENANT_DIR;
+            }
+        };
+        mapping.setAccountStore(OKTA_TENANT_DIR);
+        applicationAccountStoreMappingList = new ApplicationAccountStoreMappingCollectionBackedList(Collections.singletonList(mapping));
     }
 
     @Override
@@ -576,5 +584,53 @@ public class OktaApplication extends AbstractResource implements Application, OA
     @Override
     public OAuthTokenRevocator createOAuhtTokenRevocator() {
         return new DefaultOAuthTokenRevocator(this, getDataStore(), "/oauth2/v1/token");
+    }
+
+
+    public static class ApplicationAccountStoreMappingCollectionBackedList implements ApplicationAccountStoreMappingList {
+
+        final private Collection<ApplicationAccountStoreMapping> accountStoreMappings;
+
+        public ApplicationAccountStoreMappingCollectionBackedList(Collection<ApplicationAccountStoreMapping> accountStoreMappings) {
+            this.accountStoreMappings = accountStoreMappings;
+        }
+
+        @Override
+        public String getHref() {
+            return null;
+        }
+
+        @Override
+        public int getOffset() {
+            return 0;
+        }
+
+        @Override
+        public int getLimit() {
+            return getSize();
+        }
+
+        @Override
+        public int getSize() {
+            return accountStoreMappings.size();
+        }
+
+        @Override
+        public ApplicationAccountStoreMapping single() {
+            Iterator<ApplicationAccountStoreMapping> iterator = iterator();
+            if (!iterator.hasNext()) {
+                throw new IllegalStateException("This list is empty while it was expected to contain one (and only one) element.");
+            }
+            ApplicationAccountStoreMapping itemToReturn = iterator.next();
+            if (iterator.hasNext()) {
+                throw new IllegalStateException("Only a single resource was expected, but this list contains more than one item.");
+            }
+            return itemToReturn;
+        }
+
+        @Override
+        public Iterator<ApplicationAccountStoreMapping> iterator() {
+            return accountStoreMappings.iterator();
+        }
     }
 }
