@@ -369,30 +369,7 @@ public class StormpathHttpServletRequest extends HttpServletRequestWrapper {
             throw ex;
         }
 
-        AccessTokenResult result;
-        try {
-            OAuthPasswordGrantRequestAuthenticationBuilder requestBuilder = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
-                    .setPassword(password)
-                    .setLogin(username);
-
-            AccountStore accountStore = authcRequest.getAccountStore();
-
-            if (accountStore != null) {
-                requestBuilder.setAccountStore(accountStore);
-            }
-
-            OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR
-                    .forApplication(getApplication())
-                    .authenticate(requestBuilder.build());
-
-            result = createAccessTokenResult(authenticationResult);
-        } catch (ResourceException e) {
-            FailedAuthenticationRequestEvent evt = createEvent(authcRequest, e);
-            publish(evt);
-
-            String msg = "Unable to authenticate account for submitted username [" + username + "].";
-            throw new ServletException(msg, e);
-        }
+        AccessTokenResult result = (AccessTokenResult) this.getApplication().authenticateAccount(authcRequest);
 
         setAttribute(StormpathHttpServletRequest.AUTH_TYPE_REQUEST_ATTRIBUTE_NAME, "LOGIN_METHOD");
 

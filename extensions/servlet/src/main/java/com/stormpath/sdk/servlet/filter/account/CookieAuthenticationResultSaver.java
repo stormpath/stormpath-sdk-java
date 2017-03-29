@@ -39,6 +39,8 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SigningKeyResolver;
+import io.jsonwebtoken.SigningKeyResolverAdapter;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.slf4j.Logger;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.security.Key;
 import java.util.Date;
 
 /**
@@ -65,15 +68,19 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
     private final CookieConfig accessTokenCookieConfig;
     private final CookieConfig refreshTokenCookieConfig;
 
+    private final JwtSigningKeyResolver signingKeyResolver;
+
     public CookieAuthenticationResultSaver(CookieConfig accessTokenCookieConfig,
                                            CookieConfig refreshTokenCookieConfig,
-                                           Resolver<Boolean> secureCookieRequired) {
+                                           Resolver<Boolean> secureCookieRequired,
+                                           JwtSigningKeyResolver signingKeyResolver) {
         Assert.notNull(accessTokenCookieConfig, "accessTokenCookieConfig cannot be null.");
         Assert.notNull(refreshTokenCookieConfig, "refreshTokenCookieConfig cannot be null.");
         Assert.notNull(secureCookieRequired, "secureCookieRequired cannot be null.");
         this.accessTokenCookieConfig = accessTokenCookieConfig;
         this.refreshTokenCookieConfig = refreshTokenCookieConfig;
         this.secureCookieRequired = secureCookieRequired;
+        this.signingKeyResolver = signingKeyResolver;
     }
 
     @Override
@@ -93,10 +100,10 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             String accessToken = accessTokenResult.getTokenResponse().getAccessToken();
             String refreshToken = accessTokenResult.getTokenResponse().getRefreshToken();
 
-            getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret, accessTokenCookieConfig)).set(request, response, accessToken);
+            getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret, accessTokenCookieConfig, request, response)).set(request, response, accessToken);
             //Client Credentials auth workflow doesn't contains a refresh token
             if (Strings.hasText(refreshToken)) {
-                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret, refreshTokenCookieConfig)).set(request, response, refreshToken);
+                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret, refreshTokenCookieConfig, request, response)).set(request, response, refreshToken);
             }
         }
         if (value instanceof TransientAuthenticationResult) {
@@ -121,8 +128,8 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
                 String accessToken = authenticationResult.getAccessTokenString();
                 String refreshToken = authenticationResult.getRefreshTokenString();
 
-                getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret, accessTokenCookieConfig)).set(request, response, accessToken);
-                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret, refreshTokenCookieConfig)).set(request, response, refreshToken);
+                getAccessTokenCookieSaver(request, getMaxAge(accessToken, clientSecret, accessTokenCookieConfig, request, response)).set(request, response, accessToken);
+                getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret, refreshTokenCookieConfig, request, response)).set(request, response, refreshToken);
             } catch (UnsupportedEncodingException e) {
                 //Should not happen since UTF-8 should always be a supported encoding, but we logged just in case
                 log.error("Error get the client API Secret", e);
@@ -254,18 +261,28 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
         });
     }
 
-    private int getMaxAge(String token, byte[] clientSecret, CookieConfig cookieConfig) {
+    private int getMaxAge(String token, byte[] clientSecret, CookieConfig cookieConfig, HttpServletRequest request, HttpServletResponse response) {
         // non-zero indicates override from cookie config
-        if (cookieConfig.getMaxAge() != 0) {
+        if (cookieConfig.getMaxAge() != 0 || token.split("\\.").length != 3) {
             return cookieConfig.getMaxAge();
         }
 
         // otherwise, use the claims in the JWT to determine maxAge
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(clientSecret).parseClaimsJws(token);
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKeyResolver(createKeyResolver(request, response)).parseClaimsJws(token);
         DateTime issueAt = new DateTime(claimsJws.getBody().getIssuedAt());
         DateTime expiration = new DateTime(claimsJws.getBody().getExpiration());
 
 
         return Seconds.secondsBetween(issueAt, expiration).getSeconds() - Seconds.secondsBetween(issueAt, DateTime.now()).getSeconds();
+    }
+
+    private SigningKeyResolver createKeyResolver(final HttpServletRequest request, final HttpServletResponse response) {
+        return new SigningKeyResolverAdapter() {
+
+            @Override
+            public Key resolveSigningKey(JwsHeader header, Claims claims) {
+                return signingKeyResolver.getSigningKey(request, response, header, claims);
+            }
+        };
     }
 }

@@ -1,6 +1,7 @@
 package com.stormpath.sdk.impl.okta;
 
 import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Objects;
 import com.stormpath.sdk.lang.Strings;
@@ -12,7 +13,7 @@ import java.util.Map;
 /**
  * Converts between Okta User map and Stormpath Account Map.
  */
-public class OktaUserAccountConverter {
+public final class OktaUserAccountConverter {
 
     // https://docs.stormpath.com/rest/product-guide/latest/reference.html#account
 
@@ -68,7 +69,44 @@ public class OktaUserAccountConverter {
 
     */
 
-    public Map<String, Object> toAccount(Map<String, Object> userMap) {
+
+    private static final String STORMPATH_EMAIL = "email";
+    private static final String STORMPATH_HREF = "href";
+    private static final String STORMPATH_USERNAME = "username";
+    private static final String STORMPATH_PASSWORD = "password";
+    private static final String STORMPATH_GIVEN_NAME = "givenName";
+    private static final String STORMPATH_MIDDLE_NAME = "middleName";
+    private static final String STORMPATH_SURNAME = "surname";
+    private static final String STORMPATH_FULL_NAME = "fullName";
+    private static final String STORMPATH_CREATED_AT = "createdAt";
+    private static final String STORMPATH_MODIFIED_AT = "modifiedAt";
+    private static final String STORMPATH_PASSWORD_MODIFIED_AT = "passwordModifiedAt";
+    private static final String STORMPATH_STATUS = "status";
+
+    private static final String STORMPATH_CUSTOM_DATA = "customData";
+
+    private static final String OKTA_ID = "id";
+    private static final String OKTA_PROFILE = "profile";
+    private static final String OKTA_LOGIN = "login";
+    private static final String OKTA_EMAIL = "email";
+    private static final String OKTA_FIRST_NAME = "firstName";
+    private static final String OKTA_MIDDLE_NAME = "middleName";
+    private static final String OKTA_LAST_NAME = "lastName";
+    private static final String OKTA_CREATED = "created";
+    private static final String OKTA_LAST_UPDATED = "lastUpdated";
+    private static final String OKTA_PASSEWORD_CHANGED = "passwordChanged";
+    private static final String OKTA_STATUS = "status";
+    private static final String OKTA_LINKS = "_links";
+    private static final String OKTA_SELF = "self";
+    private static final String OKTA_HREF = "href";
+
+    private static final String OKTA_CREDENTIALS = "credentials";
+    private static final String OKTA_PASSWORD = "password";
+    private static final String OKTA_VALUE = "value";
+
+    private OktaUserAccountConverter() {}
+
+    public static Map<String, Object> toAccount(Map<String, Object> userMap, String baseUrl) {
 
         // quick hack to make existing tests work.
         // if the UserMap does NOT contain an 'id' field, just assume the map is already an account.
@@ -77,98 +115,108 @@ public class OktaUserAccountConverter {
         }
 
         Map<String, Object> accountMap = new LinkedHashMap<>();
-        Map<String, Object> profileMap = (Map<String, Object>) userMap.get("profile");
+        nullSafePut(accountMap, STORMPATH_HREF, baseUrl + OktaApiPaths.USERS + userMap.get(OKTA_ID));
+        Map<String, Object> profileMap = getPropertyMap(userMap, OKTA_PROFILE);
 
         if (!Collections.isEmpty(profileMap)) {
-            nullSafePut(accountMap, "username", profileMap.get("login"));
-            nullSafePut(accountMap, "email", profileMap.get("email"));
-
-            nullSafePut(accountMap, "givenName", profileMap.get("firstName"));
-            nullSafePut(accountMap, "middleName", profileMap.get("middleName"));
-            nullSafePut(accountMap, "surname", profileMap.get("lastName"));
-            nullSafePut(accountMap, "fullName", profileMap.get("firstName") + " " + profileMap.get("lastName")); // TODO: add null/format checks needed here
-
-            nullSafePut(accountMap, "customData", trimMap(profileMap, "login", "email", "firstName", "middleName", "lastName"));
+            nullSafePut(accountMap, STORMPATH_USERNAME, profileMap.get(OKTA_LOGIN));
+            nullSafePut(accountMap, STORMPATH_EMAIL, profileMap.get(OKTA_EMAIL));
+            nullSafePut(accountMap, STORMPATH_GIVEN_NAME, profileMap.get(OKTA_FIRST_NAME));
+            nullSafePut(accountMap, STORMPATH_MIDDLE_NAME, profileMap.get(OKTA_MIDDLE_NAME));
+            nullSafePut(accountMap, STORMPATH_SURNAME, profileMap.get(OKTA_LAST_NAME));
+            // build full name
+            nullSafePut(accountMap, STORMPATH_FULL_NAME, buildFullName(profileMap.get(OKTA_FIRST_NAME), profileMap.get(OKTA_LAST_NAME)));
+            // everything not in this lis is considered customData
+            nullSafePut(accountMap, STORMPATH_CUSTOM_DATA, trimMap(profileMap, OKTA_LOGIN, OKTA_EMAIL, OKTA_FIRST_NAME, OKTA_MIDDLE_NAME, OKTA_LAST_NAME));
         }
 
-        nullSafePut(accountMap, "createdAt", userMap.get("created"));
-        nullSafePut(accountMap, "modifiedAt", userMap.get("lastUpdated"));
-        nullSafePut(accountMap, "passwordModifiedAt", profileMap.get("passwordChanged"));
+        nullSafePut(accountMap, STORMPATH_CREATED_AT, userMap.get(OKTA_CREATED));
+        nullSafePut(accountMap, STORMPATH_MODIFIED_AT, userMap.get(OKTA_LAST_UPDATED));
+        nullSafePut(accountMap, STORMPATH_PASSWORD_MODIFIED_AT, profileMap.get(OKTA_PASSEWORD_CHANGED));
 
         // UserStatus -> AccountStatus enum conversion
-        if (userMap.containsKey("status")) {
-            accountMap.put("status", fromUserStatus(userMap.get("status")));
+        if (userMap.containsKey(OKTA_STATUS)) {
+            accountMap.put(STORMPATH_STATUS, fromUserStatus(userMap.get(OKTA_STATUS)));
         }
 
         // _links.self.href -> href
-        Map<String, Object> linksMap = (Map<String, Object>) userMap.get("_links");
-        if (!Collections.isEmpty(linksMap)) {
-            Map<String, Object> self = (Map<String, Object>) linksMap.get("self");
-            if (!Collections.isEmpty(self)) {
-                nullSafePut(accountMap, "href", self.get("href"));
-            }
-        }
+        nullSafePut(accountMap, STORMPATH_HREF, getOktaHref(userMap));
 
-        // pretty sure this logic is NOT needed when mapping User -> Account
-//        Map<String, Object> credentialsMap = (Map<String, Object>) userMap.get("credentials");
-//        if (!Collections.isEmpty(profileMap)) {
-//            Map<String, Object> passwordMap = (Map<String, Object>) userMap.get("password");
-//            if (!Collections.isEmpty(passwordMap) ) {
-//                nullSafePut(accountMap, "password", profileMap.get("value"));
-//            }
-//        }
+        Map<String, Object> groupsMap = new LinkedHashMap<>();
+        groupsMap.put(STORMPATH_HREF, accountMap.get(STORMPATH_HREF) + "/groups");
+        accountMap.put("groups", groupsMap);
 
         return accountMap;
     }
 
-    public Map<String, Object> toUser(Map<String, Object> accountMap) {
+    public static Map<String, Object> toUser(Map<String, Object> accountMap) {
 
         Map<String, Object> userMap = new LinkedHashMap<>();
         Map<String, Object> profileMap = new LinkedHashMap<>();
-        userMap.put("profile", profileMap);
+        userMap.put(OKTA_PROFILE, profileMap);
 
-        String username = (String) accountMap.get("username");
+        String username = (String) accountMap.get(STORMPATH_USERNAME);
         if (!Strings.hasText(username)) {
-            username = (String) accountMap.get("email");
+            username = (String) accountMap.get(STORMPATH_EMAIL);
         }
-        nullSafePut(profileMap, "login", username);
-        nullSafePut(profileMap, "email", accountMap.get("email"));
+        nullSafePut(profileMap, OKTA_LOGIN, username);
+        nullSafePut(profileMap, OKTA_EMAIL, accountMap.get(STORMPATH_EMAIL));
+        nullSafePut(profileMap, OKTA_FIRST_NAME, accountMap.get(STORMPATH_GIVEN_NAME));
+        nullSafePut(profileMap, OKTA_MIDDLE_NAME, accountMap.get(STORMPATH_MIDDLE_NAME));
+        nullSafePut(profileMap, OKTA_LAST_NAME, accountMap.get(STORMPATH_SURNAME));
 
-        nullSafePut(profileMap, "firstName", accountMap.get("givenName"));
-        nullSafePut(profileMap, "middleName", accountMap.get("middleName"));
-        nullSafePut(profileMap, "lastName", accountMap.get("surname"));
-//        nullSafePut(userMap, "displayName", accountMap.get("fullName")); // generated field from Stormpath
-        nullSafePut(userMap, "created", accountMap.get("createdAt"));
-        nullSafePut(userMap, "lastUpdated", accountMap.get("modifiedAt"));
-        nullSafePut(userMap, "passwordChanged", accountMap.get("passwordModifiedAt"));
+        nullSafePut(userMap, OKTA_CREATED, accountMap.get(STORMPATH_CREATED_AT));
+        nullSafePut(userMap, OKTA_LAST_UPDATED, accountMap.get(STORMPATH_MODIFIED_AT));
+        nullSafePut(userMap, OKTA_PASSEWORD_CHANGED, accountMap.get(STORMPATH_PASSWORD_MODIFIED_AT));
 
         // credentials
-        if (accountMap.containsKey("password")) {
+        if (accountMap.containsKey(STORMPATH_PASSWORD)) {
 
             Map<String, Object> credentialsMap = new LinkedHashMap<>();
             Map<String, Object> passwordMap = new LinkedHashMap<>();
 
-            userMap.put("credentials", credentialsMap);
-            credentialsMap.put("password", passwordMap);
-            passwordMap.put("value", accountMap.get("password"));
+            userMap.put(OKTA_CREDENTIALS, credentialsMap);
+            credentialsMap.put(OKTA_PASSWORD, passwordMap);
+            passwordMap.put(OKTA_VALUE, accountMap.get(STORMPATH_PASSWORD));
         }
 
         // custom data, just drop it in profile map
-        if (accountMap.containsKey("customData")) {
-            profileMap.putAll((Map<String, Object>) accountMap.get("customData"));
+        if (accountMap.containsKey(STORMPATH_CUSTOM_DATA)) {
+            profileMap.putAll(getPropertyMap(accountMap, STORMPATH_CUSTOM_DATA));
         }
 
         return userMap;
     }
 
-    private void nullSafePut(Map<String, Object> map, String key, Object value) {
+    private static String getOktaHref(Map<String, Object> properties) {
+
+        // _links.self.href -> href
+        Map<String, Object> linksMap = getPropertyMap(properties,OKTA_LINKS);
+        if (!Collections.isEmpty(linksMap)) {
+            Map<String, Object> self = getPropertyMap(linksMap, OKTA_SELF);
+            if (!Collections.isEmpty(self)) {
+                return (String) self.get(OKTA_HREF);
+            }
+        }
+        return null;
+    }
+
+    private static String buildFullName(Object firstName, Object lastName) {
+        return (Objects.getDisplayString(firstName) + " " + Objects.getDisplayString(lastName)).trim();
+    }
+
+    private static Map<String, Object> getPropertyMap(Map<String, Object> map, String key) {
+        return (Map<String, Object>) map.get(key);
+    }
+
+    private static void nullSafePut(Map<String, Object> map, String key, Object value) {
 
         if (value != null) {
             map.put(key, value);
         }
     }
 
-    private String fromUserStatus(Object userStatusRaw) {
+    private static String fromUserStatus(Object userStatusRaw) {
 
         UserStatus userStatus = UserStatus.valueOf(Objects.nullSafeToString(userStatusRaw));
         AccountStatus accountStatus;
@@ -213,7 +261,7 @@ public class OktaUserAccountConverter {
      * @param keys keys to remove from original map
      * @return new map based on previous with all <code>keys</code> removed.
      */
-    private Map<String, Object> trimMap(Map<String, Object> map, String... keys) {
+    private static Map<String, Object> trimMap(Map<String, Object> map, String... keys) {
 
         Map<String, Object> result = new LinkedHashMap<>(map);
         for (String key : keys) {
@@ -222,4 +270,32 @@ public class OktaUserAccountConverter {
 
         return result;
     }
+
+    public static Map<String, Object> toStormpathGroup(Map<String, Object> oktaGroup) {
+
+        if (Collections.isEmpty(oktaGroup) || !oktaGroup.containsKey(OKTA_PROFILE)) {
+            return oktaGroup;
+        }
+
+        Map<String, Object> stormpathGroup = new LinkedHashMap<>();
+
+        nullSafePut(stormpathGroup, STORMPATH_CREATED_AT, oktaGroup.get(OKTA_CREATED));
+        nullSafePut(stormpathGroup, STORMPATH_MODIFIED_AT, oktaGroup.get(OKTA_LAST_UPDATED));
+
+        stormpathGroup.put(STORMPATH_STATUS, "ENABLED");
+
+        Map<String, Object> profile = getPropertyMap(oktaGroup, OKTA_PROFILE);
+        if (!Collections.isEmpty(profile)) {
+            nullSafePut(stormpathGroup, "name", profile.get("name"));
+            nullSafePut(stormpathGroup, "description", profile.get("description"));
+        }
+
+        // _links.self.href -> href
+        nullSafePut(stormpathGroup, STORMPATH_HREF, "/api/v1/groups/" + oktaGroup.get("id"));
+
+        stormpathGroup.put(STORMPATH_CUSTOM_DATA, new LinkedHashMap<String, Object>());
+
+        return stormpathGroup;
+    }
+
 }

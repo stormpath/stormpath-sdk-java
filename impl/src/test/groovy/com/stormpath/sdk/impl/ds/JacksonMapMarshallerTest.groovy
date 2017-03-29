@@ -99,7 +99,7 @@ class JacksonMapMarshallerTest {
 
         def objectMapper = createMock(ObjectMapper)
         def inputStream = createMock(InputStream)
-        expect(objectMapper.readValue((InputStream)eq(inputStream), (TypeReference)isA(TypeReference)))
+        expect(objectMapper.readValue((InputStream)eq(inputStream), (Class)eq(Object.class)))
             .andAnswer(new IAnswer<Map>() {
                 @Override
                 Map answer() throws Throwable {

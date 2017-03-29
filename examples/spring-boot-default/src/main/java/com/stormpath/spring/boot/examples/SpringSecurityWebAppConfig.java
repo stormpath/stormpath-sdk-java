@@ -15,6 +15,12 @@
  */
 package com.stormpath.spring.boot.examples;
 
+import com.stormpath.sdk.authc.AuthenticationResult;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.servlet.http.Saver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -24,6 +30,19 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  */
 @Configuration
 public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("#{ @environment['stormpath.web.login.nextUri'] ?: '/' }")
+    protected String loginNextUri;
+
+    @Value("#{ @environment['stormpath.web.produces'] ?: 'application/json, text/html' }")
+    protected String produces;
+
+    @Autowired
+    @Qualifier("stormpathAuthenticationResultSaver")
+    protected Saver<AuthenticationResult> authenticationResultSaver; //provided by stormpath-spring-webmvc
+
+    @Autowired
+    protected Client client;
 
     /**
      * {@inheritDoc}

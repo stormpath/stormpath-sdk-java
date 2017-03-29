@@ -17,12 +17,12 @@ package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.resource.*;
+import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
+import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.impl.resource.ResourceReference;
+import com.stormpath.sdk.impl.resource.StringProperty;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.oauth.OAuthPolicy;
-import com.stormpath.sdk.oauth.openidconnect.Scope;
-import com.stormpath.sdk.oauth.openidconnect.ScopeList;
-import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Map;
@@ -35,23 +35,16 @@ public class DefaultOAuthPolicy extends AbstractInstanceResource implements OAut
     // SIMPLE PROPERTIES
     static final StringProperty ACCESS_TOKEN_TTL = new StringProperty("accessTokenTtl");
     static final StringProperty REFRESH_TOKEN_TTL = new StringProperty("refreshTokenTtl");
-    static final StringProperty ID_TOKEN_TTL = new StringProperty("idTokenTtl");
 
     static final StringProperty TOKEN_ENDPOINT = new StringProperty("tokenEndpoint");
     static final StringProperty REVOCATION_ENDPOINT = new StringProperty("revocationEndpoint");
-
-    static final CollectionReference<ScopeList, Scope> SCOPES =
-            new CollectionReference<>("scopes", ScopeList.class, Scope.class);
-
-    static final MapProperty ACCESS_TOKEN_ATTRIBUTE_MAPPINGS = new MapProperty("accessTokenAttributeMappings");
-    static final MapProperty ID_TOKEN_ATTRIBUTE_MAPPINGS = new MapProperty("idTokenAttributeMappings");
 
     // INSTANCE RESOURCE REFERENCES:
     static final ResourceReference<Application> APPLICATION = new ResourceReference<Application>("application", Application.class);
     static final ResourceReference<Tenant> TENANT = new ResourceReference<Tenant>("tenant", Tenant.class);
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(
-            ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL, ID_TOKEN_TTL, TOKEN_ENDPOINT, SCOPES, ACCESS_TOKEN_ATTRIBUTE_MAPPINGS, ID_TOKEN_ATTRIBUTE_MAPPINGS, APPLICATION, TENANT);
+            ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL, TOKEN_ENDPOINT, APPLICATION, TENANT);
 
     @Override
     public Map<String, Property> getPropertyDescriptors() {
@@ -77,9 +70,6 @@ public class DefaultOAuthPolicy extends AbstractInstanceResource implements OAut
     }
 
     @Override
-    public String getIdTokenTtl() { return getString(ID_TOKEN_TTL); }
-
-    @Override
     public String getTokenEndpoint() {
         return getString(TOKEN_ENDPOINT);
     }
@@ -100,46 +90,6 @@ public class DefaultOAuthPolicy extends AbstractInstanceResource implements OAut
     public OAuthPolicy setRefreshTokenTtl(String refreshTokenTtl) {
         Assert.notNull(refreshTokenTtl, "refreshTokenTtl cannot be null.");
         setProperty(REFRESH_TOKEN_TTL, refreshTokenTtl);
-        return this;
-    }
-
-    @Override
-    public OAuthPolicy setIdTokenTtl(String idTokenTtl) {
-        Assert.notNull(idTokenTtl, "idTokenTtl cannot be null.");
-        setProperty(ID_TOKEN_TTL, idTokenTtl);
-        return this;
-    }
-
-    @Override
-    public Scope createScope(Scope scope) throws ResourceException {
-        Assert.notNull(scope, "Scope instance cannot be null.");
-        return getDataStore().create(getScopes().getHref(), scope);
-    }
-
-    @Override
-    public ScopeList getScopes() {
-        return getResourceProperty(SCOPES);
-    }
-
-    @Override
-    public Map<String, String> getAccessTokenAttributeMap() {
-        return getMap(ACCESS_TOKEN_ATTRIBUTE_MAPPINGS);
-    }
-
-    @Override
-    public OAuthPolicy setAccessTokenAttributeMap(Map<String, String> accessTokenAttributeMap) {
-        setProperty(ACCESS_TOKEN_ATTRIBUTE_MAPPINGS, accessTokenAttributeMap);
-        return this;
-    }
-
-    @Override
-    public Map<String, String> getIdTokenAttributeMap() {
-        return getMap(ID_TOKEN_ATTRIBUTE_MAPPINGS);
-    }
-
-    @Override
-    public OAuthPolicy setIdTokenAttributeMap(Map<String, String> idTokenAttributeMap) {
-        setProperty(ID_TOKEN_ATTRIBUTE_MAPPINGS, idTokenAttributeMap);
         return this;
     }
 

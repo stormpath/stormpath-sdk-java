@@ -22,6 +22,7 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
+import com.stormpath.sdk.impl.application.okta.OktaSigningKeyResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
@@ -31,6 +32,7 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
+import com.stormpath.sdk.servlet.application.okta.OktaJwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
@@ -72,6 +74,7 @@ import com.stormpath.sdk.servlet.filter.account.CookieAuthenticationResultSaver;
 import com.stormpath.sdk.servlet.filter.account.DefaultJwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
+import com.stormpath.sdk.servlet.filter.account.OktaJwtAccountResolver;
 import com.stormpath.sdk.servlet.filter.mvc.ControllerFilter;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.AccessTokenResultFactory;
@@ -167,6 +170,8 @@ import com.stormpath.spring.mvc.SpringView;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import com.stormpath.spring.mvc.VerifyControllerConfig;
 import com.stormpath.spring.util.SpringPatternMatcher;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,6 +215,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -419,6 +425,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['stormpath.web.cors.allow.credentials'] ?: true }")
     protected boolean corsAllowCredentials;
+
+    @Value("#{ @environment['okta.enabled'] ?: true }")
+    protected boolean oktaEnabled;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -750,7 +759,8 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             return new CookieAuthenticationResultSaver(
                 stormpathAccessTokenCookieConfig(),
                 stormpathRefreshTokenCookieConfig(),
-                stormpathSecureResolver()
+                stormpathSecureResolver(),
+                stormpathJwtSigningKeyResolver()
             );
         }
 
@@ -784,7 +794,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public JwtSigningKeyResolver stormpathJwtSigningKeyResolver() {
-        return new JwtTokenSigningKeyResolver();
+        if (oktaEnabled) {
+            return new JwtSigningKeyResolver() {
+                @Override
+                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result, SignatureAlgorithm alg) {
+                    throw new UnsupportedOperationException("getSigningKey() is not supported");
+                }
+
+                @Override
+                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims) {
+                    return client.instantiate(OktaSigningKeyResolver.class).resolveSigningKey(jwsHeader, claims);
+                }
+            };
+        } else {
+            return new JwtTokenSigningKeyResolver();
+        }
     }
 
     public RequestEventListener stormpathRequestEventListener() {
@@ -803,7 +827,12 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public JwtAccountResolver stormpathJwtAccountResolver() {
-        return new DefaultJwtAccountResolver(stormpathJwtSigningKeyResolver());
+        if (oktaEnabled) {
+            return new OktaJwtAccountResolver(new OktaJwtSigningKeyResolver(client.getDataStore()));
+        }
+        else {
+            return new DefaultJwtAccountResolver(stormpathJwtSigningKeyResolver());
+        }
     }
 
     public Cache<String, String> stormpathNonceCache() {
@@ -1225,6 +1254,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public Controller stormpathRevokeTokenController() {
         RevokeTokenController c = new RevokeTokenController();
         c.setApplicationResolver(stormpathApplicationResolver());
+        c.setAuthenticationResultSaver(stormpathAuthenticationResultSaver());
         return init(c);
     }
 

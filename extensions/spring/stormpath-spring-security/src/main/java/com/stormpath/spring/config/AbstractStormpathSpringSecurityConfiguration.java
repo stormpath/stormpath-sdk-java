@@ -16,6 +16,8 @@
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.spring.security.provider.AccountCustomDataPermissionResolver;
 import com.stormpath.spring.security.provider.AccountGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.AccountPermissionResolver;
@@ -25,9 +27,11 @@ import com.stormpath.spring.security.provider.EmptyAccountGrantedAuthorityResolv
 import com.stormpath.spring.security.provider.GroupCustomDataPermissionResolver;
 import com.stormpath.spring.security.provider.GroupGrantedAuthorityResolver;
 import com.stormpath.spring.security.provider.GroupPermissionResolver;
+import com.stormpath.spring.security.provider.OktaAuthenticationProvider;
 import com.stormpath.spring.security.provider.StormpathAuthenticationProvider;
 import com.stormpath.spring.security.provider.UsernamePasswordAuthenticationTokenFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -39,8 +43,14 @@ import java.util.Arrays;
  */
 public abstract class AbstractStormpathSpringSecurityConfiguration {
 
+    @Value("#{ @environment['okta.enabled'] ?: true }")
+    protected boolean oktaEnabled;
+
     @Autowired
     private Application application;
+
+    @Autowired
+    private Client client;
 
     public GroupGrantedAuthorityResolver stormpathGroupGrantedAuthorityResolver() {
         return new DefaultGroupGrantedAuthorityResolver();
@@ -64,7 +74,15 @@ public abstract class AbstractStormpathSpringSecurityConfiguration {
 
     public AuthenticationProvider stormpathAuthenticationProvider() {
 
-        StormpathAuthenticationProvider provider = new StormpathAuthenticationProvider(application);
+        StormpathAuthenticationProvider provider;
+
+        if (oktaEnabled) {
+            provider = new OktaAuthenticationProvider(application, client);
+        }
+        else {
+            provider = new StormpathAuthenticationProvider(application);
+        }
+
         provider.setGroupGrantedAuthorityResolver(stormpathGroupGrantedAuthorityResolver());
         provider.setGroupPermissionResolver(stormpathGroupPermissionResolver());
         provider.setAccountGrantedAuthorityResolver(stormpathAccountGrantedAuthorityResolver());

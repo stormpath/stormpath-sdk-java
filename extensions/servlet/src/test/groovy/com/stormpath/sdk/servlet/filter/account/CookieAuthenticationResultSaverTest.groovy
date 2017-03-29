@@ -43,6 +43,7 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
         HttpServletRequest request = createMock(HttpServletRequest.class)
         CookieConfig accessTokenConfig = createMock(CookieConfig.class)
         CookieConfig refreshTokenConfig = createMock(CookieConfig.class)
+        JwtSigningKeyResolver signingKeyResolver = createMock(JwtSigningKeyResolver.class)
 
         //Let's make the IsRequestSecureResolver return true
         def resolver = new Resolver<Boolean>() {
@@ -55,13 +56,13 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
         expect(accessTokenConfig.isSecure()).andReturn(true)
         expect(request.getScheme()).andReturn "http"
 
-        replay request, accessTokenConfig, refreshTokenConfig
+        replay request, accessTokenConfig, refreshTokenConfig, signingKeyResolver
 
-        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver)
+        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver, signingKeyResolver)
 
         assertFalse saver.isCookieSecure(request, accessTokenConfig)
 
-        verify request, refreshTokenConfig, refreshTokenConfig
+        verify request, refreshTokenConfig, refreshTokenConfig, signingKeyResolver
     }
 
     /**
@@ -73,6 +74,7 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
         HttpServletRequest request = createMock(HttpServletRequest.class)
         CookieConfig accessTokenConfig = createMock(CookieConfig.class)
         CookieConfig refreshTokenConfig = createMock(CookieConfig.class)
+        JwtSigningKeyResolver signingKeyResolver = createMock(JwtSigningKeyResolver.class)
         def localhost = createMock(Resolver.class)
 
         def resolver = new SecureRequiredExceptForLocalhostResolver(localhost) {
@@ -85,12 +87,12 @@ class CookieAuthenticationResultSaverTest extends PowerMockTestCase {
         expect(accessTokenConfig.isSecure()).andReturn(true)
         expect(request.getScheme()).andReturn "https"
 
-        replay request, accessTokenConfig, refreshTokenConfig, localhost
+        replay request, accessTokenConfig, refreshTokenConfig, localhost, signingKeyResolver
 
-        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver)
+        def saver = new CookieAuthenticationResultSaver(accessTokenConfig, refreshTokenConfig, resolver, signingKeyResolver)
 
         assertFalse saver.isCookieSecure(request, accessTokenConfig)
 
-        verify request, refreshTokenConfig, refreshTokenConfig, localhost
+        verify request, refreshTokenConfig, refreshTokenConfig, localhost, signingKeyResolver
     }
 }

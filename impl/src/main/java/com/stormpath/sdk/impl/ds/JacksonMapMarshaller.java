@@ -20,9 +20,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,11 +76,25 @@ public class JacksonMapMarshaller implements MapMarshaller {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> unmarshall(InputStream marshalled) {
         try {
-            TypeReference<LinkedHashMap<String,Object>> typeRef = new TypeReference<LinkedHashMap<String,Object>>(){};
-            return this.objectMapper.readValue(marshalled, typeRef);
+            Object resolvedObj = this.objectMapper.readValue(marshalled, Object.class);
+            if (resolvedObj instanceof Map) {
+                return (Map<String, Object>) resolvedObj;
+            } else if (resolvedObj instanceof List) {
+                List list = (List) resolvedObj;
+                Map<String, Object> ret = new LinkedHashMap<>();
+                ret.put("items", list);
+                ret.put("offset", 0);
+                ret.put("limit", 100);
+                ret.put("size", list.size());
+                ret.put("href", "local");
+                return ret;
+            }
+            throw new MarshalingException("Unable to convert InputStream String to Map. " +
+                "Resolved Object is neither a Map or a List: " + resolvedObj.getClass());
         } catch (IOException e) {
             throw new MarshalingException("Unable to convert InputStream String to Map.", e);
         }

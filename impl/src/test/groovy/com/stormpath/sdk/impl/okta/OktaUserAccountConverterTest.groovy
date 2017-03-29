@@ -71,6 +71,7 @@ class OktaUserAccountConverterTest {
         // create Account object
         def internalDataStore = createStrictMock(InternalDataStore)
         def customDataPropsCapture = new Capture<Map>()
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.example.com")
         expect(internalDataStore.instantiate(anyObject(CustomData), capture(customDataPropsCapture))).andAnswer(new IAnswer<CustomData>() {
             @Override
             CustomData answer() throws Throwable {

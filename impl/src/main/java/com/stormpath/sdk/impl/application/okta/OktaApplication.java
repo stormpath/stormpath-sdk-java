@@ -1,4 +1,4 @@
-package com.stormpath.sdk.impl.application;
+package com.stormpath.sdk.impl.application.okta;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
@@ -15,6 +15,9 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingCriteria;
 import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
+import com.stormpath.sdk.application.OAuthApplication;
+import com.stormpath.sdk.application.okta.OktaForgotPasswordRequest;
+import com.stormpath.sdk.application.okta.OktaForgotPasswordResult;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus;
 import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
@@ -36,13 +39,33 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
-import com.stormpath.sdk.impl.application.webconfig.DefaultApplicationWebConfig;
+import com.stormpath.sdk.impl.application.DefaultApplicationAccountStoreMapping;
+import com.stormpath.sdk.impl.application.DefaultApplicationAccountStoreMappingList;
+import com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequest;
+import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
+import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
+import com.stormpath.sdk.oauth.IdSiteAuthenticator;
+import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthClientCredentialsGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthPolicy;
+import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthTokenRevocator;
 import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
@@ -52,24 +75,27 @@ import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
 import com.stormpath.sdk.saml.SamlPolicy;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LocalApplication extends AbstractResource implements Application {
+public class OktaApplication extends AbstractResource implements Application, OAuthApplication {
 
     private final Directory OKTA_TENANT_DIR;
 
-    private final ApplicationAccountStoreMappingList applicationAccountStoreMappingList;
+    private final ApplicationAccountStoreMappingCollectionBackedList applicationAccountStoreMappingList;
 
     private String name;
 
-    public LocalApplication(InternalDataStore dataStore) {
+    public OktaApplication(InternalDataStore dataStore) {
         this(dataStore, new LinkedHashMap<String, Object>());
     }
 
-    public LocalApplication(InternalDataStore dataStore, Map<String, Object> properties) {
+    public OktaApplication(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
         this.OKTA_TENANT_DIR = new OktaDirectory(dataStore);
 
@@ -78,9 +104,14 @@ public class LocalApplication extends AbstractResource implements Application {
         mappingProperties.put("application", this);
         mappingProperties.put("accountStore", OKTA_TENANT_DIR);
 
-        ApplicationAccountStoreMapping mapping = new DefaultApplicationAccountStoreMapping(dataStore, mappingProperties);
-
-        applicationAccountStoreMappingList = AbstractCollectionResource.singletonCollectionResource(dataStore, DefaultApplicationAccountStoreMappingList.class, mapping);
+        ApplicationAccountStoreMapping mapping = new DefaultApplicationAccountStoreMapping(dataStore, mappingProperties) {
+            @Override
+            public AccountStore getAccountStore() {
+                return OKTA_TENANT_DIR;
+            }
+        };
+        mapping.setAccountStore(OKTA_TENANT_DIR);
+        applicationAccountStoreMappingList = new ApplicationAccountStoreMappingCollectionBackedList(Collections.singletonList(mapping));
     }
 
     @Override
@@ -211,7 +242,16 @@ public class LocalApplication extends AbstractResource implements Application {
 
     @Override
     public PasswordResetToken sendPasswordResetEmail(String email) throws ResourceException {
-        throw new UnsupportedOperationException("sendPasswordResetEmail() method hasn't been implemented.");
+
+        OktaForgotPasswordRequest request = getDataStore().instantiate(OktaForgotPasswordRequest.class);
+        request.setUsername(email);
+        request.setFactorType("EMAIL");
+        request.setRelayState("/");
+
+        OktaForgotPasswordResult result = getDataStore().create(OktaApiPaths.PASSWORD_RECOVERY, request, OktaForgotPasswordResult.class);
+
+        return null;
+
     }
 
     @Override
@@ -231,7 +271,8 @@ public class LocalApplication extends AbstractResource implements Application {
 
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException {
-        throw new UnsupportedOperationException("authenticateAccount() method hasn't been implemented.");
+
+        return new DefaultOktaAuthNAuthenticator(getDataStore()).authenticate((DefaultUsernamePasswordRequest)request);
     }
 
     @Override
@@ -239,28 +280,19 @@ public class LocalApplication extends AbstractResource implements Application {
         throw new UnsupportedOperationException("getAccount() method hasn't been implemented.");
     }
 
-    /**
-     * @since 0.9
-     */
     @Override
     public ApplicationAccountStoreMappingList getAccountStoreMappings() {
         return applicationAccountStoreMappingList;
     }
 
-    /**
-     * @since 0.9
-     */
     @Override
     public ApplicationAccountStoreMappingList getAccountStoreMappings(Map<String, Object> queryParams) {
-        return applicationAccountStoreMappingList;
+        return getAccountStoreMappings();
     }
 
-    /**
-     * @since 1.0.RC9
-     */
     @Override
     public ApplicationAccountStoreMappingList getAccountStoreMappings(ApplicationAccountStoreMappingCriteria criteria) {
-        return applicationAccountStoreMappingList;
+        return getAccountStoreMappings();
     }
 
 
@@ -346,7 +378,6 @@ public class LocalApplication extends AbstractResource implements Application {
 
     @Override
     public ApplicationWebConfig getWebConfig() {
-//        return null;
 
         return new ApplicationWebConfig() {
             @Override
@@ -371,7 +402,7 @@ public class LocalApplication extends AbstractResource implements Application {
 
             @Override
             public String getDomainName() {
-                return "hack";
+                return "OktaDirectory-DomainName-Not-Used";
             }
 
             @Override
@@ -513,5 +544,93 @@ public class LocalApplication extends AbstractResource implements Application {
     @Override
     public void setDefaultGroupStore(AccountStore accountStore) {
         throw new UnsupportedOperationException("setDefaultGroupStore() method hasn't been implemented.");
+    }
+
+
+    @Override
+    public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
+        return new DefaultOAuthClientCredentialsGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
+        return new DefaultOAuthStormpathSocialGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthStormpathFactorChallengeGrantRequestAuthenticator createStormpathFactorChallengeGrantAuthenticator() {
+        return new DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
+        return new DefaultOAuthPasswordGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthRefreshTokenRequestAuthenticator createRefreshGrantAuthenticator() {
+        return new DefaultOAuthRefreshTokenRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthBearerRequestAuthenticator createJwtAuthenticator() {
+        return new DefaultOAuthBearerRequestAuthenticator(this, getDataStore());
+    }
+
+    public IdSiteAuthenticator createIdSiteAuthenticator() {
+        return new DefaultIdSiteAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+    }
+
+    @Override
+    public OAuthTokenRevocator createOAuhtTokenRevocator() {
+        return new DefaultOAuthTokenRevocator(this, getDataStore(), "/oauth2/v1/token");
+    }
+
+
+    public static class ApplicationAccountStoreMappingCollectionBackedList implements ApplicationAccountStoreMappingList {
+
+        final private Collection<ApplicationAccountStoreMapping> accountStoreMappings;
+
+        public ApplicationAccountStoreMappingCollectionBackedList(Collection<ApplicationAccountStoreMapping> accountStoreMappings) {
+            this.accountStoreMappings = accountStoreMappings;
+        }
+
+        @Override
+        public String getHref() {
+            return null;
+        }
+
+        @Override
+        public int getOffset() {
+            return 0;
+        }
+
+        @Override
+        public int getLimit() {
+            return getSize();
+        }
+
+        @Override
+        public int getSize() {
+            return accountStoreMappings.size();
+        }
+
+        @Override
+        public ApplicationAccountStoreMapping single() {
+            Iterator<ApplicationAccountStoreMapping> iterator = iterator();
+            if (!iterator.hasNext()) {
+                throw new IllegalStateException("This list is empty while it was expected to contain one (and only one) element.");
+            }
+            ApplicationAccountStoreMapping itemToReturn = iterator.next();
+            if (iterator.hasNext()) {
+                throw new IllegalStateException("Only a single resource was expected, but this list contains more than one item.");
+            }
+            return itemToReturn;
+        }
+
+        @Override
+        public Iterator<ApplicationAccountStoreMapping> iterator() {
+            return accountStoreMappings.iterator();
+        }
     }
 }

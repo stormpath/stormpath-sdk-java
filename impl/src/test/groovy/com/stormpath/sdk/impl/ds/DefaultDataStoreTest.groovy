@@ -343,7 +343,7 @@ class DefaultDataStoreTest {
         def response = createStrictMock(Response)
         def apiKeyCredentials = createStrictMock(ApiKeyCredentials)
         def apiKeyResolver = createStrictMock(ApiKeyResolver)
-        def baseUrlResolver = createStrictMock(BaseUrlResolver)
+        def baseUrlResolver = createMock(BaseUrlResolver)
 
         def providerResponseMap = [href: "https://api.stormpath.com/v1/directories/5fgF3o89Ph5nbJzY6EVSct/provider",
                            createdAt: "2014-04-01T22:05:25.661Z",
@@ -381,6 +381,7 @@ class DefaultDataStoreTest {
         def childIdProperty = "providerId"
         def map = IdentityProviderType.IDENTITY_PROVIDER_CLASS_MAP
 
+        expect(baseUrlResolver.getBaseUrl()).andReturn("https://api.stormpath.com").times(2)
         expect(requestExecutor.executeRequest(anyObject(DefaultRequest))).andReturn(response)
         expect(response.isError()).andReturn(false)
         expect(response.hasBody()).andReturn(true)
@@ -391,7 +392,7 @@ class DefaultDataStoreTest {
         expect(response.getBody()).andReturn(providerAccountResponseIS)
         expect(response.getHttpStatus()).andReturn(201)
 
-        replay(requestExecutor, response)
+        replay(requestExecutor, response, baseUrlResolver)
 
         def cache = Caches.newCacheManager()
                 .withDefaultTimeToIdle(1, TimeUnit.HOURS)
@@ -410,7 +411,7 @@ class DefaultDataStoreTest {
 
         assertEquals(defaultDataStore.cacheManager.caches.size(), 1)
 
-        verify(requestExecutor, response)
+        verify(requestExecutor, response, baseUrlResolver)
     }
 
     //@since 1.0.0

@@ -30,6 +30,7 @@ import com.stormpath.sdk.oauth.AccessToken
 import com.stormpath.sdk.tenant.Tenant
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import org.easymock.IAnswer
 import org.testng.annotations.Test
 
 import java.text.DateFormat
@@ -123,12 +124,21 @@ class DefaultAccessTokenTest {
 
         expect(apiKey.getSecret()).andReturn(secret)
 
-        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+                expect(internalDataStore.getApiKey()).andReturn(apiKey)
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
-        expect(internalDataStore.instantiate(Account, properties.account)).andReturn(new DefaultAccount(internalDataStore, properties.account))
+        expect(internalDataStore.instantiate(Account, properties.account)).andAnswer( new IAnswer<Account>() {
+            @Override
+            Account answer() throws Throwable {
+                new DefaultAccount(internalDataStore, properties.account)
+            }
+        })
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com/v1")
+
         expect(internalDataStore.instantiate(Application, properties.application)).andReturn(new DefaultApplication(internalDataStore, properties.application))
 
         replay internalDataStore, apiKey
+
+
 
         def defaultAccessToken = new DefaultAccessToken(internalDataStore, properties)
 

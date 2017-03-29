@@ -6,6 +6,22 @@ We are incredibly excited to announce that [Stormpath is joining forces with Okt
 
 We're available to answer all questions at [support@stormpath.com](mailto:support@stormpath.com).
 
+## Okta Support Branch
+
+The aim of this branch is to port the Stormpath Java integrations (Spring, Spring-Boot, and Servlet) to work with Okta's API instead of Stormpath.
+
+Take a look at the [Getting Started With Okta](OktaGettingStarted.md) guide for instructions on how to get started.
+
+**Work on this branch is on going**, but if you want to try it out you can build it with Apache Maven: `mvn install`
+
+You will also need to set the following properties (these can be set the same way as your [existing Stormpath configuration properties](https://docs.stormpath.com/java/servlet-plugin/config.html#id10)).
+
+| Key | Description |
+|-----|-------------|
+| okta.api.token | [An Okta API key](http://developer.okta.com/docs/api/getting_started/getting_a_token.html) |
+| okta.application.id | You find your Application's id with an [API call](http://developer.okta.com/docs/api/resources/apps.html), or by opening your 'application' config in the Okta Admin console and grab the ID from your browsers URL |
+| stormpath.client.baseUrl | The base url of your Okta organization, for example in a preview enviornment this would be something like: https://dev-123456.oktapreview.com |
+
 # Stormpath Java SDK #
 
 *An advanced, reliable and easy-to-use user management API, built by Java security experts*

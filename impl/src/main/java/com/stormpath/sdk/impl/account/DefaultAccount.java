@@ -142,7 +142,8 @@ public class DefaultAccount extends AbstractExtendableInstanceResource implement
     }
 
     public DefaultAccount(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, new OktaUserAccountConverter().toAccount(properties));
+        // if we have a dataStore try to convert, otherwise, just pass in the properties as is.
+        super(dataStore, dataStore != null ? OktaUserAccountConverter.toAccount(properties, dataStore.getBaseUrl()) : properties );
     }
 
     @Override

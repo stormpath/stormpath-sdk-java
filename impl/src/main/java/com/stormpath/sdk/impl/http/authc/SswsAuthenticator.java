@@ -42,7 +42,7 @@ public class SswsAuthenticator implements RequestAuthenticator {
             String base64 = Base64.encodeBase64String(basicCreds.getBytes(UTF8));
 
 
-            request.getHeaders().set(AUTHORIZATION_HEADER, "BASIC " + base64);
+            request.getHeaders().set(AUTHORIZATION_HEADER, "Basic " + base64);
 
             return;
         }

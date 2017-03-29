@@ -195,7 +195,7 @@ class LoginControllerTest {
 
         List<AccountStoreModel> accountStores = new ArrayList<AccountStoreModel>()
         accountStores.add(new DefaultAccountStoreModel(null, new DefaultProviderModel('foo', 'saml'), null))
-//        expect(accountStoreModelFactory.getAccountStores(request)).andReturn(accountStores)
+        expect(accountStoreModelFactory.getAccountStores(request)).andReturn(accountStores)
         expect(request.getAttribute(UserAgents.USER_AGENT_REQUEST_ATTRIBUTE_NAME)).andReturn new DefaultUserAgent(request)
         expect(request.getParameter("status")).andReturn null
         expect(request.getHeader("Accept")).andReturn "text/html"

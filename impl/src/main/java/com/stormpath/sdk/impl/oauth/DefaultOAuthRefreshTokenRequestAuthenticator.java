@@ -29,8 +29,15 @@ public class DefaultOAuthRefreshTokenRequestAuthenticator extends AbstractOAuthR
 
     final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
+    private final String oauthTokenPath;
+
     public DefaultOAuthRefreshTokenRequestAuthenticator(Application application, DataStore dataStore){
+        this(application, dataStore, OAUTH_TOKEN_PATH);
+    }
+
+    public DefaultOAuthRefreshTokenRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath) {
         super(application, dataStore);
+        this.oauthTokenPath = oauthTokenPath;
     }
 
     @Override
@@ -45,7 +52,7 @@ public class DefaultOAuthRefreshTokenRequestAuthenticator extends AbstractOAuthR
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + OAUTH_TOKEN_PATH, attempt, GrantAuthenticationToken.class, httpHeaders);
+        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + oauthTokenPath, attempt, GrantAuthenticationToken.class, httpHeaders);
 
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthGrantRequestAuthenticationResultBuilder(grantResult);
         return builder.build();

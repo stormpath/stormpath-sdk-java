@@ -107,6 +107,12 @@ public class DefaultConfigFactory implements ConfigFactory {
                                 key = envVarNameConverter.toDottedPropertyName(key);
                                 return new String[]{key, value};
                             }
+                            else if (key.startsWith("OKTA_")) {
+                                //we want to convert env var naming convention to dotted property convention
+                                //to allow overrides.  Overrides work based on overriding identically-named keys:
+                                key = envVarNameConverter.toDottedPropertyName(key);
+                                return new String[]{key, value};
+                            }
                             return null;
                         }
                     }));
@@ -117,6 +123,9 @@ public class DefaultConfigFactory implements ConfigFactory {
                         @Override
                         public String[] map(String key, String value) {
                             if (key.startsWith("stormpath.")) {
+                                return new String[]{key, value};
+                            }
+                            else if (key.startsWith("okta.")) {
                                 return new String[]{key, value};
                             }
                             return null;

@@ -16,6 +16,10 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.api.ApiKeys;
+import com.stormpath.sdk.application.okta.ApplicationCredentials;
+import com.stormpath.sdk.client.DefaultPairedApiKey;
+import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.api.DefaultApiKeyResolver;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
@@ -86,6 +90,8 @@ public class DefaultClientBuilder implements ClientBuilder {
             USER_HOME + ".stormpath" + File.separatorChar + STORMPATH_PROPERTIES,
             USER_HOME + STORMPATH_PROPERTIES
     };
+
+    final private boolean oktaEnabled;
 
     private ClientConfiguration clientConfig = new ClientConfiguration();
 
@@ -197,6 +203,8 @@ public class DefaultClientBuilder implements ClientBuilder {
         if (props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME) != null) {
             clientConfig.setProxyPassword(props.get(DEFAULT_CLIENT_PROXY_PASSWORD_PROPERTY_NAME));
         }
+
+        this.oktaEnabled = Boolean.valueOf(props.get(DEFAULT_OKTA_ENABLED_PROPERTY_NAME));
     }
 
     @Override
@@ -303,25 +311,35 @@ public class DefaultClientBuilder implements ClientBuilder {
                     this.clientConfig.getProxyUsername(), this.clientConfig.getProxyPassword());
         }
 
-        ClientCredentials clientCredentials;
-
-        if (this.clientCredentials != null) {
-            clientCredentials = this.clientCredentials;
-        } else if (this.apiKey != null) {
-            clientCredentials = new ApiKeyCredentials(this.apiKey);
-        } else {
-            ClientCredentialsProvider clientCredentialsProvider = new DefaultClientCredentialsProviderChain(clientConfig);
-            clientCredentials = clientCredentialsProvider.getClientCredentials();
-        }
-
         ApiKeyResolver apiKeyResolver = this.clientConfig.getApiKeyResolver();
 
-        if (apiKeyResolver == null) {
-            Assert.isInstanceOf(ApiKeyCredentials.class, clientCredentials, "An ApiKeyResolver must be configured for ClientCredentials other than ApiKeyCredentials.");
-            apiKeyResolver = new DefaultApiKeyResolver(((ApiKeyCredentials) clientCredentials).getApiKey());
+        if (oktaEnabled) {
+            ApiKey apiKey = new DefaultPairedApiKey(this.apiKey);
+            clientCredentials = new ApiKeyCredentials(apiKey);
+            if (apiKeyResolver == null) {
+                apiKeyResolver = new DefaultApiKeyResolver(apiKey);
+            }
         }
+        else {
+            ClientCredentials clientCredentials;
 
-        BaseUrlResolver baseUrlResolver = this.clientConfig.getBaseUrlResolver();
+            if (this.clientCredentials != null) {
+                clientCredentials = this.clientCredentials;
+            } else if (this.apiKey != null) {
+                clientCredentials = new ApiKeyCredentials(this.apiKey);
+            } else {
+                ClientCredentialsProvider clientCredentialsProvider = new DefaultClientCredentialsProviderChain(clientConfig);
+                clientCredentials = clientCredentialsProvider.getClientCredentials();
+            }
+
+            this.clientCredentials = clientCredentials;
+
+            if (apiKeyResolver == null) {
+                Assert.isInstanceOf(ApiKeyCredentials.class, clientCredentials, "An ApiKeyResolver must be configured for ClientCredentials other than ApiKeyCredentials.");
+                apiKeyResolver = new DefaultApiKeyResolver(((ApiKeyCredentials) clientCredentials).getApiKey());
+            }
+        }
+            BaseUrlResolver baseUrlResolver = this.clientConfig.getBaseUrlResolver();
 
         if (baseUrlResolver == null) {
             Assert.notNull(this.clientConfig.getBaseUrl(), "Stormpath base url must not be null.");

@@ -174,7 +174,7 @@ public class LoginController extends FormController {
     protected void appendModel(HttpServletRequest request, HttpServletResponse response, Form form, List<ErrorModel> errors,
                                Map<String, Object> model) {
 
-//        final List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
+
 
         // 748: If stormpath.web.idSite.enabled is false and stormpath.web.callback.enabled is false AND
         // there are SAML directories mapped to the application, that is a configuration error.
@@ -189,8 +189,8 @@ public class LoginController extends FormController {
                 errors.add(ErrorModel.builder().setStatus(HttpServletResponse.SC_OK).setMessage(errorMsg).build());
             }
         }
-
-//        model.put("accountStores", accountStores);
+        final List<AccountStoreModel> accountStores = accountStoreModelFactory.getAccountStores(request);
+        model.put("accountStores", accountStores);
 
         if (isHtmlPreferred(request, response)) {
             model.put("forgotPasswordEnabled", forgotPasswordEnabled);

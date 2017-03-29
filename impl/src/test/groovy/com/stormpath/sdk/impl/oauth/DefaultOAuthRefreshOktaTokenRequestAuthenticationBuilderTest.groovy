@@ -26,7 +26,7 @@ import static org.testng.Assert.fail
  *
  * @since 1.0.RC7
  */
-class DefaultOAuthRefreshTokenRequestAuthenticationBuilderTest {
+class DefaultOAuthRefreshOktaTokenRequestAuthenticationBuilderTest {
 
     @Test
     void testError(){

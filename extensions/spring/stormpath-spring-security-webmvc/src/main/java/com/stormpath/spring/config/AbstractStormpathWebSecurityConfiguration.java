@@ -141,6 +141,9 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     @Value("#{ @environment['stormpath.web.stormpathFilter.enabled'] ?: true }")
     protected boolean stormpathFilterEnabled;
 
+    @Value("#{ @environment['okta.enabled'] ?: true }")
+    protected boolean oktaEnabled;
+
     @Autowired
     List<Resolver<Account>> stormpathAccountResolvers;
 
@@ -162,8 +165,18 @@ public abstract class AbstractStormpathWebSecurityConfiguration {
     }
 
     public AuthenticationSuccessHandler stormpathAuthenticationSuccessHandler() {
-        StormpathLoginSuccessHandler loginSuccessHandler =
-            new StormpathLoginSuccessHandler(client, authenticationResultSaver, produces);
+
+        StormpathLoginSuccessHandler loginSuccessHandler;
+
+        if (oktaEnabled) {
+            loginSuccessHandler =
+                    new OktaLoginSuccessHandler(client, authenticationResultSaver, produces);
+        }
+        else {
+            loginSuccessHandler =
+                    new StormpathLoginSuccessHandler(client, authenticationResultSaver, produces);
+        }
+
         loginSuccessHandler.setDefaultTargetUrl(loginNextUri);
         loginSuccessHandler.setTargetUrlParameter("next");
         loginSuccessHandler.setRequestCache(new NullRequestCache());

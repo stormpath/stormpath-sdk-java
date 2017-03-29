@@ -16,9 +16,14 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.application.OAuthApplication;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.oauth.IdSiteAuthenticator;
 import com.stormpath.sdk.oauth.IdSiteAuthenticatorFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @since 1.0.RC8.2
@@ -27,6 +32,6 @@ public class DefaultIdSiteAuthenticatorFactory implements IdSiteAuthenticatorFac
 
     @Override
     public IdSiteAuthenticator forApplication(Application application) {
-        return ((DefaultApplication) application).createIdSiteAuthenticator();
+        return ((OAuthApplication) application).createIdSiteAuthenticator();
     }
 }

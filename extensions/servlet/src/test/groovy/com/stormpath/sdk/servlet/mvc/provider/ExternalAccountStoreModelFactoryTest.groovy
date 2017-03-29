@@ -58,6 +58,7 @@ class ExternalAccountStoreModelFactoryTest {
         initAccountStores()
         accountStoreMappings = []
         applicationAccountStoreMappingList = createNiceMock(ApplicationAccountStoreMappingList)
+        expect(applicationAccountStoreMappingList.getHref()).andReturn("http://api.example.com/mappings")
         expect(applicationAccountStoreMappingList.iterator()).andStubAnswer(new IAnswer<Iterator<ApplicationAccountStoreMapping>>() {
             @Override
             Iterator<ApplicationAccountStoreMapping> answer() throws Throwable {

@@ -20,7 +20,7 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.api.ApiKeyResolver;
-import com.stormpath.sdk.impl.application.LocalApplication;
+import com.stormpath.sdk.impl.application.okta.OktaApplication;
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
@@ -31,6 +31,7 @@ import com.stormpath.sdk.impl.ds.cache.DefaultCacheResolver;
 import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
 import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
+import com.stormpath.sdk.impl.error.OktaError;
 import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.HttpHeadersHolder;
@@ -105,6 +106,8 @@ public class DefaultDataStore implements InternalDataStore {
 
     private static final boolean COLLECTION_CACHING_ENABLED = false; //EXPERIMENTAL - set to true only while developing.
 
+    private static boolean oktaEnabled;
+
     private final RequestExecutor requestExecutor;
     private final ResourceFactory resourceFactory;
     private final MapMarshaller mapMarshaller;
@@ -159,6 +162,12 @@ public class DefaultDataStore implements InternalDataStore {
         this.queryStringFactory = new QueryStringFactory();
         this.cacheResolver = new DefaultCacheResolver(this.cacheManager, new DefaultCacheRegionNameResolver());
         this.apiKeyResolver = apiKeyResolver;
+
+        if (baseUrlResolver.getBaseUrl().toLowerCase().contains("okta")) {
+            oktaEnabled = true;
+        } else {
+            oktaEnabled = false;
+        }
 
         ReferenceFactory referenceFactory = new ReferenceFactory();
         this.resourceConverter = new DefaultResourceConverter(referenceFactory);
@@ -241,7 +250,7 @@ public class DefaultDataStore implements InternalDataStore {
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
 
         if ("local".equalsIgnoreCase(href) && clazz.isAssignableFrom(Application.class)) {
-            return (T) new LocalApplication(this);
+            return (T) new OktaApplication(this);
         }
 
         return getResource(href, clazz, (Map<String, Object>) null);
@@ -600,7 +609,15 @@ public class DefaultDataStore implements InternalDataStore {
                 body.put(DefaultError.REQUEST_ID.getName(), requestId);
             }
 
-            DefaultError error = new DefaultError(body);
+            com.stormpath.sdk.error.Error error;
+            if (oktaEnabled) {
+                OktaError oktaError = new OktaError(body);
+                // Okta Error response doesn't have status
+                oktaError.setProperty(OktaError.STATUS.getName(), response.getHttpStatus());
+                error = oktaError;
+            } else {
+                error = new DefaultError(body);
+            }
 
             throw new ResourceException(error);
         }

@@ -16,7 +16,7 @@
 package com.stormpath.sdk.impl.oauth;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.impl.application.DefaultApplication;
+import com.stormpath.sdk.application.OAuthApplication;
 import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthenticatorFactory;
 
@@ -26,6 +26,6 @@ import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthenti
 public class DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticatorFactory implements OAuthStormpathFactorChallengeGrantRequestAuthenticatorFactory {
     @Override
     public OAuthStormpathFactorChallengeGrantRequestAuthenticator forApplication(Application application) {
-        return ((DefaultApplication) application).createStormpathFactorChallengeGrantAuthenticator();
+        return ((OAuthApplication) application).createStormpathFactorChallengeGrantAuthenticator();
     }
 }

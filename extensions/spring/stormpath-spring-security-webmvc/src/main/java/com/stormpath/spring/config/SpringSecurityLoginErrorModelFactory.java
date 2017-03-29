@@ -23,7 +23,8 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
     private static final List<String> UNSUCCESSFUL_LOGIN_BACKEND_ERRORS = Arrays.asList(
         "Login attempt failed",
         "Invalid username or password",
-        "Login and password required"
+        "Login and password required",
+        "invalid_grant" // for Okta
     );
 
     @Autowired

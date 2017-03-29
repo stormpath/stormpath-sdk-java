@@ -159,7 +159,7 @@ public abstract class AbstractStormpathConfiguration {
 
             Client client = stormpathClient();
 
-            String applicationCredentialsHref = "/internal/apps/" + oktaApplicationId + "/settings/clientcreds";
+            String applicationCredentialsHref = "/api/v1/internal/apps/" + oktaApplicationId + "/settings/clientcreds";
             ApplicationCredentials applicationCredentials = client.getResource(applicationCredentialsHref, ApplicationCredentials.class);
 
             ApiKey secondary = ApiKeys.builder()
@@ -258,9 +258,9 @@ public abstract class AbstractStormpathConfiguration {
             if (baseUrl.endsWith("/")) {
                 baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
             }
-            if (baseUrl.endsWith(".com")) {
-                append = "/api/v1";
-            }
+//            if (baseUrl.endsWith(".com")) {
+//                append = "/api/v1";
+//            }
             if (append != null) {
                 baseUrl += append;
             }
