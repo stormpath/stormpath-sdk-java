@@ -73,8 +73,6 @@ Run an Example Application
 
 Since you are reading this page on Github, I'm going to assume you know how to clone this repo, and switch to the `okta` branch, once you have done that, build the current SNAPSHOT with Apache Maven.
 
-/Users/briandemers/dev/source/stormpath/stormpath-sdk-java
-
 ``` bash
 $ mvn clean install
 ```
