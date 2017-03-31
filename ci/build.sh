@@ -4,7 +4,7 @@ source ./ci/common.sh
 
 if [ -n "$RUN_ITS" ]; then
   info "Running unit and IT tests..."
-  (mvn -s ci/settings.xml -Pclover.all -DskipITs=false -q install &> $WORKDIR/target/tests.log) &
+  (mvn -s ci/settings.xml -Pclover.all -q install &> $WORKDIR/target/tests.log) &
   PID=$!
   show_spinner "$PID"
 
