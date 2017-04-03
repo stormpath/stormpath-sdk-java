@@ -773,7 +773,7 @@
             -->
             <!-- clover - for internal use -->
             <properties>
-                <clover.coverage.percentage>52%</clover.coverage.percentage>
+                <clover.coverage.percentage>51%</clover.coverage.percentage>
                 <clover.base.dir>${user.home}/.stormpath/clover</clover.base.dir>
                 <maven.clover.licenseLocation>${clover.base.dir}/clover.license</maven.clover.licenseLocation>
                 <clover.project.dir>${clover.base.dir}/stormpath-sdk-java</clover.project.dir>
