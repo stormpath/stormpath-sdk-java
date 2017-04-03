@@ -7,7 +7,7 @@
     <name>Stormpath Java SDK :: BOM</name>
     <description>Stormpath Bill of Materials</description>
     <packaging>pom</packaging>
-    <version>2.0.0-okta-alpha-SNAPSHOT</version>
+    <version>2.0.0-okta-alpha1</version>
 
     <url>https://github.com/stormpath/stormpath-sdk-java</url>
     <organization>
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</connection>
         <developerConnection>scm:git:git@github.com:stormpath/stormpath-sdk-java.git</developerConnection>
         <url>git@github.com:stormpath/stormpath-sdk-java.git</url>
-        <tag>HEAD</tag>
+        <tag>stormpath-sdk-root-2.0.0-okta-alpha1</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
@@ -50,92 +50,92 @@
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-api</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-impl</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-oauth</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-servlet</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-httpclient</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-servlet-plugin</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.sdk</groupId>
                 <artifactId>stormpath-sdk-zuul</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-security</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-security-webmvc</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-webmvc</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-boot-starter</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-webmvc-spring-boot-starter</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-thymeleaf-spring-boot-starter</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-security-spring-boot-starter</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-spring-security-webmvc-spring-boot-starter</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-default-spring-boot-starter</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
             <dependency>
                 <groupId>com.stormpath.spring</groupId>
                 <artifactId>stormpath-zuul-spring-cloud-starter</artifactId>
-                <version>2.0.0-okta-alpha-SNAPSHOT</version>
+                <version>2.0.0-okta-alpha1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

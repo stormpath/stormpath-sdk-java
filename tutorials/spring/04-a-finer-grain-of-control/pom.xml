@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-tutorials-spring</artifactId>
-        <version>2.0.0-okta-alpha-SNAPSHOT</version>
+        <version>2.0.0-okta-alpha1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.stormpath.spring</groupId>
     <artifactId>stormpath-sdk-tutorials-spring-security-webmvc-a-finer-grain-of-control</artifactId>
-    <version>2.0.0-okta-alpha-SNAPSHOT</version>
+    <version>2.0.0-okta-alpha1</version>
 
     <name>Stormpath Java SDK :: Tutorials :: Spring Security WebMVC :: A Finer Grain Of Control</name>
     <description>A simple Spring Security Web MVC application with out-of-the-box login and self-service screens!</description>
