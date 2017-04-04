@@ -2,8 +2,8 @@
 Getting Started With Okta
 =========================
 
-Okay, so you have been using Stormpath for a while and now you want to checkout out Okta.  This guide will walk through
-setting up a new account, creating an API token, and everything else needed to get you up and running on Okta.
+Okay, so you've been using Stormpath for a while and now you want to check out out Okta. This guide will walk you through
+setting up a new account, creating an API token, and everything else you'll need to get up and running on Okta.
 
 Create an Okta Developer Account
 --------------------------------
@@ -17,18 +17,20 @@ Create an Okta Developer Account
 Your Okta URLs
 --------------
 
-When setting up a developer account, you end up with a couple URL:
-An admin console URL that looks something like this: 
+When setting up a developer account, you end up with a couple URLs.
+The first is an admin console URL that looks something like this: 
 
 https://dev-123456-admin.oktapreview.com/admin/getting-started
 
-Use this one to manually change organization settings, create users, or other general administrative work.  The other URL looks similar, but is missing the `admin` part: 
+Use this one to manually change organization settings, create users, or other general administrative work.  
+
+The other URL looks similar, but is missing the `admin` part: 
 
 https://dev-123456.oktapreview.com/
 
-This is the one your yours could interact with, and will be the base URL for any API access.
+This is the one your users could interact with, and will be the base URL for any API access.
 
-**Important:** The second URL (the non-admin one) is the one you will need to remember, you will use this one for API access.
+**Important:** The second URL (the non-admin one) is the one you will need to remember, you will use this URL for API access.
  
 Setup your Okta 'Organization'
 ------------------------------
@@ -71,7 +73,7 @@ For more information take a look at the official [Create an API token](http://de
 Run an Example Application
 --------------------------
 
-Since you are reading this page on Github, I'm going to assume you know how to clone this repo, and switch to the `okta` branch, once you have done that, build the current SNAPSHOT with Apache Maven.
+Since you are reading this page on Github, I'm going to assume you know how to clone this repo, and switch to the `okta` branch. Once you have done that, build the current SNAPSHOT with Apache Maven.
 
 ``` bash
 $ mvn clean install
@@ -79,13 +81,13 @@ $ mvn clean install
 
 This should not take more then a couple minutes.
 
-Once complete change directories to examples/spring-boot-default
+Once complete, change directories to examples/spring-boot-default
 
 ``` bash
 $ cd examples/spring-boot-default
 ```
 
-The last step before running our example is to set your configuration variables, there are a [few different ways](https://docs.stormpath.com/java/servlet-plugin/config.html) you can do this, but I'll just use environment variables here.
+The last step before running the example is to set your configuration variables. There are a [few different ways](https://docs.stormpath.com/java/servlet-plugin/config.html) you can do this, but we'll just use environment variables here.
 
 ``` bash
 $ export STORMPATH_CLIENT_BASEURL=[baseurl_from_above]
@@ -93,11 +95,11 @@ $ export OKTA_APPLICATION_ID=[aapplication_id_from_above]
 $ export OKTA_API_TOKEN=[api_token_from_above]
 ```
 
-Start it up!
+Now, start it up...
 
 ``` bash
 $ mvn spring-boot:run
 ```
 
-Point your browser to: http://localhost:8080 and start using the example application!
+Point your browser to: http://localhost:8080 and you're ready to start using the example application!
 
