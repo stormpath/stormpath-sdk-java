@@ -81,7 +81,7 @@ $ mvn clean install
 
 This should not take more then a couple minutes.
 
-Once complete, change directories to examples/spring-boot-default
+Once complete, change directories to examples/spring-boot-default (the Spring and Servlet examples work too!)
 
 ``` bash
 $ cd examples/spring-boot-default
