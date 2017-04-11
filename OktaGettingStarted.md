@@ -93,7 +93,7 @@ The last step before running the example is to set your configuration variables.
 
 ``` bash
 $ export STORMPATH_CLIENT_BASEURL=[baseurl_from_above]
-$ export OKTA_APPLICATION_ID=[aapplication_id_from_above]
+$ export OKTA_APPLICATION_ID=[application_id_from_above]
 $ export OKTA_API_TOKEN=[api_token_from_above]
 ```
 
