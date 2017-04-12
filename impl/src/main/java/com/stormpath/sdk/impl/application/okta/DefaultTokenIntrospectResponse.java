@@ -1,15 +1,22 @@
 package com.stormpath.sdk.impl.application.okta;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.okta.TokenIntrospectResponse;
+import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.BooleanProperty;
 import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.oauth.TokenResponse;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -44,11 +51,6 @@ public class DefaultTokenIntrospectResponse extends AbstractInstanceResource imp
     @Override
     public boolean isActive() {
         return getBoolean(ACTIVE);
-    }
-
-    @Override
-    public String getScope() {
-        return getString(SCOPE);
     }
 
     @Override
@@ -99,5 +101,30 @@ public class DefaultTokenIntrospectResponse extends AbstractInstanceResource imp
     @Override
     public String getUid() {
         return getString(UID);
+    }
+
+    @Override
+    public TokenResponse getTokenResponse() {
+        return null;
+    }
+
+    @Override
+    public Set<String> getScope() {
+        return Strings.delimitedListToSet(getString(SCOPE), " ");
+    }
+
+    @Override
+    public ApiKey getApiKey() {
+        return null;
+    }
+
+    @Override
+    public Account getAccount() {
+        return getDataStore().getResource(OktaApiPaths.apiPath("users", getUid()), Account.class);
+    }
+
+    @Override
+    public void accept(AuthenticationResultVisitor visitor) {
+        visitor.visit(this);
     }
 }

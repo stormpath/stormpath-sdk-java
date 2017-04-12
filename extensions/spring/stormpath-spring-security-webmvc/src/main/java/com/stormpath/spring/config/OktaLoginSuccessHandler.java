@@ -5,6 +5,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.application.okta.DefaultOktaAccessTokenResult;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.TokenResponse;
 import com.stormpath.sdk.provider.OktaProviderAccountResult;
@@ -40,77 +41,14 @@ public class OktaLoginSuccessHandler extends StormpathLoginSuccessHandler {
             ProviderAuthenticationToken authenticationToken = (ProviderAuthenticationToken) authentication;
             final OktaProviderAccountResult providerAccountResult = (OktaProviderAccountResult) authenticationToken.getCredentials();
 
-            AuthenticationResult authcResult = new AccessTokenResult() {
-                @Override
-                public TokenResponse getTokenResponse() {
-                    return providerAccountResult.getTokenResponse();
-                }
-
-                @Override
-                public Set<String> getScope() {
-                    return null; // TODO
-                }
-
-                @Override
-                public ApiKey getApiKey() {
-                    return null;
-                }
-
-                @Override
-                public Account getAccount() {
-                    return account;
-                }
-
-                @Override
-                public void accept(AuthenticationResultVisitor visitor) {
-                    visitor.visit(this);
-                }
-
-                @Override
-                public String getHref() {
-                    return null;
-                }
-            };
+            AuthenticationResult authcResult = new DefaultOktaAccessTokenResult(providerAccountResult.getTokenResponse(), account);
             authenticationResultSaver.set(request, response, authcResult);
         }
         else if (authentication instanceof JwtProviderAuthenticationToken) {
 
-            final AccessTokenResult authenticationResult = (AccessTokenResult) ((JwtProviderAuthenticationToken) authentication).getAuthenticationResult();
+            AccessTokenResult authenticationResult = (AccessTokenResult) ((JwtProviderAuthenticationToken) authentication).getAuthenticationResult();
 
-            final Account account = getAccount(authentication);
-
-            AuthenticationResult authcResult = new AccessTokenResult() {
-                @Override
-                public TokenResponse getTokenResponse() {
-                    return authenticationResult.getTokenResponse();
-                }
-
-                @Override
-                public Set<String> getScope() {
-                    return null; // TODO
-                }
-
-                @Override
-                public ApiKey getApiKey() {
-                    return null;
-                }
-
-                @Override
-                public Account getAccount() {
-                    return account;
-                }
-
-                @Override
-                public void accept(AuthenticationResultVisitor visitor) {
-                    visitor.visit(this);
-                }
-
-                @Override
-                public String getHref() {
-                    return null;
-                }
-            };
-            authenticationResultSaver.set(request, response, authcResult);
+            authenticationResultSaver.set(request, response, authenticationResult);
         }
         else {
             super.saveAccount(request, response, authentication);

@@ -840,7 +840,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public JwtAccountResolver stormpathJwtAccountResolver() {
         if (oktaEnabled) {
-            return new OktaJwtAccountResolver(new OktaJwtSigningKeyResolver(client.getDataStore()));
+            return new OktaJwtAccountResolver();
         }
         else {
             return new DefaultJwtAccountResolver(stormpathJwtSigningKeyResolver());

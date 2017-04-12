@@ -1,23 +1,21 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.okta.OktaTokenResponse;
 import com.stormpath.sdk.application.okta.OktaTokenRequest;
 import com.stormpath.sdk.application.okta.TokenIntrospectRequest;
 import com.stormpath.sdk.application.okta.TokenIntrospectResponse;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
 import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.impl.application.okta.DefaultOktaAccessTokenResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.impl.provider.DefaultOktaProviderAccountResult;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.provider.OktaProviderData;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
@@ -26,7 +24,6 @@ import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Set;
 
 /**
  * Uses Okta's /api/v1/authn endpoint to authenticate users.
@@ -57,10 +54,18 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         // check if access key is valid
         TokenIntrospectResponse tokenIntrospectResponse = resolveAccessToken(oktaTokenResponse.getAccessToken());
 
-        // validate the key we just received
-        final String userHref = getAccountHref(tokenIntrospectResponse);
+        String userHref = OktaApiPaths.apiPath("users", tokenIntrospectResponse.getUid());
 
         return new DefaultOktaProviderAccountResult(dataStore.getResource(userHref, Account.class), oktaTokenResponse);
+    }
+
+    @Override
+    public Account getAccountByToken(String accountToken) {
+
+        // check if access key is valid
+        TokenIntrospectResponse tokenIntrospectResponse = resolveAccessToken(accountToken);
+        String userHref = OktaApiPaths.apiPath("users", tokenIntrospectResponse.getUid());
+        return dataStore.getResource(userHref, Account.class);
     }
 
     @Override
@@ -74,43 +79,9 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         // check if access key is valid
         TokenIntrospectResponse tokenIntrospectResponse = resolveAccessToken(oktaTokenResponse.getAccessToken());
 
-        // validate the key we just received
-        final String userHref = getAccountHref(tokenIntrospectResponse);
+        String userHref = OktaApiPaths.apiPath("users", tokenIntrospectResponse.getUid());
 
-        final Set<String> scopes = Strings.delimitedListToSet(tokenIntrospectResponse.getScope(), "");
-
-        // TODO: fix nested class
-        return new AccessTokenResult() {
-            @Override
-            public com.stormpath.sdk.oauth.TokenResponse getTokenResponse() {
-                return oktaTokenResponse;
-            }
-
-            @Override
-            public Set<String> getScope() {
-                return scopes;
-            }
-
-            @Override
-            public ApiKey getApiKey() {
-                return null;
-            }
-
-            @Override
-            public Account getAccount() {
-                return dataStore.getResource(userHref, Account.class);
-            }
-
-            @Override
-            public void accept(AuthenticationResultVisitor visitor) {
-                visitor.visit(this);
-            }
-
-            @Override
-            public String getHref() {
-                return null;
-            }
-        };
+        return new DefaultOktaAccessTokenResult(oktaTokenResponse, dataStore.getResource(userHref, Account.class));
     }
 
     private TokenIntrospectResponse resolveAccessToken(String accessToken) {
@@ -127,13 +98,12 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         return tokenIntrospectResponse;
     }
 
-    public void assertValidAccessToken(TokenIntrospectResponse tokenResponse) {
+    private void assertValidAccessToken(TokenIntrospectResponse tokenResponse) {
 
         if(!tokenResponse.isActive()) {
             // FIXME: we should not use JWT exceptions here as this string should _not_ be treated as a JWT
             throw new JwtException("Access token is NOT active.");
         }
-
     }
 
     @Override
@@ -193,10 +163,6 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
                 }
             });
         }
-    }
-
-    private String getAccountHref(TokenIntrospectResponse tokenResponse) {
-        return "/api/v1/users/" + tokenResponse.getUid();
     }
 
     @Override

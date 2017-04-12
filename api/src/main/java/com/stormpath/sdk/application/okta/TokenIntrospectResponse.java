@@ -1,5 +1,6 @@
 package com.stormpath.sdk.application.okta;
 
+import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.resource.Resource;
 
 import java.util.Date;
@@ -7,10 +8,10 @@ import java.util.Date;
 /**
  *
  */
-public interface TokenIntrospectResponse extends Resource {
+public interface TokenIntrospectResponse extends Resource, AccessTokenResult {
 
     boolean isActive();
-    String getScope();
+//    String getScope();
     String getUsername();
     Date getExpiresAt();
     Date getIssuedAt();

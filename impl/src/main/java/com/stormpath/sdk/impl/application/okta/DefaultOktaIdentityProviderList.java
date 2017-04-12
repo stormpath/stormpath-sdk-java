@@ -37,14 +37,13 @@ public class DefaultOktaIdentityProviderList extends AbstractInstanceResource im
     public Set<OktaProvider> getIdentityProviders() {
         Set<OktaProvider> providers = new HashSet<>();
         for (Object item : getSetProperty(ITEMS.getName())) {
-            Map<String, Object> itemMap = (Map<String, Object>) item;
+            Map<String, Object> itemMap =  castToMap(item);
             if ("OAUTH2".equals(getProtocol(itemMap))) { // TODO add OIDC
                 itemMap.put("href", "n/a");
                 itemMap.put("scope", "profile email openid");
-                itemMap.put("authorizeUri", getTemplateString(((Map<String, Object>) item).get("_links")));
+                itemMap.put("authorizeUri", getTemplateString(getSubMap(itemMap, "_links")));
 
-                OktaProvider provider = getDataStore().instantiate(OktaProvider.class, (Map<String, Object>) item);
-
+                OktaProvider provider = getDataStore().instantiate(OktaProvider.class, itemMap);
                 providers.add(provider);
             }
         }
@@ -54,7 +53,7 @@ public class DefaultOktaIdentityProviderList extends AbstractInstanceResource im
 
     private String getProtocol(Map<String, Object> item) {
         String type = null;
-        Map<String, Object> protocol = (Map<String, Object>) item.get("protocol");
+        Map<String, Object> protocol = getSubMap(item, "protocol");
         if (!Collections.isEmpty(protocol)) {
             type = (String) protocol.get("type");
         }
@@ -62,10 +61,17 @@ public class DefaultOktaIdentityProviderList extends AbstractInstanceResource im
     }
 
     private String getTemplateString(Object rawMap) {
-        Map<String, Object> links = (Map<String, Object>) rawMap;
-        Map<String, Object> authorizeLink = (Map<String, Object>) links.get("authorize");
-
-        String templateUrl = (String) authorizeLink.get("href");
-        return templateUrl;
+        Map<String, Object> authorizeLink = getSubMap(castToMap(rawMap), "authorize");
+        return (String) authorizeLink.get("href");
     }
+
+
+    private Map<String, Object> getSubMap(Map<String, Object> map, String key) {
+        return castToMap(map.get(key));
+    }
+
+    private Map<String, Object> castToMap(Object raw) {
+        return (Map<String, Object>) raw;
+    }
+
 }

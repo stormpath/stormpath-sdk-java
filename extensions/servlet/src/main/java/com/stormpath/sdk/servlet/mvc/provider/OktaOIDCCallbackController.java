@@ -5,6 +5,7 @@ import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
+import com.stormpath.sdk.impl.application.okta.DefaultOktaAccessTokenResult;
 import com.stormpath.sdk.impl.provider.DefaultOktaProviderAccountResult;
 import com.stormpath.sdk.oauth.AccessTokenResult;
 import com.stormpath.sdk.oauth.TokenResponse;
@@ -49,37 +50,8 @@ public class OktaOIDCCallbackController extends AbstractSocialCallbackController
                 return new DefaultViewModel(loginUri + "?status=unverified").setRedirect(true);
             }
 
-            AuthenticationResult authcResult = new AccessTokenResult() {
-                @Override
-                public TokenResponse getTokenResponse() {
-                    return result.getTokenResponse();
-                }
+            DefaultOktaAccessTokenResult authcResult = new DefaultOktaAccessTokenResult(result.getTokenResponse(), account);
 
-                @Override
-                public Set<String> getScope() {
-                    return null; // TODO
-                }
-
-                @Override
-                public ApiKey getApiKey() {
-                    return null;
-                }
-
-                @Override
-                public Account getAccount() {
-                    return account;
-                }
-
-                @Override
-                public void accept(AuthenticationResultVisitor visitor) {
-                    visitor.visit(this);
-                }
-
-                @Override
-                public String getHref() {
-                    return null;
-                }
-            };
             authenticationResultSaver.set(request, response, authcResult);
 
             eventPublisher.publish(new DefaultSuccessfulAuthenticationRequestEvent(request, response, null, authcResult));

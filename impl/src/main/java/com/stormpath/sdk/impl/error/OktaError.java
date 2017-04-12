@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 0.1
+ * @since 2.0.0
  */
 public class OktaError extends AbstractResource implements Error, Serializable {
 
