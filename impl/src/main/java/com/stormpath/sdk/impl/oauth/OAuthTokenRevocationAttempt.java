@@ -38,6 +38,7 @@ public class OAuthTokenRevocationAttempt extends AbstractResource implements Res
         super(dataStore);
         Assert.hasText(token, "token cannot be null or empty.");
         setProperty(TOKEN, token);
+        setProperty("token_type_hint", "access_token");
     }
 
     public void setTokenTypeHint(String tokenTypeHint) {

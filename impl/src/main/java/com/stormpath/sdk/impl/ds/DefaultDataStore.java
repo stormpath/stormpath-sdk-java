@@ -18,6 +18,7 @@ package com.stormpath.sdk.impl.ds;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.cache.CacheManager;
+import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.application.okta.OktaApplication;
@@ -250,7 +251,8 @@ public class DefaultDataStore implements InternalDataStore {
     public <T extends Resource> T getResource(String href, Class<T> clazz) {
 
         if ("local".equalsIgnoreCase(href) && clazz.isAssignableFrom(Application.class)) {
-            return (T) new OktaApplication(this);
+            // TODO: this clientId setting needs to be resolved
+            return (T) new OktaApplication(((PairedApiKey)apiKeyResolver.getApiKey()).getSecondaryApiKey().getId(), this);
         }
 
         return getResource(href, clazz, (Map<String, Object>) null);
@@ -472,11 +474,13 @@ public class DefaultDataStore implements InternalDataStore {
 
                 if (Collections.isEmpty(responseBody)) {
                     // Fix for https://github.com/stormpath/stormpath-sdk-java/issues/218
-                    if ( response.getHttpStatus() == 202 ) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
+                    if (response.getHttpStatus() == 202) { //202 means that the request has been accepted for processing, but the processing has not been completed. Therefore we do not have a response body.
                         responseBody = java.util.Collections.emptyMap();
-                    } else if(response.getHttpStatus() == 200 && OAuthTokenRevoked.class.isAssignableFrom(returnType)) {
+                    } else if (response.getHttpStatus() == 200 && OAuthTokenRevoked.class.isAssignableFrom(returnType)) {
                         responseBody = java.util.Collections.emptyMap();
-                    } else {
+                    } else if (response.getHttpStatus() == 204 && OAuthTokenRevoked.class.isAssignableFrom(returnType)) {
+                        responseBody = java.util.Collections.emptyMap();
+                    }else {
                         throw new IllegalStateException("Unable to obtain resource data from the API server.");
                     }
                 }

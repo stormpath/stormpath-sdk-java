@@ -21,8 +21,8 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
-import com.stormpath.sdk.impl.application.okta.OktaSigningKeyResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
@@ -126,6 +126,7 @@ import com.stormpath.sdk.servlet.mvc.LoginController;
 import com.stormpath.sdk.servlet.mvc.LoginErrorModelFactory;
 import com.stormpath.sdk.servlet.mvc.LogoutController;
 import com.stormpath.sdk.servlet.mvc.MeController;
+import com.stormpath.sdk.servlet.mvc.OktaExternalAccountStoreModelFactory;
 import com.stormpath.sdk.servlet.mvc.ProviderAccountRequestFactory;
 import com.stormpath.sdk.servlet.mvc.RegisterController;
 import com.stormpath.sdk.servlet.mvc.RequestFieldValueResolver;
@@ -143,6 +144,7 @@ import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GoogleCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.LinkedinCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.OktaOIDCCallbackController;
 import com.stormpath.sdk.servlet.oauth.AccessTokenValidationStrategy;
 import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
 import com.stormpath.sdk.servlet.organization.DefaultOrganizationNameKeyResolver;
@@ -170,8 +172,6 @@ import com.stormpath.spring.mvc.SpringView;
 import com.stormpath.spring.mvc.TemplateLayoutInterceptor;
 import com.stormpath.spring.mvc.VerifyControllerConfig;
 import com.stormpath.spring.util.SpringPatternMatcher;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,7 +215,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -398,6 +397,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['stormpath.web.social.github.uri'] ?: '/callbacks/github' }")
     protected String githubCallbackUri;
 
+    @Value("#{ @environment['stormpath.web.social.okta.uri'] ?: '/callbacks/okta' }")
+    protected String oktaCallbackUri;
+
     @Value("#{ @environment['stormpath.web.application.domain'] }")
     protected String baseDomainName;
 
@@ -428,6 +430,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['okta.enabled'] ?: true }")
     protected boolean oktaEnabled;
+
+    @Value("#{ @environment['stormpath.client.baseUrl'] }")
+    protected String baseUrl;
 
     @Autowired(required = false)
     protected PathMatcher pathMatcher;
@@ -537,6 +542,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
             addFilter(mgr, stormpathGithubCallbackController(), "github", githubCallbackUri);
             addFilter(mgr, stormpathGoogleCallbackController(), "google", googleCallbackUri);
             addFilter(mgr, stormpathLinkedinCallbackController(), "linkedin", linkedinCallbackUri);
+            if (oktaEnabled) {
+                addFilter(mgr, oktaCallbackController(), "okta", oktaCallbackUri);
+            }
         }
         if (stormpathLogoutConfig().isEnabled()) {
             addFilter(mgr, stormpathLogoutController(), stormpathLogoutConfig());
@@ -640,6 +648,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public Controller stormpathFacebookCallbackController() {
         return configure(new FacebookCallbackController());
+    }
+
+    public Controller oktaCallbackController() {
+        return configure(new OktaOIDCCallbackController());
     }
 
     public Controller stormpathLinkedinCallbackController() {
@@ -794,21 +806,21 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     }
 
     public JwtSigningKeyResolver stormpathJwtSigningKeyResolver() {
-        if (oktaEnabled) {
-            return new JwtSigningKeyResolver() {
-                @Override
-                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result, SignatureAlgorithm alg) {
-                    throw new UnsupportedOperationException("getSigningKey() is not supported");
-                }
-
-                @Override
-                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims) {
-                    return client.instantiate(OktaSigningKeyResolver.class).resolveSigningKey(jwsHeader, claims);
-                }
-            };
-        } else {
+//        if (oktaEnabled) {
+//            return new JwtSigningKeyResolver() {
+//                @Override
+//                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result, SignatureAlgorithm alg) {
+//                    throw new UnsupportedOperationException("getSigningKey() is not supported");
+//                }
+//
+//                @Override
+//                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims) {
+//                    return client.instantiate(OktaSigningKeyResolver.class).resolveSigningKey(jwsHeader, claims);
+//                }
+//            };
+//        } else {
             return new JwtTokenSigningKeyResolver();
-        }
+//        }
     }
 
     public RequestEventListener stormpathRequestEventListener() {
@@ -989,7 +1001,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
 
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
-        return new ExternalAccountStoreModelFactory();
+        if (oktaEnabled) {
+            // TODO clean up this hack to get the clientId ?
+            return new OktaExternalAccountStoreModelFactory(
+                    baseUrl,
+                    ((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId()
+            );
+        }
+        else {
+            return new ExternalAccountStoreModelFactory();
+        }
     }
 
     // ========================== Login =======================================

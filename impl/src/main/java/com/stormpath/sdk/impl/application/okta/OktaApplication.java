@@ -18,6 +18,9 @@ import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.OAuthApplication;
 import com.stormpath.sdk.application.okta.OktaForgotPasswordRequest;
 import com.stormpath.sdk.application.okta.OktaForgotPasswordResult;
+import com.stormpath.sdk.application.okta.OktaIdentityProviderList;
+import com.stormpath.sdk.application.okta.OktaTokenRequest;
+import com.stormpath.sdk.application.okta.OktaTokenResponse;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus;
 import com.stormpath.sdk.application.webconfig.ChangePasswordConfig;
@@ -30,6 +33,7 @@ import com.stormpath.sdk.application.webconfig.VerifyEmailConfig;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
+import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.CustomData;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
@@ -40,9 +44,9 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.application.DefaultApplicationAccountStoreMapping;
-import com.stormpath.sdk.impl.application.DefaultApplicationAccountStoreMappingList;
-import com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequest;
 import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
+import com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequest;
+import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
@@ -54,7 +58,9 @@ import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantReq
 import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
 import com.stormpath.sdk.impl.okta.OktaApiPaths;
-import com.stormpath.sdk.impl.resource.AbstractCollectionResource;
+import com.stormpath.sdk.impl.provider.DefaultFacebookProvider;
+import com.stormpath.sdk.impl.provider.IdentityProviderType;
+import com.stormpath.sdk.impl.provider.ProviderAccountResolver;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.oauth.IdSiteAuthenticator;
@@ -67,16 +73,20 @@ import com.stormpath.sdk.oauth.OAuthStormpathFactorChallengeGrantRequestAuthenti
 import com.stormpath.sdk.oauth.OAuthStormpathSocialGrantRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthTokenRevocator;
 import com.stormpath.sdk.organization.OrganizationCriteria;
+import com.stormpath.sdk.provider.OktaProvider;
+import com.stormpath.sdk.provider.OktaProviderData;
+import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.provider.social.UserInfoMappingRules;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.saml.SamlCallbackHandler;
 import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
 import com.stormpath.sdk.saml.SamlPolicy;
 import com.stormpath.sdk.tenant.Tenant;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -87,31 +97,30 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     private final Directory OKTA_TENANT_DIR;
 
-    private final ApplicationAccountStoreMappingCollectionBackedList applicationAccountStoreMappingList;
+    private final ApplicationAccountStoreMapping defaultAccountStoreMapping;
 
     private String name;
 
-    public OktaApplication(InternalDataStore dataStore) {
-        this(dataStore, new LinkedHashMap<String, Object>());
+    public OktaApplication(String clientId, InternalDataStore dataStore) {
+        this(clientId, dataStore, new LinkedHashMap<String, Object>());
     }
 
-    public OktaApplication(InternalDataStore dataStore, Map<String, Object> properties) {
+    public OktaApplication(String clientId, InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
-        this.OKTA_TENANT_DIR = new OktaDirectory(dataStore);
+        this.OKTA_TENANT_DIR = new OktaDirectory(clientId, dataStore);
 
         Map<String, Object> mappingProperties = new LinkedHashMap<>();
         mappingProperties.put("href", dataStore.getBaseUrl());
         mappingProperties.put("application", this);
         mappingProperties.put("accountStore", OKTA_TENANT_DIR);
 
-        ApplicationAccountStoreMapping mapping = new DefaultApplicationAccountStoreMapping(dataStore, mappingProperties) {
+        defaultAccountStoreMapping = new DefaultApplicationAccountStoreMapping(dataStore, mappingProperties) {
             @Override
             public AccountStore getAccountStore() {
                 return OKTA_TENANT_DIR;
             }
         };
-        mapping.setAccountStore(OKTA_TENANT_DIR);
-        applicationAccountStoreMappingList = new ApplicationAccountStoreMappingCollectionBackedList(Collections.singletonList(mapping));
+        defaultAccountStoreMapping.setAccountStore(OKTA_TENANT_DIR);
     }
 
     @Override
@@ -277,12 +286,43 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     @Override
     public ProviderAccountResult getAccount(ProviderAccountRequest request) {
-        throw new UnsupportedOperationException("getAccount() method hasn't been implemented.");
+
+        return new DefaultOktaAuthNAuthenticator(getDataStore()).getAccount(request);
     }
 
     @Override
     public ApplicationAccountStoreMappingList getAccountStoreMappings() {
-        return applicationAccountStoreMappingList;
+
+        OktaIdentityProviderList oktaIdentityProviderList = getDataStore().getResource(OktaApiPaths.API_V1 + "idps", OktaIdentityProviderList.class);
+
+        Collection<ApplicationAccountStoreMapping> mappingList = new ArrayList<>();
+        mappingList.add(defaultAccountStoreMapping);
+
+        // TODO: fix nested classes
+        for(final OktaProvider provider : oktaIdentityProviderList.getIdentityProviders() ) {
+            ApplicationAccountStoreMapping mapping = new OktaApplicationAccountStoreMapping(this.getDataStore());
+            mapping.setApplication(this);
+            mapping.setAccountStore(new AccountStore() {
+                @Override
+                public void accept(AccountStoreVisitor visitor) {
+                    visitor.visit(new DefaultDirectory(getDataStore()) {
+                        @Override
+                        public Provider getProvider() {
+                            return provider;
+                        }
+                    });
+                }
+
+                @Override
+                public String getHref() {
+                    return null;
+                }
+            });
+
+            mappingList.add(mapping);
+        }
+
+        return new ApplicationAccountStoreMappingCollectionBackedList(mappingList);
     }
 
     @Override
@@ -492,8 +532,6 @@ public class OktaApplication extends AbstractResource implements Application, OA
                 throw new UnsupportedOperationException("getTenant() method hasn't been implemented.");
             }
         };
-
-        //throw new UnsupportedOperationException("getWebConfig() method hasn't been implemented.");
     }
 
     @Override
@@ -583,13 +621,13 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     @Override
     public OAuthTokenRevocator createOAuhtTokenRevocator() {
-        return new DefaultOAuthTokenRevocator(this, getDataStore(), "/oauth2/v1/token");
+        return new DefaultOAuthTokenRevocator(this, getDataStore(), "/oauth2/v1/revoke");
     }
 
 
     public static class ApplicationAccountStoreMappingCollectionBackedList implements ApplicationAccountStoreMappingList {
 
-        final private Collection<ApplicationAccountStoreMapping> accountStoreMappings;
+        private final Collection<ApplicationAccountStoreMapping> accountStoreMappings;
 
         public ApplicationAccountStoreMappingCollectionBackedList(Collection<ApplicationAccountStoreMapping> accountStoreMappings) {
             this.accountStoreMappings = accountStoreMappings;

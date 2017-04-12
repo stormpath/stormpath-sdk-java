@@ -28,11 +28,9 @@ import com.stormpath.sdk.client.DefaultPairedApiKey;
 import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.impl.api.ClientApiKey;
-import com.stormpath.sdk.impl.application.okta.DefaultOktaSigningKeyResolver;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.servlet.application.okta.OktaJwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
 
@@ -212,14 +210,6 @@ public class DefaultServletContextClientFactory implements ServletContextClientF
                     .build();
 
             ((PairedApiKey)client.getApiKey()).setSecondaryApiKey(secondary);
-
-
-            try {
-                OktaJwtSigningKeyResolver keyResolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
-                keyResolver.setDataStore(client.getDataStore());
-            } catch (ServletException e) {
-                throw new UnsupportedOperationException("Expected 'stormpath.web.account.jwt.signingKey.resolver', to be of type 'DefaultOktaSigningKeyResolver'", e); // TODO: user interface if this works
-            }
 
         }
         return client;

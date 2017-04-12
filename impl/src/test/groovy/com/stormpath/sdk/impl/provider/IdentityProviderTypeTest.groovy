@@ -31,13 +31,18 @@ class IdentityProviderTypeTest {
     @Test
     void testMaps() {
 
-        final int PROVIDER_COUNT = 9;
+        final int PROVIDER_COUNT = 10;
 
         assertEquals(IdentityProviderType.IDENTITY_PROVIDER_MAP.size(), PROVIDER_COUNT)
         IdentityProviderType item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("stormpath");
         assertEquals(item.getNameKey(), "stormpath")
         assertEquals(item.getProviderClass(), StormpathProvider.class)
         assertEquals(item.getProviderDataClass(), ProviderData.class)
+        
+        item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("okta")
+        assertEquals(item.getNameKey(), "okta")
+        assertEquals(item.getProviderClass(), OktaProvider.class)
+        assertEquals(item.getProviderDataClass(), OktaProviderData.class)
 
         item = IdentityProviderType.IDENTITY_PROVIDER_MAP.get("facebook");
         assertEquals(item.getNameKey(), "facebook")

@@ -19,6 +19,9 @@ public interface OktaTokenRequest extends Resource {
     String getPassword();
     OktaTokenRequest setPassword(String password);
 
+    String getCode();
+    OktaTokenRequest setCode(String code);
+
     String getScope();
     OktaTokenRequest setScope(String scope);
 

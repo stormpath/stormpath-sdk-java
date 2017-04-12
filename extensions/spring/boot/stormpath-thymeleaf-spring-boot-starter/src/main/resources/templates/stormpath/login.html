@@ -85,13 +85,15 @@
                             </button>
                             <button th:case="google" class="btn btn-social btn-google"
                                     th:id="${accountStore.provider.clientId}"
-                                    th:attr="data-scope=${accountStore.provider.scope}, data-hd=${accountStore.provider.hd}, data-display=${accountStore.provider.display}, data-access_type=${accountStore.provider.accessType}"
+                                    th:attr="data-scope=${accountStore.provider.scope}, data-authorize_uri=${accountStore..authorizeUri}, data-idp=${accountStore.provider.idp}"
                             >
                                 <i class="fa fa-google"></i>
                                 <span th:text="google">|Provider|</span>
                             </button>
                             <button th:case="*" class="btn btn-social" th:classappend="${'btn-'+accountStore.provider.providerId}"
-                                    th:id="${accountStore.provider.clientId}" th:attr="data-scope=${accountStore.provider.scope}">
+                                    th:id="${accountStore.provider.clientId}"
+                                    th:attr="data-scope=${accountStore.provider.scope}, data-authorize_uri=${accountStore.authorizeUri}, data-idp=${accountStore.provider.idp}"
+                            >
                                 <i class="fa" th:classappend="${'fa-'+accountStore.provider.providerId}"></i>
                                 <span th:text="${accountStore.provider.providerId}">|Provider|</span>
                             </button>

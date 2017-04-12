@@ -3,6 +3,8 @@ package com.stormpath.sdk.impl.authc
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.application.okta.OktaTokenRequest
 import com.stormpath.sdk.application.okta.OktaTokenResponse
+import com.stormpath.sdk.application.okta.TokenIntrospectRequest
+import com.stormpath.sdk.application.okta.TokenIntrospectResponse
 import com.stormpath.sdk.impl.application.okta.OktaSigningKeyResolver
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.http.HttpHeaders
@@ -47,7 +49,8 @@ class OktaAuthNAuthenticatorTest {
         def mockDataStore = createMock(InternalDataStore)
         def oktaTokenRequest = createMock(OktaTokenRequest)
         def oktaTokenResponse = createMock(OktaTokenResponse)
-        def signingKeyResolver = createMock(OktaSigningKeyResolver)
+        def oktaTokenIntospectRequest = createMock(TokenIntrospectRequest)
+        def oktaTokenIntospectResponse = createMock(TokenIntrospectResponse)
         def account = createMock(Account)
 
         expect(mockDataStore.instantiate(OktaTokenRequest)).andReturn(oktaTokenRequest)
@@ -61,19 +64,23 @@ class OktaAuthNAuthenticatorTest {
         expect(mockDataStore.create("/oauth2/v1/token", oktaTokenRequest, OktaTokenResponse, httpHeaders)).andReturn(oktaTokenResponse)
         expect(oktaTokenResponse.getAccessToken()).andReturn(accessToken)
 
-        // TODO: pull this out into own class
-        expect(mockDataStore.instantiate(OktaSigningKeyResolver)).andReturn(signingKeyResolver)
-        expect(signingKeyResolver.resolveSigningKey(anyObject(JwsHeader), anyObject(Claims))).andReturn(getKey(key))
+        expect(mockDataStore.instantiate(TokenIntrospectRequest)).andReturn(oktaTokenIntospectRequest)
+        expect(oktaTokenIntospectRequest.setToken(accessToken)).andReturn(oktaTokenIntospectRequest)
+        expect(oktaTokenIntospectRequest.setTokenTypeHint("access_token")).andReturn(oktaTokenIntospectRequest)
+        expect(mockDataStore.create("/oauth2/v1/introspect", oktaTokenIntospectRequest, TokenIntrospectResponse, httpHeaders)).andReturn(oktaTokenIntospectResponse)
+        expect(oktaTokenIntospectResponse.isActive()).andReturn(true)
+        expect(oktaTokenIntospectResponse.getUid()).andReturn("011110")
+        expect(oktaTokenIntospectResponse.getScope()).andReturn("a_scope")
         expect(mockDataStore.getResource("/api/v1/users/011110", Account)).andReturn(account)
 
 
-        replay mockDataStore, oktaTokenRequest, oktaTokenResponse, signingKeyResolver
+        replay mockDataStore, oktaTokenRequest, oktaTokenResponse, oktaTokenIntospectRequest, oktaTokenIntospectResponse
 
         def authResult = new DefaultOktaAuthNAuthenticator(mockDataStore).authenticate(authRequest)
         assertThat authResult.getHref(), nullValue()
         assertThat authResult.getAccount(), sameInstance(account)
 
-        verify mockDataStore, oktaTokenRequest, oktaTokenResponse, signingKeyResolver
+        verify mockDataStore, oktaTokenRequest, oktaTokenResponse, oktaTokenIntospectRequest, oktaTokenIntospectResponse
     }
 
 

@@ -4,30 +4,28 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.okta.OktaTokenResponse;
 import com.stormpath.sdk.application.okta.OktaTokenRequest;
+import com.stormpath.sdk.application.okta.TokenIntrospectRequest;
+import com.stormpath.sdk.application.okta.TokenIntrospectResponse;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
 import com.stormpath.sdk.error.Error;
-import com.stormpath.sdk.impl.application.okta.OktaSigningKeyResolver;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
+import com.stormpath.sdk.impl.provider.DefaultOktaProviderAccountResult;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.provider.OktaProviderData;
+import com.stormpath.sdk.provider.ProviderAccountRequest;
+import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.ResourceException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SigningKeyResolver;
+import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -45,6 +43,27 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
     }
 
     @Override
+    public ProviderAccountResult getAccount(ProviderAccountRequest request) {
+
+        OktaProviderData oktaProviderData = (OktaProviderData) request.getProviderData();
+
+        OktaTokenRequest tokenRequest = dataStore.instantiate(OktaTokenRequest.class);
+        tokenRequest.setCode(oktaProviderData.getCode());
+        tokenRequest.setGrantType("authorization_code");
+        tokenRequest.setRedirectUri(request.getRedirectUri());
+
+        OktaTokenResponse oktaTokenResponse = dataStore.create("/oauth2/v1/token", tokenRequest, OktaTokenResponse.class, getHeaders());
+
+        // check if access key is valid
+        TokenIntrospectResponse tokenIntrospectResponse = resolveAccessToken(oktaTokenResponse.getAccessToken());
+
+        // validate the key we just received
+        final String userHref = getAccountHref(tokenIntrospectResponse);
+
+        return new DefaultOktaProviderAccountResult(dataStore.getResource(userHref, Account.class), oktaTokenResponse);
+    }
+
+    @Override
     public AuthenticationResult authenticate(AuthenticationRequest request) {
 
         Assert.isInstanceOf(DefaultUsernamePasswordRequest.class, request, "Only 'DefaultUsernamePasswordRequest' requests are supported.");
@@ -52,19 +71,15 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
 
         final OktaTokenResponse oktaTokenResponse = doAuthRequest(usernamePasswordRequest);
 
+        // check if access key is valid
+        TokenIntrospectResponse tokenIntrospectResponse = resolveAccessToken(oktaTokenResponse.getAccessToken());
+
         // validate the key we just received
-        final Jwt<Header, Claims> jwt = parseJwt(oktaTokenResponse.getAccessToken());
-        String userId = jwt.getBody().get("uid", String.class);
+        final String userHref = getAccountHref(tokenIntrospectResponse);
 
-        final String userHref = "/api/v1/users/" + userId;
+        final Set<String> scopes = Strings.delimitedListToSet(tokenIntrospectResponse.getScope(), "");
 
-        Map<String, Object> authMap = new LinkedHashMap<>();
-        Map<String, Object> accountMap = new LinkedHashMap<>();
-        authMap.put("account", accountMap);
-        accountMap.put("href", userHref);
-
-        final Set<String> scopes = new HashSet<>(jwt.getBody().get("scp", ArrayList.class));
-
+        // TODO: fix nested class
         return new AccessTokenResult() {
             @Override
             public com.stormpath.sdk.oauth.TokenResponse getTokenResponse() {
@@ -98,22 +113,36 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         };
     }
 
+    private TokenIntrospectResponse resolveAccessToken(String accessToken) {
+
+        TokenIntrospectRequest request = dataStore.instantiate(TokenIntrospectRequest.class)
+            .setToken(accessToken)
+            .setTokenTypeHint("access_token");
+
+        TokenIntrospectResponse tokenIntrospectResponse = dataStore.create("/oauth2/v1/introspect", request, TokenIntrospectResponse.class, getHeaders());
+
+        // fail if token is invalid
+        assertValidAccessToken(tokenIntrospectResponse);
+
+        return tokenIntrospectResponse;
+    }
+
+    public void assertValidAccessToken(TokenIntrospectResponse tokenResponse) {
+
+        if(!tokenResponse.isActive()) {
+            // FIXME: we should not use JWT exceptions here as this string should _not_ be treated as a JWT
+            throw new JwtException("Access token is NOT active.");
+        }
+
+    }
+
     @Override
     public void assertValidAccessToken(String accessToken) {
-        parseJwt(accessToken);
+        assertValidAccessToken(resolveAccessToken(accessToken));
     }
 
-    private Jwt<Header, Claims> parseJwt(String accessToken) {
-
-        SigningKeyResolver keyResolver = dataStore.instantiate(OktaSigningKeyResolver.class);
-        return Jwts.parser()
-                .setSigningKeyResolver(keyResolver)
-                .parse(accessToken);
-    }
 
     private OktaTokenResponse doAuthRequest(DefaultUsernamePasswordRequest request) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         // hit the oauth token endpoint
         OktaTokenRequest tokenRequest = this.dataStore.instantiate(OktaTokenRequest.class)
@@ -124,12 +153,13 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
 
         try {
 
-            return this.dataStore.create("/oauth2/v1/token", tokenRequest, OktaTokenResponse.class, httpHeaders);
+            return this.dataStore.create("/oauth2/v1/token", tokenRequest, OktaTokenResponse.class, getHeaders());
         }
         catch (final ResourceException e) {
 
             log.debug("Exception thrown while requesting token, assuming this is an Invalid username or password", e);
 
+            // TODO: fix nested class
             throw  new ResourceException(new Error() {
                 @Override
                 public int getStatus() {
@@ -165,8 +195,18 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         }
     }
 
+    private String getAccountHref(TokenIntrospectResponse tokenResponse) {
+        return "/api/v1/users/" + tokenResponse.getUid();
+    }
+
     @Override
     public String getHref() {
         return null;
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        return httpHeaders;
     }
 }

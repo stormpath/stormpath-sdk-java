@@ -18,6 +18,7 @@ package com.stormpath.sdk.servlet.application;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.impl.application.okta.OktaApplication;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
@@ -87,7 +88,8 @@ public class DefaultApplicationResolver implements ApplicationResolver {
 
         Config config = getConfig(servletContext);
         if (Boolean.valueOf(config.get("okta.enabled"))) {
-            return new OktaApplication((InternalDataStore) client.getDataStore());
+            // TODO: There must be a better way to get the clientId
+            return new OktaApplication(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(), (InternalDataStore) client.getDataStore());
         }
 
         //this is a local cached href value that we use in case we have to query applications (see below):

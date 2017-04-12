@@ -27,6 +27,7 @@ import com.stormpath.sdk.servlet.mvc.provider.FacebookCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GithubCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.GoogleCallbackController;
 import com.stormpath.sdk.servlet.mvc.provider.LinkedinCallbackController;
+import com.stormpath.sdk.servlet.mvc.provider.OktaOIDCCallbackController;
 import com.stormpath.sdk.servlet.util.ServletUtils;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.slf4j.Logger;
@@ -86,6 +87,9 @@ public class SocialCallbackSpringSecurityProcessingFilter extends HttpFilter imp
     protected Controller stormpathLinkedinCallbackController;
 
     @Autowired
+    protected Controller oktaCallbackController;
+
+    @Autowired
     @Qualifier("stormpathAuthenticationFailureHandler")
     protected AuthenticationFailureHandler failureHandler;
 
@@ -105,6 +109,10 @@ public class SocialCallbackSpringSecurityProcessingFilter extends HttpFilter imp
     @Value("#{ @environment['stormpath.web.social.github.uri'] ?: '/callbacks/github' }")
     protected String githubCallbackUri;
 
+    @Value("#{ @environment['stormpath.web.social.okta.uri'] ?: '/callbacks/okta' }")
+    protected String oktaCallbackUri;
+
+
     public void afterPropertiesSet() {
     }
 
@@ -122,6 +130,8 @@ public class SocialCallbackSpringSecurityProcessingFilter extends HttpFilter imp
                 providerAccountRequest = ((GithubCallbackController)stormpathGithubCallbackController).getAccountProviderRequest(request);
             } else if (requestUri.equals(linkedinCallbackUri)) {
                 providerAccountRequest = ((LinkedinCallbackController)stormpathLinkedinCallbackController).getAccountProviderRequest(request);
+            } else if (requestUri.equals(oktaCallbackUri)) {
+                providerAccountRequest = ((OktaOIDCCallbackController)oktaCallbackController).getAccountProviderRequest(request);
             }
         } catch (Exception e) {
             logger.error("Exception handling social callback request", e);
@@ -141,7 +151,7 @@ public class SocialCallbackSpringSecurityProcessingFilter extends HttpFilter imp
                 failureHandler.onAuthenticationFailure(request, response, new LockedException("Unverified account."));
             }
 
-            Authentication authentication = stormpathAuthenticationManager.authenticate(new ProviderAuthenticationToken(account));
+            Authentication authentication = stormpathAuthenticationManager.authenticate(new ProviderAuthenticationToken(result));
             SecurityContextHolder.clearContext();
             SecurityContextHolder.getContext().setAuthentication(authentication);
             successHandler.onAuthenticationSuccess(request, response, authentication);

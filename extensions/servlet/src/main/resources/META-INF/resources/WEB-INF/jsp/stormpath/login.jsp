@@ -115,9 +115,9 @@
                                             <button class="btn btn-social btn-google"
                                                     id="${accountStore.provider.clientId}"
                                                     data-scope="${accountStore.provider.scope}"
-                                                    data-hd="${accountStore.provider.hd}"
                                                     data-display="${accountStore.provider.display}"
                                                     data-access_type="${accountStore.provider.accessType}"
+                                                    data-authorizeUri="${accountStore.authorizeUri}"
                                             >
                                                 <span class="fa fa-google"></span>
                                                 <c:out value="google"/>
@@ -126,7 +126,10 @@
                                         <c:otherwise>
                                             <button class="btn btn-social btn-${accountStore.provider.providerId}"
                                                     id="${accountStore.provider.clientId}"
-                                                    data-scope="${accountStore.provider.scope}">
+                                                    data-wtf="odd"
+                                                    data-scope1="${accountStore.provider.scope} FOOBAR"
+                                                    data-authorizeUri="${accountStore.authorizeUri}"
+                                            >
                                                 <span class="fa fa-${accountStore.provider.providerId}"></span>
                                                 <c:out value="${accountStore.provider.providerId}"/>
                                             </button>

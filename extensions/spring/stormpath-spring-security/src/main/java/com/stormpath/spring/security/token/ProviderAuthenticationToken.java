@@ -17,6 +17,7 @@ package com.stormpath.spring.security.token;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.provider.ProviderAccountResult;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 /**
@@ -26,13 +27,19 @@ public class ProviderAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object principal;
     private final Account account;
+    private ProviderAccountResult providerAccountResult = null;
 
     public ProviderAuthenticationToken(Account account) {
         super(null);
-        Assert.notNull(account.getEmail(), "email cannot be null");
         Assert.notNull(account, "account cannot be null");
+        Assert.notNull(account.getEmail(), "email cannot be null");
         this.principal = account.getEmail();
         this.account = account;
+    }
+
+    public ProviderAuthenticationToken(ProviderAccountResult providerAccountResult) {
+        this(providerAccountResult.getAccount());
+        this.providerAccountResult = providerAccountResult;
     }
 
     /**
@@ -40,7 +47,7 @@ public class ProviderAuthenticationToken extends AbstractAuthenticationToken {
      */
     @Override
     public Object getCredentials() {
-        return null; // already authenticated via IdSite
+        return providerAccountResult;
     }
 
     /**

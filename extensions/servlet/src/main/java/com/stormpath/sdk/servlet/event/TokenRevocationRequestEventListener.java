@@ -96,8 +96,13 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
                 OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(application).revoke(revocationRequest);
             } catch (ResourceException e) {
                 com.stormpath.sdk.error.Error error = e.getStormpathError();
-                String message = error.getMessage();
-                log.warn("There was an error trying to revoke a token", message);
+                String message = "There was an error trying to revoke a token: {}";
+
+                if (log.isDebugEnabled()) {
+                    log.warn(message, error.getMessage(), e);
+                } else {
+                    log.warn(message, error.getMessage());
+                }
             }
         }
     }

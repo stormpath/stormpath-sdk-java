@@ -7,6 +7,8 @@ import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.AccessTokenResult;
+import com.stormpath.sdk.provider.OktaProviderAccountResult;
+import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.spring.security.token.JwtProviderAuthenticationToken;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
@@ -37,12 +39,14 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
 
         try {
             if (authentication instanceof ProviderAuthenticationToken) {
-                returnToken = authentication;
+                OktaAuthNAuthenticator authNAuthenticator = client.instantiate(OktaAuthNAuthenticator.class);
+                authNAuthenticator.assertValidAccessToken(
+                        ((OktaProviderAccountResult) authentication.getCredentials()).getTokenResponse().getAccessToken()
+                );
+                return authentication;
             }
             else if (authentication instanceof JwtProviderAuthenticationToken) {
-                // TODO: add tests around this flow
-                OktaAuthNAuthenticator authNAuthenticator = client.instantiate(OktaAuthNAuthenticator.class);
-                authNAuthenticator.assertValidAccessToken(((JwtProviderAuthenticationToken) authentication).getAccessToken());
+                // FIXME: validate
                 return authentication;
             }
             else {

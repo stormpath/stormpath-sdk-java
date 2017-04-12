@@ -16,13 +16,13 @@
 $('.btn-google').click(function (event) {
     event.preventDefault();
     var $btn = $('.btn-google');
-    googleLogin($btn.attr('id'), $btn.data('scope'), $btn.data('hd'), $btn.data('display'), $btn.data('access_type'));
+    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'));
 });
 
 $('.btn-facebook').click(function (event) {
     event.preventDefault();
     var $btn = $('.btn-facebook');
-    facebookLogin($btn.attr('id'), $btn.data('scope'));
+    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'));
 });
 
 $('.btn-github').click(function (event) {
@@ -34,7 +34,7 @@ $('.btn-github').click(function (event) {
 $('.btn-linkedin').click(function (event) {
     event.preventDefault();
     var $btn = $('.btn-linkedin');
-    linkedinLogin($btn.attr('id'), $btn.data('scope'));
+    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'));
 });
 
 $('.btn-saml').click(function (event) {
@@ -62,6 +62,19 @@ function linkedinLogin(clientId, scope) {
                 state: 'oauthState' //linkedin requires state to be pass all the time.
             }
         )
+    );
+}
+
+function oktaLogin(authorizeUri, scope, idp) {
+
+    var params = {
+        scope: scope,
+        idp: idp,
+        redirect_uri: baseUrl() + '/callbacks/okta'
+    };
+
+    window.location.replace(
+        buildUrl(authorizeUri, params)
     );
 }
 
@@ -141,6 +154,10 @@ function buildUrl(url, params) {
 
     if (next) {
         params.state = next;
+    }
+
+    if (!params.state) {
+        params.state = '/';
     }
 
     if (url.includes('?')) {

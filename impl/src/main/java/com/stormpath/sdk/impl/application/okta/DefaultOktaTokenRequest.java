@@ -18,6 +18,7 @@ public class DefaultOktaTokenRequest extends AbstractInstanceResource implements
     private static final StringProperty REDIRECT_URI = new StringProperty("redirect_uri");
     private static final StringProperty SCOPE = new StringProperty("scope");
     private static final StringProperty GRANT_TYPE = new StringProperty("grant_type");
+    private static final StringProperty CODE = new StringProperty("code");
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(USERNAME, PASSWORD, REDIRECT_URI, SCOPE, GRANT_TYPE);
 
@@ -82,6 +83,15 @@ public class DefaultOktaTokenRequest extends AbstractInstanceResource implements
     @Override
     public OktaTokenRequest setScope(String scope) {
         setProperty(SCOPE, scope);
+        return this;
+    }
+
+    public String getCode() {
+        return getString(CODE);
+    }
+
+    public OktaTokenRequest setCode(String code) {
+        setProperty(CODE, code);
         return this;
     }
 }

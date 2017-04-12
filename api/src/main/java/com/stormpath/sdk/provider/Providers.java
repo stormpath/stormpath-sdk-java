@@ -101,5 +101,7 @@ public final class Providers {
      */
     public static final GenericOAuth2ProviderRequestFactory OAUTH2 = (GenericOAuth2ProviderRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultGenericOAuth2ProviderRequestFactory");
 
+    public static final OktaRequestFactory OKTA = (OktaRequestFactory) Classes.newInstance("com.stormpath.sdk.impl.provider.DefaultOktaProviderRequestFactory");
+
 }
 

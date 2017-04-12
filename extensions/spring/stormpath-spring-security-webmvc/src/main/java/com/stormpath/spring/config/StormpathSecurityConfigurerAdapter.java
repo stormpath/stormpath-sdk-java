@@ -169,6 +169,9 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
     @Value("#{ @environment['stormpath.web.social.facebook.uri'] ?: '/callbacks/facebook' }")
     protected String facebookCallbackUri;
 
+    @Value("#{ @environment['stormpath.web.social.okta.uri'] ?: '/callbacks/okta' }")
+    protected String oktaCallbackUri;
+
     @Value("#{ @environment['stormpath.web.social.linkedin.uri'] ?: '/callbacks/linkedin' }")
     protected String linkedinCallbackUri;
 
@@ -247,6 +250,8 @@ public class StormpathSecurityConfigurerAdapter extends AbstractStormpathSecurit
                     .antMatchers(githubCallbackUri).permitAll()
                     .antMatchers(facebookCallbackUri).permitAll()
                     .antMatchers(linkedinCallbackUri).permitAll()
+                    .antMatchers(oktaCallbackUri).permitAll()
+
                     .and().exceptionHandling().authenticationEntryPoint(stormpathAuthenticationEntryPoint); //Fix for https://github.com/stormpath/stormpath-sdk-java/issues/714
             }
 

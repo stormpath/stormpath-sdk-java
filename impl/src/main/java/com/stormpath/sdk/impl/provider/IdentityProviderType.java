@@ -34,6 +34,8 @@ public enum IdentityProviderType {
 
     STORMPATH("stormpath", StormpathProvider.class, ProviderData.class),
 
+    OKTA("okta", OktaProvider.class, OktaProviderData.class),
+
     FACEBOOK("facebook", FacebookProvider.class, FacebookProviderData.class),
 
     /**

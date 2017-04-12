@@ -59,8 +59,6 @@ public abstract class AbstractAccountStoreMapping<T extends AccountStoreMapping>
             accountStore = getDataStore().getResource(href, Group.class);
         } else if (href.contains("/organizations/")){
             accountStore = getDataStore().getResource(href, Organization.class);
-        } else if (href.contains("/api/v1")){
-            accountStore = new OktaDirectory(getDataStore());
         }
         return accountStore;
     }

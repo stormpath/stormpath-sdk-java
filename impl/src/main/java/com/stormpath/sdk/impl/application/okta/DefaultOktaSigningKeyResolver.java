@@ -2,13 +2,11 @@ package com.stormpath.sdk.impl.application.okta;
 
 import com.stormpath.sdk.application.okta.OIDCKey;
 import com.stormpath.sdk.application.okta.OIDCKeysList;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.util.Base64;
+import com.stormpath.sdk.lang.Assert;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
-import io.jsonwebtoken.SigningKeyResolver;
 
 import java.math.BigInteger;
 import java.security.Key;
@@ -50,6 +48,7 @@ public class DefaultOktaSigningKeyResolver implements OktaSigningKeyResolver {
 
         OIDCKeysList keyList = dataStore.getResource("/oauth2/v1/keys", OIDCKeysList.class);
         OIDCKey key = keyList.getKeyById(keyId);
+        Assert.notNull(key, "Key with 'kid' of "+keyId+" could not be found via the /oauth2/v1/keys endpoint.");
 
         try {
 

@@ -396,6 +396,12 @@ public class StormpathWebMvcAutoConfiguration extends AbstractStormpathWebMvcCon
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "oktaCallbackController")
+    public Controller oktaCallbackController() {
+        return super.oktaCallbackController();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(name = "stormpathLinkedinCallbackController")
     public Controller stormpathLinkedinCallbackController() {
         return super.stormpathLinkedinCallbackController();
