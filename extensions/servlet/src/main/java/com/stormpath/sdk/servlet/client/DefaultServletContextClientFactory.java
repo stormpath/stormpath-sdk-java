@@ -18,7 +18,7 @@ package com.stormpath.sdk.servlet.client;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
-import com.stormpath.sdk.application.okta.ApplicationCredentials;
+import com.stormpath.sdk.okta.ApplicationCredentials;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.AuthenticationScheme;
 import com.stormpath.sdk.client.Client;

@@ -29,6 +29,13 @@
                     <div th:if="${account}">
                         <h1 th:inline="text">Hello, [[${account.givenName}]]!</h1>
 
+                        <h1>Groups</h1>
+                        <div th:each="group : ${account.getGroups()}">
+                            <h3 th:if="${group.description}" th:text="${group.name} + ': ' + ${group.description}">Group-Name: Description</h3>
+                            <h3 th:unless="${group.description}" th:text="${group.name}">Group-Name</h3>
+                        </div>
+
+
                         <form th:action="@{/logout}" method="post">
                             <a th:href="@{/restricted}" class="btn btn-primary">Restricted</a>
                             <input type="submit" class="btn btn-danger" value="Logout"/>

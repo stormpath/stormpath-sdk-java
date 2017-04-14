@@ -1,16 +1,18 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.application.okta.OktaTokenResponse;
-import com.stormpath.sdk.application.okta.OktaTokenRequest;
-import com.stormpath.sdk.application.okta.TokenIntrospectRequest;
-import com.stormpath.sdk.application.okta.TokenIntrospectResponse;
+import com.stormpath.sdk.okta.OktaTokenResponse;
+import com.stormpath.sdk.okta.OktaTokenRequest;
+import com.stormpath.sdk.okta.TokenIntrospectRequest;
+import com.stormpath.sdk.okta.TokenIntrospectResponse;
 import com.stormpath.sdk.authc.AuthenticationRequest;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
-import com.stormpath.sdk.error.Error;
-import com.stormpath.sdk.impl.application.okta.DefaultOktaAccessTokenResult;
+import com.stormpath.sdk.error.authc.AccessTokenOAuthException;
+import com.stormpath.sdk.impl.okta.DefaultOktaAccessTokenResult;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.error.ApiAuthenticationExceptionFactory;
+import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.MediaType;
 import com.stormpath.sdk.impl.okta.OktaApiPaths;
@@ -20,9 +22,10 @@ import com.stormpath.sdk.provider.OktaProviderData;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
 import com.stormpath.sdk.resource.ResourceException;
-import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.stormpath.sdk.error.authc.AccessTokenOAuthException.INVALID_ACCESS_TOKEN;
 
 
 /**
@@ -49,7 +52,7 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         tokenRequest.setGrantType("authorization_code");
         tokenRequest.setRedirectUri(request.getRedirectUri());
 
-        OktaTokenResponse oktaTokenResponse = dataStore.create("/oauth2/v1/token", tokenRequest, OktaTokenResponse.class, getHeaders());
+        OktaTokenResponse oktaTokenResponse = dataStore.create(OktaApiPaths.oauthPath("token"), tokenRequest, OktaTokenResponse.class, getHeaders());
 
         // check if access key is valid
         TokenIntrospectResponse tokenIntrospectResponse = resolveAccessToken(oktaTokenResponse.getAccessToken());
@@ -90,7 +93,7 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
             .setToken(accessToken)
             .setTokenTypeHint("access_token");
 
-        TokenIntrospectResponse tokenIntrospectResponse = dataStore.create("/oauth2/v1/introspect", request, TokenIntrospectResponse.class, getHeaders());
+        TokenIntrospectResponse tokenIntrospectResponse = dataStore.create(OktaApiPaths.oauthPath("introspect"), request, TokenIntrospectResponse.class, getHeaders());
 
         // fail if token is invalid
         assertValidAccessToken(tokenIntrospectResponse);
@@ -101,8 +104,8 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
     private void assertValidAccessToken(TokenIntrospectResponse tokenResponse) {
 
         if(!tokenResponse.isActive()) {
-            // FIXME: we should not use JWT exceptions here as this string should _not_ be treated as a JWT
-            throw new JwtException("Access token is NOT active.");
+            throw ApiAuthenticationExceptionFactory
+                    .newOAuthException(AccessTokenOAuthException.class, INVALID_ACCESS_TOKEN);
         }
     }
 
@@ -123,45 +126,25 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
 
         try {
 
-            return this.dataStore.create("/oauth2/v1/token", tokenRequest, OktaTokenResponse.class, getHeaders());
+            return this.dataStore.create(OktaApiPaths.oauthPath("token"), tokenRequest, OktaTokenResponse.class, getHeaders());
         }
         catch (final ResourceException e) {
 
             log.debug("Exception thrown while requesting token, assuming this is an Invalid username or password", e);
 
-            // TODO: fix nested class
-            throw  new ResourceException(new Error() {
-                @Override
-                public int getStatus() {
-                    return e.getStatus();
-                }
+            // TODO: i18n? This String is also hard coded in the Spring Controller
+            String errorMessage = "Invalid username or password.";
 
-                @Override
-                public int getCode() {
-                    return 0;
-                }
-
-                @Override
-                public String getMessage() {
-                    // TODO: i18n, configure error handler for this type of message?
-                    return "Invalid username or password.";
-                }
-
-                @Override
-                public String getDeveloperMessage() {
-                    return e.getDeveloperMessage();
-                }
-
-                @Override
-                public String getMoreInfo() {
-                    return e.getMoreInfo();
-                }
-
-                @Override
-                public String getRequestId() {
-                    return e.getRequestId();
-                }
-            });
+            // wrap Error so we can set the Message so it is handled correctly on the front end.
+            throw new ResourceException(
+                new DefaultError()
+                    .setMessage(errorMessage)
+                    .setCode(e.getCode())
+                    .setDeveloperMessage(e.getDeveloperMessage())
+                    .setMoreInfo(e.getMoreInfo())
+                    .setRequestId(e.getRequestId())
+                    .setStatus(e.getStatus())
+            );
         }
     }
 

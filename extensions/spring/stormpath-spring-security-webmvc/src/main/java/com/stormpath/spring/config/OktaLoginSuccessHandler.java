@@ -1,25 +1,20 @@
 package com.stormpath.spring.config;
 
 import com.stormpath.sdk.account.Account;
-import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.AuthenticationResultVisitor;
 import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.impl.application.okta.DefaultOktaAccessTokenResult;
+import com.stormpath.sdk.impl.okta.DefaultOktaAccessTokenResult;
 import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.TokenResponse;
 import com.stormpath.sdk.provider.OktaProviderAccountResult;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.spring.security.token.JwtProviderAuthenticationToken;
 import com.stormpath.spring.security.token.ProviderAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Set;
 
 /**
  *
@@ -46,9 +41,8 @@ public class OktaLoginSuccessHandler extends StormpathLoginSuccessHandler {
         }
         else if (authentication instanceof JwtProviderAuthenticationToken) {
 
-            AccessTokenResult authenticationResult = (AccessTokenResult) ((JwtProviderAuthenticationToken) authentication).getAuthenticationResult();
-
-            authenticationResultSaver.set(request, response, authenticationResult);
+            JwtProviderAuthenticationToken tokenAuthentication = (JwtProviderAuthenticationToken) authentication;
+            authenticationResultSaver.set(request, response, tokenAuthentication.getAuthenticationResult());
         }
         else {
             super.saveAccount(request, response, authentication);

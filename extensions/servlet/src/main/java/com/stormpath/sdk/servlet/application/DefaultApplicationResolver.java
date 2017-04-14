@@ -19,10 +19,9 @@ import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.PairedApiKey;
-import com.stormpath.sdk.impl.application.okta.OktaApplication;
+import com.stormpath.sdk.impl.application.OktaApplication;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory;
 import com.stormpath.sdk.servlet.config.Config;
 

@@ -21,7 +21,7 @@ import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.api.ApiKeyResolver;
-import com.stormpath.sdk.impl.application.okta.OktaApplication;
+import com.stormpath.sdk.impl.application.OktaApplication;
 import com.stormpath.sdk.impl.authc.credentials.ApiKeyCredentials;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;
 import com.stormpath.sdk.impl.cache.DisabledCacheManager;
@@ -32,7 +32,6 @@ import com.stormpath.sdk.impl.ds.cache.DefaultCacheResolver;
 import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
 import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.impl.error.OktaError;
 import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.HttpHeadersHolder;
@@ -615,10 +614,9 @@ public class DefaultDataStore implements InternalDataStore {
 
             com.stormpath.sdk.error.Error error;
             if (oktaEnabled) {
-                OktaError oktaError = new OktaError(body);
                 // Okta Error response doesn't have status
-                oktaError.setProperty(OktaError.STATUS.getName(), response.getHttpStatus());
-                error = oktaError;
+                error = new DefaultError(body)
+                        .setStatus(response.getHttpStatus());
             } else {
                 error = new DefaultError(body);
             }

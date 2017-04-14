@@ -1,16 +1,13 @@
 package com.stormpath.sdk.impl.authc
 
 import com.stormpath.sdk.account.Account
-import com.stormpath.sdk.application.okta.OktaTokenRequest
-import com.stormpath.sdk.application.okta.OktaTokenResponse
-import com.stormpath.sdk.application.okta.TokenIntrospectRequest
-import com.stormpath.sdk.application.okta.TokenIntrospectResponse
-import com.stormpath.sdk.impl.application.okta.OktaSigningKeyResolver
+import com.stormpath.sdk.okta.OktaTokenRequest
+import com.stormpath.sdk.okta.OktaTokenResponse
+import com.stormpath.sdk.okta.TokenIntrospectRequest
+import com.stormpath.sdk.okta.TokenIntrospectResponse
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.http.HttpHeaders
 import com.stormpath.sdk.impl.http.MediaType
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.impl.DefaultClaims
@@ -70,7 +67,6 @@ class OktaAuthNAuthenticatorTest {
         expect(mockDataStore.create("/oauth2/v1/introspect", oktaTokenIntospectRequest, TokenIntrospectResponse, httpHeaders)).andReturn(oktaTokenIntospectResponse)
         expect(oktaTokenIntospectResponse.isActive()).andReturn(true)
         expect(oktaTokenIntospectResponse.getUid()).andReturn("011110")
-        expect(oktaTokenIntospectResponse.getScope()).andReturn("a_scope")
         expect(mockDataStore.getResource("/api/v1/users/011110", Account)).andReturn(account)
 
 

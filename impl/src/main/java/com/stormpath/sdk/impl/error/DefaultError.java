@@ -61,9 +61,19 @@ public class DefaultError extends AbstractResource implements Error, Serializabl
         return getInt(STATUS);
     }
 
+    public DefaultError setStatus(int status) {
+        setProperty(STATUS, status);
+        return this;
+    }
+
     @Override
     public int getCode() {
         return getInt(CODE);
+    }
+
+    public DefaultError setCode(int code) {
+        setProperty(CODE, code);
+        return this;
     }
 
     @Override
@@ -71,9 +81,19 @@ public class DefaultError extends AbstractResource implements Error, Serializabl
         return getString(MESSAGE);
     }
 
+    public DefaultError setMessage(String message) {
+        setProperty(MESSAGE, message);
+        return this;
+    }
+
     @Override
     public String getDeveloperMessage() {
         return getString(DEV_MESSAGE);
+    }
+
+    public DefaultError setDeveloperMessage(String message) {
+        setProperty(DEV_MESSAGE, message);
+        return this;
     }
 
     @Override
@@ -81,9 +101,20 @@ public class DefaultError extends AbstractResource implements Error, Serializabl
         return getString(MORE_INFO);
     }
 
+    public DefaultError setMoreInfo(String moreInfo) {
+        setProperty(MORE_INFO, moreInfo);
+        return this;
+    }
+
     @Override
     public String getRequestId() {
        return getString(REQUEST_ID);
+    }
+
+
+    public DefaultError setRequestId(String requestId) {
+        setProperty(REQUEST_ID, requestId);
+        return this;
     }
 
 }

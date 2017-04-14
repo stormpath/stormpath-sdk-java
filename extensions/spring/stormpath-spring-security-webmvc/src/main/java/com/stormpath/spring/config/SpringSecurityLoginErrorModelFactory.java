@@ -25,6 +25,7 @@ public class SpringSecurityLoginErrorModelFactory extends AbstractErrorModelFact
         "Invalid username or password",
         "Login and password required",
         "invalid_grant" // for Okta
+        ,"User canceled the social login request."
     );
 
     @Autowired

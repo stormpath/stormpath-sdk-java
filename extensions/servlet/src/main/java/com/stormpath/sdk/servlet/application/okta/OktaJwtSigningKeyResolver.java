@@ -2,7 +2,7 @@ package com.stormpath.sdk.servlet.application.okta;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.ds.DataStore;
-import com.stormpath.sdk.impl.application.okta.OktaSigningKeyResolver;
+import com.stormpath.sdk.impl.okta.OktaSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;

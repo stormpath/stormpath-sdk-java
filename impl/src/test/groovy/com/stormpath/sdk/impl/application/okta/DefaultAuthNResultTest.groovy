@@ -1,14 +1,14 @@
 package com.stormpath.sdk.impl.application.okta
 
+import com.stormpath.sdk.impl.okta.DefaultAuthNResult
 
-import static org.easymock.EasyMock.*
 import static org.hamcrest.Matchers.*
 import static org.hamcrest.MatcherAssert.*
 
 import org.testng.annotations.Test
 
 /**
- * Tests for {@link DefaultAuthNResult}.
+ * Tests for {@link com.stormpath.sdk.impl.okta.DefaultAuthNResult}.
  */
 class DefaultAuthNResultTest {
 

@@ -16,10 +16,7 @@
 package com.stormpath.sdk.impl.client;
 
 import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.api.ApiKeys;
-import com.stormpath.sdk.application.okta.ApplicationCredentials;
 import com.stormpath.sdk.client.DefaultPairedApiKey;
-import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.api.DefaultApiKeyResolver;
 import com.stormpath.sdk.impl.authc.credentials.ClientCredentials;

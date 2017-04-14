@@ -1,9 +1,15 @@
 package com.stormpath.sdk.impl.provider;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.api.ApiKey;
+import com.stormpath.sdk.authc.AuthenticationResultVisitor;
+import com.stormpath.sdk.lang.Collections;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.oauth.TokenResponse;
 import com.stormpath.sdk.provider.OktaProviderAccountResult;
 import com.stormpath.sdk.provider.ProviderAccountResult;
+
+import java.util.Set;
 
 /**
  *
@@ -37,4 +43,18 @@ public class DefaultOktaProviderAccountResult implements OktaProviderAccountResu
         return false;
     }
 
+    @Override
+    public void accept(AuthenticationResultVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public Set<String> getScope() {
+        return Strings.delimitedListToSet(tokenResponse.getScope(), " ");
+    }
+
+    @Override
+    public ApiKey getApiKey() {
+        return null;
+    }
 }

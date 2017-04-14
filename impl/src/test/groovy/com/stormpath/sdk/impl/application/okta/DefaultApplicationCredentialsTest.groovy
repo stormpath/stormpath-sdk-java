@@ -1,6 +1,6 @@
 package com.stormpath.sdk.impl.application.okta
 
-import com.stormpath.sdk.impl.application.okta.DefaultApplicationCredentials
+import com.stormpath.sdk.impl.okta.DefaultApplicationCredentials
 import org.testng.annotations.Test
 
 import static org.hamcrest.MatcherAssert.*

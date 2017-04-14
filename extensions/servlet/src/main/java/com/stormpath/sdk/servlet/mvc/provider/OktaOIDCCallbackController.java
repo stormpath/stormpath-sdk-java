@@ -2,13 +2,8 @@ package com.stormpath.sdk.servlet.mvc.provider;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
-import com.stormpath.sdk.api.ApiKey;
-import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.authc.AuthenticationResultVisitor;
-import com.stormpath.sdk.impl.application.okta.DefaultOktaAccessTokenResult;
+import com.stormpath.sdk.impl.okta.DefaultOktaAccessTokenResult;
 import com.stormpath.sdk.impl.provider.DefaultOktaProviderAccountResult;
-import com.stormpath.sdk.oauth.AccessTokenResult;
-import com.stormpath.sdk.oauth.TokenResponse;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
@@ -22,7 +17,6 @@ import com.stormpath.sdk.servlet.util.ServletUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
 
 /**
  *

@@ -130,7 +130,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
                 getRefreshTokenCookieSaver(request, getMaxAge(refreshToken, clientSecret, refreshTokenCookieConfig, request, response)).set(request, response, refreshToken);
             } catch (UnsupportedEncodingException e) {
                 //Should not happen since UTF-8 should always be a supported encoding, but we logged just in case
-                log.error("Error get the client API Secret", e);
+                log.error("Error resolving the client API Secret", e);
             }
         }
     }
