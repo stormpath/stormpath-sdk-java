@@ -32,6 +32,7 @@ import com.stormpath.sdk.impl.ds.cache.DefaultCacheResolver;
 import com.stormpath.sdk.impl.ds.cache.ReadCacheFilter;
 import com.stormpath.sdk.impl.ds.cache.WriteCacheFilter;
 import com.stormpath.sdk.impl.error.DefaultError;
+import com.stormpath.sdk.impl.error.OktaError;
 import com.stormpath.sdk.impl.http.CanonicalUri;
 import com.stormpath.sdk.impl.http.HttpHeaders;
 import com.stormpath.sdk.impl.http.HttpHeadersHolder;
@@ -615,7 +616,7 @@ public class DefaultDataStore implements InternalDataStore {
             com.stormpath.sdk.error.Error error;
             if (oktaEnabled) {
                 // Okta Error response doesn't have status
-                error = new DefaultError(body)
+                error = new OktaError(body)
                         .setStatus(response.getHttpStatus());
             } else {
                 error = new DefaultError(body);

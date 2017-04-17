@@ -54,6 +54,10 @@ public class DefaultOAuthRefreshTokenRequestAuthenticator extends AbstractOAuthR
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + oauthTokenPath, attempt, GrantAuthenticationToken.class, httpHeaders);
 
+        return buildGrant(grantResult);
+    }
+
+    protected OAuthGrantRequestAuthenticationResult buildGrant(GrantAuthenticationToken grantResult) {
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthGrantRequestAuthenticationResultBuilder(grantResult);
         return builder.build();
     }

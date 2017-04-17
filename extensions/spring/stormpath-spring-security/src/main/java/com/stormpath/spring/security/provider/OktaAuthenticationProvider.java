@@ -66,9 +66,6 @@ public class OktaAuthenticationProvider extends StormpathAuthenticationProvider 
                                     getGrantedAuthorities(account),
                                     account
                             );
-
-                    // FIXME: validate first? we already have the account ?
-                    returnToken.setAuthenticated(true);
                 }
             }
             else {

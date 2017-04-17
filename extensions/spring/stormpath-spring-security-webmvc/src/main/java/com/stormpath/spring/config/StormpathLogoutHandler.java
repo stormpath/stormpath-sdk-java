@@ -18,6 +18,7 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.http.authc.RequestAuthenticator;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
 import com.stormpath.sdk.servlet.authc.impl.DefaultLogoutRequestEvent;
@@ -122,6 +123,20 @@ public class StormpathLogoutHandler implements LogoutHandler {
             HttpServletRequestWrapper r = new HttpServletRequestWrapper(request) {
                 @Override
                 public Cookie[] getCookies() { return null; }
+
+                // when forwarding, we need to unset the Auth header
+                @Override
+                public String getAuthType() {
+                    return null;
+                }
+
+                @Override
+                public String getHeader(String name) {
+                    if (RequestAuthenticator.AUTHORIZATION_HEADER.equals(name)) {
+                        return null;
+                    }
+                    return super.getHeader(name);
+                }
             };
             MediaType requestMediaType =
                 ContentNegotiationResolver.INSTANCE.getContentType(request, response, stormpathProducedMediaTypes);

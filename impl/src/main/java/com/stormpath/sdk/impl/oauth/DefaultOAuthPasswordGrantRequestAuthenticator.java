@@ -27,7 +27,7 @@ import com.stormpath.sdk.lang.Assert;
  */
 public class DefaultOAuthPasswordGrantRequestAuthenticator extends AbstractOAuthRequestAuthenticator implements OAuthPasswordGrantRequestAuthenticator {
 
-    final static String OAUTH_TOKEN_PATH = "/oauth/token";
+    private final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
     private final String oauthTokenPath;
 
@@ -60,6 +60,10 @@ public class DefaultOAuthPasswordGrantRequestAuthenticator extends AbstractOAuth
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + oauthTokenPath, oauthPasswordGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
+        return buildGrant(grantResult);
+    }
+
+    protected OAuthGrantRequestAuthenticationResult buildGrant(GrantAuthenticationToken grantResult) {
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthGrantRequestAuthenticationResultBuilder(grantResult);
         return builder.build();
     }

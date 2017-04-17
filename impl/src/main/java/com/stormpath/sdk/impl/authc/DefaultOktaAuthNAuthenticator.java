@@ -1,6 +1,10 @@
 package com.stormpath.sdk.impl.authc;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthentication;
+import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
+import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
 import com.stormpath.sdk.okta.OktaTokenResponse;
 import com.stormpath.sdk.okta.OktaTokenRequest;
 import com.stormpath.sdk.okta.TokenIntrospectRequest;
@@ -87,7 +91,7 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         return new DefaultOktaAccessTokenResult(oktaTokenResponse, dataStore.getResource(userHref, Account.class));
     }
 
-    private TokenIntrospectResponse resolveAccessToken(String accessToken) {
+    public TokenIntrospectResponse resolveAccessToken(String accessToken) {
 
         TokenIntrospectRequest request = dataStore.instantiate(TokenIntrospectRequest.class)
             .setToken(accessToken)
@@ -99,6 +103,12 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         assertValidAccessToken(tokenIntrospectResponse);
 
         return tokenIntrospectResponse;
+    }
+
+    public OAuthGrantRequestAuthenticationResult resolveRefreshToken(String refreshToken, OAuthRefreshTokenRequestAuthenticator refreshTokenAuthenticator) {
+
+        OAuthRequestAuthentication authenticationRequest = new DefaultOAuthRefreshTokenRequestAuthentication(refreshToken);
+        return refreshTokenAuthenticator.authenticate(authenticationRequest);
     }
 
     private void assertValidAccessToken(TokenIntrospectResponse tokenResponse) {

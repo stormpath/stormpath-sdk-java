@@ -125,26 +125,26 @@ public class CookieAccountResolver implements Resolver<Account> {
             return null;
         }
 
-//        try {
-//            OAuthRefreshTokenRequestAuthentication refreshGrantRequest = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder()
-//                    .setRefreshToken(val)
-//                    .build();
-//
-//            OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR
-//                    .forApplication(ApplicationResolver.INSTANCE.getApplication(request))
-//                    .authenticate(refreshGrantRequest);
-//
-//                AccessTokenResult accessTokenResult = this.accessTokenResultFactory.createAccessTokenResult(request, response, authenticationResult);
-//
-//                authenticationResultSaver.set(request, response, accessTokenResult);
-//                return getAccount(request, response, authenticationResult.getAccessToken().getJwt());
-//
-//        } catch (Exception e) {
-//            String msg = "Encountered invalid JWT in refresh_token cookie. We will now delete both the access and refresh cookies for safety.";
-//            log.error(msg, e);
-//            deleteCookie(response, cookie);
-//            deleteCookie(response, accessTokenCookieResolver.get(request, response));
-//        }
+        try {
+            OAuthRefreshTokenRequestAuthentication refreshGrantRequest = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder()
+                    .setRefreshToken(val)
+                    .build();
+
+            OAuthGrantRequestAuthenticationResult authenticationResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR
+                    .forApplication(ApplicationResolver.INSTANCE.getApplication(request))
+                    .authenticate(refreshGrantRequest);
+
+                AccessTokenResult accessTokenResult = this.accessTokenResultFactory.createAccessTokenResult(request, response, authenticationResult);
+
+                authenticationResultSaver.set(request, response, accessTokenResult);
+                return getAccount(request, response, authenticationResult.getAccessToken().getJwt());
+
+        } catch (Exception e) {
+            String msg = "Encountered invalid JWT in refresh_token cookie. We will now delete both the access and refresh cookies for safety.";
+            log.error(msg, e);
+            deleteCookie(response, cookie);
+            deleteCookie(response, accessTokenCookieResolver.get(request, response));
+        }
 
         return null;
     }

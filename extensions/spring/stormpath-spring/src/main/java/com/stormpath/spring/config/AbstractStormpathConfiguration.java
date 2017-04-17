@@ -178,7 +178,7 @@ public abstract class AbstractStormpathConfiguration {
             Application application = client.getResource("local", Application.class);
             String name = applicationName;
             if (!Strings.hasText(name)) {
-                name = "Application";
+                name = "My Application";
             }
             application.setName(name);
             return application;

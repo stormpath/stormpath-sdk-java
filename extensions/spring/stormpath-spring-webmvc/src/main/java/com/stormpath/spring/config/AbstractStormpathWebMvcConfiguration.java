@@ -23,6 +23,9 @@ import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
+import com.stormpath.sdk.impl.application.OktaApplication;
+import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
+import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
@@ -32,7 +35,6 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
-import com.stormpath.sdk.servlet.application.okta.OktaJwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
@@ -83,6 +85,7 @@ import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenRequestAuthorize
 import com.stormpath.sdk.servlet.filter.oauth.DefaultAccessTokenResultFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultRefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.DefaultRefreshTokenResultFactory;
+import com.stormpath.sdk.servlet.filter.oauth.OktaRefreshTokenResultFactory;
 import com.stormpath.sdk.servlet.filter.oauth.OriginAccessTokenRequestAuthorizer;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenAuthenticationRequestFactory;
 import com.stormpath.sdk.servlet.filter.oauth.RefreshTokenResultFactory;
@@ -875,7 +878,13 @@ public abstract class AbstractStormpathWebMvcConfiguration {
      * @since 1.0.RC8.3
      */
     public RefreshTokenResultFactory stormpathRefreshTokenResultFactory() {
-        return new DefaultRefreshTokenResultFactory(application);
+        if (oktaEnabled) {
+            // FIXME: OktaAuthN is needed here because of the dependency on the Introspect endpoint, maybe that logic should be broken out.
+            return new OktaRefreshTokenResultFactory(application, new DefaultOktaAuthNAuthenticator((InternalDataStore) client.getDataStore()));
+        } else {
+            return new DefaultRefreshTokenResultFactory(application);
+        }
+
     }
 
     public WrappedServletRequestFactory stormpathWrappedServletRequestFactory() {

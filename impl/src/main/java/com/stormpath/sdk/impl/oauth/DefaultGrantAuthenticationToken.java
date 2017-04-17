@@ -92,6 +92,11 @@ public class DefaultGrantAuthenticationToken extends AbstractInstanceResource im
             return null;
         }
 
+        // okta refresh tokens are NOT JWTs
+        if (refreshToken.split("\\.").length == 1) {
+            return null;
+        }
+
         Jws<Claims> jws = AbstractBaseOAuthToken.parseJws(refreshToken, getDataStore());
         Map<String, Object> props = new LinkedHashMap<>(1);
         String refreshTokenID = jws.getBody().getId();

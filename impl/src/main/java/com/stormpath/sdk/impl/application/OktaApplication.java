@@ -16,6 +16,9 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.OAuthApplication;
+import com.stormpath.sdk.impl.oauth.OktaOAuthPasswordGrantRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.OktaOAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.impl.oauth.OktaOAuthRequestAuthenticator;
 import com.stormpath.sdk.okta.OktaForgotPasswordRequest;
 import com.stormpath.sdk.okta.OktaForgotPasswordResult;
 import com.stormpath.sdk.okta.OktaIdentityProviderList;
@@ -46,13 +49,6 @@ import com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequest;
 import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.oauth.DefaultIdSiteAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultOAuthBearerRequestAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultOAuthClientCredentialsGrantRequestAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultOAuthPasswordGrantRequestAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultOAuthRefreshTokenRequestAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator;
-import com.stormpath.sdk.impl.oauth.DefaultOAuthStormpathSocialGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
 import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.impl.okta.OktaApplicationAccountStoreMapping;
@@ -580,36 +576,37 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     @Override
     public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
-        return new DefaultOAuthClientCredentialsGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+        throw new UnsupportedOperationException("createClientCredentialsGrantAuthenticator() method hasn't been implemented.");
     }
 
     @Override
     public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
-        return new DefaultOAuthStormpathSocialGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+        throw new UnsupportedOperationException("createStormpathSocialGrantAuthenticator() method hasn't been implemented.");
     }
 
     @Override
     public OAuthStormpathFactorChallengeGrantRequestAuthenticator createStormpathFactorChallengeGrantAuthenticator() {
-        return new DefaultOAuthStormpathFactorChallengeGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+        throw new UnsupportedOperationException("createStormpathFactorChallengeGrantAuthenticator() method hasn't been implemented.");
     }
 
     @Override
     public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
-        return new DefaultOAuthPasswordGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+        // TODO clean this up, maybe these Authenticators should be _merged_ in with the OktaAuthN?
+        return new OktaOAuthPasswordGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token", new DefaultOktaAuthNAuthenticator(getDataStore()), createOAuhtTokenRevocator(), createRefreshGrantAuthenticator());
     }
 
     @Override
     public OAuthRefreshTokenRequestAuthenticator createRefreshGrantAuthenticator() {
-        return new DefaultOAuthRefreshTokenRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+        return new OktaOAuthRefreshTokenRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token", new DefaultOktaAuthNAuthenticator(getDataStore()), createOAuhtTokenRevocator());
     }
 
     @Override
     public OAuthBearerRequestAuthenticator createJwtAuthenticator() {
-        return new DefaultOAuthBearerRequestAuthenticator(this, getDataStore());
+        return new OktaOAuthRequestAuthenticator(this, getDataStore(), new DefaultOktaAuthNAuthenticator(getDataStore()));
     }
 
     public IdSiteAuthenticator createIdSiteAuthenticator() {
-        return new DefaultIdSiteAuthenticator(this, getDataStore(), "/oauth2/v1/token");
+        throw new UnsupportedOperationException("createIdSiteAuthenticator() method hasn't been implemented.");
     }
 
     @Override
