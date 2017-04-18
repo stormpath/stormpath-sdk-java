@@ -24,6 +24,8 @@ import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitorAdapter;
 import com.stormpath.sdk.directory.Directory;
+import com.stormpath.sdk.impl.okta.OktaOAuthAuthenticator;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.provider.GoogleProvider;
 import com.stormpath.sdk.provider.OAuthProvider;
 import com.stormpath.sdk.provider.OktaProvider;
@@ -55,12 +57,10 @@ import java.util.List;
 public class OktaExternalAccountStoreModelFactory implements AccountStoreModelFactory {
 
     private final String clientId;
-    private final String baseUrl;
 
 
-    public OktaExternalAccountStoreModelFactory(String baseUrl, String clientId) {
+    public OktaExternalAccountStoreModelFactory(String clientId) {
         this.clientId = clientId;
-        this.baseUrl = baseUrl;
     }
 
 
@@ -92,7 +92,10 @@ public class OktaExternalAccountStoreModelFactory implements AccountStoreModelFa
 
     @SuppressWarnings("WeakerAccess") // Want to allow overriding this method
     protected String getAuthorizeBaseUri(@SuppressWarnings("UnusedParameters") HttpServletRequest request, ApplicationWebConfig webConfig) {
-        return baseUrl;
+
+        Assert.isInstanceOf(OktaOAuthAuthenticator.class, webConfig.getOAuth2());
+        OktaOAuthAuthenticator oktaOAuthAuthenticator = (OktaOAuthAuthenticator) webConfig.getOAuth2();
+        return oktaOAuthAuthenticator.getAuthorizationEndpoint();
     }
 
     private class AccountStoreModelVisitor extends AccountStoreVisitorAdapter {

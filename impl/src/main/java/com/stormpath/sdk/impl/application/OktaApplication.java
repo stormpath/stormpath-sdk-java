@@ -479,7 +479,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
             @Override
             public Oauth2Config getOAuth2() {
-                throw new UnsupportedOperationException("getOAuth2() method hasn't been implemented.");
+                return ensureOktaOAuthAuthenticator();
             }
 
             @Override

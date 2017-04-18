@@ -56,6 +56,11 @@ public class DefaultProviderAccountRequestFactory implements ProviderAccountRequ
                         return Providers.FACEBOOK
                                 .account().setAccessToken(accessToken).build();
                     }
+                    case "okta": {
+                        String accessToken = providerData.get("code");
+                        return Providers.OKTA
+                                .account().setCode(accessToken).build();
+                    }
                     case "github": {
                         String accessToken = githubAccessTokenResolver.get(request, null);
                         return Providers.GITHUB

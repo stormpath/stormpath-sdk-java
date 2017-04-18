@@ -210,4 +210,9 @@ public interface Config extends Map<String, String> {
      * @since 1.2.0
      */
     GrantTypeValidator getGrantTypeStatusValidator();
+
+    /**
+     * @since 2.0.0
+     */
+    String getOktaAuthorizationServerId();
 }

@@ -4,6 +4,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.impl.okta.DefaultOktaAccessTokenResult;
 import com.stormpath.sdk.impl.provider.DefaultOktaProviderAccountResult;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.Providers;
 import com.stormpath.sdk.servlet.authc.impl.DefaultSuccessfulAuthenticationRequestEvent;
@@ -81,5 +82,10 @@ public class OktaOIDCCallbackController extends AbstractSocialCallbackController
                 .setCode(code)
                 .setRedirectUri(request.getRequestURL().toString())
                 .build();
+    }
+
+    @Override
+    protected boolean shouldGetRedirectUriFromState(String state) {
+        return Strings.hasText(state) && !"none".equals(state);
     }
 }

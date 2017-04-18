@@ -33,6 +33,7 @@ import com.stormpath.sdk.servlet.config.filter.LinkedInCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LoginFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.LogoutFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.MeFilterFactory;
+import com.stormpath.sdk.servlet.config.filter.OktaOIDCCallbackFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.RegisterFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.RevokeTokenFilterFactory;
 import com.stormpath.sdk.servlet.config.filter.SamlFilterFactory;
@@ -58,6 +59,7 @@ public enum DefaultFilter {
     authc(AuthenticationFilter.class, AuthenticationFilterFactory.class),
     change(ControllerFilter.class, ChangePasswordFilterFactory.class),
     facebookCallback(ControllerFilter.class, FacebookCallbackFilterFactory.class),
+    oktaCallback(ControllerFilter.class, OktaOIDCCallbackFilterFactory.class),
     forgot(ControllerFilter.class, ForgotPasswordFilterFactory.class),
     githubCallback(ControllerFilter.class, GithubCallbackFilterFactory.class),
     googleCallback(ControllerFilter.class, GoogleCallbackFilterFactory.class),

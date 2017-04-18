@@ -2,6 +2,7 @@ package com.stormpath.sdk.impl.okta;
 
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.application.OAuthAuthenticator;
+import com.stormpath.sdk.application.webconfig.Oauth2Config;
 import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
@@ -20,7 +21,7 @@ import com.stormpath.sdk.okta.OktaOIDCWellKnownResource;
 
 /**
  */
-public class OktaOAuthAuthenticator implements OAuthAuthenticator {
+public class OktaOAuthAuthenticator implements OAuthAuthenticator, Oauth2Config {
 
     private final InternalDataStore dataStore;
     private final Application application;
@@ -48,6 +49,10 @@ public class OktaOAuthAuthenticator implements OAuthAuthenticator {
     // TODO: remove the need for these
     public String getIntrospectionEndpoint() {
         return wellKnownResource.getIntrospectionEndpoint();
+    }
+
+    public String getAuthorizationEndpoint() {
+        return wellKnownResource.getAuthorizationEndpoint();
     }
 
     @Override
@@ -112,4 +117,13 @@ public class OktaOAuthAuthenticator implements OAuthAuthenticator {
         throw new UnsupportedOperationException("createIdSiteAuthenticator() method hasn't been implemented.");
     }
 
+    @Override
+    public Boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Oauth2Config setEnabled(Boolean enabled) {
+        throw new UnsupportedOperationException("setEnabled() method hasn't been implemented.");
+    }
 }

@@ -146,6 +146,10 @@ public class DefaultFilterChainManagerConfigurer {
         String facebookCallbackUrlPattern = cleanUri(facebookCallbackUrl);
         boolean facebookCallbackChainSpecified = false;
 
+        String oktaCallbackUrl = config.get("stormpath.web.social.okta.uri");
+        String oktaCallbackUrlPattern = cleanUri(oktaCallbackUrl);
+        boolean oktaCallbackChainSpecified = false;
+
         String linkedinCallbackUrl = config.get("stormpath.web.social.linkedin.uri");
         String linkedinCallbackUrlPattern = cleanUri(linkedinCallbackUrl);
         boolean linkedinCallbackChainSpecified = false;
@@ -171,6 +175,13 @@ public class DefaultFilterChainManagerConfigurer {
                     facebookCallbackChainSpecified = true;
 
                     String filterName = DefaultFilter.facebookCallback.name();
+                    if (!chainDefinition.contains(filterName)) {
+                        chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
+                    }
+                } else if (uriPattern.startsWith(oktaCallbackUrl)) {
+                    oktaCallbackChainSpecified = true;
+
+                    String filterName = DefaultFilter.oktaCallback.name();
                     if (!chainDefinition.contains(filterName)) {
                         chainDefinition += Strings.DEFAULT_DELIMITER_CHAR + filterName;
                     }
@@ -351,6 +362,9 @@ public class DefaultFilterChainManagerConfigurer {
         }
         if (!facebookCallbackChainSpecified) {
             mgr.createChain(facebookCallbackUrlPattern, DefaultFilter.facebookCallback.name());
+        }
+        if (!oktaCallbackChainSpecified) {
+            mgr.createChain(oktaCallbackUrlPattern, DefaultFilter.oktaCallback.name());
         }
         if (!linkedinCallbackChainSpecified) {
             mgr.createChain(linkedinCallbackUrlPattern, DefaultFilter.linkedinCallback.name());

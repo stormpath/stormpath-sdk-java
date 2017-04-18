@@ -115,9 +115,8 @@
                                             <button class="btn btn-social btn-google"
                                                     id="${accountStore.provider.clientId}"
                                                     data-scope="${accountStore.provider.scope}"
-                                                    data-display="${accountStore.provider.display}"
-                                                    data-access_type="${accountStore.provider.accessType}"
-                                                    data-authorizeUri="${accountStore.authorizeUri}"
+                                                    data-authorize_uri="${accountStore.authorizeUri}"
+                                                    data-idp="${accountStore.provider.idp}"
                                             >
                                                 <span class="fa fa-google"></span>
                                                 <c:out value="google"/>
@@ -126,9 +125,9 @@
                                         <c:otherwise>
                                             <button class="btn btn-social btn-${accountStore.provider.providerId}"
                                                     id="${accountStore.provider.clientId}"
-                                                    data-wtf="odd"
-                                                    data-scope1="${accountStore.provider.scope} FOOBAR"
-                                                    data-authorizeUri="${accountStore.authorizeUri}"
+                                                    data-scope="${accountStore.provider.scope}"
+                                                    data-authorize_uri="${accountStore.authorizeUri}"
+                                                    data-idp="${accountStore.provider.idp}"
                                             >
                                                 <span class="fa fa-${accountStore.provider.providerId}"></span>
                                                 <c:out value="${accountStore.provider.providerId}"/>

@@ -19,10 +19,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Classes;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.okta.OktaApplicationConfigResource;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.client.ClientResolver;
@@ -655,5 +657,24 @@ public class DefaultConfig implements Config {
         validator.setClientCredentialsGrantTypeEnabled(clientCredentialsEnabled);
         validator.setPasswordGrantTypeEnabled(passwordEnabled);
         return validator;
+    }
+
+    @Override
+    public String getOktaAuthorizationServerId() {
+
+        String oktaApplicationId = CFG.getString("okta.application.id");
+        Assert.hasText(oktaApplicationId, "When okta.enabled is true, okta.application.id " +
+                "must be configured with your Okta Application ID. This can be found in the URL when accessing " +
+                "you application in a browser.");
+
+        // if it is configured, use it, otherwise try to  look it up
+        String authorizationServerId = CFG.getString("okta.authorizationServer.id");
+        if (!Strings.hasText(authorizationServerId)) {
+            String applicationCredentialsHref = OktaApiPaths.apiPath("apps", oktaApplicationId);
+            OktaApplicationConfigResource oktaApplicationConfigResource = getClient().getResource(applicationCredentialsHref, OktaApplicationConfigResource.class);
+            authorizationServerId = oktaApplicationConfigResource.getAuthorizationServerId();
+        }
+
+        return authorizationServerId;
     }
 }

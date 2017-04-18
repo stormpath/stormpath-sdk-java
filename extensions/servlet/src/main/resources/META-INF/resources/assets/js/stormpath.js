@@ -16,13 +16,13 @@
 $('.btn-google').click(function (event) {
     event.preventDefault();
     var $btn = $('.btn-google');
-    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'));
+    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'), $btn.data('state'));
 });
 
 $('.btn-facebook').click(function (event) {
     event.preventDefault();
     var $btn = $('.btn-facebook');
-    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'));
+    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'), $btn.data('state'));
 });
 
 $('.btn-github').click(function (event) {
@@ -34,7 +34,7 @@ $('.btn-github').click(function (event) {
 $('.btn-linkedin').click(function (event) {
     event.preventDefault();
     var $btn = $('.btn-linkedin');
-    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'));
+    oktaLogin($btn.data('authorize_uri'), $btn.data('scope'), $btn.data('idp'), $btn.data('state'));
 });
 
 $('.btn-saml').click(function (event) {
@@ -65,11 +65,14 @@ function linkedinLogin(clientId, scope) {
     );
 }
 
-function oktaLogin(authorizeUri, scope, idp) {
+function oktaLogin(authorizeUri, scope, idp, state) {
+
+    state = state || "none"
 
     var params = {
         scope: scope,
         idp: idp,
+        state: state,
         redirect_uri: baseUrl() + '/callbacks/okta'
     };
 
@@ -154,10 +157,6 @@ function buildUrl(url, params) {
 
     if (next) {
         params.state = next;
-    }
-
-    if (!params.state) {
-        params.state = '/';
     }
 
     if (url.includes('?')) {

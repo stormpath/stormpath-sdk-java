@@ -15,9 +15,12 @@
  */
 package com.stormpath.sdk.servlet.config.filter;
 
+import com.stormpath.sdk.client.PairedApiKey;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.filter.ControllerConfig;
 import com.stormpath.sdk.servlet.mvc.LoginController;
+import com.stormpath.sdk.servlet.mvc.OktaExternalAccountStoreModelFactory;
 
 /**
  * @since 1.0.0
@@ -50,5 +53,13 @@ public class LoginFilterFactory extends FormControllerFilterFactory<LoginControl
         controller.setIdSiteEnabled(config.isIdSiteEnabled());
         controller.setCallbackEnabled(config.isCallbackEnabled());
         controller.setApplicationResolver(config.getApplicationResolver());
+
+        if (Boolean.valueOf(config.get("okta.enabled"))) {
+            String clientId = ((PairedApiKey)config.getClient().getApiKey()).getSecondaryApiKey().getId();
+
+            OktaExternalAccountStoreModelFactory oktaExternalAccountStoreModelFactory = new OktaExternalAccountStoreModelFactory(clientId);
+            controller.setAccountStoreModelFactory(oktaExternalAccountStoreModelFactory);
+        }
+
     }
 }

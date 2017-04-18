@@ -85,7 +85,7 @@
                             </button>
                             <button th:case="google" class="btn btn-social btn-google"
                                     th:id="${accountStore.provider.clientId}"
-                                    th:attr="data-scope=${accountStore.provider.scope}, data-authorize_uri=${accountStore..authorizeUri}, data-idp=${accountStore.provider.idp}"
+                                    th:attr="data-scope=${accountStore.provider.scope}, data-authorize_uri=${accountStore.authorizeUri}, data-idp=${accountStore.provider.idp}"
                             >
                                 <i class="fa fa-google"></i>
                                 <span th:text="google">|Provider|</span>

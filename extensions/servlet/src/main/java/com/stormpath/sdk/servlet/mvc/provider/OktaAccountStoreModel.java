@@ -19,7 +19,6 @@ public class OktaAccountStoreModel implements AccountStoreModel {
         if (authorizeBaseUri != null) {
             try {
                 URIBuilder builder = new URIBuilder(authorizeBaseUri);
-                builder.setPath("/oauth2/v1/authorize");
                 builder.addParameter("response_type", "code");
                 builder.addParameter("response_mode", "query");
                 builder.addParameter("client_id", clientId);

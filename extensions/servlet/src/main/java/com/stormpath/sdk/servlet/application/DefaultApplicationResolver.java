@@ -21,11 +21,16 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.impl.application.OktaApplication;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.okta.OktaApiPaths;
+import com.stormpath.sdk.impl.okta.OktaSigningKeyResolver;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.okta.OktaApplicationConfigResource;
 import com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory;
 import com.stormpath.sdk.servlet.config.Config;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -91,13 +96,13 @@ public class DefaultApplicationResolver implements ApplicationResolver {
         if (Boolean.valueOf(config.get("okta.enabled"))) {
 
             Map<String, Object> appConfigMap = new LinkedHashMap<>();
-            appConfigMap.put(OktaApplication.AUTHORIZATION_SERVER_ID_KEY, null); // FIXME get config value
+            appConfigMap.put(OktaApplication.AUTHORIZATION_SERVER_ID_KEY, config.getOktaAuthorizationServerId());
 
             // TODO: There must be a better way to get the clientId
-            OktaApplication oktaApplication = new OktaApplication(
-                     ((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(),
-                     (InternalDataStore) client.getDataStore());
+            OktaApplication oktaApplication = new OktaApplication(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(),
+                                                                  (InternalDataStore) client.getDataStore());
             oktaApplication.configureWithProperties(appConfigMap);
+
             return oktaApplication;
         }
 

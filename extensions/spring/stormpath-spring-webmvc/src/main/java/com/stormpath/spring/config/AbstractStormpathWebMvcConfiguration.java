@@ -1010,10 +1010,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     public AccountStoreModelFactory stormpathAccountStoreModelFactory() {
         if (oktaEnabled) {
             // TODO clean up this hack to get the clientId ?
-            return new OktaExternalAccountStoreModelFactory(
-                    baseUrl,
-                    ((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId()
-            );
+            return new OktaExternalAccountStoreModelFactory(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId());
         }
         else {
             return new ExternalAccountStoreModelFactory();
