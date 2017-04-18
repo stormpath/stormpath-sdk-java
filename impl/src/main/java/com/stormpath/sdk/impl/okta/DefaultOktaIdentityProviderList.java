@@ -38,7 +38,8 @@ public class DefaultOktaIdentityProviderList extends AbstractInstanceResource im
         Set<OktaProvider> providers = new HashSet<>();
         for (Object item : getSetProperty(ITEMS.getName())) {
             Map<String, Object> itemMap =  castToMap(item);
-            if ("OAUTH2".equals(getProtocol(itemMap))) { // TODO add OIDC
+            String protocol = getProtocol(itemMap);
+            if ("OAUTH2".equals(protocol) || "OIDC".equals(protocol)) {
                 itemMap.put("href", "n/a");
                 itemMap.put("scope", "profile email openid");
                 itemMap.put("authorizeUri", getTemplateString(getSubMap(itemMap, "_links")));
