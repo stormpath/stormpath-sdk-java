@@ -48,4 +48,9 @@ public class StormpathConfiguration extends AbstractStormpathConfiguration {
     public Client stormpathClient() {
         return super.stormpathClient();
     }
+
+    @Bean
+    public String oktaAuthorizationServerId() {
+        return super.oktaAuthorizationServerId();
+    }
 }

@@ -372,6 +372,12 @@ public class StormpathWebMvcConfiguration extends AbstractStormpathWebMvcConfigu
 
     @Bean
     @Override
+    public Controller oktaCallbackController() {
+        return super.oktaCallbackController();
+    }
+
+    @Bean
+    @Override
     public Controller stormpathLinkedinCallbackController() {
         return super.stormpathLinkedinCallbackController();
     }
