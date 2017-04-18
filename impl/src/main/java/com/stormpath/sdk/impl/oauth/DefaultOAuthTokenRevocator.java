@@ -31,22 +31,22 @@ public class DefaultOAuthTokenRevocator implements OAuthTokenRevocator {
 
     private final static String OAUTH_REVOKE_PATH = "/oauth/revoke";
 
-    private final String oauthRevokePath;
-
-    protected final Application application;
+    protected final String revokeUrl;
 
     protected final InternalDataStore dataStore;
 
     public DefaultOAuthTokenRevocator(Application application, InternalDataStore dataStore) {
-        this(application, dataStore, OAUTH_REVOKE_PATH);
+        this(application, dataStore, application.getHref() + OAUTH_REVOKE_PATH);
     }
 
-    public DefaultOAuthTokenRevocator(Application application, InternalDataStore dataStore, String oauthRevokePath) {
-        Assert.notNull(application, "application cannot be null.");
+    public DefaultOAuthTokenRevocator(InternalDataStore dataStore, String revokeUrl) {
+        this(null, dataStore, revokeUrl);
+    }
+
+    public DefaultOAuthTokenRevocator(Application application, InternalDataStore dataStore, String revokeUrl) {
         Assert.notNull(dataStore, "dataStore cannot be null.");
-        this.application = application;
+        this.revokeUrl = revokeUrl;
         this.dataStore = dataStore;
-        this.oauthRevokePath = oauthRevokePath;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class DefaultOAuthTokenRevocator implements OAuthTokenRevocator {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        dataStore.create(application.getHref() + oauthRevokePath, attempt, OAuthTokenRevoked.class, httpHeaders);
+        dataStore.create(revokeUrl, attempt, OAuthTokenRevoked.class, httpHeaders);
     }
 
 }

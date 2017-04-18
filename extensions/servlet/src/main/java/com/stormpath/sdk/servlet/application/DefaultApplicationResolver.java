@@ -27,6 +27,8 @@ import com.stormpath.sdk.servlet.config.Config;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @since 1.0.RC3
@@ -87,8 +89,16 @@ public class DefaultApplicationResolver implements ApplicationResolver {
 
         Config config = getConfig(servletContext);
         if (Boolean.valueOf(config.get("okta.enabled"))) {
+
+            Map<String, Object> appConfigMap = new LinkedHashMap<>();
+            appConfigMap.put(OktaApplication.AUTHORIZATION_SERVER_ID_KEY, null); // FIXME get config value
+
             // TODO: There must be a better way to get the clientId
-            return new OktaApplication(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(), (InternalDataStore) client.getDataStore());
+            OktaApplication oktaApplication = new OktaApplication(
+                     ((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(),
+                     (InternalDataStore) client.getDataStore());
+            oktaApplication.configureWithProperties(appConfigMap);
+            return oktaApplication;
         }
 
         //this is a local cached href value that we use in case we have to query applications (see below):

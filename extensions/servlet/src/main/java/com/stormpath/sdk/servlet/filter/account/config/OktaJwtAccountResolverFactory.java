@@ -32,9 +32,9 @@ public class OktaJwtAccountResolverFactory extends ConfigSingletonFactory<JwtAcc
 
     @Override
     protected JwtAccountResolver createInstance(ServletContext servletContext) throws Exception {
-//        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
-//        JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
+        Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
+        JwtSigningKeyResolver resolver = config.getInstance("stormpath.web.account.jwt.signingKey.resolver");
 
-        return new OktaJwtAccountResolver();
+        return new OktaJwtAccountResolver(resolver);
     }
 }

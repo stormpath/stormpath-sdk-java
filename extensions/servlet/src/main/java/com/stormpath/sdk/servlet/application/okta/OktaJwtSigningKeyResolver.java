@@ -1,7 +1,6 @@
 package com.stormpath.sdk.servlet.application.okta;
 
 import com.stormpath.sdk.authc.AuthenticationResult;
-import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.okta.OktaSigningKeyResolver;
 import com.stormpath.sdk.servlet.filter.account.JwtSigningKeyResolver;
 import io.jsonwebtoken.Claims;
@@ -17,19 +16,11 @@ import java.security.Key;
  */
 public class OktaJwtSigningKeyResolver implements JwtSigningKeyResolver {
 
-    private DataStore dataStore;
+    private final OktaSigningKeyResolver oktaSigningKeyResolver;
 
-    public OktaJwtSigningKeyResolver() {
-
-    }
-
-    public OktaJwtSigningKeyResolver(DataStore dataStore)
+    public OktaJwtSigningKeyResolver(OktaSigningKeyResolver oktaSigningKeyResolver)
     {
-        this.dataStore = dataStore;
-    }
-
-    public void setDataStore(DataStore dataStore) {
-        this.dataStore = dataStore;
+        this.oktaSigningKeyResolver = oktaSigningKeyResolver;
     }
 
     @Override
@@ -39,6 +30,6 @@ public class OktaJwtSigningKeyResolver implements JwtSigningKeyResolver {
 
     @Override
     public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims) {
-        return dataStore.instantiate(OktaSigningKeyResolver.class).resolveSigningKey(jwsHeader, claims);
+        return oktaSigningKeyResolver.resolveSigningKey(jwsHeader, claims);
     }
 }

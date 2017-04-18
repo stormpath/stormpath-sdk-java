@@ -30,6 +30,7 @@ import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.okta.OktaApplicationConfigResource;
 import com.stormpath.spring.cache.SpringCacheManager;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -107,6 +110,9 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['okta.application.id'] }")
     protected String oktaApplicationId;
 
+    @Value("#{ @environment['okta.authorizationServer.id'] }")
+    protected String oktaAuthorizationServerIdConfig;
+
     public ApiKey stormpathClientApiKey() {
 
         if (oktaEnabled) {
@@ -170,17 +176,35 @@ public abstract class AbstractStormpathConfiguration {
         }
     }
 
+    protected String oktaAuthorizationServerId() {
+
+        if (oktaAuthorizationServerIdConfig == null) {
+            Client client = stormpathClient();
+
+            String applicationCredentialsHref = "/api/v1/apps/" + oktaApplicationId;
+            OktaApplicationConfigResource oktaApplicationConfigResource = client.getResource(applicationCredentialsHref, OktaApplicationConfigResource.class);
+            oktaAuthorizationServerIdConfig = oktaApplicationConfigResource.getAuthorizationServerId();
+        }
+
+        return oktaAuthorizationServerIdConfig;
+    }
+
     public Application stormpathApplication() {
 
         Client client = stormpathClient();
 
         if (oktaEnabled) {
-            Application application = client.getResource("local", Application.class);
+
+            Map<String, Object> oktaAppConfigMap = new LinkedHashMap<>();
+            oktaAppConfigMap.put("authorizationServerId", oktaAuthorizationServerId());
+
+            Application application = client.getDataStore().getResource("local", Application.class);
             String name = applicationName;
             if (!Strings.hasText(name)) {
                 name = "My Application";
             }
             application.setName(name);
+            application.configureWithProperties(oktaAppConfigMap);
             return application;
         }
 

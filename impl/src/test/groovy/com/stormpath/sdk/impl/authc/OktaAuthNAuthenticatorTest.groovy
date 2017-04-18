@@ -72,7 +72,7 @@ class OktaAuthNAuthenticatorTest {
 
         replay mockDataStore, oktaTokenRequest, oktaTokenResponse, oktaTokenIntospectRequest, oktaTokenIntospectResponse
 
-        def authResult = new DefaultOktaAuthNAuthenticator(mockDataStore).authenticate(authRequest)
+        def authResult = new DefaultOktaAuthNAuthenticator(mockDataStore, "/oauth2/v1/token", "/oauth2/v1/introspect").authenticate(authRequest)
         assertThat authResult.getHref(), nullValue()
         assertThat authResult.getAccount(), sameInstance(account)
 

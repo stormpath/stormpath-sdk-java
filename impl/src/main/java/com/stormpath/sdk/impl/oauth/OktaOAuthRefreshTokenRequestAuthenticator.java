@@ -15,8 +15,8 @@ public class OktaOAuthRefreshTokenRequestAuthenticator extends DefaultOAuthRefre
     private final OktaAuthNAuthenticator authenticator;
     private final OAuthTokenRevocator tokenRevocator;
 
-    public OktaOAuthRefreshTokenRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath, OktaAuthNAuthenticator authenticator, OAuthTokenRevocator tokenRevocator) {
-        super(application, dataStore, oauthTokenPath);
+    public OktaOAuthRefreshTokenRequestAuthenticator(DataStore dataStore, String oauthTokenUrl, OktaAuthNAuthenticator authenticator, OAuthTokenRevocator tokenRevocator) {
+        super(dataStore, oauthTokenUrl);
         this.authenticator = authenticator;
         this.tokenRevocator = tokenRevocator;
     }

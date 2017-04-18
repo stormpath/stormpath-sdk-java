@@ -29,20 +29,24 @@ public class DefaultOAuthRefreshTokenRequestAuthenticator extends AbstractOAuthR
 
     final static String OAUTH_TOKEN_PATH = "/oauth/token";
 
-    private final String oauthTokenPath;
+    private final String oauthTokenUrl;
 
     public DefaultOAuthRefreshTokenRequestAuthenticator(Application application, DataStore dataStore){
-        this(application, dataStore, OAUTH_TOKEN_PATH);
+        this(application, dataStore, application.getHref() + OAUTH_TOKEN_PATH);
     }
 
-    public DefaultOAuthRefreshTokenRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath) {
+    public DefaultOAuthRefreshTokenRequestAuthenticator(DataStore dataStore, String oauthTokenUrl) {
+        this(null, dataStore, oauthTokenUrl);
+    }
+
+    public DefaultOAuthRefreshTokenRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenUrl) {
         super(application, dataStore);
-        this.oauthTokenPath = oauthTokenPath;
+        this.oauthTokenUrl = oauthTokenUrl;
     }
 
     @Override
     public OAuthGrantRequestAuthenticationResult authenticate(OAuthRequestAuthentication authenticationRequest) {
-        Assert.notNull(this.application, "application cannot be null or empty");
+        Assert.notNull(this.oauthTokenUrl, "baseUrl cannot be null or empty");
         Assert.isInstanceOf(OAuthRefreshTokenRequestAuthentication.class, authenticationRequest, "authenticationRequest must be an instance of RefreshGrantRequest.");
         OAuthRefreshTokenRequestAuthentication refreshGrantRequest = (OAuthRefreshTokenRequestAuthentication) authenticationRequest;
 
@@ -52,7 +56,7 @@ public class DefaultOAuthRefreshTokenRequestAuthenticator extends AbstractOAuthR
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + oauthTokenPath, attempt, GrantAuthenticationToken.class, httpHeaders);
+        GrantAuthenticationToken grantResult = dataStore.create(oauthTokenUrl, attempt, GrantAuthenticationToken.class, httpHeaders);
 
         return buildGrant(grantResult);
     }

@@ -41,7 +41,12 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
 
     private final InternalDataStore dataStore;
 
-    public DefaultOktaAuthNAuthenticator(InternalDataStore dataStore) {
+    private final String tokenUrl;
+    private final String introspectUrl;
+
+    public DefaultOktaAuthNAuthenticator(InternalDataStore dataStore, String tokenUrl, String introspectUrl) {
+        this.tokenUrl = tokenUrl;
+        this.introspectUrl = introspectUrl;
         Assert.notNull(dataStore);
         this.dataStore = dataStore;
     }
@@ -56,7 +61,7 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
         tokenRequest.setGrantType("authorization_code");
         tokenRequest.setRedirectUri(request.getRedirectUri());
 
-        OktaTokenResponse oktaTokenResponse = dataStore.create(OktaApiPaths.oauthPath("token"), tokenRequest, OktaTokenResponse.class, getHeaders());
+        OktaTokenResponse oktaTokenResponse = dataStore.create(tokenUrl, tokenRequest, OktaTokenResponse.class, getHeaders());
 
         // check if access key is valid
         TokenIntrospectResponse tokenIntrospectResponse = resolveAccessToken(oktaTokenResponse.getAccessToken());
@@ -97,7 +102,7 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
             .setToken(accessToken)
             .setTokenTypeHint("access_token");
 
-        TokenIntrospectResponse tokenIntrospectResponse = dataStore.create(OktaApiPaths.oauthPath("introspect"), request, TokenIntrospectResponse.class, getHeaders());
+        TokenIntrospectResponse tokenIntrospectResponse = dataStore.create(introspectUrl, request, TokenIntrospectResponse.class, getHeaders());
 
         // fail if token is invalid
         assertValidAccessToken(tokenIntrospectResponse);
@@ -136,7 +141,7 @@ public class DefaultOktaAuthNAuthenticator implements OktaAuthNAuthenticator {
 
         try {
 
-            return this.dataStore.create(OktaApiPaths.oauthPath("token"), tokenRequest, OktaTokenResponse.class, getHeaders());
+            return this.dataStore.create(tokenUrl, tokenRequest, OktaTokenResponse.class, getHeaders());
         }
         catch (final ResourceException e) {
 

@@ -1204,4 +1204,10 @@ public interface Application extends AccountStoreHolder<Application>, Resource, 
      * @since 1.2.0
      */
     Application addAuthorizedOriginUri(String authorizedOriginUri);
+
+    /**
+     * Added to support Okta Migration, configures underling object with property map.
+     * @return this instance for method chaining.
+     */
+    Application configureWithProperties(Map<String, Object> properties);
 }

@@ -16,9 +16,8 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.OAuthApplication;
-import com.stormpath.sdk.impl.oauth.OktaOAuthPasswordGrantRequestAuthenticator;
-import com.stormpath.sdk.impl.oauth.OktaOAuthRefreshTokenRequestAuthenticator;
-import com.stormpath.sdk.impl.oauth.OktaOAuthRequestAuthenticator;
+import com.stormpath.sdk.impl.okta.OktaOAuthAuthenticator;
+import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.okta.OktaForgotPasswordRequest;
 import com.stormpath.sdk.okta.OktaForgotPasswordResult;
 import com.stormpath.sdk.okta.OktaIdentityProviderList;
@@ -45,11 +44,9 @@ import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
 import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
-import com.stormpath.sdk.impl.authc.DefaultUsernamePasswordRequest;
 import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
 import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.impl.okta.OktaApplicationAccountStoreMapping;
 import com.stormpath.sdk.impl.resource.AbstractResource;
@@ -84,18 +81,18 @@ import java.util.Map;
 
 public class OktaApplication extends AbstractResource implements Application, OAuthApplication {
 
+    public static final String AUTHORIZATION_SERVER_ID_KEY = "authorizationServerId";
+
     private final Directory OKTA_TENANT_DIR;
 
     private final ApplicationAccountStoreMapping defaultAccountStoreMapping;
 
+    private OktaOAuthAuthenticator oAuthAuthenticator = null;
+
     private String name;
 
     public OktaApplication(String clientId, InternalDataStore dataStore) {
-        this(clientId, dataStore, new LinkedHashMap<String, Object>());
-    }
-
-    public OktaApplication(String clientId, InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, properties);
+        super(dataStore, null);
         this.OKTA_TENANT_DIR = new OktaDirectory(clientId, dataStore);
 
         Map<String, Object> mappingProperties = new LinkedHashMap<>();
@@ -110,6 +107,14 @@ public class OktaApplication extends AbstractResource implements Application, OA
             }
         };
         defaultAccountStoreMapping.setAccountStore(OKTA_TENANT_DIR);
+    }
+
+    public Application configureWithProperties(Map<String, Object> properties) {
+        setProperties(properties);
+        String authorizationServerId = getStringProperty(AUTHORIZATION_SERVER_ID_KEY);
+        oAuthAuthenticator = new OktaOAuthAuthenticator(authorizationServerId, this, getDataStore());
+
+        return this;
     }
 
     @Override
@@ -270,13 +275,21 @@ public class OktaApplication extends AbstractResource implements Application, OA
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException {
 
-        return new DefaultOktaAuthNAuthenticator(getDataStore()).authenticate((DefaultUsernamePasswordRequest)request);
+        return new DefaultOktaAuthNAuthenticator(
+                getDataStore(),
+                ensureOktaOAuthAuthenticator().getTokenEndpoint(),
+                ensureOktaOAuthAuthenticator().getIntrospectionEndpoint()
+        ).authenticate(request);
     }
 
     @Override
     public ProviderAccountResult getAccount(ProviderAccountRequest request) {
 
-        return new DefaultOktaAuthNAuthenticator(getDataStore()).getAccount(request);
+        return new DefaultOktaAuthNAuthenticator(
+                getDataStore(),
+                ensureOktaOAuthAuthenticator().getTokenEndpoint(),
+                ensureOktaOAuthAuthenticator().getIntrospectionEndpoint()
+        ).getAccount(request);
     }
 
     @Override
@@ -576,42 +589,46 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     @Override
     public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
-        throw new UnsupportedOperationException("createClientCredentialsGrantAuthenticator() method hasn't been implemented.");
+        return ensureOktaOAuthAuthenticator().createClientCredentialsGrantAuthenticator();
     }
 
     @Override
     public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
-        throw new UnsupportedOperationException("createStormpathSocialGrantAuthenticator() method hasn't been implemented.");
+        return ensureOktaOAuthAuthenticator().createStormpathSocialGrantAuthenticator();
     }
 
     @Override
     public OAuthStormpathFactorChallengeGrantRequestAuthenticator createStormpathFactorChallengeGrantAuthenticator() {
-        throw new UnsupportedOperationException("createStormpathFactorChallengeGrantAuthenticator() method hasn't been implemented.");
+        return ensureOktaOAuthAuthenticator().createStormpathFactorChallengeGrantAuthenticator();
     }
 
     @Override
     public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
-        // TODO clean this up, maybe these Authenticators should be _merged_ in with the OktaAuthN?
-        return new OktaOAuthPasswordGrantRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token", new DefaultOktaAuthNAuthenticator(getDataStore()), createOAuhtTokenRevocator(), createRefreshGrantAuthenticator());
+        return ensureOktaOAuthAuthenticator().createPasswordGrantAuthenticator();
     }
 
     @Override
     public OAuthRefreshTokenRequestAuthenticator createRefreshGrantAuthenticator() {
-        return new OktaOAuthRefreshTokenRequestAuthenticator(this, getDataStore(), "/oauth2/v1/token", new DefaultOktaAuthNAuthenticator(getDataStore()), createOAuhtTokenRevocator());
+        return ensureOktaOAuthAuthenticator().createRefreshGrantAuthenticator();
     }
 
     @Override
     public OAuthBearerRequestAuthenticator createJwtAuthenticator() {
-        return new OktaOAuthRequestAuthenticator(this, getDataStore(), new DefaultOktaAuthNAuthenticator(getDataStore()));
+        return ensureOktaOAuthAuthenticator().createJwtAuthenticator();
     }
 
     public IdSiteAuthenticator createIdSiteAuthenticator() {
-        throw new UnsupportedOperationException("createIdSiteAuthenticator() method hasn't been implemented.");
+        return ensureOktaOAuthAuthenticator().createIdSiteAuthenticator();
     }
 
     @Override
-    public OAuthTokenRevocator createOAuhtTokenRevocator() {
-        return new DefaultOAuthTokenRevocator(this, getDataStore(), "/oauth2/v1/revoke");
+    public OAuthTokenRevocator createOAuthTokenRevocator() {
+        return ensureOktaOAuthAuthenticator().createOAuthTokenRevocator();
+    }
+
+    private OktaOAuthAuthenticator ensureOktaOAuthAuthenticator() {
+        Assert.notNull(this.oAuthAuthenticator);
+        return oAuthAuthenticator;
     }
 
 

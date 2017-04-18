@@ -32,8 +32,8 @@ public class OktaOAuthPasswordGrantRequestAuthenticator extends DefaultOAuthPass
     private final OAuthTokenRevocator tokenRevocator;
     private final OAuthRefreshTokenRequestAuthenticator refreshTokenAuthenticator;
 
-    public OktaOAuthPasswordGrantRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath, OktaAuthNAuthenticator authenticator, OAuthTokenRevocator tokenRevocator, OAuthRefreshTokenRequestAuthenticator refreshTokenAuthenticator) {
-        super(application, dataStore, oauthTokenPath);
+    public OktaOAuthPasswordGrantRequestAuthenticator(DataStore dataStore, String oauthTokenUrl, OktaAuthNAuthenticator authenticator, OAuthTokenRevocator tokenRevocator, OAuthRefreshTokenRequestAuthenticator refreshTokenAuthenticator) {
+        super(null, dataStore, oauthTokenUrl);
         this.authenticator = authenticator;
         this.tokenRevocator = tokenRevocator;
         this.refreshTokenAuthenticator = refreshTokenAuthenticator;

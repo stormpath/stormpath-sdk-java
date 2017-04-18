@@ -261,7 +261,7 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
 
     private int getMaxAge(String token, byte[] clientSecret, CookieConfig cookieConfig, HttpServletRequest request, HttpServletResponse response) {
         // non-zero indicates override from cookie config
-        if (cookieConfig.getMaxAge() != 0 || token.split("\\.").length != 3) {
+        if (cookieConfig.getMaxAge() != 0 ) {
             return cookieConfig.getMaxAge();
         }
 

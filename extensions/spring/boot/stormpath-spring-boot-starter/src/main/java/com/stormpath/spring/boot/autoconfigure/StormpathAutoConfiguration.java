@@ -58,4 +58,10 @@ public class StormpathAutoConfiguration extends AbstractStormpathConfiguration {
         return super.stormpathClient();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(name = "oktaAuthorizationServerId")
+    public String oktaAuthorizationServerId() {
+        return super.oktaAuthorizationServerId();
+    }
+
 }

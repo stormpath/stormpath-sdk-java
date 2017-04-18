@@ -23,9 +23,8 @@ import com.stormpath.sdk.cache.Cache;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.idsite.IdSiteResultListener;
-import com.stormpath.sdk.impl.application.OktaApplication;
-import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
+import com.stormpath.sdk.impl.okta.DefaultOktaSigningKeyResolver;
+import com.stormpath.sdk.impl.okta.OktaSigningKeyResolver;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
@@ -35,6 +34,7 @@ import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
 import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.application.DefaultApplicationResolver;
+import com.stormpath.sdk.servlet.application.okta.OktaJwtSigningKeyResolver;
 import com.stormpath.sdk.servlet.authz.RequestAuthorizer;
 import com.stormpath.sdk.servlet.config.CookieConfig;
 import com.stormpath.sdk.servlet.config.RegisterEnabledPredicate;
@@ -185,6 +185,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -433,6 +434,10 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     @Value("#{ @environment['okta.enabled'] ?: true }")
     protected boolean oktaEnabled;
+
+    @Autowired(required = false)
+    @Qualifier("oktaAuthorizationServerId")
+    protected String oktaAuthorizationServerId;
 
     @Value("#{ @environment['stormpath.client.baseUrl'] }")
     protected String baseUrl;
@@ -808,22 +813,16 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new AuthenticationResultSaver(savers);
     }
 
+    public OktaSigningKeyResolver oktaSigningKeyResolver() {
+        return new DefaultOktaSigningKeyResolver(client, oktaAuthorizationServerId);
+    }
+
     public JwtSigningKeyResolver stormpathJwtSigningKeyResolver() {
-//        if (oktaEnabled) {
-//            return new JwtSigningKeyResolver() {
-//                @Override
-//                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, AuthenticationResult result, SignatureAlgorithm alg) {
-//                    throw new UnsupportedOperationException("getSigningKey() is not supported");
-//                }
-//
-//                @Override
-//                public Key getSigningKey(HttpServletRequest request, HttpServletResponse response, JwsHeader jwsHeader, Claims claims) {
-//                    return client.instantiate(OktaSigningKeyResolver.class).resolveSigningKey(jwsHeader, claims);
-//                }
-//            };
-//        } else {
+        if (oktaEnabled) {
+            return new OktaJwtSigningKeyResolver(oktaSigningKeyResolver());
+        } else {
             return new JwtTokenSigningKeyResolver();
-//        }
+        }
     }
 
     public RequestEventListener stormpathRequestEventListener() {
@@ -843,7 +842,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public JwtAccountResolver stormpathJwtAccountResolver() {
         if (oktaEnabled) {
-            return new OktaJwtAccountResolver();
+            return new OktaJwtAccountResolver(stormpathJwtSigningKeyResolver());
         }
         else {
             return new DefaultJwtAccountResolver(stormpathJwtSigningKeyResolver());
@@ -879,8 +878,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
      */
     public RefreshTokenResultFactory stormpathRefreshTokenResultFactory() {
         if (oktaEnabled) {
-            // FIXME: OktaAuthN is needed here because of the dependency on the Introspect endpoint, maybe that logic should be broken out.
-            return new OktaRefreshTokenResultFactory(application, new DefaultOktaAuthNAuthenticator((InternalDataStore) client.getDataStore()));
+            return new OktaRefreshTokenResultFactory(application);
         } else {
             return new DefaultRefreshTokenResultFactory(application);
         }

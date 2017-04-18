@@ -916,7 +916,7 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     }
 
     @Override
-    public OAuthTokenRevocator createOAuhtTokenRevocator() {
+    public OAuthTokenRevocator createOAuthTokenRevocator() {
         return new DefaultOAuthTokenRevocator(this, getDataStore());
     }
 
@@ -924,5 +924,11 @@ public class DefaultApplication extends AbstractExtendableInstanceResource imple
     @Override
     public AccountLinkingPolicy getAccountLinkingPolicy() {
         return getResourceProperty(ACCOUNT_LINKING_POLICY);
+    }
+
+    @Override
+    public Application configureWithProperties(Map<String, Object> properties) {
+        setProperties(properties);
+        return this;
     }
 }

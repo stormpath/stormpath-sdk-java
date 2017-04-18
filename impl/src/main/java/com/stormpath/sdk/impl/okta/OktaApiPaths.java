@@ -7,15 +7,9 @@ public final class OktaApiPaths {
 
     public static final String API_V1 = "/api/v1/";
 
-    public static final String OAUTH2_V1 = "/oauth2/v1/";
-
     public static final String USERS = API_V1 + "users/";
 
     public static final String PASSWORD_RECOVERY = API_V1 + "authn/recovery/password";
-
-    public static String oauthPath(String ... parts) {
-        return buildPath(OAUTH2_V1, parts);
-    }
 
     public static String apiPath(String ... parts) {
 

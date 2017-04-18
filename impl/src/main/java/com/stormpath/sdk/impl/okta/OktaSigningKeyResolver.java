@@ -7,4 +7,7 @@ import io.jsonwebtoken.SigningKeyResolver;
  *
  */
 public interface OktaSigningKeyResolver extends SigningKeyResolver, Resource {
+
+    OktaSigningKeyResolver setKeysUrl(String keysUrl);
+
 }

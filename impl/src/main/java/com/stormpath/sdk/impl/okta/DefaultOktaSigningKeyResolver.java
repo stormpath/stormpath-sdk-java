@@ -1,8 +1,9 @@
 package com.stormpath.sdk.impl.okta;
 
+import com.stormpath.sdk.ds.DataStore;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.okta.OIDCKey;
 import com.stormpath.sdk.okta.OIDCKeysList;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
 import io.jsonwebtoken.Claims;
@@ -21,11 +22,24 @@ import java.security.spec.RSAPublicKeySpec;
  */
 public class DefaultOktaSigningKeyResolver implements OktaSigningKeyResolver {
 
+    private final DataStore dataStore;
 
-    private final InternalDataStore dataStore;
+    private String keysUrl = "/oauth2/v1/keys";
 
-    public DefaultOktaSigningKeyResolver(InternalDataStore dataStore) {
+    public DefaultOktaSigningKeyResolver(DataStore dataStore, String authorizationServerId) {
         this.dataStore = dataStore;
+
+        if (Strings.hasText(authorizationServerId)) {
+            // TODO: This should come from the discovery URL, no _easy_ way of getting it,
+            // as that Resource is NOT cached.
+            keysUrl = "/oauth2/" + authorizationServerId + "/v1/keys";
+        }
+    }
+
+    @Override
+    public OktaSigningKeyResolver setKeysUrl(String keysUrl) {
+        this.keysUrl = keysUrl;
+        return this;
     }
 
     @Override
@@ -46,9 +60,9 @@ public class DefaultOktaSigningKeyResolver implements OktaSigningKeyResolver {
             throw new UnsupportedOperationException("Only 'RS256' key algorithm is supported.");
         }
 
-        OIDCKeysList keyList = dataStore.getResource("/oauth2/v1/keys", OIDCKeysList.class);
+        OIDCKeysList keyList = dataStore.getResource(keysUrl, OIDCKeysList.class);
         OIDCKey key = keyList.getKeyById(keyId);
-        Assert.notNull(key, "Key with 'kid' of "+keyId+" could not be found via the /oauth2/v1/keys endpoint.");
+        Assert.notNull(key, "Key with 'kid' of "+keyId+" could not be found via the '" + keysUrl + "' endpoint.");
 
         try {
 
