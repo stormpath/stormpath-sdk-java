@@ -49,7 +49,8 @@ public class OktaJwtAccountResolver implements JwtAccountResolver {
             return null;
         }
 
-        String accountHref = OktaApiPaths.USERS + claims.get("uid");
+        String uid = claims.get("uid", String.class);
+        String accountHref = OktaApiPaths.apiPath("users", uid);
 
         //will hit the cache:
         return client.getResource(accountHref, Account.class);

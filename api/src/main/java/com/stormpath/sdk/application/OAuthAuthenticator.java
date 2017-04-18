@@ -27,7 +27,7 @@ public interface OAuthAuthenticator {
 
     OAuthTokenRevocator createOAuthTokenRevocator();
 
-    // FIXME: this shouldn't be here, but not sure how much of the IdSite code is just OAuth functionality.
+    // TODO: this shouldn't be here, but not sure how much of the IdSite code is just OAuth functionality.
     IdSiteAuthenticator createIdSiteAuthenticator();
 
 }

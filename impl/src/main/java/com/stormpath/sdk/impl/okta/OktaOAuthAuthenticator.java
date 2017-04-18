@@ -24,15 +24,20 @@ public class OktaOAuthAuthenticator implements OAuthAuthenticator {
 
     private final InternalDataStore dataStore;
     private final Application application;
+    private final OktaSigningKeyResolver oktaSigningKeyResolver;
 
     private OktaOIDCWellKnownResource wellKnownResource;
 
-    public OktaOAuthAuthenticator(String authorizationServerId, Application application, InternalDataStore dataStore) {
+    public OktaOAuthAuthenticator(String authorizationServerId,
+                                  Application application,
+                                  InternalDataStore dataStore) {
         this.dataStore = dataStore;
         this.application = application;
 
         String wellKnownUrlBaseUrl = authorizationServerId != null ? "/oauth2/"+authorizationServerId : "/";
         wellKnownResource = dataStore.getResource(wellKnownUrlBaseUrl + "/.well-known/openid-configuration", OktaOIDCWellKnownResource.class);
+
+        this.oktaSigningKeyResolver = new DefaultOktaSigningKeyResolver(dataStore, authorizationServerId);
     }
 
     // TODO: remove the need for these
@@ -43,10 +48,6 @@ public class OktaOAuthAuthenticator implements OAuthAuthenticator {
     // TODO: remove the need for these
     public String getIntrospectionEndpoint() {
         return wellKnownResource.getIntrospectionEndpoint();
-    }
-
-    public String getJwksUri() {
-        return wellKnownResource.getJwksUri();
     }
 
     @Override
@@ -79,7 +80,9 @@ public class OktaOAuthAuthenticator implements OAuthAuthenticator {
                                                  new DefaultOktaAuthNAuthenticator(
                                                          dataStore,
                                                          wellKnownResource.getTokenEndpoint(),
-                                                         wellKnownResource.getIntrospectionEndpoint()));
+                                                         wellKnownResource.getIntrospectionEndpoint()),
+                                                 oktaSigningKeyResolver
+        );
     }
 
 
