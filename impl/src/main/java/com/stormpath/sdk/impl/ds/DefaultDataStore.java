@@ -252,7 +252,9 @@ public class DefaultDataStore implements InternalDataStore {
 
         if ("local".equalsIgnoreCase(href) && clazz.isAssignableFrom(Application.class)) {
             // TODO: this clientId setting needs to be resolved
-            return (T) new OktaApplication(((PairedApiKey)apiKeyResolver.getApiKey()).getSecondaryApiKey().getId(), this);
+            return (T) new OktaApplication(
+                    ((PairedApiKey)apiKeyResolver.getApiKey()).getSecondaryApiKey().getId(),
+                    this);
         }
 
         return getResource(href, clazz, (Map<String, Object>) null);

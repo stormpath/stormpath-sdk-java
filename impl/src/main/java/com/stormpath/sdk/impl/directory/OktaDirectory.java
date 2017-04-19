@@ -3,8 +3,10 @@ package com.stormpath.sdk.impl.directory;
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.Accounts;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.EmailVerificationStatus;
 import com.stormpath.sdk.directory.AccountCreationPolicy;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.CustomData;
@@ -19,8 +21,11 @@ import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
+import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest;
+import com.stormpath.sdk.impl.application.OktaApplication;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.okta.OktaApiPaths;
+import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
 import com.stormpath.sdk.impl.provider.DefaultOktaProvider;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
@@ -34,24 +39,30 @@ import com.stormpath.sdk.organization.OrganizationCriteria;
 import com.stormpath.sdk.organization.OrganizationList;
 import com.stormpath.sdk.provider.OktaProvider;
 import com.stormpath.sdk.provider.Provider;
+import com.stormpath.sdk.query.Options;
 import com.stormpath.sdk.schema.Schema;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 public class OktaDirectory extends AbstractResource implements Directory {
 
     private final OktaProvider oktaProvider;
+    private final OktaApplication oktaApplication;
+    private boolean registrationWorkflowEnabled = false;
 
-    public OktaDirectory(String clientId, InternalDataStore dataStore) {
+    public OktaDirectory(String clientId, OktaApplication oktaApplication, InternalDataStore dataStore) {
         super(dataStore);
+        this.oktaApplication = oktaApplication;
         this.oktaProvider = new DefaultOktaProvider(dataStore)
                 .setClientId(clientId);
     }
 
-    public OktaDirectory(String clientId, InternalDataStore dataStore, Map<String, Object> properties) {
+    public OktaDirectory(String clientId, OktaApplication oktaApplication, InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
+        this.oktaApplication = oktaApplication;
         this.oktaProvider = new DefaultOktaProvider(dataStore, properties)
                 .setClientId(clientId);
     }
@@ -128,21 +139,34 @@ public class OktaDirectory extends AbstractResource implements Directory {
 
     @Override
     public Account createAccount(Account account) {
-        Assert.notNull(account, "Account instance cannot be null.");
-        CreateAccountRequest request = Accounts.newCreateRequestFor(account).build();
-        return createAccount(request);
+        return createAccount(account, isRegistrationWorkflowEnabled());
     }
 
     @Override
     public Account createAccount(Account account, boolean registrationWorkflowEnabled) {
-        throw new UnsupportedOperationException("Not implemented.");
+        Assert.notNull(account, "Account instance cannot be null.");
+        CreateAccountRequest request = Accounts.newCreateRequestFor(account).setRegistrationWorkflowEnabled(registrationWorkflowEnabled).build();
+        return createAccount(request);
     }
 
     @Override
     public Account createAccount(CreateAccountRequest request) {
-        String usersHref = getHref() + OktaApiPaths.USERS;
+        String usersHref = getHref() + OktaApiPaths.USERS + "?activate=" + !request.isRegistrationWorkflowEnabled();
         final Account account = request.getAccount();
-        return getDataStore().create(usersHref, account);
+        account.getCustomData().put(OktaUserAccountConverter.RECOVERY_WORK_AROUND_KEY, UUID.randomUUID().toString());
+
+        if (request.isRegistrationWorkflowEnabled()) {
+            account.setStatus(AccountStatus.UNVERIFIED);
+            account.setEmailVerificationStatus(EmailVerificationStatus.UNVERIFIED);
+            account.getCustomData().put(OktaUserAccountConverter.STORMPATH_EMAIL_VERIFICATION_TOKEN, UUID.randomUUID().toString());
+        }
+        Account result = getDataStore().create(usersHref, account);
+
+        if (request.isRegistrationWorkflowEnabled()) {
+            oktaApplication.sendVerificationEmail(new DefaultVerificationEmailRequest(getDataStore()).setLogin(account.getEmail()));
+        }
+
+        return result;
     }
 
     @Override
@@ -246,6 +270,14 @@ public class OktaDirectory extends AbstractResource implements Directory {
     @Override
     public Schema getAccountSchema() {
         throw new UnsupportedOperationException("Not implemented.");
+    }
+
+    public boolean isRegistrationWorkflowEnabled() {
+        return registrationWorkflowEnabled;
+    }
+
+    public void setRegistrationWorkflowEnabled(boolean registrationWorkflowEnabled) {
+        this.registrationWorkflowEnabled = registrationWorkflowEnabled;
     }
 
     @SuppressWarnings("unchecked")

@@ -1,0 +1,14 @@
+{
+  "id": "default",
+  "name": "Default Verification Email Template",
+  "description": "This is the verification email template that is associated with the directory.",
+  "mimeType": "text/plain",
+  "fromEmailAddress": "change-me@stormpath.com",
+  "fromName": "change-me",
+  "subject": "Verify your account",
+  "defaultModel": {
+    "linkBaseUrl": "http://localhost:8080/verify"
+  },
+  "htmlBody": "<p>Hi,</p>\n<p>You have been registered for an application that uses Stormpath.</p><a href=\"${url}\">Click here to verify your account</a><p>Once you verify, you will be able to login.</p><p>--------------------- <br />For general inquiries or to request support with your account, please email change-me@stormpath.com</p>",
+  "textBody": "Hi,\nYou have been registered for an application that uses Stormpath.\n\n${url}\n\nOnce you verify, you will be able to login.\n\n---------------------\nFor general inquiries or to request support with your account, please email change-me@stormpath.com"
+}

@@ -1,6 +1,7 @@
 package com.stormpath.sdk.impl.okta;
 
 import com.stormpath.sdk.account.AccountStatus;
+import com.stormpath.sdk.account.EmailVerificationStatus;
 import com.stormpath.sdk.group.Group;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Objects;
@@ -82,6 +83,8 @@ public final class OktaUserAccountConverter {
     private static final String STORMPATH_MODIFIED_AT = "modifiedAt";
     private static final String STORMPATH_PASSWORD_MODIFIED_AT = "passwordModifiedAt";
     private static final String STORMPATH_STATUS = "status";
+    private static final String STORMPATH_EMAIL_VERIFICATION_STATUS = "emailVerificationStatus";
+    public static final  String STORMPATH_EMAIL_VERIFICATION_TOKEN = "emailVerificationToken";
 
     private static final String STORMPATH_CUSTOM_DATA = "customData";
 
@@ -99,14 +102,26 @@ public final class OktaUserAccountConverter {
     private static final String OKTA_LINKS = "_links";
     private static final String OKTA_SELF = "self";
     private static final String OKTA_HREF = "href";
+    private static final String OKTA_EMAIL_VERIFICATION_STATUS = "emailVerificationStatus";
+    private static final String OKTA_EMAIL_VERIFICATION_TOKEN = "emailVerificationToken";
 
     private static final String OKTA_CREDENTIALS = "credentials";
     private static final String OKTA_PASSWORD = "password";
     private static final String OKTA_VALUE = "value";
 
+    public static final String RECOVERY_WORK_AROUND_KEY = "stormpathMigrationRecoveryAnswer";
+    private static final String OKTA_RECOVERY_QUESTION = "recovery_question";
+    private static final String OKTA_RECOVERY_QUESTION_QUESTION = "question";
+    private static final String OKTA_RECOVERY_QUESTION_ANSWER = "answer";
+
+
     private OktaUserAccountConverter() {}
 
     public static Map<String, Object> toAccount(Map<String, Object> userMap, String baseUrl) {
+
+        if (userMap == null) {
+            return null;
+        }
 
         // quick hack to make existing tests work.
         // if the UserMap does NOT contain an 'id' field, just assume the map is already an account.
@@ -124,10 +139,18 @@ public final class OktaUserAccountConverter {
             nullSafePut(accountMap, STORMPATH_GIVEN_NAME, profileMap.get(OKTA_FIRST_NAME));
             nullSafePut(accountMap, STORMPATH_MIDDLE_NAME, profileMap.get(OKTA_MIDDLE_NAME));
             nullSafePut(accountMap, STORMPATH_SURNAME, profileMap.get(OKTA_LAST_NAME));
+            nullSafePut(accountMap, STORMPATH_EMAIL_VERIFICATION_STATUS, fromEmailStatus(profileMap.get(OKTA_EMAIL_VERIFICATION_STATUS)));
+
+            String emailVerificationToken = (String) profileMap.get(OKTA_EMAIL_VERIFICATION_TOKEN);
+            if (!Strings.hasText(emailVerificationToken)) {
+                Map<String, Object> verificationTokenMap = new LinkedHashMap<>();
+                verificationTokenMap.put(STORMPATH_HREF, "/emailVerificationTokens/"+emailVerificationToken);
+            }
+
             // build full name
             nullSafePut(accountMap, STORMPATH_FULL_NAME, buildFullName(profileMap.get(OKTA_FIRST_NAME), profileMap.get(OKTA_LAST_NAME)));
             // everything not in this lis is considered customData
-            nullSafePut(accountMap, STORMPATH_CUSTOM_DATA, trimMap(profileMap, OKTA_LOGIN, OKTA_EMAIL, OKTA_FIRST_NAME, OKTA_MIDDLE_NAME, OKTA_LAST_NAME));
+            nullSafePut(accountMap, STORMPATH_CUSTOM_DATA, trimMap(profileMap, OKTA_LOGIN, OKTA_EMAIL, OKTA_FIRST_NAME, OKTA_MIDDLE_NAME, OKTA_LAST_NAME, OKTA_EMAIL_VERIFICATION_STATUS, STORMPATH_EMAIL_VERIFICATION_TOKEN));
         }
 
         nullSafePut(accountMap, STORMPATH_CREATED_AT, userMap.get(OKTA_CREATED));
@@ -138,6 +161,7 @@ public final class OktaUserAccountConverter {
         if (userMap.containsKey(OKTA_STATUS)) {
             accountMap.put(STORMPATH_STATUS, fromUserStatus(userMap.get(OKTA_STATUS)));
         }
+
 
         // _links.self.href -> href
         nullSafePut(accountMap, STORMPATH_HREF, getOktaHref(userMap));
@@ -153,7 +177,6 @@ public final class OktaUserAccountConverter {
 
         Map<String, Object> userMap = new LinkedHashMap<>();
         Map<String, Object> profileMap = new LinkedHashMap<>();
-        userMap.put(OKTA_PROFILE, profileMap);
 
         String username = (String) accountMap.get(STORMPATH_USERNAME);
         if (!Strings.hasText(username)) {
@@ -164,15 +187,17 @@ public final class OktaUserAccountConverter {
         nullSafePut(profileMap, OKTA_FIRST_NAME, accountMap.get(STORMPATH_GIVEN_NAME));
         nullSafePut(profileMap, OKTA_MIDDLE_NAME, accountMap.get(STORMPATH_MIDDLE_NAME));
         nullSafePut(profileMap, OKTA_LAST_NAME, accountMap.get(STORMPATH_SURNAME));
+        nullSafePut(profileMap, OKTA_EMAIL_VERIFICATION_STATUS, accountMap.get(STORMPATH_EMAIL_VERIFICATION_STATUS));
 
         nullSafePut(userMap, OKTA_CREATED, accountMap.get(STORMPATH_CREATED_AT));
         nullSafePut(userMap, OKTA_LAST_UPDATED, accountMap.get(STORMPATH_MODIFIED_AT));
         nullSafePut(userMap, OKTA_PASSEWORD_CHANGED, accountMap.get(STORMPATH_PASSWORD_MODIFIED_AT));
 
+
+        Map<String, Object> credentialsMap = new LinkedHashMap<>();
         // credentials
         if (accountMap.containsKey(STORMPATH_PASSWORD)) {
 
-            Map<String, Object> credentialsMap = new LinkedHashMap<>();
             Map<String, Object> passwordMap = new LinkedHashMap<>();
 
             userMap.put(OKTA_CREDENTIALS, credentialsMap);
@@ -183,6 +208,22 @@ public final class OktaUserAccountConverter {
         // custom data, just drop it in profile map
         if (accountMap.containsKey(STORMPATH_CUSTOM_DATA)) {
             profileMap.putAll(getPropertyMap(accountMap, STORMPATH_CUSTOM_DATA));
+
+            String recoveryAnswer = (String) profileMap.get(RECOVERY_WORK_AROUND_KEY);
+
+            if (Strings.hasText(recoveryAnswer)) {
+                // here is the work around, if we have a recovery answer we MUST set the question
+                Map<String, Object> recoveryQuestionMap = new LinkedHashMap<>();
+                recoveryQuestionMap.put(OKTA_RECOVERY_QUESTION_QUESTION, RECOVERY_WORK_AROUND_KEY); // the question is also the key
+                recoveryQuestionMap.put(OKTA_RECOVERY_QUESTION_ANSWER, recoveryAnswer);
+
+                credentialsMap.put(OKTA_RECOVERY_QUESTION, recoveryQuestionMap);
+                userMap.put(OKTA_CREDENTIALS, credentialsMap);
+            }
+        }
+
+        if (!Collections.isEmpty(profileMap)) {
+            userMap.put(OKTA_PROFILE, profileMap);
         }
 
         return userMap;
@@ -214,6 +255,15 @@ public final class OktaUserAccountConverter {
         if (value != null) {
             map.put(key, value);
         }
+    }
+
+    private static String fromEmailStatus(Object emailStatusRaw) {
+
+        if (emailStatusRaw == null) {
+            return EmailVerificationStatus.UNKNOWN.name();
+        }
+
+        return EmailVerificationStatus.valueOf(Objects.nullSafeToString(emailStatusRaw)).name();
     }
 
     private static String fromUserStatus(Object userStatusRaw) {

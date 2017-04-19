@@ -19,6 +19,10 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyBuilder;
 import com.stormpath.sdk.api.ApiKeys;
 import com.stormpath.sdk.application.Application;
+import com.stormpath.sdk.mail.EmailService;
+import com.stormpath.sdk.mail.EmailServiceBuilder;
+import com.stormpath.sdk.mail.config.DefaultEmailServiceConfig;
+import com.stormpath.sdk.mail.config.EmailServiceConfig;
 import com.stormpath.sdk.okta.ApplicationCredentials;
 import com.stormpath.sdk.cache.Caches;
 import com.stormpath.sdk.client.AuthenticationScheme;
@@ -113,6 +117,49 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['okta.authorizationServer.id'] }")
     protected String oktaAuthorizationServerIdConfig;
 
+    @Value("#{ @environment['stormpath.registration.workflow.enabled'] ?: false }")
+    protected boolean registrationWorkflowEnabled;
+
+    @Value("#{ @environment['stormpath.email.port'] ?: 25 }")
+    protected int emailPort;
+
+    @Value("#{ @environment['stormpath.email.fromName'] ?: 'Application' }")
+    protected String emailFromName;
+
+    @Value("#{ @environment['stormpath.email.foo'] ?: 'admin@local' }")
+    protected String emailFromAddress;
+
+    @Value("#{ @environment['stormpath.email.applicationBaseUrl'] ?: 'http://localhost:8080' }")
+    protected String emailApplicationBaseUrl;
+
+    @Value("#{ @environment['stormpath.email.hostname'] ?: 'localhost' }")
+    protected String emailHostname;
+
+    @Value("#{ @environment['stormpath.email.sselEnabled'] ?: false }")
+    protected boolean emailSSLEnabled;
+
+    @Value("#{ @environment['stormpath.email.sslCheckServerIdentityEnabled'] ?: false }")
+    protected boolean emailSSLCheckServerIdentityEnabled;
+
+    @Value("#{ @environment['stormpath.email.tlsEnabled'] ?: false }")
+    protected boolean emailTLSEnabled;
+
+    @Value("#{ @environment['stormpath.email.username']}")
+    protected String emailUsername;
+
+    @Value("#{ @environment['stormpath.email.password']}")
+    protected String emailPassword;
+
+    @Value("#{ @environment['stormpath.email.tokenExpirationHours'] ?: 2 }")
+    protected int emailExpirationHours;
+
+    @Value("#{ @environment['stormpath.email.verifyEmailTemplate'] ?: '/com/stormpath/sdk/mail/templates/verifyEmail.json' }")
+    protected String verifyEmailTemplate;
+
+    @Value("#{ @environment['stormpath.email.forgotPasswordTemplate'] ?: '/com/stormpath/sdk/mail/templates/forgotPassword.json' }")
+    protected String forgotPasswordEmailTemplate;
+
+
     public ApiKey stormpathClientApiKey() {
 
         if (oktaEnabled) {
@@ -189,6 +236,26 @@ public abstract class AbstractStormpathConfiguration {
         return oktaAuthorizationServerIdConfig;
     }
 
+    public EmailServiceConfig emailServiceConfig() {
+        return new DefaultEmailServiceConfig()
+                .setTokenExpirationHours(emailExpirationHours)
+                .setValidationTemplateConfig(verifyEmailTemplate)
+                .setResetPasswordTemplateConfig(forgotPasswordEmailTemplate)
+                .setHostname(emailHostname)
+                .setPort(emailPort)
+                .setSsl(emailSSLEnabled)
+                .setSslCheckServerIdentity(emailSSLCheckServerIdentityEnabled)
+                .setTls(emailTLSEnabled)
+                .setUsername(emailUsername)
+                .setPassword(emailPassword);
+    }
+
+    public EmailService emailService() {
+        return EmailServiceBuilder.INSTANCE
+                .setConfig(emailServiceConfig())
+                .build();
+    }
+
     public Application stormpathApplication() {
 
         Client client = stormpathClient();
@@ -197,6 +264,9 @@ public abstract class AbstractStormpathConfiguration {
 
             Map<String, Object> oktaAppConfigMap = new LinkedHashMap<>();
             oktaAppConfigMap.put("authorizationServerId", oktaAuthorizationServerId());
+            oktaAppConfigMap.put("emailService", emailService());
+            oktaAppConfigMap.put("registrationWorkflowEnabled", registrationWorkflowEnabled);
+            oktaAppConfigMap.put("client", client);
 
             Application application = client.getDataStore().getResource("local", Application.class);
             String name = applicationName;
@@ -277,15 +347,9 @@ public abstract class AbstractStormpathConfiguration {
             //base url checks:
             Assert.hasText(baseUrl, "When okta.enabled is true, stormpath.client.baseUrl " +
                 "must be configured with your Okta Organization Base URL");
-            String append = null;
+
             if (baseUrl.endsWith("/")) {
                 baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
-            }
-//            if (baseUrl.endsWith(".com")) {
-//                append = "/api/v1";
-//            }
-            if (append != null) {
-                baseUrl += append;
             }
         }
 

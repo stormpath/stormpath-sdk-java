@@ -21,13 +21,14 @@ import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.client.PairedApiKey;
 import com.stormpath.sdk.impl.application.OktaApplication;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.okta.OktaApiPaths;
-import com.stormpath.sdk.impl.okta.OktaSigningKeyResolver;
+import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.lang.Assert;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.okta.OktaApplicationConfigResource;
+import com.stormpath.sdk.mail.EmailService;
+import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.client.DefaultServletContextClientFactory;
 import com.stormpath.sdk.servlet.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -40,6 +41,7 @@ import java.util.Map;
  */
 public class DefaultApplicationResolver implements ApplicationResolver {
 
+    public static final Logger LOG = LoggerFactory.getLogger(DefaultApplicationResolver.class);
     public static final String STORMPATH_APPLICATION_HREF = DefaultServletContextClientFactory.STORMPATH_APPLICATION_HREF;
 
     private static final String APP_HREF_ERROR =
@@ -95,15 +97,29 @@ public class DefaultApplicationResolver implements ApplicationResolver {
         Config config = getConfig(servletContext);
         if (Boolean.valueOf(config.get("okta.enabled"))) {
 
-            Map<String, Object> appConfigMap = new LinkedHashMap<>();
-            appConfigMap.put(OktaApplication.AUTHORIZATION_SERVER_ID_KEY, config.getOktaAuthorizationServerId());
+            try {
+                EmailService emailService = config.getInstance("stormpath.email.service");
 
-            // TODO: There must be a better way to get the clientId
-            OktaApplication oktaApplication = new OktaApplication(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(),
-                                                                  (InternalDataStore) client.getDataStore());
-            oktaApplication.configureWithProperties(appConfigMap);
+                Map<String, Object> appConfigMap = new LinkedHashMap<>();
+                appConfigMap.put(OktaApplication.AUTHORIZATION_SERVER_ID_KEY, config.getOktaAuthorizationServerId());
+                appConfigMap.put(OktaApplication.EMAIL_SERVICE_KEY, emailService);
+                appConfigMap.put(OktaApplication.REGISTRATION_WORKFLOW_KEY, Boolean.valueOf(config.get("stormpath.registration.workflow.enabled")));
+                appConfigMap.put("client", client);
 
-            return oktaApplication;
+                // TODO: There must be a better way to get the clientId
+                OktaApplication oktaApplication = new OktaApplication(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(),
+                                                                      (InternalDataStore) client.getDataStore());
+                oktaApplication.configureWithProperties(appConfigMap);
+
+                return oktaApplication;
+
+            } catch (ServletException e) {
+                LOG.error("Failed to configure EmailService", e);
+                throw new ResourceException(new DefaultError()
+                        .setCode(500)
+                        .setMessage("Failed to resolve Application")
+                        .setDeveloperMessage(e.getMessage()));
+            }
         }
 
         //this is a local cached href value that we use in case we have to query applications (see below):

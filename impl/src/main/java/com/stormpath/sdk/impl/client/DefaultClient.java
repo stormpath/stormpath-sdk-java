@@ -133,6 +133,10 @@ public class DefaultClient implements Client {
         return new DefaultDataStore(requestExecutor, baseUrlResolver, clientCredentials, apiKeyResolver, cacheManager);
     }
 
+    public void setTenantResolver(TenantResolver tenantResolver) {
+        this.tenantResolver = tenantResolver;
+    }
+
     @Override
     public Tenant getCurrentTenant() {
         return this.tenantResolver.getCurrentTenant();

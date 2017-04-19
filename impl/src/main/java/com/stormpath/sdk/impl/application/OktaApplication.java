@@ -4,7 +4,10 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.account.AccountCriteria;
 import com.stormpath.sdk.account.AccountLinkingPolicy;
 import com.stormpath.sdk.account.AccountList;
+import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.CreateAccountRequest;
+import com.stormpath.sdk.account.EmailVerificationStatus;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiKey;
@@ -16,8 +19,19 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.OAuthApplication;
+import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.error.Error;
+import com.stormpath.sdk.impl.client.DefaultClient;
+import com.stormpath.sdk.impl.error.DefaultError;
+import com.stormpath.sdk.impl.mail.DefaultEmailRequest;
+import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
+import com.stormpath.sdk.impl.tenant.TenantResolver;
+import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.mail.EmailRequest;
+import com.stormpath.sdk.mail.EmailService;
 import com.stormpath.sdk.impl.okta.OktaOAuthAuthenticator;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.okta.OktaActivateAccountResponse;
 import com.stormpath.sdk.okta.OktaForgotPasswordRequest;
 import com.stormpath.sdk.okta.OktaForgotPasswordResult;
 import com.stormpath.sdk.okta.OktaIdentityProviderList;
@@ -65,11 +79,24 @@ import com.stormpath.sdk.provider.OktaProvider;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
+import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.saml.SamlCallbackHandler;
 import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
 import com.stormpath.sdk.saml.SamlPolicy;
 import com.stormpath.sdk.tenant.Tenant;
+import com.stormpath.sdk.tenant.TenantOptions;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.compression.CompressionCodecs;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,14 +105,21 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class OktaApplication extends AbstractResource implements Application, OAuthApplication {
 
     public static final String AUTHORIZATION_SERVER_ID_KEY = "authorizationServerId";
+    public static final String EMAIL_SERVICE_KEY = "emailService";
+    public static final String REGISTRATION_WORKFLOW_KEY = "registrationWorkflowEnabled";
 
-    private final Directory OKTA_TENANT_DIR;
+    private final Logger log = LoggerFactory.getLogger(OktaApplication.class);
+
+    private final OktaDirectory OKTA_TENANT_DIR;
 
     private final ApplicationAccountStoreMapping defaultAccountStoreMapping;
+
+    private EmailService emailService;
 
     private OktaOAuthAuthenticator oAuthAuthenticator = null;
 
@@ -93,7 +127,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     public OktaApplication(String clientId, InternalDataStore dataStore) {
         super(dataStore, null);
-        this.OKTA_TENANT_DIR = new OktaDirectory(clientId, dataStore);
+        this.OKTA_TENANT_DIR = new OktaDirectory(clientId, this, dataStore);
 
         Map<String, Object> mappingProperties = new LinkedHashMap<>();
         mappingProperties.put("href", dataStore.getBaseUrl());
@@ -107,12 +141,31 @@ public class OktaApplication extends AbstractResource implements Application, OA
             }
         };
         defaultAccountStoreMapping.setAccountStore(OKTA_TENANT_DIR);
+
     }
 
     public Application configureWithProperties(Map<String, Object> properties) {
         setProperties(properties);
-        String authorizationServerId = getStringProperty(AUTHORIZATION_SERVER_ID_KEY);
-        oAuthAuthenticator = new OktaOAuthAuthenticator(authorizationServerId, this, getDataStore());
+        oAuthAuthenticator = new OktaOAuthAuthenticator(getStringProperty(AUTHORIZATION_SERVER_ID_KEY), this, getDataStore());
+        emailService = (EmailService) getProperty(EMAIL_SERVICE_KEY);
+        this.OKTA_TENANT_DIR.setRegistrationWorkflowEnabled(getBooleanProperty(REGISTRATION_WORKFLOW_KEY));
+
+        Object client = properties.get("client");
+        if (client instanceof DefaultClient) {
+            ((DefaultClient) client).setTenantResolver(new TenantResolver() {
+                @Override
+                public Tenant getCurrentTenant() {
+                    return getTenant();
+                }
+
+                @Override
+                public Tenant getCurrentTenant(TenantOptions tenantOptions) {
+                    return getTenant();
+                }
+            });
+        }
+
+
 
         return this;
     }
@@ -240,21 +293,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     @Override
     public Tenant getTenant() {
-        throw new UnsupportedOperationException("getTenant() method hasn't been implemented.");
-    }
-
-    @Override
-    public PasswordResetToken sendPasswordResetEmail(String email) throws ResourceException {
-
-        OktaForgotPasswordRequest request = getDataStore().instantiate(OktaForgotPasswordRequest.class);
-        request.setUsername(email);
-        request.setFactorType("EMAIL");
-        request.setRelayState("/");
-
-        OktaForgotPasswordResult result = getDataStore().create(OktaApiPaths.PASSWORD_RECOVERY, request, OktaForgotPasswordResult.class);
-
-        return null;
-
+        return new OktaTenant(this);
     }
 
     @Override
@@ -263,13 +302,118 @@ public class OktaApplication extends AbstractResource implements Application, OA
     }
 
     @Override
+    public PasswordResetToken sendPasswordResetEmail(String email) throws ResourceException {
+
+        // make sure this email is valid first
+        String userHref = OktaApiPaths.apiPath("users", email); // users endpoint works with uid and emails
+        Account account = getDataStore().getResource(userHref, Account.class);
+
+        String compactJwt =  Jwts.builder()
+                .setSubject(email)
+                .claim("tokenType", "reset")
+                .claim("resetToken", UUID.randomUUID())
+                .claim("userHref", account.getHref())
+                .setExpiration(DateTime.now().plusHours(2).toDate())
+                .compressWith(CompressionCodecs.DEFLATE)
+                .signWith(SignatureAlgorithm.HS512, getDataStore().getApiKey().getSecret())
+                .compact();
+
+        EmailRequest emailRequest = new DefaultEmailRequest()
+                .setToAddress(email)
+                .setToken(compactJwt);
+
+        ensureEmailService().sendResetEmail(emailRequest);
+
+        return null;
+
+    }
+
+    @Override
     public Account verifyPasswordResetToken(String token) {
-        throw new UnsupportedOperationException("verifyPasswordResetToken() method hasn't been implemented.");
+
+        try {
+            // parsing validate the JWT, so we only need to grab the href
+            Jws<Claims> jwt = Jwts.parser()
+                    .setSigningKey(getDataStore().getApiKey().getSecret())
+                    .require("tokenType", "reset")
+                    .parseClaimsJws(token);
+
+            String userHref = jwt.getBody().get("userHref", String.class);
+            return getDataStore().getResource(userHref, Account.class);
+        }
+        catch(JwtException e) {
+
+            log.debug("Failed to parse JWT", e);
+            Error error = new DefaultError()
+                    .setCode(404)
+                    .setStatus(404)
+                    .setDeveloperMessage(e.getMessage())
+                    .setMessage("Invalid Token");
+            throw new ResourceException(error);
+        }
     }
 
     @Override
     public Account resetPassword(String passwordResetToken, String newPassword) {
-        throw new UnsupportedOperationException("resetPassword() method hasn't been implemented.");
+
+        Account account = verifyPasswordResetToken(passwordResetToken);
+        account.setPassword(newPassword);
+        getDataStore().save(account);
+
+        return account;
+    }
+
+    @Override
+    public void sendVerificationEmail(VerificationEmailRequest verificationEmailRequest) {
+
+        String userHref = OktaApiPaths.apiPath("users", verificationEmailRequest.getLogin()); // users endpoint works with uid and emails
+        Account account = getDataStore().getResource(userHref, Account.class);
+
+        String compactJwt =  Jwts.builder()
+                .setSubject(account.getEmail())
+                .claim("tokenType", "verify")
+                .claim("resetToken", UUID.randomUUID())
+                .claim("userHref", account.getHref())
+                .compressWith(CompressionCodecs.DEFLATE)
+                .signWith(SignatureAlgorithm.HS512, getDataStore().getApiKey().getSecret())
+                .compact();
+
+
+        account.setEmailVerificationStatus(EmailVerificationStatus.UNVERIFIED);
+        account.getCustomData().put(OktaUserAccountConverter.STORMPATH_EMAIL_VERIFICATION_TOKEN, compactJwt);
+
+        getDataStore().save(account);
+
+        EmailRequest emailRequest = new DefaultEmailRequest()
+                .setToDisplayName(account.getFullName())
+                .setToAddress(account.getEmail())
+                .setToken(compactJwt);
+
+        ensureEmailService().sendValidationEmail(emailRequest);
+    }
+
+
+
+    public Account verifyAccountEmail(String token) {
+
+        // parsing validate the JWT, so we only need to grab the href
+        Jws<Claims> jwt = Jwts.parser()
+                .setSigningKey(getDataStore().getApiKey().getSecret())
+                .require("tokenType", "verify")
+                .parseClaimsJws(token);
+
+        String userHref = jwt.getBody().get("userHref", String.class);
+        String activateAccountHref = userHref + "/lifecycle/activate?sendEmail=false";
+        OktaActivateAccountResponse activateAccountResponse = getDataStore().instantiate(OktaActivateAccountResponse.class);
+        getDataStore().create(activateAccountHref, activateAccountResponse);
+
+        Account account = getDataStore().getResource(userHref, Account.class);
+
+        account.setEmailVerificationStatus(EmailVerificationStatus.VERIFIED);
+        account.setStatus(AccountStatus.ENABLED);
+        account.save();
+
+        return account;
     }
 
     @Override
@@ -376,11 +520,6 @@ public class OktaApplication extends AbstractResource implements Application, OA
     @Override
     public SamlCallbackHandler newSamlCallbackHandler(Object httpRequest) {
         throw new UnsupportedOperationException("newSamlCallbackHandler() method hasn't been implemented.");
-    }
-
-    @Override
-    public void sendVerificationEmail(VerificationEmailRequest verificationEmailRequest) {
-        throw new UnsupportedOperationException("sendVerificationEmail() method hasn't been implemented.");
     }
 
     @Override
@@ -629,6 +768,11 @@ public class OktaApplication extends AbstractResource implements Application, OA
     private OktaOAuthAuthenticator ensureOktaOAuthAuthenticator() {
         Assert.notNull(this.oAuthAuthenticator);
         return oAuthAuthenticator;
+    }
+
+    private EmailService ensureEmailService() {
+        Assert.notNull(this.emailService);
+        return this.emailService;
     }
 
 

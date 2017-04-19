@@ -35,12 +35,14 @@ import com.stormpath.sdk.servlet.http.Resolver;
 import com.stormpath.sdk.servlet.http.Saver;
 import com.stormpath.sdk.servlet.util.SecureRequiredExceptForLocalhostResolver;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SigningKeyResolver;
 import io.jsonwebtoken.SigningKeyResolverAdapter;
 import org.joda.time.DateTime;
+import org.joda.time.Seconds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -265,14 +267,14 @@ public class CookieAuthenticationResultSaver implements Saver<AuthenticationResu
             return cookieConfig.getMaxAge();
         }
 
-        // TODO: we could validate the token and collect the expire time from it, or cache the current token to the request
-//
-//            // otherwise, use the claims in the JWT to determine maxAge
-//            Jws<Claims> claimsJws = Jwts.parser().setSigningKeyResolver(createKeyResolver(request, response)).parseClaimsJws(token);
-//            DateTime issueAt = new DateTime(claimsJws.getBody().getIssuedAt());
-//            DateTime expiration = new DateTime(claimsJws.getBody().getExpiration());
-//
-//            return Seconds.secondsBetween(issueAt, expiration).getSeconds() - Seconds.secondsBetween(issueAt, DateTime.now()).getSeconds();
+        if(Strings.hasText(token) && token.split("\\.").length == 3) {
+            // otherwise, use the claims in the JWT to determine maxAge
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKeyResolver(createKeyResolver(request, response)).parseClaimsJws(token);
+            DateTime issueAt = new DateTime(claimsJws.getBody().getIssuedAt());
+            DateTime expiration = new DateTime(claimsJws.getBody().getExpiration());
+
+            return Seconds.secondsBetween(issueAt, expiration).getSeconds() - Seconds.secondsBetween(issueAt, DateTime.now()).getSeconds();
+        }
 
         return DEFAULT_COOKIE_MAX_AGE;
     }

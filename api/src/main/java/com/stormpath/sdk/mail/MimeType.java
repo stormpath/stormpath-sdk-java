@@ -30,7 +30,12 @@ public enum MimeType {
     /**
      * HTML format
      */
-    HTML("text/html");
+    HTML("text/html"),
+
+    /**
+     * HTML and Text
+     */
+    BOTH("multipart/alternative");
 
     private final String mimeType;
 

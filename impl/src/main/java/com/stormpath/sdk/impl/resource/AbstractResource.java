@@ -94,7 +94,7 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
 
     public abstract Map<String, Property> getPropertyDescriptors();
 
-    public final void setProperties(Map<String, Object> properties) {
+    public void setProperties(Map<String, Object> properties) {
         writeLock.lock();
         try {
             this.dirtyProperties.clear();
