@@ -3,6 +3,7 @@ package com.stormpath.sdk.servlet.filter.account.config;
 import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.impl.okta.DefaultOktaSigningKeyResolver;
 import com.stormpath.sdk.impl.okta.OktaSigningKeyResolver;
+import com.stormpath.sdk.okta.OIDCWellKnownResource;
 import com.stormpath.sdk.servlet.client.ClientResolver;
 import com.stormpath.sdk.servlet.config.Config;
 import com.stormpath.sdk.servlet.config.ConfigResolver;
@@ -20,6 +21,8 @@ public class OktaSigningKeyResolverFactory extends ConfigSingletonFactory<OktaSi
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         Client client = ClientResolver.INSTANCE.getClient(servletContext);
 
-        return new DefaultOktaSigningKeyResolver(client, config.getOktaAuthorizationServerId());
+        OIDCWellKnownResource wellKnownResource = config.getInstance(""); // FIXME - needs key
+
+        return new DefaultOktaSigningKeyResolver(client, null, wellKnownResource.getJwksUri());
     }
 }

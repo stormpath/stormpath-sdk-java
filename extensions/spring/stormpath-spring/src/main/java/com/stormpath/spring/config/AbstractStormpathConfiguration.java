@@ -35,6 +35,7 @@ import com.stormpath.sdk.client.Proxy;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.okta.OktaApplicationConfigResource;
+import com.stormpath.sdk.okta.OIDCWellKnownResource;
 import com.stormpath.spring.cache.SpringCacheManager;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,25 +257,38 @@ public abstract class AbstractStormpathConfiguration {
                 .build();
     }
 
+    public OIDCWellKnownResource oidcWellKnownResource() {
+
+        if (oktaEnabled) {
+            String authorizationServerId = oktaAuthorizationServerId();
+            String wellKnownUrlBaseUrl = authorizationServerId != null ? "/oauth2/"+authorizationServerId : "/";
+            String href = wellKnownUrlBaseUrl + "/.well-known/openid-configuration";
+            return stormpathClient().getResource(href, OIDCWellKnownResource.class);
+        }
+        return null;
+    }
+
     public Application stormpathApplication() {
 
         Client client = stormpathClient();
 
         if (oktaEnabled) {
 
+            String clientSecret = ((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId();
+
             Map<String, Object> oktaAppConfigMap = new LinkedHashMap<>();
             oktaAppConfigMap.put("authorizationServerId", oktaAuthorizationServerId());
+            oktaAppConfigMap.put("wellKnownResource", oidcWellKnownResource());
             oktaAppConfigMap.put("emailService", emailService());
             oktaAppConfigMap.put("registrationWorkflowEnabled", registrationWorkflowEnabled);
+            oktaAppConfigMap.put("clientSecret", clientSecret);
             oktaAppConfigMap.put("client", client);
 
             Application application = client.getDataStore().getResource("local", Application.class);
-            String name = applicationName;
-            if (!Strings.hasText(name)) {
-                name = "My Application";
-            }
-            application.setName(name);
             application.configureWithProperties(oktaAppConfigMap);
+            if (Strings.hasText(applicationName)) {
+                application.setName(applicationName);
+            }
             return application;
         }
 

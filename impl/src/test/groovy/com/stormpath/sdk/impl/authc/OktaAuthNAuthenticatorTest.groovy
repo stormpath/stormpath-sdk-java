@@ -1,6 +1,7 @@
 package com.stormpath.sdk.impl.authc
 
 import com.stormpath.sdk.account.Account
+import com.stormpath.sdk.impl.okta.OktaSigningKeyResolver
 import com.stormpath.sdk.okta.OktaTokenRequest
 import com.stormpath.sdk.okta.OktaTokenResponse
 import com.stormpath.sdk.okta.TokenIntrospectRequest
@@ -72,7 +73,7 @@ class OktaAuthNAuthenticatorTest {
 
         replay mockDataStore, oktaTokenRequest, oktaTokenResponse, oktaTokenIntospectRequest, oktaTokenIntospectResponse
 
-        def authResult = new DefaultOktaAuthNAuthenticator(mockDataStore, "/oauth2/v1/token", "/oauth2/v1/introspect").authenticate(authRequest)
+        def authResult = new DefaultOktaAuthNAuthenticator(mockDataStore, "/oauth2/v1/token", "/oauth2/v1/introspect", null).authenticate(authRequest)
         assertThat authResult.getHref(), nullValue()
         assertThat authResult.getAccount(), sameInstance(account)
 

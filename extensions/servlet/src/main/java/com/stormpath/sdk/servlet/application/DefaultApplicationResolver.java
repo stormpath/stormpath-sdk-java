@@ -106,6 +106,8 @@ public class DefaultApplicationResolver implements ApplicationResolver {
                 appConfigMap.put(OktaApplication.REGISTRATION_WORKFLOW_KEY, Boolean.valueOf(config.get("stormpath.registration.workflow.enabled")));
                 appConfigMap.put("client", client);
 
+                // FIXME, not all props are set
+
                 // TODO: There must be a better way to get the clientId
                 OktaApplication oktaApplication = new OktaApplication(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(),
                                                                       (InternalDataStore) client.getDataStore());

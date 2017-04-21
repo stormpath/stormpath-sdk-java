@@ -7,7 +7,6 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.EmailVerificationStatus;
-import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiKey;
@@ -19,21 +18,19 @@ import com.stormpath.sdk.application.ApplicationAccountStoreMappingList;
 import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.OAuthApplication;
-import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.impl.client.DefaultClient;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.mail.DefaultEmailRequest;
+import com.stormpath.sdk.impl.okta.DefaultOktaSigningKeyResolver;
 import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
 import com.stormpath.sdk.impl.tenant.TenantResolver;
-import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.mail.EmailRequest;
 import com.stormpath.sdk.mail.EmailService;
 import com.stormpath.sdk.impl.okta.OktaOAuthAuthenticator;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.okta.OktaActivateAccountResponse;
-import com.stormpath.sdk.okta.OktaForgotPasswordRequest;
-import com.stormpath.sdk.okta.OktaForgotPasswordResult;
 import com.stormpath.sdk.okta.OktaIdentityProviderList;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfig;
 import com.stormpath.sdk.application.webconfig.ApplicationWebConfigStatus;
@@ -49,7 +46,6 @@ import com.stormpath.sdk.authc.AuthenticationResult;
 import com.stormpath.sdk.directory.AccountStore;
 import com.stormpath.sdk.directory.AccountStoreVisitor;
 import com.stormpath.sdk.directory.CustomData;
-import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.directory.DirectoryCriteria;
 import com.stormpath.sdk.group.CreateGroupRequest;
 import com.stormpath.sdk.group.Group;
@@ -79,7 +75,6 @@ import com.stormpath.sdk.provider.OktaProvider;
 import com.stormpath.sdk.provider.Provider;
 import com.stormpath.sdk.provider.ProviderAccountRequest;
 import com.stormpath.sdk.provider.ProviderAccountResult;
-import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.saml.SamlCallbackHandler;
 import com.stormpath.sdk.saml.SamlIdpUrlBuilder;
@@ -87,9 +82,7 @@ import com.stormpath.sdk.saml.SamlPolicy;
 import com.stormpath.sdk.tenant.Tenant;
 import com.stormpath.sdk.tenant.TenantOptions;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -122,8 +115,9 @@ public class OktaApplication extends AbstractResource implements Application, OA
     private EmailService emailService;
 
     private OktaOAuthAuthenticator oAuthAuthenticator = null;
+    private OktaAuthNAuthenticator authNAuthenticator = null;
 
-    private String name;
+    private String name = "My Application";
 
     public OktaApplication(String clientId, InternalDataStore dataStore) {
         super(dataStore, null);
@@ -146,7 +140,8 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     public Application configureWithProperties(Map<String, Object> properties) {
         setProperties(properties);
-        oAuthAuthenticator = new OktaOAuthAuthenticator(getStringProperty(AUTHORIZATION_SERVER_ID_KEY), this, getDataStore());
+        String authServerId = getStringProperty(AUTHORIZATION_SERVER_ID_KEY);
+        oAuthAuthenticator = new OktaOAuthAuthenticator(authServerId, this, getDataStore());
         emailService = (EmailService) getProperty(EMAIL_SERVICE_KEY);
         this.OKTA_TENANT_DIR.setRegistrationWorkflowEnabled(getBooleanProperty(REGISTRATION_WORKFLOW_KEY));
 
@@ -165,7 +160,11 @@ public class OktaApplication extends AbstractResource implements Application, OA
             });
         }
 
-
+        this.authNAuthenticator = new DefaultOktaAuthNAuthenticator(
+                                            getDataStore(),
+                                            oAuthAuthenticator.getTokenEndpoint(),
+                                            oAuthAuthenticator.getIntrospectionEndpoint(),
+                                            new DefaultOktaSigningKeyResolver(getDataStore(), authServerId, null));
 
         return this;
     }
@@ -418,22 +417,12 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     @Override
     public AuthenticationResult authenticateAccount(AuthenticationRequest request) throws ResourceException {
-
-        return new DefaultOktaAuthNAuthenticator(
-                getDataStore(),
-                ensureOktaOAuthAuthenticator().getTokenEndpoint(),
-                ensureOktaOAuthAuthenticator().getIntrospectionEndpoint()
-        ).authenticate(request);
+        return authNAuthenticator.authenticate(request);
     }
 
     @Override
     public ProviderAccountResult getAccount(ProviderAccountRequest request) {
-
-        return new DefaultOktaAuthNAuthenticator(
-                getDataStore(),
-                ensureOktaOAuthAuthenticator().getTokenEndpoint(),
-                ensureOktaOAuthAuthenticator().getIntrospectionEndpoint()
-        ).getAccount(request);
+        return authNAuthenticator.getAccount(request);
     }
 
     @Override

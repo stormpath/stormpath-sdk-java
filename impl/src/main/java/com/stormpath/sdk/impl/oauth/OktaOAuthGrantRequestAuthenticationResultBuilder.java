@@ -23,6 +23,7 @@ import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.GrantAuthenticationToken;
 import com.stormpath.sdk.oauth.OAuthGrantRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthRefreshTokenRequestAuthenticator;
+import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthRevocationRequest;
 import com.stormpath.sdk.oauth.OAuthTokenRevocator;
 import com.stormpath.sdk.oauth.RefreshToken;
@@ -71,9 +72,7 @@ public class OktaOAuthGrantRequestAuthenticationResultBuilder extends DefaultOAu
 
     private AccessToken toOktaAccessToken(final String accessToken) {
 
-        final TokenIntrospectResponse tokenIntrospectResponse = authenticator.resolveAccessToken(accessToken);
-
-        return new SimpleIntrospectAccessToken(accessToken, tokenIntrospectResponse.getAccount(), application) {
+        return new SimpleIntrospectAccessToken(accessToken, authenticator.getAccountByToken(accessToken), application) {
 
             @Override
             public void revoke() {
@@ -89,7 +88,8 @@ public class OktaOAuthGrantRequestAuthenticationResultBuilder extends DefaultOAu
             return null;
         }
 
-        final OAuthGrantRequestAuthenticationResult authResult = authenticator.resolveRefreshToken(refreshToken, refreshTokenAuthenticator);
+        OAuthRequestAuthentication authenticationRequest = new DefaultOAuthRefreshTokenRequestAuthentication(refreshToken);
+        final OAuthGrantRequestAuthenticationResult authResult = refreshTokenAuthenticator.authenticate(authenticationRequest);
 
         return new RefreshToken() {
             @Override

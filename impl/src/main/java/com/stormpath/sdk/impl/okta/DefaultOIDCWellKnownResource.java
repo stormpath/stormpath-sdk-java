@@ -4,13 +4,13 @@ import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.resource.AbstractInstanceResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
-import com.stormpath.sdk.okta.OktaOIDCWellKnownResource;
+import com.stormpath.sdk.okta.OIDCWellKnownResource;
 
 import java.util.Map;
 
 /**
  */
-public class DefaultOktaOIDCWellKnownResource extends AbstractInstanceResource implements OktaOIDCWellKnownResource {
+public class DefaultOIDCWellKnownResource extends AbstractInstanceResource implements OIDCWellKnownResource {
 
 
     private static final StringProperty AUTHORIZATION_ENDPOINT = new StringProperty("authorization_endpoint");
@@ -21,11 +21,11 @@ public class DefaultOktaOIDCWellKnownResource extends AbstractInstanceResource i
 
     private static final Map<String, Property> PROPERTY_DESCRIPTORS = createPropertyDescriptorMap(AUTHORIZATION_ENDPOINT, INTROSPECTION_ENDPOINT, JWKS_URI, REVOCATION_ENDPOINT, TOKEN_ENDPOINT);
 
-    public DefaultOktaOIDCWellKnownResource(InternalDataStore dataStore) {
+    public DefaultOIDCWellKnownResource(InternalDataStore dataStore) {
         super(dataStore);
     }
 
-    public DefaultOktaOIDCWellKnownResource(InternalDataStore dataStore, Map<String, Object> properties) {
+    public DefaultOIDCWellKnownResource(InternalDataStore dataStore, Map<String, Object> properties) {
         super(dataStore, properties);
     }
 
@@ -40,7 +40,7 @@ public class DefaultOktaOIDCWellKnownResource extends AbstractInstanceResource i
     }
 
     @Override
-    public OktaOIDCWellKnownResource setAuthorizationEndpoint(String authorizationEndpoint) {
+    public OIDCWellKnownResource setAuthorizationEndpoint(String authorizationEndpoint) {
         setProperty(AUTHORIZATION_ENDPOINT, authorizationEndpoint);
         return this;
     }
@@ -51,7 +51,7 @@ public class DefaultOktaOIDCWellKnownResource extends AbstractInstanceResource i
     }
 
     @Override
-    public OktaOIDCWellKnownResource setIntrospectionEndpoint(String introspectionEndpoint) {
+    public OIDCWellKnownResource setIntrospectionEndpoint(String introspectionEndpoint) {
         setProperty(INTROSPECTION_ENDPOINT, introspectionEndpoint);
         return this;
     }
@@ -62,7 +62,7 @@ public class DefaultOktaOIDCWellKnownResource extends AbstractInstanceResource i
     }
 
     @Override
-    public OktaOIDCWellKnownResource setJwksUri(String jwksUri) {
+    public OIDCWellKnownResource setJwksUri(String jwksUri) {
         setProperty(JWKS_URI, jwksUri);
         return this;
     }
@@ -73,7 +73,7 @@ public class DefaultOktaOIDCWellKnownResource extends AbstractInstanceResource i
     }
 
     @Override
-    public OktaOIDCWellKnownResource setRevocationEndpoint(String revocationEndpoint) {
+    public OIDCWellKnownResource setRevocationEndpoint(String revocationEndpoint) {
         setProperty(REVOCATION_ENDPOINT, revocationEndpoint);
         return this;
     }
@@ -84,7 +84,7 @@ public class DefaultOktaOIDCWellKnownResource extends AbstractInstanceResource i
     }
 
     @Override
-    public OktaOIDCWellKnownResource setTokenEndpoint(String tokenEndpoint) {
+    public OIDCWellKnownResource setTokenEndpoint(String tokenEndpoint) {
         setProperty(TOKEN_ENDPOINT, tokenEndpoint);
         return this;
     }

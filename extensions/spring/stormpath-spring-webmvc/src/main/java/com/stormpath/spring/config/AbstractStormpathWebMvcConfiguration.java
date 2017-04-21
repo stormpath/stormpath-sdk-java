@@ -29,6 +29,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.BiPredicate;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
+import com.stormpath.sdk.okta.OIDCWellKnownResource;
 import com.stormpath.sdk.saml.SamlResultListener;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import com.stormpath.sdk.servlet.account.DefaultAccountResolver;
@@ -813,13 +814,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
         return new AuthenticationResultSaver(savers);
     }
 
-    public OktaSigningKeyResolver oktaSigningKeyResolver() {
-        return new DefaultOktaSigningKeyResolver(client, oktaAuthorizationServerId);
-    }
-
     public JwtSigningKeyResolver stormpathJwtSigningKeyResolver() {
         if (oktaEnabled) {
-            return new OktaJwtSigningKeyResolver(oktaSigningKeyResolver());
+            return new OktaJwtSigningKeyResolver(new DefaultOktaSigningKeyResolver(client, oktaAuthorizationServerId, null));
         } else {
             return new JwtTokenSigningKeyResolver();
         }

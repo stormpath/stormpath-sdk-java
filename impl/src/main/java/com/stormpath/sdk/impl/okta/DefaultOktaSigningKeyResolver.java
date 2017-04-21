@@ -15,6 +15,8 @@ import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Resolves Signing keys via Okta's /oauth2/v1/keys endpoint.
@@ -24,15 +26,21 @@ public class DefaultOktaSigningKeyResolver implements OktaSigningKeyResolver {
 
     private final DataStore dataStore;
 
+    // cache the keys forever, they are not rotated often.
+    private final Map<String, Key> keyMap = new LinkedHashMap<>();
+
     private String keysUrl = "/oauth2/v1/keys";
 
-    public DefaultOktaSigningKeyResolver(DataStore dataStore, String authorizationServerId) {
+    public DefaultOktaSigningKeyResolver(DataStore dataStore, String authorizationServerId, String keysUrl) {
         this.dataStore = dataStore;
 
         if (Strings.hasText(authorizationServerId)) {
-            // TODO: This should come from the discovery URL, no _easy_ way of getting it,
             // as that Resource is NOT cached.
-            keysUrl = "/oauth2/" + authorizationServerId + "/v1/keys";
+            this.keysUrl = "/oauth2/" + authorizationServerId + "/v1/keys";
+        }
+
+        if (keysUrl != null) {
+            this.keysUrl = keysUrl;
         }
     }
 
@@ -53,29 +61,44 @@ public class DefaultOktaSigningKeyResolver implements OktaSigningKeyResolver {
     }
 
     private Key getKey(JwsHeader header) {
-        String keyId = header.getKeyId();
-        String keyAlgoritm = header.getAlgorithm();
 
-        if (!"RS256".equals(keyAlgoritm)) {
+        String keyId = header.getKeyId();
+        String keyAlgorithm = header.getAlgorithm();
+
+        if (!"RS256".equals(keyAlgorithm)) {
             throw new UnsupportedOperationException("Only 'RS256' key algorithm is supported.");
         }
 
-        OIDCKeysList keyList = dataStore.getResource(keysUrl, OIDCKeysList.class);
-        OIDCKey key = keyList.getKeyById(keyId);
+        Key key = keyMap.get(keyId);
+        if (key == null) {
+            keyMap.putAll(getKeys());
+            key = keyMap.get(keyId);
+        }
         Assert.notNull(key, "Key with 'kid' of "+keyId+" could not be found via the '" + keysUrl + "' endpoint.");
 
-        try {
+        return key;
+    }
 
-            BigInteger modulus = new BigInteger(1, Base64.decodeBase64(key.get("n")));
-            BigInteger publicExponent = new BigInteger(1, Base64.decodeBase64(key.get("e")));
-            return KeyFactory.getInstance("RSA").generatePublic(
-                    new RSAPublicKeySpec(modulus, publicExponent));
+    private Map<String, Key> getKeys() {
 
-        } catch (NoSuchAlgorithmException e) {
-            throw new UnsupportedOperationException("Failed to load key Algorithm", e);
-        } catch (InvalidKeySpecException e) {
-            throw new UnsupportedOperationException("Failed to load key", e);
+        Map<String, Key> keyMap = new LinkedHashMap<>();
+        OIDCKeysList keyList = dataStore.getResource(keysUrl, OIDCKeysList.class);
+
+        for (OIDCKey oidcKey : keyList.getKeys()) {
+            try {
+
+                BigInteger modulus = new BigInteger(1, Base64.decodeBase64(oidcKey.get("n")));
+                BigInteger publicExponent = new BigInteger(1, Base64.decodeBase64(oidcKey.get("e")));
+                Key key = KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(modulus, publicExponent));
+                keyMap.put(oidcKey.getId(), key);
+
+            } catch (NoSuchAlgorithmException e) {
+                throw new UnsupportedOperationException("Failed to load key Algorithm", e);
+            } catch (InvalidKeySpecException e) {
+                throw new UnsupportedOperationException("Failed to load key", e);
+            }
         }
+        return keyMap;
     }
 
     @Override

@@ -15,14 +15,8 @@ import com.stormpath.sdk.resource.Resource;
 public interface OktaAuthNAuthenticator extends Resource {
 
     AuthenticationResult authenticate(AuthenticationRequest request);
-    
-    void assertValidAccessToken(String accessToken);
 
-    ProviderAccountResult getAccount(ProviderAccountRequest providerAccountRequesst);
+    ProviderAccountResult getAccount(ProviderAccountRequest providerAccountRequest);
 
     Account getAccountByToken(String accountToken);
-
-    TokenIntrospectResponse resolveAccessToken(String accessToken);
-
-    OAuthGrantRequestAuthenticationResult resolveRefreshToken(String refreshToken, OAuthRefreshTokenRequestAuthenticator refreshTokenAuthenticator);
 }

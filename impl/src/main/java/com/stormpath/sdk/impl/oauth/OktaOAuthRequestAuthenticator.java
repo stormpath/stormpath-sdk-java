@@ -12,7 +12,6 @@ import com.stormpath.sdk.oauth.OAuthBearerRequestAuthentication;
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticationResult;
 import com.stormpath.sdk.oauth.OAuthBearerRequestAuthenticator;
 import com.stormpath.sdk.oauth.OAuthRequestAuthentication;
-import com.stormpath.sdk.okta.TokenIntrospectResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
@@ -64,8 +63,7 @@ public class OktaOAuthRequestAuthenticator extends AbstractOAuthRequestAuthentic
             account = dataStore.getResource(accountHref, Account.class);
         }
         else {
-            TokenIntrospectResponse tokenIntrospectResponse = oktaAuthNAuthenticator.resolveAccessToken(bearerRequest.getJwt());
-            account = tokenIntrospectResponse.getAccount();
+            account = oktaAuthNAuthenticator.getAccountByToken(bearerRequest.getJwt());
         }
 
         AccessToken accessToken = new SimpleIntrospectAccessToken(bearerRequest.getJwt(), account, application);
