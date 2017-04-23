@@ -52,6 +52,24 @@ public class DefaultOAuthGrantRequestAuthenticationResult implements OAuthGrantR
         this.expiresIn = builder.getExpiresIn();
     }
 
+    public DefaultOAuthGrantRequestAuthenticationResult(AccessToken accessToken,
+                                                        String accessTokenString,
+                                                        String idTokenString,
+                                                        RefreshToken refreshToken,
+                                                        String refreshTokenString,
+                                                        String accessTokenHref,
+                                                        String tokenType,
+                                                        long expiresIn) {
+        this.accessToken = accessToken;
+        this.accessTokenString = accessTokenString;
+        this.idTokenString = idTokenString;
+        this.refreshToken = refreshToken;
+        this.refreshTokenString = refreshTokenString;
+        this.accessTokenHref = accessTokenHref;
+        this.tokenType = tokenType;
+        this.expiresIn = expiresIn;
+    }
+
     public AccessToken getAccessToken() {
         return accessToken;
     }

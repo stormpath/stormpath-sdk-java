@@ -13,21 +13,20 @@ import com.stormpath.sdk.oauth.*;
 public class DefaultOAuthClientCredentialsGrantRequestAuthenticator extends AbstractOAuthRequestAuthenticator implements OAuthClientCredentialsGrantRequestAuthenticator {
 
     private final static String OAUTH_TOKEN_PATH = "/oauth/token";
-
     private final String oauthTokenPath;
 
     public DefaultOAuthClientCredentialsGrantRequestAuthenticator(Application application, DataStore dataStore) {
-        this(application, dataStore, OAUTH_TOKEN_PATH);
+        this(application, dataStore, application.getHref() + OAUTH_TOKEN_PATH);
     }
 
-    public DefaultOAuthClientCredentialsGrantRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath) {
+    protected DefaultOAuthClientCredentialsGrantRequestAuthenticator(Application application, DataStore dataStore, String oauthTokenPath) {
         super(application, dataStore);
         this.oauthTokenPath = oauthTokenPath;
     }
 
     @Override
     public OAuthGrantRequestAuthenticationResult authenticate(OAuthRequestAuthentication authenticationRequest) {
-        Assert.notNull(this.application, "application cannot be null or empty");
+        Assert.notNull(this.oauthTokenPath, "oauthTokenPath cannot be null or empty");
         Assert.isInstanceOf(OAuthClientCredentialsGrantRequestAuthentication.class, authenticationRequest, "authenticationRequest must be an instance of OAuthClientCredentialsGrantRequestAuthentication.");
         OAuthClientCredentialsGrantRequestAuthentication oAuthClientCredentialsGrantRequestAuthentication = (OAuthClientCredentialsGrantRequestAuthentication) authenticationRequest;
 
@@ -36,13 +35,21 @@ public class DefaultOAuthClientCredentialsGrantRequestAuthenticator extends Abst
         oAuthClientCredentialsGrantAuthenticationAttempt.setApiKeyId(oAuthClientCredentialsGrantRequestAuthentication.getApiKeyId());
         oAuthClientCredentialsGrantAuthenticationAttempt.setApiKeySecret(oAuthClientCredentialsGrantRequestAuthentication.getApiKeySecret());
 
+        return performAuthentiationAttempt(oAuthClientCredentialsGrantAuthenticationAttempt, oauthTokenPath);
+    }
+
+    protected OAuthGrantRequestAuthenticationResult performAuthentiationAttempt(OAuthClientCredentialsGrantAuthenticationAttempt oAuthClientCredentialsGrantAuthenticationAttempt, String oauthTokenPath) {
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        GrantAuthenticationToken grantResult = dataStore.create(application.getHref() + oauthTokenPath, oAuthClientCredentialsGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
+        GrantAuthenticationToken grantResult = dataStore.create(oauthTokenPath, oAuthClientCredentialsGrantAuthenticationAttempt, GrantAuthenticationToken.class, httpHeaders);
 
         OAuthGrantRequestAuthenticationResultBuilder builder = new DefaultOAuthClientCredentialsGrantRequestAuthenticationResultBuilder(grantResult);
-
         return builder.build();
+    }
+
+    protected String getOauthTokenPath() {
+        return oauthTokenPath;
     }
 }

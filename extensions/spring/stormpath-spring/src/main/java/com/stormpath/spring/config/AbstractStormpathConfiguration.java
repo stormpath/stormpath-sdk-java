@@ -160,6 +160,11 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['stormpath.email.forgotPasswordTemplate'] ?: '/com/stormpath/sdk/mail/templates/forgotPassword.json' }")
     protected String forgotPasswordEmailTemplate;
 
+    @Value("#{ @environment['stormpath.application.allowApiClientCredentials'] ?: false }")
+    protected boolean allowApiSecret;
+
+    @Value("#{ @environment['stormpath.application.apiSecretQueryTemplate'] ?: '?search=profile.stormpathApiKey_0 sw \"{0}\" or profile.stormpathApiKey_1 sw \"{0}\"' }")
+    protected String apiSecretQueryTemplate;
 
     public ApiKey stormpathClientApiKey() {
 
@@ -274,15 +279,13 @@ public abstract class AbstractStormpathConfiguration {
 
         if (oktaEnabled) {
 
-            String clientSecret = ((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId();
-
             Map<String, Object> oktaAppConfigMap = new LinkedHashMap<>();
             oktaAppConfigMap.put("authorizationServerId", oktaAuthorizationServerId());
-            oktaAppConfigMap.put("wellKnownResource", oidcWellKnownResource());
             oktaAppConfigMap.put("emailService", emailService());
             oktaAppConfigMap.put("registrationWorkflowEnabled", registrationWorkflowEnabled);
-            oktaAppConfigMap.put("clientSecret", clientSecret);
             oktaAppConfigMap.put("client", client);
+            oktaAppConfigMap.put("allowApiSecret", allowApiSecret);
+            oktaAppConfigMap.put("userApiQueryTemplate", apiSecretQueryTemplate);
 
             Application application = client.getDataStore().getResource("local", Application.class);
             application.configureWithProperties(oktaAppConfigMap);

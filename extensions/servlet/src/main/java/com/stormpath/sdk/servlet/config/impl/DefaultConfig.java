@@ -677,4 +677,14 @@ public class DefaultConfig implements Config {
 
         return authorizationServerId;
     }
+
+    @Override
+    public boolean isAllowApiSecret() {
+        return CFG.getBoolean("stormpath.application.allowApiClientCredentials");
+    }
+
+    @Override
+    public String getUserApiQueryTemplate() {
+        return CFG.getString("stormpath.application.apiSecretQueryTemplate");
+    }
 }

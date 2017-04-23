@@ -1,5 +1,6 @@
 package com.stormpath.sdk.impl.okta;
 
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.okta.OIDCKey;
@@ -8,7 +9,9 @@ import com.stormpath.sdk.impl.util.Base64;
 import com.stormpath.sdk.lang.Assert;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.SignatureAlgorithm;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -25,22 +28,20 @@ import java.util.Map;
 public class DefaultOktaSigningKeyResolver implements OktaSigningKeyResolver {
 
     private final DataStore dataStore;
+    private final boolean allowApiSecret;
 
     // cache the keys forever, they are not rotated often.
     private final Map<String, Key> keyMap = new LinkedHashMap<>();
 
     private String keysUrl = "/oauth2/v1/keys";
 
-    public DefaultOktaSigningKeyResolver(DataStore dataStore, String authorizationServerId, String keysUrl) {
+    public DefaultOktaSigningKeyResolver(DataStore dataStore, String authorizationServerId, boolean allowApiSecret) {
         this.dataStore = dataStore;
+        this.allowApiSecret = allowApiSecret;
 
         if (Strings.hasText(authorizationServerId)) {
             // as that Resource is NOT cached.
             this.keysUrl = "/oauth2/" + authorizationServerId + "/v1/keys";
-        }
-
-        if (keysUrl != null) {
-            this.keysUrl = keysUrl;
         }
     }
 
@@ -60,12 +61,26 @@ public class DefaultOktaSigningKeyResolver implements OktaSigningKeyResolver {
         return getKey(header);
     }
 
+    protected Key getSpSigningKey(SignatureAlgorithm alg) {
+        String apiKeySecret = dataStore.getApiKey().getSecret();
+        byte[] apiKeySecretBytes = Base64.decodeBase64(apiKeySecret);
+        return new SecretKeySpec(apiKeySecretBytes, alg.getJcaName());
+    }
+
     private Key getKey(JwsHeader header) {
 
         String keyId = header.getKeyId();
         String keyAlgorithm = header.getAlgorithm();
 
-        if (!"RS256".equals(keyAlgorithm)) {
+
+        if (allowApiSecret && SignatureAlgorithm.HS512.name().equals(header.getAlgorithm())) {
+
+            // special case for Stormpath migration
+            if ("sp_client_credentials".equals(header.get("grantType"))) {
+                return getSpSigningKey(SignatureAlgorithm.HS512);
+            }
+
+        } else if (!"RS256".equals(keyAlgorithm)) {
             throw new UnsupportedOperationException("Only 'RS256' key algorithm is supported.");
         }
 

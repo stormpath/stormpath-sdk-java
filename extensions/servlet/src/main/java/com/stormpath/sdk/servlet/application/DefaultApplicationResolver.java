@@ -100,18 +100,18 @@ public class DefaultApplicationResolver implements ApplicationResolver {
             try {
                 EmailService emailService = config.getInstance("stormpath.email.service");
 
-                Map<String, Object> appConfigMap = new LinkedHashMap<>();
-                appConfigMap.put(OktaApplication.AUTHORIZATION_SERVER_ID_KEY, config.getOktaAuthorizationServerId());
-                appConfigMap.put(OktaApplication.EMAIL_SERVICE_KEY, emailService);
-                appConfigMap.put(OktaApplication.REGISTRATION_WORKFLOW_KEY, Boolean.valueOf(config.get("stormpath.registration.workflow.enabled")));
-                appConfigMap.put("client", client);
-
-                // FIXME, not all props are set
+                Map<String, Object> oktaAppConfigMap = new LinkedHashMap<>();
+                oktaAppConfigMap.put(OktaApplication.AUTHORIZATION_SERVER_ID_KEY, config.getOktaAuthorizationServerId());
+                oktaAppConfigMap.put(OktaApplication.EMAIL_SERVICE_KEY, emailService);
+                oktaAppConfigMap.put(OktaApplication.REGISTRATION_WORKFLOW_KEY, Boolean.valueOf(config.get("stormpath.registration.workflow.enabled")));
+                oktaAppConfigMap.put(OktaApplication.CLIENT_KEY, client);
+                oktaAppConfigMap.put(OktaApplication.ALLOW_API_SECRET, config.isAllowApiSecret());
+                oktaAppConfigMap.put(OktaApplication.USER_API_QUERY_TEMPLATE, config.getUserApiQueryTemplate());
 
                 // TODO: There must be a better way to get the clientId
                 OktaApplication oktaApplication = new OktaApplication(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(),
                                                                       (InternalDataStore) client.getDataStore());
-                oktaApplication.configureWithProperties(appConfigMap);
+                oktaApplication.configureWithProperties(oktaAppConfigMap);
 
                 return oktaApplication;
 

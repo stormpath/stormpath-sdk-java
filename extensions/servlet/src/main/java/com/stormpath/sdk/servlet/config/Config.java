@@ -215,4 +215,8 @@ public interface Config extends Map<String, String> {
      * @since 2.0.0
      */
     String getOktaAuthorizationServerId();
+
+    boolean isAllowApiSecret();
+
+    String getUserApiQueryTemplate();
 }

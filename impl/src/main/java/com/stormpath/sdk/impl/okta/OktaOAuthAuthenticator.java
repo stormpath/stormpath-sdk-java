@@ -6,6 +6,7 @@ import com.stormpath.sdk.application.webconfig.Oauth2Config;
 import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.impl.oauth.DefaultOAuthTokenRevocator;
+import com.stormpath.sdk.impl.oauth.OktaOAuthClientCredentialsGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.OktaOAuthPasswordGrantRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.OktaOAuthRefreshTokenRequestAuthenticator;
 import com.stormpath.sdk.impl.oauth.OktaOAuthRequestAuthenticator;
@@ -25,26 +26,39 @@ public class OktaOAuthAuthenticator implements OAuthAuthenticator, Oauth2Config 
 
     private final InternalDataStore dataStore;
     private final Application application;
+    private final String userStringQueryStringTemplate;
     private final OktaSigningKeyResolver oktaSigningKeyResolver;
     private final DefaultOktaAuthNAuthenticator oktaAuthNAuthenticator;
 
     private OIDCWellKnownResource wellKnownResource;
 
     public OktaOAuthAuthenticator(String authorizationServerId,
+                                  boolean allowApiSecret,
+                                  String userStringQueryStringTemplate,
                                   Application application,
                                   InternalDataStore dataStore) {
         this.dataStore = dataStore;
         this.application = application;
+        this.userStringQueryStringTemplate = userStringQueryStringTemplate;
 
         String wellKnownUrlBaseUrl = authorizationServerId != null ? "/oauth2/"+authorizationServerId : "/";
         wellKnownResource = dataStore.getResource(wellKnownUrlBaseUrl + "/.well-known/openid-configuration", OIDCWellKnownResource.class);
 
-        this.oktaSigningKeyResolver = new DefaultOktaSigningKeyResolver(dataStore, authorizationServerId, null);
+        this.oktaSigningKeyResolver = new DefaultOktaSigningKeyResolver(dataStore, authorizationServerId, allowApiSecret);
         this.oktaAuthNAuthenticator = new DefaultOktaAuthNAuthenticator(dataStore,
                                                                    wellKnownResource.getTokenEndpoint(),
                                                                    wellKnownResource.getIntrospectionEndpoint(),
                                                                    oktaSigningKeyResolver);
     }
+
+    public  OktaSigningKeyResolver getOktaSigningKeyResolver() {
+        return oktaSigningKeyResolver;
+    }
+
+    public  DefaultOktaAuthNAuthenticator getOktaAuthNAuthenticator() {
+        return oktaAuthNAuthenticator;
+    }
+
 
     // TODO: remove the need for these
     public String getTokenEndpoint() {
@@ -101,7 +115,7 @@ public class OktaOAuthAuthenticator implements OAuthAuthenticator, Oauth2Config 
 
     @Override
     public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
-        throw new UnsupportedOperationException("createClientCredentialsGrantAuthenticator() method hasn't been implemented.");
+        return new OktaOAuthClientCredentialsGrantRequestAuthenticator(application, dataStore, wellKnownResource.getTokenEndpoint(), userStringQueryStringTemplate);
     }
 
     @Override

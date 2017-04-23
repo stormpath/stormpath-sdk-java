@@ -21,8 +21,9 @@ public class OktaSigningKeyResolverFactory extends ConfigSingletonFactory<OktaSi
         Config config = ConfigResolver.INSTANCE.getConfig(servletContext);
         Client client = ClientResolver.INSTANCE.getClient(servletContext);
 
-        OIDCWellKnownResource wellKnownResource = config.getInstance(""); // FIXME - needs key
-
-        return new DefaultOktaSigningKeyResolver(client, null, wellKnownResource.getJwksUri());
+        return new DefaultOktaSigningKeyResolver(
+                client,
+                config.getOktaAuthorizationServerId(),
+                config.isAllowApiSecret());
     }
 }

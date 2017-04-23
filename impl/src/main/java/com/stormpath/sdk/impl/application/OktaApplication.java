@@ -23,7 +23,6 @@ import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.impl.client.DefaultClient;
 import com.stormpath.sdk.impl.error.DefaultError;
 import com.stormpath.sdk.impl.mail.DefaultEmailRequest;
-import com.stormpath.sdk.impl.okta.DefaultOktaSigningKeyResolver;
 import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
 import com.stormpath.sdk.impl.tenant.TenantResolver;
 import com.stormpath.sdk.mail.EmailRequest;
@@ -53,7 +52,6 @@ import com.stormpath.sdk.group.GroupCriteria;
 import com.stormpath.sdk.group.GroupList;
 import com.stormpath.sdk.idsite.IdSiteCallbackHandler;
 import com.stormpath.sdk.idsite.IdSiteUrlBuilder;
-import com.stormpath.sdk.impl.authc.DefaultOktaAuthNAuthenticator;
 import com.stormpath.sdk.impl.directory.DefaultDirectory;
 import com.stormpath.sdk.impl.directory.OktaDirectory;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
@@ -105,6 +103,9 @@ public class OktaApplication extends AbstractResource implements Application, OA
     public static final String AUTHORIZATION_SERVER_ID_KEY = "authorizationServerId";
     public static final String EMAIL_SERVICE_KEY = "emailService";
     public static final String REGISTRATION_WORKFLOW_KEY = "registrationWorkflowEnabled";
+    public static final String CLIENT_KEY = "client";
+    public static final String ALLOW_API_SECRET = "allowApiSecret";
+    public static final String USER_API_QUERY_TEMPLATE = "userApiQueryTemplate";
 
     private final Logger log = LoggerFactory.getLogger(OktaApplication.class);
 
@@ -141,11 +142,14 @@ public class OktaApplication extends AbstractResource implements Application, OA
     public Application configureWithProperties(Map<String, Object> properties) {
         setProperties(properties);
         String authServerId = getStringProperty(AUTHORIZATION_SERVER_ID_KEY);
-        oAuthAuthenticator = new OktaOAuthAuthenticator(authServerId, this, getDataStore());
+        String userApiQueryTemplate = getStringProperty(USER_API_QUERY_TEMPLATE);
+        boolean allowApiSecret = getBooleanProperty(ALLOW_API_SECRET);
+        oAuthAuthenticator = new OktaOAuthAuthenticator(authServerId, allowApiSecret, userApiQueryTemplate, this, getDataStore());
+        this.authNAuthenticator = oAuthAuthenticator.getOktaAuthNAuthenticator();
         emailService = (EmailService) getProperty(EMAIL_SERVICE_KEY);
         this.OKTA_TENANT_DIR.setRegistrationWorkflowEnabled(getBooleanProperty(REGISTRATION_WORKFLOW_KEY));
 
-        Object client = properties.get("client");
+        Object client = properties.get(CLIENT_KEY);
         if (client instanceof DefaultClient) {
             ((DefaultClient) client).setTenantResolver(new TenantResolver() {
                 @Override
@@ -159,12 +163,6 @@ public class OktaApplication extends AbstractResource implements Application, OA
                 }
             });
         }
-
-        this.authNAuthenticator = new DefaultOktaAuthNAuthenticator(
-                                            getDataStore(),
-                                            oAuthAuthenticator.getTokenEndpoint(),
-                                            oAuthAuthenticator.getIntrospectionEndpoint(),
-                                            new DefaultOktaSigningKeyResolver(getDataStore(), authServerId, null));
 
         return this;
     }

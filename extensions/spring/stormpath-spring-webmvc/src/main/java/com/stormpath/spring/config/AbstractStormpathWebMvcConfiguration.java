@@ -436,6 +436,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Value("#{ @environment['okta.enabled'] ?: true }")
     protected boolean oktaEnabled;
 
+    @Value("#{ @environment['stormpath.application.allowApiClientCredentials'] ?: false }")
+    protected boolean allowApiSecret;
+
     @Autowired(required = false)
     @Qualifier("oktaAuthorizationServerId")
     protected String oktaAuthorizationServerId;
@@ -816,7 +819,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
     public JwtSigningKeyResolver stormpathJwtSigningKeyResolver() {
         if (oktaEnabled) {
-            return new OktaJwtSigningKeyResolver(new DefaultOktaSigningKeyResolver(client, oktaAuthorizationServerId, null));
+            return new OktaJwtSigningKeyResolver(new DefaultOktaSigningKeyResolver(client, oktaAuthorizationServerId, allowApiSecret));
         } else {
             return new JwtTokenSigningKeyResolver();
         }
