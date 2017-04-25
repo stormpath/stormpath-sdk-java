@@ -42,6 +42,9 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
     @Value("#{ @environment['stormpath.enabled'] ?: true }")
     protected boolean stormpathEnabled;
 
+    @Value("#{ @environment['stormpath.spring.security.autoload'] ?: true }")
+    protected boolean stormpathSpringSecurityAutoload;
+
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
      * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
@@ -82,7 +85,7 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
-        if (stormpathEnabled) { /// we only need the configurer Stormpath is enabled
+        if (stormpathEnabled && stormpathSpringSecurityAutoload) { /// we only need the configurer Stormpath is enabled
             stormpathSecurityConfigurerAdapter.init(http);
         }
     }
