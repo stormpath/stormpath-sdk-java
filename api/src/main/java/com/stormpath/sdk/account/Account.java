@@ -22,6 +22,7 @@ import com.stormpath.sdk.api.ApiKeyOptions;
 import com.stormpath.sdk.application.ApplicationCriteria;
 import com.stormpath.sdk.application.ApplicationList;
 import com.stormpath.sdk.authc.AuthenticationRequest;
+import com.stormpath.sdk.cache.OktaCacheable;
 import com.stormpath.sdk.directory.Directory;
 import com.stormpath.sdk.factor.*;
 import com.stormpath.sdk.group.Group;
@@ -48,7 +49,7 @@ import java.util.Map;
  *
  * @since 0.1
  */
-public interface Account extends Resource, Saveable, Deletable, Extendable, Auditable {
+public interface Account extends Resource, Saveable, Deletable, Extendable, Auditable , OktaCacheable {
 
     /**
      * Returns the account's username, guaranteed to be unique for all accounts within a Directory.  If you do not have

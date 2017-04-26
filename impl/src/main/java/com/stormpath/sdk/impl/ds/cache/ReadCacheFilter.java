@@ -17,6 +17,7 @@ package com.stormpath.sdk.impl.ds.cache;
 
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.api.ApiKeyList;
+import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.impl.authc.LoginAttempt;
 import com.stormpath.sdk.impl.ds.DefaultResourceDataResult;
 import com.stormpath.sdk.impl.ds.FilterChain;
@@ -32,6 +33,8 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -40,6 +43,8 @@ import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.LIMIT;
 import static com.stormpath.sdk.impl.resource.AbstractCollectionResource.OFFSET;
 
 public class ReadCacheFilter extends AbstractCacheFilter {
+
+    private static final Logger cacheLog = LoggerFactory.getLogger(DataStore.class.getName() + "-cache");
 
     private BaseUrlResolver baseUrlResolver;
 
@@ -100,6 +105,10 @@ public class ReadCacheFilter extends AbstractCacheFilter {
             return null;
         }
 
+        if (cacheLog.isTraceEnabled()) {
+            cacheLog.trace("Executing cache request: action: '{}', uri: {}", request.getAction(), request.getUri().getAbsolutePath());
+        }
+
         return new DefaultResourceDataResult(request.getAction(), uri, clazz, coerce(data));
     }
 
@@ -136,5 +145,6 @@ public class ReadCacheFilter extends AbstractCacheFilter {
             //we do cache ApiKeyList. This is a fix for #216
             (!CollectionResource.class.isAssignableFrom(clazz) || ApiKeyList.class.isAssignableFrom(clazz) ||
                     (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
+
     }
 }

@@ -19,6 +19,7 @@ import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.cache.CacheManager;
 import com.stormpath.sdk.client.PairedApiKey;
+import com.stormpath.sdk.ds.DataStore;
 import com.stormpath.sdk.http.HttpMethod;
 import com.stormpath.sdk.impl.api.ApiKeyResolver;
 import com.stormpath.sdk.impl.application.OktaApplication;
@@ -86,6 +87,7 @@ import static com.stormpath.sdk.impl.http.HttpHeaders.STORMPATH_CLIENT_REQUEST_I
 public class DefaultDataStore implements InternalDataStore {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultDataStore.class);
+    private static final Logger requestLog = LoggerFactory.getLogger(DataStore.class.getName() + "-request");
 
     public static final String DEFAULT_SERVER_HOST = "api.stormpath.com";
 
@@ -605,6 +607,10 @@ public class DefaultDataStore implements InternalDataStore {
 
         Response response = this.requestExecutor.executeRequest(request);
         log.trace("Executed HTTP request.");
+
+        if (requestLog.isTraceEnabled()) {
+            requestLog.trace("Executing request: method: '{}', url: {}", request.getMethod(), request.getResourceUrl());
+        }
 
         if (response.isError()) {
             Map<String, Object> body = getBody(response);

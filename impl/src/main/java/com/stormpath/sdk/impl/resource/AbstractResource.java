@@ -15,6 +15,7 @@
  */
 package com.stormpath.sdk.impl.resource;
 
+import com.stormpath.sdk.cache.OktaCacheable;
 import com.stormpath.sdk.impl.ds.Enlistment;
 import com.stormpath.sdk.impl.ds.InternalDataStore;
 import com.stormpath.sdk.lang.Assert;
@@ -71,6 +72,13 @@ public abstract class AbstractResource extends AbstractPropertyRetriever impleme
      */
     public static boolean isMaterialized(Map<String, ?> props) {
         return props != null && props.get(HREF_PROP_NAME) != null && props.size() > 1;
+    }
+
+    public static boolean isForceOktaCache(Map<String, ?> props, Class clazz) {
+
+        return props != null &&
+                OktaCacheable.class.isAssignableFrom(clazz) &&
+                (props.size() > 1);
     }
 
     /**

@@ -97,7 +97,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         }
 
         if (isCacheable(request, result)) {
-            cache(result.getResourceClass(), result.getData(), result.getUri().getQuery());
+            cache(result.getResourceClass(), result.getData(),  request.getUri().getAbsolutePath(), result.getUri().getQuery());
         }
 
         //since 0.9.2: custom data quick fix for https://github.com/stormpath/stormpath-sdk-java/issues/30
@@ -144,7 +144,9 @@ public class WriteCacheFilter extends AbstractCacheFilter {
             !ProviderAccountResult.class.isAssignableFrom(clazz) &&
 
             //@since 1.0.RC3: Check if the response is an actual Resource (meaning, that it has an href property)
-            AbstractResource.isMaterialized(result.getData()) &&
+            (AbstractResource.isMaterialized(result.getData()) ||
+                    // also alow any classes marked with OktaCacheable to be cached (they do NOT have an href property)
+                    AbstractResource.isForceOktaCache(result.getData(), clazz)) &&
 
             //@since 1.0.RC7: Let's not cache Access Tokens
             !AccessToken.class.isAssignableFrom(clazz);
@@ -198,21 +200,26 @@ public class WriteCacheFilter extends AbstractCacheFilter {
         //we pass 'null' in as the querystring param because the querystring is only valid for
         //the top-most item being cached - we don't want to propagate it for nested resources because the nested
         //resource wasn't acquired w/ that query string.
-        cache(CustomData.class, customDataToCache, null);
+        cache(CustomData.class, customDataToCache, null, null);
     }
 
     /**
      * @since 0.8
      */
     @SuppressWarnings("unchecked")
-    private void cache(Class<? extends Resource> clazz, Map<String, ?> data, QueryString queryString) {
+    private void cache(Class<? extends Resource> clazz, Map<String, ?> data, String fallbackHref, QueryString queryString) {
 
         Assert.notEmpty(data, "Resource data cannot be null or empty.");
         String href = (String) data.get(AbstractResource.HREF_PROP_NAME);
 
+        boolean forceOktaCache = AbstractResource.isForceOktaCache(data, clazz);
+        if (href == null && fallbackHref != null && forceOktaCache) {
+            href = fallbackHref;
+        }
+
         if (isDirectlyCacheable(clazz, data)) {
             Assert.notNull(href, "Resource data must contain an '" + AbstractResource.HREF_PROP_NAME + "' attribute.");
-            Assert.isTrue(data.size() > 1, "Resource data must be materialized to be cached (need more than just an '" +
+            Assert.isTrue(data.size() > 1 || forceOktaCache, "Resource data must be materialized to be cached (need more than just an '" +
                                            AbstractResource.HREF_PROP_NAME + "' attribute).");
         }
 
@@ -252,7 +259,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                     //we pass 'null' in as the querystring param because the querystring is only valid for
                     //the top-most item being cached - we don't want to propagate it for nested resources because the nested
                     //resource wasn't acquired w/ that query string.
-                    cache(property.getType(), nested, null);
+                    cache(property.getType(), nested, null, null);
 
                     //Because the materialized reference has now been cached, we don't need to store
                     //all of its properties again in the 'toCache' instance.  Instead, we just want to store
@@ -293,7 +300,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
                             //we pass 'null' in as the querystring param because the querystring is only valid for
                             //the top-most item being cached - we don't want to propagate it for nested resources because the nested
                             //resource wasn't acquired w/ that query string.
-                            cache(itemType, referenceData, null);
+                            cache(itemType, referenceData, null, null);
                             element = toCanonicalReference(null, referenceData);
                         }
                     }
@@ -378,8 +385,7 @@ public class WriteCacheFilter extends AbstractCacheFilter {
      */
     private boolean isDirectlyCacheable(Class<? extends Resource> clazz, Map<String, ?> data) {
 
-        return AbstractResource.isMaterialized(data) &&
-
+        return (AbstractResource.isMaterialized(data) || AbstractResource.isForceOktaCache(data, clazz) ) &&
                (!CollectionResource.class.isAssignableFrom(clazz) ||
                 (CollectionResource.class.isAssignableFrom(clazz) && isCollectionCachingEnabled()));
     }
