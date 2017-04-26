@@ -54,6 +54,8 @@ import java.util.jar.JarFile;
  */
 public class UserAgent {
 
+    private static final String OKTA_CLIENT_USER_AGENT = "stormpath-oktagration";
+
     //Integrations (aka Plugins)
     private static final String INTEGRATION_SHIRO_ID = "stormpath-shiro";
     private static final String INTEGRATION_SHIRO_CLASS = "com.stormpath.shiro.realm.ApplicationRealm";
@@ -131,6 +133,7 @@ public class UserAgent {
         String userAgent =  getIntegrationString() +    // stormpath-shiro | stormpath-spring-security
                 getStormpathSDKComponentsString() +     // stormpath-servlet-java | stormpath-spring-boot-starter
                 getStormpathSdkString() +               // stormpath-sdk-java
+                getOktaSdkString() +                    // stormpath-oktagration
                 getSecurityFrameworkString() +          // shiro | spring-security
                 getIntegrationRuntimeString() +         // spring
                 getSpringBootString() +                 // spring-boot
@@ -155,6 +158,10 @@ public class UserAgent {
 
     private static String getStormpathSdkString() {
         return STORMPATH_SDK_STRING + VERSION_SEPARATOR + Version.getClientVersion() + ENTRY_SEPARATOR;
+    }
+
+    private static String getOktaSdkString() {
+        return OKTA_CLIENT_USER_AGENT + VERSION_SEPARATOR + Version.getClientVersion() + ENTRY_SEPARATOR;
     }
 
     private static String getIntegrationRuntimeString() {
