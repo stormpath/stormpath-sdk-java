@@ -31,6 +31,7 @@ import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.saml.AttributeStatementMappingRules;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,17 +52,23 @@ public class DefaultResourceConverter implements ResourceConverter {
     @Override
     public Map<String, Object> convert(AbstractResource resource) {
         Assert.notNull(resource, "resource cannot be null.");
-        return toMap(resource, true);
+
+        boolean updateBoth = false;
+        if (resource.getHref() != null && resource.getHref().matches(".*\\/api\\/v1\\/users\\/\\w*$")) {
+            updateBoth = true;
+        }
+        return toMap(resource, true, updateBoth);
     }
 
-    private LinkedHashMap<String, Object> toMap(final AbstractResource resource, boolean partialUpdate) {
+    private LinkedHashMap<String, Object> toMap(final AbstractResource resource, boolean partialUpdate, boolean updateBoth) {
 
-        Set<String> propNames;
+        Set<String> propNames = new HashSet<>();
 
-        if (partialUpdate) {
-            propNames = resource.getUpdatedPropertyNames();
-        } else {
-            propNames = resource.getPropertyNames();
+        if (partialUpdate || updateBoth) {
+            propNames.addAll(resource.getUpdatedPropertyNames());
+        }
+        if (!partialUpdate || updateBoth) {
+            propNames.addAll(resource.getPropertyNames());
         }
 
         LinkedHashMap<String, Object> props = new LinkedHashMap<>(propNames.size());

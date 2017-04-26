@@ -150,7 +150,10 @@ public final class OktaUserAccountConverter {
             // build full name
             nullSafePut(accountMap, STORMPATH_FULL_NAME, buildFullName(profileMap.get(OKTA_FIRST_NAME), profileMap.get(OKTA_LAST_NAME)));
             // everything not in this lis is considered customData
-            nullSafePut(accountMap, STORMPATH_CUSTOM_DATA, trimMap(profileMap, OKTA_LOGIN, OKTA_EMAIL, OKTA_FIRST_NAME, OKTA_MIDDLE_NAME, OKTA_LAST_NAME, OKTA_EMAIL_VERIFICATION_STATUS, STORMPATH_EMAIL_VERIFICATION_TOKEN));
+            Map<String, Object> customData = trimMap(profileMap, OKTA_LOGIN, OKTA_EMAIL, OKTA_FIRST_NAME, OKTA_MIDDLE_NAME, OKTA_LAST_NAME, OKTA_EMAIL_VERIFICATION_STATUS, STORMPATH_EMAIL_VERIFICATION_TOKEN);
+            customData.put(STORMPATH_HREF, baseUrl + OktaApiPaths.USERS + userMap.get(OKTA_ID) +"/okta-custom-data");
+            nullSafePut(accountMap, STORMPATH_CUSTOM_DATA, customData);
+
         }
 
         nullSafePut(accountMap, STORMPATH_CREATED_AT, userMap.get(OKTA_CREATED));
@@ -207,7 +210,9 @@ public final class OktaUserAccountConverter {
 
         // custom data, just drop it in profile map
         if (accountMap.containsKey(STORMPATH_CUSTOM_DATA)) {
-            profileMap.putAll(getPropertyMap(accountMap, STORMPATH_CUSTOM_DATA));
+
+            Map<String, Object> customData = trimMap(getPropertyMap(accountMap, STORMPATH_CUSTOM_DATA), STORMPATH_HREF);
+            profileMap.putAll(customData);
 
             String recoveryAnswer = (String) profileMap.get(RECOVERY_WORK_AROUND_KEY);
 

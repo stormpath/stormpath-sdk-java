@@ -23,6 +23,8 @@ import com.stormpath.sdk.impl.resource.DateProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Collections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import java.util.Set;
  */
 public class DefaultCustomData extends AbstractInstanceResource implements CustomData {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultCustomData.class);
     static final DateProperty CREATED_AT = new DateProperty("createdAt");
     static final DateProperty MODIFIED_AT = new DateProperty("modifiedAt");
 
@@ -225,6 +228,13 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
         if (isDirty()) {
             this.writeLock.lock();
             try{
+
+                // return if href ends with '/okta-custom-data'
+                if (getHref().endsWith("/okta-custom-data")) {
+                    log.warn("Custom Data cannot be updated directly when using Okta's API, use Account.save() instead.");
+                    return;
+                }
+
                 if (hasRemovedProperties()) {
                     deleteRemovedProperties();
                 }
@@ -240,6 +250,11 @@ public class DefaultCustomData extends AbstractInstanceResource implements Custo
     public void deleteRemovedProperties() {
         this.writeLock.lock();
         try {
+
+            // cannot save custom data for accounts directly
+            if (getHref().endsWith("/okta-custom-data")) {
+                return;
+            }
 
             Set<String> deletedPropertyNames = this.getDeletedPropertyNames();
             for (String deletedPropertyName : deletedPropertyNames) {

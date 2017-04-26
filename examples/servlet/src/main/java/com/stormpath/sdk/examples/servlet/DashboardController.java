@@ -72,7 +72,7 @@ public class DashboardController extends HttpServlet {
                 data.remove("color");
             }
 
-            data.save();
+            account.save();
         }
 
         req.setAttribute("birthday", birthday);

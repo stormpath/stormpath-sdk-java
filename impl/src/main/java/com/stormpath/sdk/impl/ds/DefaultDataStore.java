@@ -471,7 +471,13 @@ public class DefaultDataStore implements InternalDataStore {
                 QueryString qs = uri.getQuery();
 
                 HttpHeaders httpHeaders = req.getHttpHeaders();
-                Request request = new DefaultRequest(HttpMethod.POST, href, qs, httpHeaders, body, length);
+
+                // if this is an Okta user, we must use a PUT and not a POST
+                HttpMethod method = HttpMethod.POST;
+                if (href.matches(".*\\/api\\/v1\\/users\\/\\w*$") && !create) {
+                    method = HttpMethod.PUT;
+                }
+                Request request = new DefaultRequest(method, href, qs, httpHeaders, body, length);
 
                 Response response = execute(request);
                 Map<String, Object> responseBody = getBody(response);
