@@ -46,6 +46,21 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
     protected boolean stormpathSpringSecurityAutoload;
 
     /**
+     * The init below will be called automatically and again if {@link #stormpath()} is called.  When stormpath() is
+     * called we still need to make sure the init method can call <code>stormpathSecurityConfigurerAdapter.init(http)</code>
+     * See below.
+     */
+    private final boolean manuallyConfigured;
+
+    public StormpathWebSecurityConfigurer() {
+        this.manuallyConfigured = false;
+    }
+
+    public StormpathWebSecurityConfigurer(boolean manuallyConfigured) {
+        this.manuallyConfigured = manuallyConfigured;
+    }
+
+    /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
      * the {@link com.stormpath.spring.config.StormpathWebSecurityConfigurer#stormpath stormpath()} utility method.
      * For example:
@@ -68,7 +83,7 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
      * @return the StormpathWebSecurityConfigurer object
      */
     public static AbstractHttpConfigurer<?, HttpSecurity> stormpath() {
-        return new StormpathWebSecurityConfigurer();
+        return new StormpathWebSecurityConfigurer(true);
     }
 
     /**
@@ -85,7 +100,7 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
         ApplicationContext context = http.getSharedObject(ApplicationContext.class);
         context.getAutowireCapableBeanFactory().autowireBean(this);
 
-        if (stormpathEnabled && stormpathSpringSecurityAutoload) { /// we only need the configurer Stormpath is enabled
+        if (stormpathEnabled && (stormpathSpringSecurityAutoload || manuallyConfigured)) { /// we only need the configurer Stormpath is enabled
             stormpathSecurityConfigurerAdapter.init(http);
         }
     }
