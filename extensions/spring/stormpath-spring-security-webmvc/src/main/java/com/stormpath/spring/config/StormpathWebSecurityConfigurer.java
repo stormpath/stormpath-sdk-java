@@ -50,15 +50,7 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
      * called we still need to make sure the init method can call <code>stormpathSecurityConfigurerAdapter.init(http)</code>
      * See below.
      */
-    private final boolean manuallyConfigured;
-
-    public StormpathWebSecurityConfigurer() {
-        this.manuallyConfigured = false;
-    }
-
-    public StormpathWebSecurityConfigurer(boolean manuallyConfigured) {
-        this.manuallyConfigured = manuallyConfigured;
-    }
+    private boolean manuallyConfigured = false;
 
     /**
      * Extend WebSecurityConfigurerAdapter and configure the {@code HttpSecurity} object using
@@ -83,7 +75,9 @@ public class StormpathWebSecurityConfigurer extends AbstractHttpConfigurer<Storm
      * @return the StormpathWebSecurityConfigurer object
      */
     public static AbstractHttpConfigurer<?, HttpSecurity> stormpath() {
-        return new StormpathWebSecurityConfigurer(true);
+        StormpathWebSecurityConfigurer configurer = new StormpathWebSecurityConfigurer();
+        configurer.manuallyConfigured  = true;
+        return configurer;
     }
 
     /**
