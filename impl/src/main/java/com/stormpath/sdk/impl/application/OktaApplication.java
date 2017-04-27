@@ -168,43 +168,8 @@ public class OktaApplication extends AbstractResource implements Application, OA
     }
 
     @Override
-    public AccountLinkingPolicy getAccountLinkingPolicy() {
-        throw new UnsupportedOperationException("getAccountLinkingPolicy() method hasn't been implemented.");
-    }
-
-    @Override
-    public void save() {
-        throw new UnsupportedOperationException("save() method hasn't been implemented.");
-    }
-
-    @Override
-    public void delete() {
-        throw new UnsupportedOperationException("delete() method hasn't been implemented.");
-    }
-
-    @Override
-    public Map<String, Property> getPropertyDescriptors() {
-        throw new UnsupportedOperationException("getPropertyDescriptors() method hasn't been implemented.");
-    }
-
-    @Override
     public String getHref() {
         return getDataStore().getBaseUrl();
-    }
-
-    @Override
-    public Date getCreatedAt() {
-        throw new UnsupportedOperationException("getCreatedAt() method hasn't been implemented.");
-    }
-
-    @Override
-    public Date getModifiedAt() {
-        throw new UnsupportedOperationException("getModifiedAt() method hasn't been implemented.");
-    }
-
-    @Override
-    public CustomData getCustomData() {
-        throw new UnsupportedOperationException("getCustomData() method hasn't been implemented.");
     }
 
     @Override
@@ -219,41 +184,6 @@ public class OktaApplication extends AbstractResource implements Application, OA
     }
 
     @Override
-    public String getDescription() {
-        throw new UnsupportedOperationException("getDescription() method hasn't been implemented.");
-    }
-
-    @Override
-    public Application setDescription(String description) {
-        throw new UnsupportedOperationException("setDescription() method hasn't been implemented.");
-    }
-
-    @Override
-    public ApplicationStatus getStatus() {
-        throw new UnsupportedOperationException("getStatus() method hasn't been implemented.");
-    }
-
-    @Override
-    public Application setStatus(ApplicationStatus status) {
-        throw new UnsupportedOperationException("setStatus() method hasn't been implemented.");
-    }
-
-    @Override
-    public AccountList getAccounts() {
-        throw new UnsupportedOperationException("getAccounts() method hasn't been implemented.");
-    }
-
-    @Override
-    public AccountList getAccounts(Map<String, Object> queryParams) {
-        throw new UnsupportedOperationException("getAccounts() method hasn't been implemented.");
-    }
-
-    @Override
-    public AccountList getAccounts(AccountCriteria criteria) {
-        throw new UnsupportedOperationException("getAccounts() method hasn't been implemented.");
-    }
-
-    @Override
     public Account createAccount(Account account) throws ResourceException {
         return OKTA_TENANT_DIR.createAccount(account);
     }
@@ -261,31 +191,6 @@ public class OktaApplication extends AbstractResource implements Application, OA
     @Override
     public Account createAccount(CreateAccountRequest request) throws ResourceException {
         return OKTA_TENANT_DIR.createAccount(request);
-    }
-
-    @Override
-    public GroupList getGroups() {
-        throw new UnsupportedOperationException("getGroups() method hasn't been implemented.");
-    }
-
-    @Override
-    public GroupList getGroups(Map<String, Object> queryParams) {
-        throw new UnsupportedOperationException("getGroups() method hasn't been implemented.");
-    }
-
-    @Override
-    public GroupList getGroups(GroupCriteria criteria) {
-        throw new UnsupportedOperationException("getGroups() method hasn't been implemented.");
-    }
-
-    @Override
-    public Group createGroup(Group group) throws ResourceException {
-        throw new UnsupportedOperationException("createGroup() method hasn't been implemented.");
-    }
-
-    @Override
-    public Group createGroup(CreateGroupRequest request) {
-        throw new UnsupportedOperationException("createGroup() method hasn't been implemented.");
     }
 
     @Override
@@ -369,7 +274,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
         String compactJwt =  Jwts.builder()
                 .setSubject(account.getEmail())
                 .claim("tokenType", "verify")
-                .claim("resetToken", UUID.randomUUID())
+                .claim("verifyToken", UUID.randomUUID())
                 .claim("userHref", account.getHref())
                 .compressWith(CompressionCodecs.DEFLATE)
                 .signWith(SignatureAlgorithm.HS512, getDataStore().getApiKey().getSecret())
@@ -379,7 +284,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
         account.setEmailVerificationStatus(EmailVerificationStatus.UNVERIFIED);
         account.getCustomData().put(OktaUserAccountConverter.STORMPATH_EMAIL_VERIFICATION_TOKEN, compactJwt);
 
-        getDataStore().save(account);
+        account.save();
 
         EmailRequest emailRequest = new DefaultEmailRequest()
                 .setToDisplayName(account.getFullName())
@@ -388,8 +293,6 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
         ensureEmailService().sendValidationEmail(emailRequest);
     }
-
-
 
     public Account verifyAccountEmail(String token) {
 
@@ -408,6 +311,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
         account.setEmailVerificationStatus(EmailVerificationStatus.VERIFIED);
         account.setStatus(AccountStatus.ENABLED);
+        account.getCustomData().put(OktaUserAccountConverter.STORMPATH_EMAIL_VERIFICATION_TOKEN, null);
         account.save();
 
         return account;
@@ -468,6 +372,278 @@ public class OktaApplication extends AbstractResource implements Application, OA
         return getAccountStoreMappings();
     }
 
+    @Override
+    public AccountStore getDefaultGroupStore() {
+        return OKTA_TENANT_DIR;
+    }
+
+    @Override
+    public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
+        return ensureOktaOAuthAuthenticator().createClientCredentialsGrantAuthenticator();
+    }
+
+    @Override
+    public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
+        return ensureOktaOAuthAuthenticator().createStormpathSocialGrantAuthenticator();
+    }
+
+    @Override
+    public OAuthStormpathFactorChallengeGrantRequestAuthenticator createStormpathFactorChallengeGrantAuthenticator() {
+        return ensureOktaOAuthAuthenticator().createStormpathFactorChallengeGrantAuthenticator();
+    }
+
+    @Override
+    public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
+        return ensureOktaOAuthAuthenticator().createPasswordGrantAuthenticator();
+    }
+
+    @Override
+    public OAuthRefreshTokenRequestAuthenticator createRefreshGrantAuthenticator() {
+        return ensureOktaOAuthAuthenticator().createRefreshGrantAuthenticator();
+    }
+
+    @Override
+    public OAuthBearerRequestAuthenticator createJwtAuthenticator() {
+        return ensureOktaOAuthAuthenticator().createJwtAuthenticator();
+    }
+
+    public IdSiteAuthenticator createIdSiteAuthenticator() {
+        return ensureOktaOAuthAuthenticator().createIdSiteAuthenticator();
+    }
+
+    @Override
+    public OAuthTokenRevocator createOAuthTokenRevocator() {
+        return ensureOktaOAuthAuthenticator().createOAuthTokenRevocator();
+    }
+
+    private OktaOAuthAuthenticator ensureOktaOAuthAuthenticator() {
+        Assert.notNull(this.oAuthAuthenticator);
+        return oAuthAuthenticator;
+    }
+
+    private EmailService ensureEmailService() {
+        Assert.notNull(this.emailService);
+        return this.emailService;
+    }
+
+    @Override
+    public AccountStore getDefaultAccountStore() {
+        return OKTA_TENANT_DIR;
+    }
+
+    @Override
+    public ApplicationWebConfig getWebConfig() {
+
+        return new ApplicationWebConfig() {
+
+            @Override
+            public String getDomainName() {
+                return "OktaDirectory-DomainName-Not-Used";
+            }
+
+            @Override
+            public Oauth2Config getOAuth2() {
+                return ensureOktaOAuthAuthenticator();
+            }
+
+            @Override
+            public ApplicationWebConfigStatus getStatus() {
+                return ApplicationWebConfigStatus.ENABLED;
+            }
+
+            @Override
+            public LoginConfig getLogin() {
+                return new LoginConfig() {
+                    private boolean enabled = true;
+                    @Override
+                    public LoginConfig setEnabled(Boolean enabled) {
+                        this.enabled = enabled;
+                        return this;
+                    }
+
+                    @Override
+                    public Boolean isEnabled() {
+                        return enabled;
+                    }
+                };
+            }
+
+            @Override
+            public void save() {
+                throw new UnsupportedOperationException("save() method hasn't been implemented.");
+            }
+
+            @Override
+            public String getHref() {
+                throw new UnsupportedOperationException("getHref() method hasn't been implemented.");
+            }
+
+            @Override
+            public Date getCreatedAt() {
+                throw new UnsupportedOperationException("getCreatedAt() method hasn't been implemented.");
+            }
+
+            @Override
+            public Date getModifiedAt() {
+                throw new UnsupportedOperationException("getModifiedAt() method hasn't been implemented.");
+            }
+
+            @Override
+            public String getDnsLabel() {
+                throw new UnsupportedOperationException("getDnsLabel() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApplicationWebConfig setDnsLabel(String dnsLabel) {
+                throw new UnsupportedOperationException("setDnsLabel() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApplicationWebConfig setStatus(ApplicationWebConfigStatus status) {
+                throw new UnsupportedOperationException("setStatus() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApiKey getSigningApiKey() {
+                throw new UnsupportedOperationException("getSigningApiKey() method hasn't been implemented.");
+            }
+
+            @Override
+            public ApplicationWebConfig setSigningApiKey(ApiKey apiKey) {
+                throw new UnsupportedOperationException("setSigningApiKey() method hasn't been implemented.");
+            }
+
+            @Override
+            public RegisterConfig getRegister() {
+                throw new UnsupportedOperationException("getRegister() method hasn't been implemented.");
+            }
+
+            @Override
+            public VerifyEmailConfig getVerifyEmail() {
+                throw new UnsupportedOperationException("getVerifyEmail() method hasn't been implemented.");
+            }
+
+            @Override
+            public ForgotPasswordConfig getForgotPassword() {
+                throw new UnsupportedOperationException("getForgotPassword() method hasn't been implemented.");
+            }
+
+            @Override
+            public ChangePasswordConfig getChangePassword() {
+                throw new UnsupportedOperationException("getChangePassword() method hasn't been implemented.");
+            }
+
+            @Override
+            public MeConfig getMe() {
+                throw new UnsupportedOperationException("getMe() method hasn't been implemented.");
+            }
+
+            @Override
+            public Application getApplication() {
+                throw new UnsupportedOperationException("getApplication() method hasn't been implemented.");
+            }
+
+            @Override
+            public Tenant getTenant() {
+                throw new UnsupportedOperationException("getTenant() method hasn't been implemented.");
+            }
+        };
+    }
+
+    @Override
+    public AccountLinkingPolicy getAccountLinkingPolicy() {
+        throw new UnsupportedOperationException("getAccountLinkingPolicy() method hasn't been implemented.");
+    }
+
+    @Override
+    public void save() {
+        throw new UnsupportedOperationException("save() method hasn't been implemented.");
+    }
+
+    @Override
+    public void delete() {
+        throw new UnsupportedOperationException("delete() method hasn't been implemented.");
+    }
+
+    @Override
+    public Map<String, Property> getPropertyDescriptors() {
+        throw new UnsupportedOperationException("getPropertyDescriptors() method hasn't been implemented.");
+    }
+
+    @Override
+    public Date getCreatedAt() {
+        throw new UnsupportedOperationException("getCreatedAt() method hasn't been implemented.");
+    }
+
+    @Override
+    public Date getModifiedAt() {
+        throw new UnsupportedOperationException("getModifiedAt() method hasn't been implemented.");
+    }
+
+    @Override
+    public CustomData getCustomData() {
+        throw new UnsupportedOperationException("getCustomData() method hasn't been implemented.");
+    }
+
+    @Override
+    public String getDescription() {
+        throw new UnsupportedOperationException("getDescription() method hasn't been implemented.");
+    }
+
+    @Override
+    public Application setDescription(String description) {
+        throw new UnsupportedOperationException("setDescription() method hasn't been implemented.");
+    }
+
+    @Override
+    public ApplicationStatus getStatus() {
+        throw new UnsupportedOperationException("getStatus() method hasn't been implemented.");
+    }
+
+    @Override
+    public Application setStatus(ApplicationStatus status) {
+        throw new UnsupportedOperationException("setStatus() method hasn't been implemented.");
+    }
+
+    @Override
+    public AccountList getAccounts() {
+        throw new UnsupportedOperationException("getAccounts() method hasn't been implemented.");
+    }
+
+    @Override
+    public AccountList getAccounts(Map<String, Object> queryParams) {
+        throw new UnsupportedOperationException("getAccounts() method hasn't been implemented.");
+    }
+
+    @Override
+    public AccountList getAccounts(AccountCriteria criteria) {
+        throw new UnsupportedOperationException("getAccounts() method hasn't been implemented.");
+    }
+
+    @Override
+    public GroupList getGroups() {
+        throw new UnsupportedOperationException("getGroups() method hasn't been implemented.");
+    }
+
+    @Override
+    public GroupList getGroups(Map<String, Object> queryParams) {
+        throw new UnsupportedOperationException("getGroups() method hasn't been implemented.");
+    }
+
+    @Override
+    public GroupList getGroups(GroupCriteria criteria) {
+        throw new UnsupportedOperationException("getGroups() method hasn't been implemented.");
+    }
+
+    @Override
+    public Group createGroup(Group group) throws ResourceException {
+        throw new UnsupportedOperationException("createGroup() method hasn't been implemented.");
+    }
+
+    @Override
+    public Group createGroup(CreateGroupRequest request) {
+        throw new UnsupportedOperationException("createGroup() method hasn't been implemented.");
+    }
 
     @Override
     public ApplicationAccountStoreMapping createAccountStoreMapping(ApplicationAccountStoreMapping mapping) throws ResourceException {
@@ -545,124 +721,6 @@ public class OktaApplication extends AbstractResource implements Application, OA
     }
 
     @Override
-    public ApplicationWebConfig getWebConfig() {
-
-        return new ApplicationWebConfig() {
-            @Override
-            public void save() {
-                throw new UnsupportedOperationException("save() method hasn't been implemented.");
-            }
-
-            @Override
-            public String getHref() {
-                throw new UnsupportedOperationException("getHref() method hasn't been implemented.");
-            }
-
-            @Override
-            public Date getCreatedAt() {
-                throw new UnsupportedOperationException("getCreatedAt() method hasn't been implemented.");
-            }
-
-            @Override
-            public Date getModifiedAt() {
-                throw new UnsupportedOperationException("getModifiedAt() method hasn't been implemented.");
-            }
-
-            @Override
-            public String getDomainName() {
-                return "OktaDirectory-DomainName-Not-Used";
-            }
-
-            @Override
-            public String getDnsLabel() {
-                throw new UnsupportedOperationException("getDnsLabel() method hasn't been implemented.");
-            }
-
-            @Override
-            public ApplicationWebConfig setDnsLabel(String dnsLabel) {
-                throw new UnsupportedOperationException("setDnsLabel() method hasn't been implemented.");
-            }
-
-            @Override
-            public ApplicationWebConfigStatus getStatus() {
-                return ApplicationWebConfigStatus.ENABLED;
-            }
-
-            @Override
-            public ApplicationWebConfig setStatus(ApplicationWebConfigStatus status) {
-                throw new UnsupportedOperationException("setStatus() method hasn't been implemented.");
-            }
-
-            @Override
-            public ApiKey getSigningApiKey() {
-                throw new UnsupportedOperationException("getSigningApiKey() method hasn't been implemented.");
-            }
-
-            @Override
-            public ApplicationWebConfig setSigningApiKey(ApiKey apiKey) {
-                throw new UnsupportedOperationException("setSigningApiKey() method hasn't been implemented.");
-            }
-
-            @Override
-            public Oauth2Config getOAuth2() {
-                return ensureOktaOAuthAuthenticator();
-            }
-
-            @Override
-            public RegisterConfig getRegister() {
-                throw new UnsupportedOperationException("getRegister() method hasn't been implemented.");
-            }
-
-            @Override
-            public LoginConfig getLogin() {
-                return new LoginConfig() {
-                    private boolean enabled = true;
-                    @Override
-                    public LoginConfig setEnabled(Boolean enabled) {
-                         this.enabled = enabled;
-                         return this;
-                    }
-
-                    @Override
-                    public Boolean isEnabled() {
-                        return enabled;
-                    }
-                };
-            }
-
-            @Override
-            public VerifyEmailConfig getVerifyEmail() {
-                throw new UnsupportedOperationException("getVerifyEmail() method hasn't been implemented.");
-            }
-
-            @Override
-            public ForgotPasswordConfig getForgotPassword() {
-                throw new UnsupportedOperationException("getForgotPassword() method hasn't been implemented.");
-            }
-
-            @Override
-            public ChangePasswordConfig getChangePassword() {
-                throw new UnsupportedOperationException("getChangePassword() method hasn't been implemented.");
-            }
-
-            @Override
-            public MeConfig getMe() {
-                throw new UnsupportedOperationException("getMe() method hasn't been implemented.");
-            }
-
-            @Override
-            public Application getApplication() {
-                throw new UnsupportedOperationException("getApplication() method hasn't been implemented.");
-            }
-
-            @Override
-            public Tenant getTenant() {
-                throw new UnsupportedOperationException("getTenant() method hasn't been implemented.");
-            }
-        };
-    }
-
-    @Override
     public List<String> getAuthorizedCallbackUris() {
         throw new UnsupportedOperationException("getAuthorizedCallbackUris() method hasn't been implemented.");
     }
@@ -691,77 +749,15 @@ public class OktaApplication extends AbstractResource implements Application, OA
     public Application addAuthorizedOriginUri(String authorizedOriginUri) {
         throw new UnsupportedOperationException("addAuthorizedOriginUri() method hasn't been implemented.");
     }
-
-    @Override
-    public AccountStore getDefaultAccountStore() {
-        return OKTA_TENANT_DIR;
-    }
-
     @Override
     public void setDefaultAccountStore(AccountStore accountStore) {
         throw new UnsupportedOperationException("setDefaultAccountStore() method hasn't been implemented.");
     }
 
     @Override
-    public AccountStore getDefaultGroupStore() {
-        return OKTA_TENANT_DIR;
-    }
-
-    @Override
     public void setDefaultGroupStore(AccountStore accountStore) {
         throw new UnsupportedOperationException("setDefaultGroupStore() method hasn't been implemented.");
     }
-
-
-    @Override
-    public OAuthClientCredentialsGrantRequestAuthenticator createClientCredentialsGrantAuthenticator() {
-        return ensureOktaOAuthAuthenticator().createClientCredentialsGrantAuthenticator();
-    }
-
-    @Override
-    public OAuthStormpathSocialGrantRequestAuthenticator createStormpathSocialGrantAuthenticator() {
-        return ensureOktaOAuthAuthenticator().createStormpathSocialGrantAuthenticator();
-    }
-
-    @Override
-    public OAuthStormpathFactorChallengeGrantRequestAuthenticator createStormpathFactorChallengeGrantAuthenticator() {
-        return ensureOktaOAuthAuthenticator().createStormpathFactorChallengeGrantAuthenticator();
-    }
-
-    @Override
-    public OAuthPasswordGrantRequestAuthenticator createPasswordGrantAuthenticator() {
-        return ensureOktaOAuthAuthenticator().createPasswordGrantAuthenticator();
-    }
-
-    @Override
-    public OAuthRefreshTokenRequestAuthenticator createRefreshGrantAuthenticator() {
-        return ensureOktaOAuthAuthenticator().createRefreshGrantAuthenticator();
-    }
-
-    @Override
-    public OAuthBearerRequestAuthenticator createJwtAuthenticator() {
-        return ensureOktaOAuthAuthenticator().createJwtAuthenticator();
-    }
-
-    public IdSiteAuthenticator createIdSiteAuthenticator() {
-        return ensureOktaOAuthAuthenticator().createIdSiteAuthenticator();
-    }
-
-    @Override
-    public OAuthTokenRevocator createOAuthTokenRevocator() {
-        return ensureOktaOAuthAuthenticator().createOAuthTokenRevocator();
-    }
-
-    private OktaOAuthAuthenticator ensureOktaOAuthAuthenticator() {
-        Assert.notNull(this.oAuthAuthenticator);
-        return oAuthAuthenticator;
-    }
-
-    private EmailService ensureEmailService() {
-        Assert.notNull(this.emailService);
-        return this.emailService;
-    }
-
 
     public static class ApplicationAccountStoreMappingCollectionBackedList implements ApplicationAccountStoreMappingList {
 
