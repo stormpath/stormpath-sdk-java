@@ -106,6 +106,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
     public static final String CLIENT_KEY = "client";
     public static final String ALLOW_API_SECRET = "allowApiSecret";
     public static final String USER_API_QUERY_TEMPLATE = "userApiQueryTemplate";
+    public static final String APPLICATION_ID = "applicationId";
 
     private final Logger log = LoggerFactory.getLogger(OktaApplication.class);
 
@@ -113,6 +114,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     private final ApplicationAccountStoreMapping defaultAccountStoreMapping;
 
+    private  String applicationId;
     private EmailService emailService;
 
     private OktaOAuthAuthenticator oAuthAuthenticator = null;
@@ -141,6 +143,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     public Application configureWithProperties(Map<String, Object> properties) {
         setProperties(properties);
+        this.applicationId = getStringProperty(APPLICATION_ID);
         String authServerId = getStringProperty(AUTHORIZATION_SERVER_ID_KEY);
         String userApiQueryTemplate = getStringProperty(USER_API_QUERY_TEMPLATE);
         boolean allowApiSecret = getBooleanProperty(ALLOW_API_SECRET);
@@ -165,6 +168,10 @@ public class OktaApplication extends AbstractResource implements Application, OA
         }
 
         return this;
+    }
+
+    public String getId() {
+        return applicationId;
     }
 
     @Override

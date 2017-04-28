@@ -33,6 +33,7 @@ import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.mail.EmailStatus;
 import com.stormpath.sdk.mail.ModeledEmailTemplateList;
 import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
+import com.stormpath.sdk.okta.OktaUserToApplicationMapping;
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingCriteria;
 import com.stormpath.sdk.organization.OrganizationAccountStoreMappingList;
 import com.stormpath.sdk.organization.OrganizationCriteria;
@@ -165,6 +166,17 @@ public class OktaDirectory extends AbstractResource implements Directory {
         if (request.isRegistrationWorkflowEnabled()) {
             oktaApplication.sendVerificationEmail(new DefaultVerificationEmailRequest(getDataStore()).setLogin(account.getEmail()));
         }
+
+        // add the new Account to the current application
+        String uid = account.getHref().substring(account.getHref().lastIndexOf('/')+1);
+        String mappingHref = OktaApiPaths.apiPath("apps", oktaApplication.getId(), "users"); // "/api/v1/apps/{{appId}}/users"
+        OktaUserToApplicationMapping mapping = getDataStore().instantiate(OktaUserToApplicationMapping.class)
+                .setId(uid)
+                .setScope("USER")
+                .setUsername(account.getEmail());
+
+        // create the mapping
+        getDataStore().create(mappingHref, mapping);
 
         return result;
     }
