@@ -166,6 +166,10 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['stormpath.application.apiSecretQueryTemplate'] ?: '?search=profile.stormpathApiKey_1 sw \"{0}\" or profile.stormpathApiKey_2 sw \"{0}\"' }")
     protected String apiSecretQueryTemplate;
 
+    @Value("#{ @environment['okta.password.policy.name'] ?: 'Default Policy' }")
+    protected String oktaPasswordPolicyName;
+
+
     public ApiKey stormpathClientApiKey() {
 
         if (oktaEnabled) {
@@ -287,6 +291,7 @@ public abstract class AbstractStormpathConfiguration {
             oktaAppConfigMap.put("allowApiSecret", allowApiSecret);
             oktaAppConfigMap.put("userApiQueryTemplate", apiSecretQueryTemplate);
             oktaAppConfigMap.put("applicationId", oktaApplicationId);
+            oktaAppConfigMap.put("passwordPolicyName", oktaPasswordPolicyName);
 
             Application application = client.getDataStore().getResource("local", Application.class);
             application.configureWithProperties(oktaAppConfigMap);

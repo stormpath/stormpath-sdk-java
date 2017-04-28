@@ -30,6 +30,7 @@ import com.stormpath.sdk.impl.provider.DefaultOktaProvider;
 import com.stormpath.sdk.impl.resource.AbstractResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
+import com.stormpath.sdk.lang.Strings;
 import com.stormpath.sdk.mail.EmailStatus;
 import com.stormpath.sdk.mail.ModeledEmailTemplateList;
 import com.stormpath.sdk.mail.UnmodeledEmailTemplateList;
@@ -45,6 +46,7 @@ import com.stormpath.sdk.schema.Schema;
 import com.stormpath.sdk.tenant.Tenant;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -235,7 +237,20 @@ public class OktaDirectory extends AbstractResource implements Directory {
     public PasswordPolicy getPasswordPolicy() {
         String passwordPolicyHref = getHref() + OktaApiPaths.API_V1 + "policies?type=PASSWORD";
         OktaPasswordPolicyList policies = getDataStore().getResource(passwordPolicyHref, OktaPasswordPolicyList.class);
-        OktaPasswordPolicy oktaPasswordPolicy = policies.single();
+
+        String passwordPolicyName = getStringProperty(OktaApplication.PASSWORD_POLICY_NAME);
+        if (!Strings.hasText(passwordPolicyName)) {
+            passwordPolicyName = "Default Policy";
+        }
+
+        OktaPasswordPolicy oktaPasswordPolicy = null;
+        for (OktaPasswordPolicy tmpPolicy : policies) {
+            if (passwordPolicyName.equals(tmpPolicy.getName())) {
+                oktaPasswordPolicy = tmpPolicy;
+                break;
+            }
+        }
+        Assert.isTrue(oktaPasswordPolicy != null, "No password policy with name '"+ passwordPolicyName +"' found, you can set your password policy name using the configuration property: 'okta.password.policy.name'");
         return transformOktaPasswordPolicy(oktaPasswordPolicy);
     }
 
