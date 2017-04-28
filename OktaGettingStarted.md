@@ -105,3 +105,46 @@ $ mvn spring-boot:run
 
 Point your browser to: http://localhost:8080 and you're ready to start using the example application!
 
+
+## Additional Configuration
+
+| Property | Description | Default Value |
+|----------|-------------|---------------|
+| stormpath.registration.workflow.enabled | Require email verification before logging in | false |
+| stormpath.email.hostname | Email Server Hostname | localhost |
+| stormpath.email.port | Email Server Port | 25 |
+| stormpath.email.sslEnabled | SSL enabled | false |
+| stormpath.email.sslCheckServerIdentityEnabled | SSL Verify Server Identity  | false |
+| stormpath.email.tlsEnabled | TLS Enabled | false |
+| stormpath.email.username | Email Username | n/a |
+| stormpath.email.password | Email Password | n/a |
+| stormpath.email.verifyEmailTemplate | JSON file from Stormpath Export used for email verification | /com/stormpath/sdk/mail/templates/verifyEmail.json |
+| stormpath.email.forgotPasswordTemplate | SON file from Stormpath Export used for forgot password/reset | /com/stormpath/sdk/mail/templates/forgotPassword.json |
+| stormpath.application.allowApiClientCredentials | See notes about client credentials below | false |
+
+
+### Email Configuration
+
+These integrations use [Apache Commons Email](https://commons.apache.org/proper/commons-email/userguide.html) to send email verification and forgot password/reset emails.
+
+**NOTE:** these work flows require a mail server.
+
+Gmail can be configured with the following settings (generate an [App-Password](https://support.google.com/accounts/answer/185833?hl=en)):
+
+```
+-Dstormpath.email.hostname=smtp.gmail.com
+-Dstormpath.email.port=587
+-Dstormpath.email.tlsEnabled=true
+-Dstormpath.email.username=<email@address>
+-Dstormpath.email.password=<app-password>
+```
+
+Email template json files can be found in the `emailTemplates` folder of your Stormpath data export, just include them on the classpath of your application.
+
+
+### Client Credentials
+
+Client credentials are supported by storing a plain text versions of your client credential id:secret in user profile data (similar to Stormpath's Custom Data).  To use this feature you MUST enable it using the 
+`stormpath.application.allowApiClientCredentials=true` property. NOTE: the validation of the id and secret is done via the integration and there will be no audit log on Okta's server of these log ins.  Use this feature while migrating only.  Alternatives: Create an Okta Application and use it's client id/secret, or create 'service user' accounts and use basic authentication.
+
+
