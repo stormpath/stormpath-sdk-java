@@ -142,6 +142,30 @@ Gmail can be configured with the following settings (generate an [App-Password](
 Email template json files can be found in the `emailTemplates` folder of your Stormpath data export, just include them on the classpath of your application.
 
 
+### Required Okta Configuration Change
+
+In order for email verification and password reset workflows to work you will need add additional properties to Okta user profile.
+
+1. Log into your Okta Admin Console
+2. Select 'Directory' from the top menu, then select 'Profile Editor'
+3. Click on the 'Profile' button on the top Entry in the table for 'User'
+4. For each item in the table create new Attributes:
+
+  | Display name | Variable name |
+  |--------------|---------------|
+  | Email Verification Status | emailVerificationStatus |
+  | Email Verification Token | emailVerificationToken |
+  | Stormpath Migration Recovery Answer | stormpathMigrationRecoveryAnswer |
+  
+5. Click the 'Add Attribute' button
+6. Enter the 'Display name' and 'Variable name' from above
+7. Click the 'Save' or 'Save and Add Another' button when you are finished.
+
+**NOTE:** The Stormpath -> Okta import process will create these fields for you, but the `emailVerificationToken` attribute size will be too small, you can edit this attribute and either remove the min/max attribute length or set the max to 10000.
+
+Read more about the Okta [Profile Editor](https://help.okta.com/en/prod/Content/Topics/Directory/Directory_Profile_Editor.htm).
+
+
 ### Client Credentials
 
 Client credentials are supported by storing a plain text versions of your client credential id:secret in user profile data (similar to Stormpath's Custom Data).  To use this feature you MUST enable it using the 
