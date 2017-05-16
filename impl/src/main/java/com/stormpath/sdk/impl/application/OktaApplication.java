@@ -7,6 +7,7 @@ import com.stormpath.sdk.account.AccountList;
 import com.stormpath.sdk.account.AccountStatus;
 import com.stormpath.sdk.account.CreateAccountRequest;
 import com.stormpath.sdk.account.EmailVerificationStatus;
+import com.stormpath.sdk.account.EmailVerificationToken;
 import com.stormpath.sdk.account.PasswordResetToken;
 import com.stormpath.sdk.account.VerificationEmailRequest;
 import com.stormpath.sdk.api.ApiKey;
@@ -19,6 +20,7 @@ import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.OAuthApplication;
 import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
+import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.impl.client.DefaultClient;
 import com.stormpath.sdk.impl.error.DefaultError;
@@ -289,11 +291,17 @@ public class OktaApplication extends AbstractResource implements Application, OA
                 .signWith(SignatureAlgorithm.HS512, getDataStore().getApiKey().getSecret())
                 .compact();
 
-
         account.setEmailVerificationStatus(EmailVerificationStatus.UNVERIFIED);
         account.getCustomData().put(OktaUserAccountConverter.STORMPATH_EMAIL_VERIFICATION_TOKEN, compactJwt);
 
-        account.save();
+        try {
+            // catch a resource exception, we do NOT want to leak the JWT token if an exception is thrown
+            account.save();
+        }
+        catch (ResourceException e) {
+            log.warn("Could not save account: {}", e.getStormpathError().getMessage(), e);
+            throw resourceException("Could not save email verification token", "Could not save email verification token", 500);
+        }
 
         EmailRequest emailRequest = new DefaultEmailRequest()
                 .setToDisplayName(account.getFullName())
@@ -312,11 +320,17 @@ public class OktaApplication extends AbstractResource implements Application, OA
                 .parseClaimsJws(token);
 
         String userHref = jwt.getBody().get("userHref", String.class);
+        Account account = getDataStore().getResource(userHref, Account.class);
+
+        EmailVerificationToken accountToken = account.getEmailVerificationToken();
+        if (accountToken == null || !token.equals(accountToken.getValue())) {
+            log.debug("Email verification token did NOT match");
+            throw resourceException("Invalid Token", "Email verification token did NOT match", 400);
+        }
+
         String activateAccountHref = userHref + "/lifecycle/activate?sendEmail=false";
         OktaActivateAccountResponse activateAccountResponse = getDataStore().instantiate(OktaActivateAccountResponse.class);
         getDataStore().create(activateAccountHref, activateAccountResponse);
-
-        Account account = getDataStore().getResource(userHref, Account.class);
 
         account.setEmailVerificationStatus(EmailVerificationStatus.VERIFIED);
         account.setStatus(AccountStatus.ENABLED);
@@ -324,6 +338,15 @@ public class OktaApplication extends AbstractResource implements Application, OA
         account.save();
 
         return account;
+    }
+
+    private ResourceException resourceException(String message, String developerMessage, int status) {
+        Error error = new DefaultError()
+                .setCode(status)
+                .setStatus(status)
+                .setDeveloperMessage(developerMessage)
+                .setMessage(message);
+        return new ResourceException(error);
     }
 
     @Override
