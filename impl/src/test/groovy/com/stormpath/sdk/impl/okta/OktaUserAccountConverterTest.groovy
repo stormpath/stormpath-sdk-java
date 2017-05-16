@@ -6,6 +6,7 @@ import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.account.DefaultAccountList
 import com.stormpath.sdk.impl.directory.DefaultCustomData
 import com.stormpath.sdk.impl.ds.InternalDataStore
+import com.stormpath.sdk.impl.group.DefaultGroup
 import com.stormpath.sdk.resource.Resource
 import org.easymock.Capture
 import org.easymock.EasyMock
@@ -13,18 +14,9 @@ import org.easymock.IAnswer
 import org.joda.time.Instant
 import org.testng.annotations.Test
 
-import static org.easymock.EasyMock.anyObject
-import static org.easymock.EasyMock.anyString
-import static org.easymock.EasyMock.capture
-import static org.easymock.EasyMock.createStrictMock
-import static org.easymock.EasyMock.expect
-import static org.easymock.EasyMock.isNull
-import static org.easymock.EasyMock.replay
-import static org.easymock.EasyMock.verify
+import static org.easymock.EasyMock.*
 import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.Matchers.allOf
-import static org.hamcrest.Matchers.hasEntry
-import static org.hamcrest.Matchers.is
+import static org.hamcrest.Matchers.*
 
 /**
  * Tests for {@link OktaUserAccountConverter}.
@@ -65,9 +57,6 @@ class OktaUserAccountConverterTest {
             ]
         ]
 
-        // convert Account map
-        //def accountMap = new OktaUserAccountConverter().toAccount(userMap)
-
         // create Account object
         def internalDataStore = createStrictMock(InternalDataStore)
         def customDataPropsCapture = new Capture<Map>()
@@ -83,11 +72,52 @@ class OktaUserAccountConverterTest {
         def account = new DefaultAccount(internalDataStore, userMap)
 
         // validate
-        // verify internalDataStore
+//        verify internalDataStore
         assertThat account.givenName, is("Joe")
         assertThat account.customData, allOf(hasEntry("myCustomAttribute", "foobar"))
         assertThat account.createdAt, is(Instant.parse("2017-03-06T22:16:30.000Z").toDate())
         assertThat account.modifiedAt, is(Instant.parse("2017-03-06T22:16:30.000Z").toDate())
+
+    }
+
+    @Test
+    void toStormpathGroupTest() {
+        // define Group map
+        Map<String, Object> groupMap = [
+                id                    : "foobarGroup",
+                created               : "2017-03-06T18:28:15.000Z",
+                lastUpdated           : "2017-03-06T22:16:30.000Z",
+                lastMembershipUpdated : "2017-03-06T22:16:30.000Z",
+                created               : "2017-03-06T22:16:30.000Z",
+                objectClass           : [
+                    "okta:user_group"
+                ],
+                profile: [
+                    name              : "Everyone",
+                    description       : "All users in your organization"
+                ]
+        ]
+
+        // create Account object
+        def internalDataStore = createMock(InternalDataStore)
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.example.com")
+        expect(internalDataStore.instantiate(eq(CustomData), anyObject(Map))).andAnswer(new IAnswer<CustomData>() {
+            @Override
+            CustomData answer() throws Throwable {
+                return new DefaultCustomData(internalDataStore, null)
+            }
+        }).anyTimes()
+
+        replay internalDataStore
+
+        def group = new DefaultGroup(internalDataStore, groupMap)
+        
+        //        verify internalDataStore
+        assertThat group.getName(), is("Everyone")
+        assertThat group.getDescription(), is("All users in your organization")
+        assertThat group.createdAt, is(Instant.parse("2017-03-06T22:16:30.000Z").toDate())
+        assertThat group.modifiedAt, is(Instant.parse("2017-03-06T22:16:30.000Z").toDate())
+        assertThat group.getHref(), is("https://api.example.com/api/v1/groups/foobarGroup")
 
     }
 

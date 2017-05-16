@@ -65,7 +65,7 @@ public class DefaultGroup extends AbstractExtendableInstanceResource implements 
     }
 
     public DefaultGroup(InternalDataStore dataStore, Map<String, Object> properties) {
-        super(dataStore, OktaUserAccountConverter.toStormpathGroup(properties));
+        super(dataStore, OktaUserAccountConverter.toStormpathGroup(properties, dataStore.getBaseUrl()));
     }
 
     @Override

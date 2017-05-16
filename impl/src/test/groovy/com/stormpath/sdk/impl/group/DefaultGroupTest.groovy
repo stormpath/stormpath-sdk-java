@@ -73,18 +73,8 @@ class DefaultGroupTest {
                           accountMemberships: [href: "https://api.stormpath.com/v1/groups/koaertnw47ufsjngDFSs/accountMemberships"]]
 
         InternalDataStore internalDataStore = createStrictMock(InternalDataStore)
-        Group defaultGroup = new DefaultGroup(internalDataStore, properties)
 
-        assertNull(defaultGroup.getStatus())
-
-        defaultGroup = defaultGroup.setName("My new group")
-            .setDescription("My new description")
-            .setStatus(GroupStatus.DISABLED)
-
-        assertEquals(defaultGroup.getName(), "My new group")
-        assertEquals(defaultGroup.getDescription(), "My new description")
-        assertEquals(defaultGroup.getStatus(), GroupStatus.DISABLED)
-
+        expect(internalDataStore.getBaseUrl()).andReturn("https://api.stormpath.com")
         expect(internalDataStore.instantiate(Directory, properties.directory)).andReturn(new DefaultDirectory(internalDataStore, properties.directory))
 
         expect(internalDataStore.instantiate(Tenant, properties.tenant)).andReturn(new DefaultTenant(internalDataStore, properties.tenant))
@@ -97,7 +87,7 @@ class DefaultGroupTest {
 
         expect(internalDataStore.instantiate(GroupMembershipList, properties.accountMemberships)).andReturn(new DefaultGroupMembershipList(internalDataStore, properties.accountMemberships))
 
-        expect(internalDataStore.delete(defaultGroup))
+        expect(internalDataStore.delete(anyObject(Group)))
 
         def groupMembership =  new DefaultGroupMembership(internalDataStore)
         Account account = createStrictMock(Account)
@@ -106,6 +96,16 @@ class DefaultGroupTest {
         expect(internalDataStore.create(eq("/groupMemberships"), same(groupMembership))).andReturn(groupMembership)
 
         replay internalDataStore, account
+
+        Group defaultGroup = new DefaultGroup(internalDataStore, properties)
+        assertNull(defaultGroup.getStatus())
+        defaultGroup = defaultGroup.setName("My new group")
+                .setDescription("My new description")
+                .setStatus(GroupStatus.DISABLED)
+
+        assertEquals(defaultGroup.getName(), "My new group")
+        assertEquals(defaultGroup.getDescription(), "My new description")
+        assertEquals(defaultGroup.getStatus(), GroupStatus.DISABLED)
 
         def resource = defaultGroup.getDirectory()
         assertTrue(resource instanceof DefaultDirectory && resource.getHref().equals(properties.directory.href))

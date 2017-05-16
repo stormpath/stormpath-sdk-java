@@ -142,9 +142,10 @@ public final class OktaUserAccountConverter {
             nullSafePut(accountMap, STORMPATH_EMAIL_VERIFICATION_STATUS, fromEmailStatus(profileMap.get(OKTA_EMAIL_VERIFICATION_STATUS)));
 
             String emailVerificationToken = (String) profileMap.get(OKTA_EMAIL_VERIFICATION_TOKEN);
-            if (!Strings.hasText(emailVerificationToken)) {
+            if (Strings.hasText(emailVerificationToken)) {
                 Map<String, Object> verificationTokenMap = new LinkedHashMap<>();
                 verificationTokenMap.put(STORMPATH_HREF, "/emailVerificationTokens/"+emailVerificationToken);
+                accountMap.put(STORMPATH_EMAIL_VERIFICATION_TOKEN, verificationTokenMap);
             }
 
             // build full name
@@ -326,7 +327,7 @@ public final class OktaUserAccountConverter {
         return result;
     }
 
-    public static Map<String, Object> toStormpathGroup(Map<String, Object> oktaGroup) {
+    public static Map<String, Object> toStormpathGroup(Map<String, Object> oktaGroup, String baseUrl) {
 
         if (Collections.isEmpty(oktaGroup) || !oktaGroup.containsKey(OKTA_PROFILE)) {
             return oktaGroup;
@@ -346,7 +347,7 @@ public final class OktaUserAccountConverter {
         }
 
         // _links.self.href -> href
-        nullSafePut(stormpathGroup, STORMPATH_HREF, "/api/v1/groups/" + oktaGroup.get("id"));
+        nullSafePut(stormpathGroup, STORMPATH_HREF, baseUrl + "/api/v1/groups/" + oktaGroup.get("id"));
 
         stormpathGroup.put(STORMPATH_CUSTOM_DATA, new LinkedHashMap<String, Object>());
 
