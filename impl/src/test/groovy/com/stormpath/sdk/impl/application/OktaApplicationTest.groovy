@@ -3,6 +3,7 @@ package com.stormpath.sdk.impl.application
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
 import com.stormpath.sdk.account.EmailVerificationStatus
+import com.stormpath.sdk.account.EmailVerificationToken
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
@@ -119,6 +120,7 @@ class OktaApplicationTest {
         def account = createMock(Account)
         def apiKey = createMock(ApiKey)
         def customData = createMock(CustomData)
+        def emailVerificationToken = createMock(EmailVerificationToken)
 
         def jwt =  Jwts.builder()
                 .setSubject(email)
@@ -140,13 +142,15 @@ class OktaApplicationTest {
         expect(internalDataStore.getApiKey()).andReturn(apiKey)
         expect(apiKey.getSecret()).andReturn(apiKeyScret)
 
+        expect(account.getEmailVerificationToken()).andReturn(emailVerificationToken).anyTimes()
+        expect(emailVerificationToken.getValue()).andReturn(jwt)
         expect(account.setEmailVerificationStatus(EmailVerificationStatus.VERIFIED)).andReturn(account)
         expect(account.setStatus(AccountStatus.ENABLED)).andReturn(account)
         expect(account.getCustomData()).andReturn(customData)
         expect(customData.put(OktaUserAccountConverter.STORMPATH_EMAIL_VERIFICATION_TOKEN, null)).andReturn(null)
         account.save()
 
-        replay internalDataStore, client, wellKnown, emailService, account, apiKey, customData
+        replay internalDataStore, client, wellKnown, emailService, account, apiKey, customData, emailVerificationToken
 
         def app = new OktaApplication(clientId, internalDataStore)
 
@@ -159,6 +163,68 @@ class OktaApplicationTest {
         app.configureWithProperties(appProps)
         app.verifyAccountEmail(jwt)
 
-        verify internalDataStore, client, wellKnown, emailService, account, apiKey, customData
+        verify internalDataStore, client, wellKnown, emailService, account, apiKey, customData, emailVerificationToken
+    }
+
+    @Test
+    void verifyAccountEmailInvalidTokenTest() {
+
+        def email = "test@example.com"
+        def clientId = "test_client_id"
+        def apiKeyScret = "api_key_secret"
+        def internalDataStore = createMock(InternalDataStore)
+        def client = createMock(DefaultClient)
+        def emailService = createMock(EmailService)
+        def wellKnown = createNiceMock(OIDCWellKnownResource)
+        def account = createMock(Account)
+        def apiKey = createMock(ApiKey)
+        def customData = createMock(CustomData)
+        def emailVerificationToken = createMock(EmailVerificationToken)
+
+        def jwt =  Jwts.builder()
+                .setSubject(email)
+                .claim("tokenType", "verify")
+                .claim("verifyToken", "this token could be anything")
+                .claim("userHref", "/api/v1/users/uid")
+                .compressWith(CompressionCodecs.DEFLATE)
+                .signWith(SignatureAlgorithm.HS512, apiKeyScret)
+                .compact()
+
+        expect(internalDataStore.getBaseUrl()).andReturn("http://base.example.com").anyTimes()
+        expect(internalDataStore.getResource("/oauth2/test_authorization_server_id/.well-known/openid-configuration", OIDCWellKnownResource)).andReturn(wellKnown)
+        client.setTenantResolver(anyObject())
+
+        // test specifics
+        expect(internalDataStore.getResource("/api/v1/users/uid", Account)).andReturn(account)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey)
+        expect(apiKey.getSecret()).andReturn(apiKeyScret)
+
+        expect(account.getEmailVerificationToken()).andReturn(emailVerificationToken).anyTimes()
+        expect(emailVerificationToken.getValue()).andReturn(jwt + "_testDifferentToken") // jwt will validate, but token will not match previously saved
+
+        replay internalDataStore, client, wellKnown, emailService, account, apiKey, customData, emailVerificationToken
+
+        def app = new OktaApplication(clientId, internalDataStore)
+
+        def appProps = [
+                authorizationServerId: "test_authorization_server_id",
+                emailService: emailService,
+                registrationWorkflowEnabled: false,
+                client: client
+        ]
+        app.configureWithProperties(appProps)
+
+        try {
+            app.verifyAccountEmail(jwt)
+            fail("expected ResourceException")
+        }
+        catch (com.stormpath.sdk.resource.ResourceException e) {
+            // expected
+            assertThat(e.getStormpathError().getMessage(), equalTo("Invalid Token"))
+            assertThat(e.getStormpathError().getDeveloperMessage(), equalTo("Email verification token did NOT match"))
+        }
+
+        verify internalDataStore, client, wellKnown, emailService, account, apiKey, customData, emailVerificationToken
     }
 }

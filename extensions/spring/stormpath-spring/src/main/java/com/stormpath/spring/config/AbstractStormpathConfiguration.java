@@ -154,10 +154,10 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['stormpath.email.tokenExpirationHours'] ?: 2 }")
     protected int emailExpirationHours;
 
-    @Value("#{ @environment['stormpath.email.verifyEmailTemplate'] ?: '/com/stormpath/sdk/mail/templates/verifyEmail.json' }")
+    @Value("#{ @environment['stormpath.email.verifyEmailTemplate'] ?: 'classpath:com/stormpath/sdk/mail/templates/verifyEmail.json' }")
     protected String verifyEmailTemplate;
 
-    @Value("#{ @environment['stormpath.email.forgotPasswordTemplate'] ?: '/com/stormpath/sdk/mail/templates/forgotPassword.json' }")
+    @Value("#{ @environment['stormpath.email.forgotPasswordTemplate'] ?: 'classpath:com/stormpath/sdk/mail/templates/forgotPassword.json' }")
     protected String forgotPasswordEmailTemplate;
 
     @Value("#{ @environment['stormpath.application.allowApiClientCredentials'] ?: false }")

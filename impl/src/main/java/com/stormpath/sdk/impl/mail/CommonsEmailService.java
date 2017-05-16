@@ -3,6 +3,7 @@ package com.stormpath.sdk.impl.mail;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stormpath.sdk.impl.error.DefaultError;
+import com.stormpath.sdk.impl.io.ResourceFactory;
 import com.stormpath.sdk.impl.mail.template.EmailTemplate;
 import com.stormpath.sdk.mail.EmailRequest;
 import com.stormpath.sdk.mail.EmailService;
@@ -42,13 +43,14 @@ public class CommonsEmailService implements EmailService {
     private final Logger log = LoggerFactory.getLogger(CommonsEmailService.class);
 
     private final TemplateRenderer templateRenderer;
-
     private final EmailServiceConfig config;
+    private final ResourceFactory resourceFactory;
 
-    public CommonsEmailService(EmailServiceConfig config, TemplateRenderer templateRenderer) {
+    public CommonsEmailService(EmailServiceConfig config, TemplateRenderer templateRenderer, ResourceFactory resourceFactory) {
 
         this.config = config;
         this.templateRenderer = templateRenderer;
+        this.resourceFactory = resourceFactory;
     }
 
     @Override
@@ -63,7 +65,7 @@ public class CommonsEmailService implements EmailService {
 
     private void sendEmail(String template, EmailRequest request) {
 
-        try (InputStream inputStream = getClass().getResourceAsStream(template)) {
+        try (InputStream inputStream = resourceFactory.createResource(template).getInputStream()) {
 
             Map<String, Object> context = new LinkedHashMap<>();
 
@@ -123,7 +125,15 @@ public class CommonsEmailService implements EmailService {
                 throw new ResourceException(error);
             }
         } catch (IOException e) {
-            throw new UnsupportedOperationException("wtf", e);
+            String message = "Failed to parse email template.";
+            log.warn(message, e);
+
+            DefaultError error = new DefaultError(null);
+            error.setStatus(500);
+            error.setMessage(message);
+            error.setDeveloperMessage(e.getMessage());
+
+            throw new ResourceException(error);
         }
     }
 

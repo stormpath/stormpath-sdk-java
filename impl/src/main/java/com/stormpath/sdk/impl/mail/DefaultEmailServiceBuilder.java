@@ -1,5 +1,6 @@
 package com.stormpath.sdk.impl.mail;
 
+import com.stormpath.sdk.impl.io.DefaultResourceFactory;
 import com.stormpath.sdk.impl.mail.template.VelocityTemplateRenderer;
 import com.stormpath.sdk.mail.EmailService;
 import com.stormpath.sdk.mail.EmailServiceBuilder;
@@ -28,6 +29,6 @@ public class DefaultEmailServiceBuilder implements EmailServiceBuilder {
 
     @Override
     public EmailService build() {
-        return new CommonsEmailService(config, templateRenderer);
+        return new CommonsEmailService(config, templateRenderer, new DefaultResourceFactory());
     }
 }
