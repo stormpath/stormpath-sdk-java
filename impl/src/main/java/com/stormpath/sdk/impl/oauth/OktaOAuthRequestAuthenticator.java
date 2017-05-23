@@ -56,7 +56,8 @@ public class OktaOAuthRequestAuthenticator extends AbstractOAuthRequestAuthentic
                     .setSigningKeyResolver(oktaSigningKeyResolver)
                     .parseClaimsJws(bearerRequest.getJwt()).getBody();
 
-            Assert.isTrue(claims.getIssuer().startsWith(dataStore.getBaseUrl()));
+            String issuer = claims.getIssuer();
+            Assert.isTrue(issuer.startsWith(dataStore.getBaseUrl()) || "stormpath-okta-client".equals(issuer));
 
             String uid = claims.get("uid", String.class);
             String accountHref = OktaApiPaths.apiPath("users", uid);
