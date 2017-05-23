@@ -79,7 +79,8 @@ public class OktaOAuthClientCredentialsGrantRequestAuthenticator extends Default
             throw resourceException();
         }
 
-        Date expires = new DateTime().plusHours(1).toDate();
+        DateTime issueDate = new DateTime();
+        Date expires = issueDate.plusHours(1).toDate();
         String accountHref = account.getHref();
         String accountUid = accountHref.substring(accountHref.lastIndexOf('/')+1);
         String spGrantType = "sp_" + grantType;
@@ -90,6 +91,9 @@ public class OktaOAuthClientCredentialsGrantRequestAuthenticator extends Default
                                     .setHeaderParam("grantType", spGrantType)
                                     .setId(tokenId)
                                     .setExpiration(expires)
+                                    .setSubject(account.getEmail())
+                                    .setIssuer("stormpath-okta-client")
+                                    .setIssuedAt(issueDate.toDate())
                                     .claim("accountHref", accountHref)
                                     .claim("uid", accountUid)
                                     .compact();
