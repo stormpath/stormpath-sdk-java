@@ -21,6 +21,7 @@ import com.stormpath.sdk.impl.resource.IntegerProperty;
 import com.stormpath.sdk.impl.resource.ListProperty;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.impl.resource.StringProperty;
+import com.stormpath.sdk.lang.Collections;
 import com.stormpath.sdk.lang.Strings;
 
 import java.io.Serializable;
@@ -85,7 +86,12 @@ public class OktaError extends AbstractResource implements Error, Serializable {
         }
 
         List causes = getListProperty(ERROR_CAUSES.getName());
-        return ((Map<String, String>)causes.get(0)).get("errorSummary");
+        if (!Collections.isEmpty(causes)) {
+            return ((Map<String, String>)causes.get(0)).get("errorSummary");
+        }
+        else {
+            return getString(ERROR_SUMMARY);
+        }
     }
 
     @Override
