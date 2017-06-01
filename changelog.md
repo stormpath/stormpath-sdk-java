@@ -1,5 +1,11 @@
 ## Change Log ##
 
+### 2.0.0-okta-rc2 ##
+
+* Email templates can be loaded as a resource via a `file:` or `classpath:` prefix
+* Group HREFs are now fully qualified
+* Add subject, issuer, and issuedAt date to client credential JWT
+
 ### 2.0.0-okta-rc1 ##
 
 Okta specific release for teams migrating from Stormpath to Okta.  The Spring, Spring-Boot, and Servlet integrations are now all using Okta APIs.  Read more about it on the [Okta GGetting Started Guide](./OktaGettingStarted.md). 
