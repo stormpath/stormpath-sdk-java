@@ -109,6 +109,7 @@ public class DefaultApplicationResolver implements ApplicationResolver {
                 oktaAppConfigMap.put(OktaApplication.USER_API_QUERY_TEMPLATE, config.getUserApiQueryTemplate());
                 oktaAppConfigMap.put(OktaApplication.APPLICATION_ID, config.get("okta.application.id"));
                 oktaAppConfigMap.put(OktaApplication.PASSWORD_POLICY_NAME, config.get("okta.password.policy.name"));
+                oktaAppConfigMap.put(OktaApplication.APPLICATION_GROUP_ID, config.get("okta.application.groupId"));
 
                 // TODO: There must be a better way to get the clientId
                 OktaApplication oktaApplication = new OktaApplication(((PairedApiKey)client.getApiKey()).getSecondaryApiKey().getId(),

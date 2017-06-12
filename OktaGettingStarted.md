@@ -120,6 +120,7 @@ Point your browser to: http://localhost:8080 and you're ready to start using the
 | stormpath.email.verifyEmailTemplate | JSON file from Stormpath Export used for email verification | /com/stormpath/sdk/mail/templates/verifyEmail.json |
 | stormpath.email.forgotPasswordTemplate | SON file from Stormpath Export used for forgot password/reset | /com/stormpath/sdk/mail/templates/forgotPassword.json |
 | stormpath.application.allowApiClientCredentials | See notes about client credentials below | false |
+| okta.application.groupId | GroupId to associate new users with | n/a |
 
 ### Email Configuration
 

@@ -28,6 +28,7 @@ import com.stormpath.sdk.impl.okta.OktaApiPaths;
 import com.stormpath.sdk.impl.okta.OktaUserAccountConverter;
 import com.stormpath.sdk.impl.provider.DefaultOktaProvider;
 import com.stormpath.sdk.impl.resource.AbstractResource;
+import com.stormpath.sdk.impl.resource.DefaultVoidResource;
 import com.stormpath.sdk.impl.resource.Property;
 import com.stormpath.sdk.lang.Assert;
 import com.stormpath.sdk.lang.Strings;
@@ -170,6 +171,23 @@ public class OktaDirectory extends AbstractResource implements Directory {
         }
 
         // add the new Account to the current application
+        associateUser(account);
+
+        return result;
+    }
+
+    protected void associateUser(Account account) {
+
+        String groupId = getStringProperty(OktaApplication.APPLICATION_GROUP_ID);
+        if (Strings.hasText(groupId)) {
+            associateUserWithGroup(account, groupId);
+        } else {
+            associateUserWithApplication(account);
+        }
+    }
+
+    protected void associateUserWithApplication(Account account) {
+        // add the new Account to the current application
         String uid = account.getHref().substring(account.getHref().lastIndexOf('/')+1);
         String mappingHref = OktaApiPaths.apiPath("apps", oktaApplication.getId(), "users"); // "/api/v1/apps/{{appId}}/users"
         OktaUserToApplicationMapping mapping = getDataStore().instantiate(OktaUserToApplicationMapping.class)
@@ -179,8 +197,20 @@ public class OktaDirectory extends AbstractResource implements Directory {
 
         // create the mapping
         getDataStore().create(mappingHref, mapping);
+    }
 
-        return result;
+    protected void associateUserWithGroup(Account account, String groupId) {
+        // add the new Account to the current application
+        String uid = getUserUid(account);
+        String mappingHref = OktaApiPaths.apiPath("groups", groupId, "users", uid); // "/api/v1/groups/{{gid}}/users/{{uid}}"
+
+        // create the mapping
+        getDataStore().save(new DefaultVoidResource(getDataStore(), null, mappingHref));
+    }
+
+    private String getUserUid(Account account) {
+        String[] parts = account.getHref().split("/");
+        return parts[parts.length-1];
     }
 
     @Override

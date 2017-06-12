@@ -110,6 +110,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
     public static final String USER_API_QUERY_TEMPLATE = "userApiQueryTemplate";
     public static final String APPLICATION_ID = "applicationId";
     public static final String PASSWORD_POLICY_NAME = "passwordPolicyName";
+    public static final String APPLICATION_GROUP_ID = "oktaApplicationGroupId";
 
     private final Logger log = LoggerFactory.getLogger(OktaApplication.class);
 
@@ -117,7 +118,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
 
     private final ApplicationAccountStoreMapping defaultAccountStoreMapping;
 
-    private  String applicationId;
+    private String applicationId;
     private EmailService emailService;
 
     private OktaOAuthAuthenticator oAuthAuthenticator = null;
@@ -155,6 +156,7 @@ public class OktaApplication extends AbstractResource implements Application, OA
         emailService = (EmailService) getProperty(EMAIL_SERVICE_KEY);
         this.OKTA_TENANT_DIR.setRegistrationWorkflowEnabled(getBooleanProperty(REGISTRATION_WORKFLOW_KEY));
         this.OKTA_TENANT_DIR.setProperty(PASSWORD_POLICY_NAME, getStringProperty(PASSWORD_POLICY_NAME));
+        this.OKTA_TENANT_DIR.setProperty(APPLICATION_GROUP_ID, getStringProperty(APPLICATION_GROUP_ID));
 
         Object client = properties.get(CLIENT_KEY);
         if (client instanceof DefaultClient) {

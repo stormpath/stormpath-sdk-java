@@ -65,6 +65,7 @@ import com.stormpath.sdk.resource.CollectionResource;
 import com.stormpath.sdk.resource.Resource;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.resource.Saveable;
+import com.stormpath.sdk.resource.VoidResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -472,9 +473,11 @@ public class DefaultDataStore implements InternalDataStore {
 
                 HttpHeaders httpHeaders = req.getHttpHeaders();
 
-                // if this is an Okta user, we must use a PUT and not a POST
+                // if this is an Okta CRUD operation, we must use a PUT and not a POST
                 HttpMethod method = HttpMethod.POST;
-                if (href.matches(".*\\/api\\/v1\\/users\\/\\w*$") && !create) {
+                if ((href.matches(".*\\/api\\/v1\\/users\\/\\w*$")
+                        || href.matches(".*/api/v1/groups/.*"))
+                        && !create) {
                     method = HttpMethod.PUT;
                 }
                 Request request = new DefaultRequest(method, href, qs, httpHeaders, body, length);
@@ -488,7 +491,9 @@ public class DefaultDataStore implements InternalDataStore {
                         responseBody = java.util.Collections.emptyMap();
                     } else if (response.getHttpStatus() == 200 && OAuthTokenRevoked.class.isAssignableFrom(returnType)) {
                         responseBody = java.util.Collections.emptyMap();
-                    } else if (response.getHttpStatus() == 204 && OAuthTokenRevoked.class.isAssignableFrom(returnType)) {
+                    } else if (response.getHttpStatus() == 204
+                            && (OAuthTokenRevoked.class.isAssignableFrom(returnType)
+                                || VoidResource.class.isAssignableFrom(returnType))) {
                         responseBody = java.util.Collections.emptyMap();
                     }else {
                         throw new IllegalStateException("Unable to obtain resource data from the API server.");

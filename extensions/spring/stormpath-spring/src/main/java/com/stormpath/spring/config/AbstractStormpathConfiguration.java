@@ -118,6 +118,9 @@ public abstract class AbstractStormpathConfiguration {
     @Value("#{ @environment['okta.authorizationServer.id'] }")
     protected String oktaAuthorizationServerIdConfig;
 
+    @Value("#{ @environment['okta.application.groupId'] }")
+    protected String oktaApplicationGroupId;
+
     @Value("#{ @environment['stormpath.registration.workflow.enabled'] ?: false }")
     protected boolean registrationWorkflowEnabled;
 
@@ -292,6 +295,7 @@ public abstract class AbstractStormpathConfiguration {
             oktaAppConfigMap.put("userApiQueryTemplate", apiSecretQueryTemplate);
             oktaAppConfigMap.put("applicationId", oktaApplicationId);
             oktaAppConfigMap.put("passwordPolicyName", oktaPasswordPolicyName);
+            oktaAppConfigMap.put("oktaApplicationGroupId", oktaApplicationGroupId);
 
             Application application = client.getDataStore().getResource("local", Application.class);
             application.configureWithProperties(oktaAppConfigMap);

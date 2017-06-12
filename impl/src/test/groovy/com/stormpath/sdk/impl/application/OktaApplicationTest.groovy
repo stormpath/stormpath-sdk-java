@@ -2,24 +2,31 @@ package com.stormpath.sdk.impl.application
 
 import com.stormpath.sdk.account.Account
 import com.stormpath.sdk.account.AccountStatus
+import com.stormpath.sdk.account.Accounts
 import com.stormpath.sdk.account.EmailVerificationStatus
 import com.stormpath.sdk.account.EmailVerificationToken
 import com.stormpath.sdk.api.ApiKey
 import com.stormpath.sdk.directory.CustomData
+import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
 import com.stormpath.sdk.impl.client.DefaultClient
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.okta.OktaUserAccountConverter
+import com.stormpath.sdk.impl.resource.DefaultVoidResource
 import com.stormpath.sdk.mail.EmailRequest
 import com.stormpath.sdk.mail.EmailService
 import com.stormpath.sdk.okta.OIDCWellKnownResource
 import com.stormpath.sdk.okta.OktaActivateAccountResponse
+import com.stormpath.sdk.okta.OktaUserToApplicationMapping
+import com.stormpath.sdk.resource.VoidResource
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.impl.compression.CompressionCodecs
 import org.easymock.Capture
+import org.easymock.EasyMock
+import org.easymock.IAnswer
 import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
@@ -226,5 +233,115 @@ class OktaApplicationTest {
         }
 
         verify internalDataStore, client, wellKnown, emailService, account, apiKey, customData, emailVerificationToken
+    }
+
+
+    @Test
+    void createUserTest() {
+
+        def email = "test@example.com"
+        def uid = "uid123"
+        def appId = "app123"
+        def clientId = "test_client_id"
+        def internalDataStore = createMock(InternalDataStore)
+        def client = createMock(DefaultClient)
+        def wellKnown = createNiceMock(OIDCWellKnownResource)
+        def customData = createNiceMock(CustomData)
+        def appMapping = createMock(OktaUserToApplicationMapping)
+
+        def accountCapture = new Capture<Account>()
+
+        expect(internalDataStore.getBaseUrl()).andReturn("http://base.example.com").anyTimes()
+        expect(internalDataStore.getResource("/oauth2/test_authorization_server_id/.well-known/openid-configuration", OIDCWellKnownResource)).andReturn(wellKnown)
+        client.setTenantResolver(anyObject())
+        expect(internalDataStore.instantiate(CustomData)).andReturn(customData)
+        expect(internalDataStore.create(eq("http://base.example.com/api/v1/users/?activate=true"), capture(accountCapture))).andAnswer(new IAnswer<Account>() {
+            @Override
+            Account answer() throws Throwable {
+                DefaultAccount account = accountCapture.getValue()
+                account.setProperty("href", "http://base.example.com/api/v1/users/${uid}".toString())
+                return account
+            }
+        })
+
+        expect(internalDataStore.instantiate(OktaUserToApplicationMapping)).andReturn(appMapping)
+        expect(appMapping.setId(uid)).andReturn(appMapping)
+        expect(appMapping.setScope("USER")).andReturn(appMapping)
+        expect(appMapping.setUsername(email)).andReturn(appMapping)
+        expect(internalDataStore.create("/api/v1/apps/${appId}/users".toString(), appMapping)).andReturn(appMapping)
+
+        replay internalDataStore, client, wellKnown, customData, appMapping
+
+        def app = new OktaApplication(clientId, internalDataStore)
+
+        def appProps = [
+                applicationId: appId,
+                authorizationServerId: "test_authorization_server_id",
+                registrationWorkflowEnabled: false,
+                client: client
+        ]
+        app.configureWithProperties(appProps)
+
+        def account = new DefaultAccount(internalDataStore)
+                .setEmail(email)
+                .setGivenName("Joe")
+                .setSurname("Coder")
+
+        app.createAccount(account)
+
+        verify internalDataStore, client, wellKnown, customData, appMapping
+    }
+
+    @Test
+    void createUserWithGroup() {
+        def email = "test@example.com"
+        def uid = "uid123"
+        def appId = "app123"
+        def groupId = "group123"
+        def clientId = "test_client_id"
+        def internalDataStore = createMock(InternalDataStore)
+        def client = createMock(DefaultClient)
+        def wellKnown = createNiceMock(OIDCWellKnownResource)
+        def customData = createNiceMock(CustomData)
+        def appMapping = createMock(OktaUserToApplicationMapping)
+
+        def accountCapture = new Capture<Account>()
+
+        expect(internalDataStore.getBaseUrl()).andReturn("http://base.example.com").anyTimes()
+        expect(internalDataStore.getResource("/oauth2/test_authorization_server_id/.well-known/openid-configuration", OIDCWellKnownResource)).andReturn(wellKnown)
+        client.setTenantResolver(anyObject())
+        expect(internalDataStore.instantiate(CustomData)).andReturn(customData)
+        expect(internalDataStore.create(eq("http://base.example.com/api/v1/users/?activate=true"), capture(accountCapture))).andAnswer(new IAnswer<Account>() {
+            @Override
+            Account answer() throws Throwable {
+                DefaultAccount account = accountCapture.getValue()
+                account.setProperty("href", "http://base.example.com/api/v1/users/${uid}".toString())
+                return account
+            }
+        })
+
+        internalDataStore.save(anyObject(DefaultVoidResource))
+
+        replay internalDataStore, client, wellKnown, customData, appMapping
+
+        def app = new OktaApplication(clientId, internalDataStore)
+
+        def appProps = [
+                applicationId: appId,
+                oktaApplicationGroupId: groupId,
+                authorizationServerId: "test_authorization_server_id",
+                registrationWorkflowEnabled: false,
+                client: client
+        ]
+        app.configureWithProperties(appProps)
+
+        def account = new DefaultAccount(internalDataStore)
+                .setEmail(email)
+                .setGivenName("Joe")
+                .setSurname("Coder")
+
+        app.createAccount(account)
+
+        verify internalDataStore, client, wellKnown, customData, appMapping
     }
 }
