@@ -510,6 +510,9 @@ public abstract class AbstractStormpathWebMvcConfiguration {
     @Autowired //all view resolvers in the spring app context. key: bean name, value: resolver
     private Map<String, org.springframework.web.servlet.ViewResolver> viewResolvers;
 
+    @Autowired
+    protected AccountResolverFilter springSecurityResolvedAccountFilter;
+
     private static class AccessibleResourceHandlerRegistry extends ResourceHandlerRegistry {
         public AccessibleResourceHandlerRegistry(ApplicationContext applicationContext, ServletContext servletContext) {
             super(applicationContext, servletContext);
@@ -1517,14 +1520,7 @@ public abstract class AbstractStormpathWebMvcConfiguration {
 
         // The account resolver filter always executes immediately after the StormpathFilter but
         // before any other configured filters in the chain:
-        //
-        // Note that we don't do this as a bean defined outside of this method because we don't want Spring
-        // to discover it and add it to the general filter chain.  It is used only by the PrioritizedFilterChainResolver
-        AccountResolverFilter accountResolverFilter = new AccountResolverFilter();
-        accountResolverFilter.setEnabled(stormpathFilterEnabled);
-        accountResolverFilter.setResolvers(stormpathAccountResolvers());
-        accountResolverFilter.setOauthEndpointUri(stormpathAccessTokenConfig().getAccessTokenUri());
-        List<Filter> priorityFilters = Collections.<Filter>toList(accountResolverFilter);
+        List<Filter> priorityFilters = Collections.<Filter>toList(springSecurityResolvedAccountFilter);
 
         if (corsEnabled) {
             priorityFilters.add(newCorsFilter());
