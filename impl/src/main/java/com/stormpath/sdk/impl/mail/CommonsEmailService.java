@@ -55,15 +55,16 @@ public class CommonsEmailService implements EmailService {
 
     @Override
     public void sendValidationEmail(EmailRequest request) {
-        sendEmail(config.getValidationTemplateConfig(), request);
+        sendEmail(request, config.getValidationTemplateConfig());
     }
 
     @Override
     public void sendResetEmail(EmailRequest request) {
-        sendEmail(config.getResetPasswordTemplateConfig(), request);
+        sendEmail(request, config.getResetPasswordTemplateConfig());
     }
 
-    private void sendEmail(String template, EmailRequest request) {
+    @Override
+    public void sendEmail(EmailRequest request, String template) {
 
         try (InputStream inputStream = resourceFactory.createResource(template).getInputStream()) {
 
