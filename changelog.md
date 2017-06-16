@@ -1,5 +1,11 @@
 ## Change Log ##
 
+### 2.0.0-okta-rc3 ##
+
+* Newly created Accounts can be automatically assocated with a given group, if property `okta.application.groupId` is set.
+* Basic auth calls were making multiple requests, which could cause a rate limiting error, they now correctly make only one
+* EmailService is now exposed as a Spring bean, as well as a new `sendEmail` method.
+
 ### 2.0.0-okta-rc2 ##
 
 * Email templates can be loaded as a resource via a `file:` or `classpath:` prefix
