@@ -18,6 +18,7 @@ package com.stormpath.spring.config;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.mail.EmailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -52,5 +53,10 @@ public class StormpathConfiguration extends AbstractStormpathConfiguration {
     @Bean
     public String oktaAuthorizationServerId() {
         return super.oktaAuthorizationServerId();
+    }
+
+    @Bean
+    public EmailService emailService() {
+        return super.emailService();
     }
 }

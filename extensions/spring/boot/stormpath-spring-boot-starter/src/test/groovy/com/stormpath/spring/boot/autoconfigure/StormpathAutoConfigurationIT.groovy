@@ -21,6 +21,7 @@ import com.stormpath.sdk.cache.CacheManager
 import com.stormpath.sdk.client.Client
 import com.stormpath.sdk.impl.cache.DefaultCacheManager
 import com.stormpath.sdk.lang.Duration
+import com.stormpath.sdk.mail.EmailService
 import com.stormpath.spring.config.TwoAppTenantStormpathTestConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -51,6 +52,9 @@ class StormpathAutoConfigurationIT extends AbstractTestNGSpringContextTests {
     @Autowired
     Application application;
 
+    @Autowired
+    EmailService emailService;
+
     @Test
     void test() {
 
@@ -59,6 +63,7 @@ class StormpathAutoConfigurationIT extends AbstractTestNGSpringContextTests {
         assertNotNull stormpathCacheManager
         assertNotNull client
         assertNotNull application
+        assertNotNull emailService
 
         assertNull c.apiKeyId
         assertNull c.apiKeySecret

@@ -18,6 +18,7 @@ package com.stormpath.spring.boot.autoconfigure;
 import com.stormpath.sdk.api.ApiKey;
 import com.stormpath.sdk.application.Application;
 import com.stormpath.sdk.client.Client;
+import com.stormpath.sdk.mail.EmailService;
 import com.stormpath.spring.config.AbstractStormpathConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -62,6 +63,12 @@ public class StormpathAutoConfiguration extends AbstractStormpathConfiguration {
     @ConditionalOnMissingBean(name = "oktaAuthorizationServerId")
     public String oktaAuthorizationServerId() {
         return super.oktaAuthorizationServerId();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public EmailService emailService() {
+        return super.emailService();
     }
 
 }
