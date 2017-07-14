@@ -20,7 +20,6 @@ import com.stormpath.sdk.application.ApplicationOptions;
 import com.stormpath.sdk.application.ApplicationStatus;
 import com.stormpath.sdk.application.OAuthApplication;
 import com.stormpath.sdk.authc.OktaAuthNAuthenticator;
-import com.stormpath.sdk.client.Client;
 import com.stormpath.sdk.error.Error;
 import com.stormpath.sdk.impl.client.DefaultClient;
 import com.stormpath.sdk.impl.error.DefaultError;

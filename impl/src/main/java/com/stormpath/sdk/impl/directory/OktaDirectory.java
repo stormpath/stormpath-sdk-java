@@ -167,7 +167,8 @@ public class OktaDirectory extends AbstractResource implements Directory {
         Account result = getDataStore().create(usersHref, account);
 
         if (request.isRegistrationWorkflowEnabled()) {
-            oktaApplication.sendVerificationEmail(new DefaultVerificationEmailRequest(getDataStore()).setLogin(account.getEmail()));
+
+            oktaApplication.sendVerificationEmail(new DefaultVerificationEmailRequest(getDataStore()).setLogin(getUserUid(account)));
         }
 
         // add the new Account to the current application
