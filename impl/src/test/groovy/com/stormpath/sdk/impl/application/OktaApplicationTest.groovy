@@ -10,6 +10,7 @@ import com.stormpath.sdk.directory.CustomData
 import com.stormpath.sdk.impl.account.DefaultAccount
 import com.stormpath.sdk.impl.account.DefaultVerificationEmailRequest
 import com.stormpath.sdk.impl.client.DefaultClient
+import com.stormpath.sdk.impl.directory.DefaultCustomData
 import com.stormpath.sdk.impl.ds.InternalDataStore
 import com.stormpath.sdk.impl.okta.OktaUserAccountConverter
 import com.stormpath.sdk.impl.resource.DefaultVoidResource
@@ -31,6 +32,7 @@ import org.testng.annotations.Test
 
 import static org.easymock.EasyMock.*
 import static org.powermock.api.easymock.PowerMock.createMock
+import static org.powermock.api.easymock.PowerMock.createNiceMock
 import static org.powermock.api.easymock.PowerMock.verify
 import static org.hamcrest.Matchers.*
 import static org.hamcrest.MatcherAssert.*
@@ -255,14 +257,7 @@ class OktaApplicationTest {
         expect(internalDataStore.getResource("/oauth2/test_authorization_server_id/.well-known/openid-configuration", OIDCWellKnownResource)).andReturn(wellKnown)
         client.setTenantResolver(anyObject())
         expect(internalDataStore.instantiate(CustomData)).andReturn(customData)
-        expect(internalDataStore.create(eq("http://base.example.com/api/v1/users/?activate=true"), capture(accountCapture))).andAnswer(new IAnswer<Account>() {
-            @Override
-            Account answer() throws Throwable {
-                DefaultAccount account = accountCapture.getValue()
-                account.setProperty("href", "http://base.example.com/api/v1/users/${uid}".toString())
-                return account
-            }
-        })
+        expect(internalDataStore.create(eq("http://base.example.com/api/v1/users/?activate=true"), capture(accountCapture))).andAnswer(new AccountAnswer(accountCapture, uid))
 
         expect(internalDataStore.instantiate(OktaUserToApplicationMapping)).andReturn(appMapping)
         expect(appMapping.setId(uid)).andReturn(appMapping)
@@ -293,6 +288,64 @@ class OktaApplicationTest {
     }
 
     @Test
+    void createUserWithRegistrationWorkflowTest() {
+
+        def email = "test@example.com"
+        def uid = "uid123"
+        def appId = "app123"
+        def clientId = "test_client_id"
+        def apiKeyScret = "api_key_secret"
+        def internalDataStore = createMock(InternalDataStore)
+        def client = createMock(DefaultClient)
+        def wellKnown = createNiceMock(OIDCWellKnownResource)
+        def customData = new DefaultCustomData(null, null)
+        def appMapping = createMock(OktaUserToApplicationMapping)
+        def apiKey = createNiceMock(ApiKey)
+        def emailService = createNiceMock(EmailService)
+        def accountCapture = new Capture<Account>()
+        def accountAnswer = new AccountAnswer(accountCapture, uid)
+
+        expect(internalDataStore.getApiKey()).andReturn(apiKey).anyTimes()
+        expect(apiKey.getSecret()).andReturn(apiKeyScret).anyTimes()
+
+        expect(internalDataStore.getBaseUrl()).andReturn("http://base.example.com").anyTimes()
+        expect(internalDataStore.getResource("/oauth2/test_authorization_server_id/.well-known/openid-configuration", OIDCWellKnownResource)).andReturn(wellKnown)
+        client.setTenantResolver(anyObject())
+        expect(internalDataStore.instantiate(CustomData)).andReturn(customData)
+        expect(internalDataStore.create(eq("http://base.example.com/api/v1/users/?activate=false"), capture(accountCapture))).andAnswer(accountAnswer)
+        expect(internalDataStore.getResource("/api/v1/users/uid123", Account)).andAnswer(accountAnswer)
+        expect(appMapping.setId(uid)).andReturn(appMapping)
+        expect(appMapping.setScope("USER")).andReturn(appMapping)
+        expect(appMapping.setUsername(email)).andReturn(appMapping)
+        internalDataStore.save(anyObject())
+        expect(internalDataStore.getResource("http://base.example.com/api/v1/users/uid123", DefaultAccount)).andAnswer(accountAnswer)
+        expect(internalDataStore.instantiate(OktaUserToApplicationMapping)).andReturn(appMapping)
+        expect(internalDataStore.create("/api/v1/apps/${appId}/users".toString(), appMapping)).andReturn(appMapping)
+
+        replay internalDataStore, client, wellKnown, appMapping, apiKey
+
+        def app = new OktaApplication(clientId, internalDataStore)
+
+        def appProps = [
+                applicationId: appId,
+                authorizationServerId: "test_authorization_server_id",
+                registrationWorkflowEnabled: true,
+                client: client,
+                emailService: emailService
+        ]
+        app.configureWithProperties(appProps)
+
+        def account = new DefaultAccount(internalDataStore)
+                .setEmail(email)
+                .setGivenName("Joe")
+                .setSurname("Coder")
+
+        app.createAccount(account)
+
+        verify internalDataStore, client, wellKnown, appMapping, apiKey
+    }
+
+    @Test
     void createUserWithGroup() {
         def email = "test@example.com"
         def uid = "uid123"
@@ -311,14 +364,7 @@ class OktaApplicationTest {
         expect(internalDataStore.getResource("/oauth2/test_authorization_server_id/.well-known/openid-configuration", OIDCWellKnownResource)).andReturn(wellKnown)
         client.setTenantResolver(anyObject())
         expect(internalDataStore.instantiate(CustomData)).andReturn(customData)
-        expect(internalDataStore.create(eq("http://base.example.com/api/v1/users/?activate=true"), capture(accountCapture))).andAnswer(new IAnswer<Account>() {
-            @Override
-            Account answer() throws Throwable {
-                DefaultAccount account = accountCapture.getValue()
-                account.setProperty("href", "http://base.example.com/api/v1/users/${uid}".toString())
-                return account
-            }
-        })
+        expect(internalDataStore.create(eq("http://base.example.com/api/v1/users/?activate=true"), capture(accountCapture))).andAnswer(new AccountAnswer(accountCapture, uid))
 
         internalDataStore.save(anyObject(DefaultVoidResource))
 
@@ -343,5 +389,23 @@ class OktaApplicationTest {
         app.createAccount(account)
 
         verify internalDataStore, client, wellKnown, customData, appMapping
+    }
+
+    class AccountAnswer implements IAnswer<Account> {
+
+        def final accountCapture
+        def final uid
+
+        AccountAnswer(def accountCapture, def uid) {
+            this.accountCapture = accountCapture
+            this.uid = uid
+        }
+
+        @Override
+        Account answer() throws Throwable {
+            DefaultAccount account = accountCapture.getValue()
+            account.setProperty("href", "http://base.example.com/api/v1/users/${uid}".toString())
+            return account
+        }
     }
 }
