@@ -12,7 +12,7 @@ The aim of this branch is to port the Stormpath Java integrations (Spring, Sprin
 
 Take a look at the [Getting Started With Okta](OktaGettingStarted.md) guide for instructions on how to get started.
 
-**Work on this branch is on going**, but if you want to try it out you can grab the `2.0.0-okta-rc3` release from [Central](https://search.maven.org/#search%7Cga%7C1%7Cstormpath%20), or build it yourself with Apache Maven: `mvn install`
+**Work on this branch is on going**, but if you want to try it out you can grab the `2.0.0-okta` release from [Central](https://search.maven.org/#search%7Cga%7C1%7Cstormpath%20), or build it yourself with Apache Maven: `mvn install`
 
 You will also need to set the following properties (these can be set the same way as your [existing Stormpath configuration properties](https://docs.stormpath.com/java/servlet-plugin/config.html#id10)).
 
