@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/stormpath/stormpath-sdk-java.png?branch=master)](https://travis-ci.org/stormpath/stormpath-sdk-java)
+[![Build Status](https://api.travis-ci.org/stormpath/stormpath-sdk-java.png?branch=okta)](https://travis-ci.org/stormpath/stormpath-sdk-java)
 
 # Stormpath is Joining Okta
 
