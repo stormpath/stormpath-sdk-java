@@ -72,6 +72,10 @@ Your application has been created, but you still have a few settings to change:
 
 For more information take a look at the official [Create an API token](http://developer.okta.com/docs/api/getting_started/getting_a_token.html) guide.
 
+### Create an Authorization Server
+
+If you have not run the [migration tool](https://developer.okta.com/documentation/stormpath-import) you will need to create an Authorizaion Server and configure the ID with the property of `okta.authorizationServer.id`.
+https://developer.okta.com/docs/how-to/set-up-auth-server.html
 
 Run an Example Application
 --------------------------
