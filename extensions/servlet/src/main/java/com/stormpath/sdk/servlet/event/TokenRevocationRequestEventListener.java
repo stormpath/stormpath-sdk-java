@@ -16,16 +16,9 @@
 package com.stormpath.sdk.servlet.event;
 
 import com.stormpath.sdk.application.Application;
-import com.stormpath.sdk.client.Client;
-import com.stormpath.sdk.impl.ds.InternalDataStore;
-import com.stormpath.sdk.impl.error.DefaultError;
-import com.stormpath.sdk.lang.Strings;
-import com.stormpath.sdk.oauth.AccessToken;
 import com.stormpath.sdk.oauth.OAuthRequests;
 import com.stormpath.sdk.oauth.OAuthRevocationRequest;
-import com.stormpath.sdk.oauth.OAuthRevocationRequestBuilder;
 import com.stormpath.sdk.oauth.OAuthTokenRevocators;
-import com.stormpath.sdk.oauth.RefreshToken;
 import com.stormpath.sdk.oauth.TokenTypeHint;
 import com.stormpath.sdk.resource.ResourceException;
 import com.stormpath.sdk.servlet.account.event.RegisteredAccountRequestEvent;
@@ -34,24 +27,13 @@ import com.stormpath.sdk.servlet.application.ApplicationResolver;
 import com.stormpath.sdk.servlet.authc.FailedAuthenticationRequestEvent;
 import com.stormpath.sdk.servlet.authc.LogoutRequestEvent;
 import com.stormpath.sdk.servlet.authc.SuccessfulAuthenticationRequestEvent;
-import com.stormpath.sdk.servlet.client.ClientResolver;
-import com.stormpath.sdk.servlet.filter.oauth.OAuthErrorCode;
-import com.stormpath.sdk.servlet.filter.oauth.OAuthException;
 import com.stormpath.sdk.servlet.http.CookieResolver;
-import com.stormpath.sdk.servlet.oauth.impl.JwtTokenSigningKeyResolver;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwsHeader;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.oltu.oauth2.rs.extractor.BearerHeaderTokenExtractor;
 import org.apache.oltu.oauth2.rs.extractor.TokenExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Key;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @since 1.0.RC8.3
@@ -62,6 +44,7 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
 
     private final TokenExtractor tokenExtractor = new BearerHeaderTokenExtractor();
     private final CookieResolver accessTokenCookieResolver = new CookieResolver("access_token");
+    private final CookieResolver refreshTokenCookieResolver = new CookieResolver("refresh_token");
 
     protected ApplicationResolver applicationResolver = ApplicationResolver.INSTANCE;
 
@@ -87,12 +70,31 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
 
     @Override
     public void on(LogoutRequestEvent event) {
-        String jwt = getJwtFromLogoutRequestEvent(event);
+        revokeAccessToken(event);
+        revokeRefreshToken(event);
+    }
+
+    private void revokeAccessToken(LogoutRequestEvent event) {
+        String accessToken = getJwtFromLogoutRequestEvent(event);
         HttpServletRequest request = event.getRequest();
         Application application = applicationResolver.getApplication(request);
-        if (application != null && jwt != null) {
+        revokeToken(accessToken, TokenTypeHint.ACCESS_TOKEN, application);
+    }
+
+    private void revokeRefreshToken(LogoutRequestEvent event) {
+        HttpServletRequest request = event.getRequest();
+        String refreshToken = refreshTokenCookieResolver.get(request, null).getValue();
+        Application application = applicationResolver.getApplication(request);
+        revokeToken(refreshToken, TokenTypeHint.REFRESH_TOKEN, application);
+    }
+
+    private void revokeToken(String token, TokenTypeHint tokenTypeHint, Application application) {
+        if (application != null && token != null) {
             try {
-                OAuthRevocationRequest revocationRequest = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder().setToken(jwt).build();
+                OAuthRevocationRequest revocationRequest = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder()
+                    .setToken(token)
+                    .setTokenTypeHint(tokenTypeHint)
+                    .build();
                 OAuthTokenRevocators.OAUTH_TOKEN_REVOCATOR.forApplication(application).revoke(revocationRequest);
             } catch (ResourceException e) {
                 com.stormpath.sdk.error.Error error = e.getStormpathError();
