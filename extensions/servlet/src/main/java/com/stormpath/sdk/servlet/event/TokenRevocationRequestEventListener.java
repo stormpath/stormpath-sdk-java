@@ -77,18 +77,17 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
     private void revokeAccessToken(LogoutRequestEvent event) {
         String accessToken = getJwtFromLogoutRequestEvent(event);
         HttpServletRequest request = event.getRequest();
-        Application application = applicationResolver.getApplication(request);
-        revokeToken(accessToken, TokenTypeHint.ACCESS_TOKEN, application);
+        revokeToken(accessToken, TokenTypeHint.ACCESS_TOKEN, request);
     }
 
     private void revokeRefreshToken(LogoutRequestEvent event) {
         HttpServletRequest request = event.getRequest();
         String refreshToken = refreshTokenCookieResolver.get(request, null).getValue();
-        Application application = applicationResolver.getApplication(request);
-        revokeToken(refreshToken, TokenTypeHint.REFRESH_TOKEN, application);
+        revokeToken(refreshToken, TokenTypeHint.REFRESH_TOKEN, request);
     }
 
-    private void revokeToken(String token, TokenTypeHint tokenTypeHint, Application application) {
+    private void revokeToken(String token, TokenTypeHint tokenTypeHint, HttpServletRequest request) {
+        Application application = applicationResolver.getApplication(request);
         if (application != null && token != null) {
             try {
                 OAuthRevocationRequest revocationRequest = OAuthRequests.OAUTH_TOKEN_REVOCATION_REQUEST.builder()
