@@ -1,5 +1,13 @@
 ## Change Log ##
 
+### 2.0.1-okta ##
+
+* Added revoke refresh token on logout
+
+### 2.0.0-okta ##
+
+* Always UID when sending verification email, to avoid cacheing issues
+
 ### 2.0.0-okta-rc3 ##
 
 * Newly created Accounts can be automatically assocated with a given group, if property `okta.application.groupId` is set.
