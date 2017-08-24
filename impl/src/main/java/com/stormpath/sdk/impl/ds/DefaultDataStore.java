@@ -475,8 +475,7 @@ public class DefaultDataStore implements InternalDataStore {
 
                 // if this is an Okta CRUD operation, we must use a PUT and not a POST
                 HttpMethod method = HttpMethod.POST;
-                if ((href.matches(".*\\/api\\/v1\\/users\\/\\w*$")
-                        || href.matches(".*/api/v1/groups/.*"))
+                if ((href.matches(".*/api/v1/groups/.*"))
                         && !create) {
                     method = HttpMethod.PUT;
                 }
