@@ -33,6 +33,7 @@ import org.apache.oltu.oauth2.rs.extractor.TokenExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -82,8 +83,11 @@ public class TokenRevocationRequestEventListener implements RequestEventListener
 
     private void revokeRefreshToken(LogoutRequestEvent event) {
         HttpServletRequest request = event.getRequest();
-        String refreshToken = refreshTokenCookieResolver.get(request, null).getValue();
-        revokeToken(refreshToken, TokenTypeHint.REFRESH_TOKEN, request);
+        Cookie refreshTokenCookie = refreshTokenCookieResolver.get(request, null);
+        if (refreshTokenCookie != null) {
+            String refreshToken = refreshTokenCookie.getValue();
+            revokeToken(refreshToken, TokenTypeHint.REFRESH_TOKEN, request);
+        }
     }
 
     private void revokeToken(String token, TokenTypeHint tokenTypeHint, HttpServletRequest request) {
