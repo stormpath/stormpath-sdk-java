@@ -56,7 +56,7 @@ public class DefaultRequestAuthenticatorFactory implements RequestAuthenticatorF
             Constructor<RequestAuthenticator> ctor = Classes.getConstructor(requestAuthenticatorClass, ApiKeyCredentials.class);
             return Classes.instantiate(ctor, apiKeyCredentials);
         } catch (RuntimeException ex) {
-            throw new RequestAuthenticationException("There was an error instantiating " + scheme.getRequestAuthenticatorClassName());
+            throw new RequestAuthenticationException("There was an error instantiating " + scheme.getRequestAuthenticatorClassName(), ex);
         }
     }
 
