@@ -1,9 +1,5 @@
 language: java
-sudo: false
-jdk:
-  - openjdk7
-  - oraclejdk7
-  - oraclejdk8
+dist: precise
 addons:
   apt:
     packages:
@@ -20,3 +16,17 @@ after_success:
 notifications:
   slack:
     secure: INiA7V4aXvimkImaErVH94ZSmFNuOgun9aurmf3BiE2Qq0EfNiEaWK9pp6hfkv+wSls4LXNDLaYVzdoMECVLh+Dv9VLHIABnaNEmMStXUlyZ+sOpdayl/47gnNr0G1cr06eqbikGVqWtQaxDz2Psaejq2D/6WYw5Vnqk4BjWQHw=
+
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      jdk: openjdk7
+    - os: linux
+      sudo: false
+      dist: precise
+      jdk: oraclejdk7
+    - os: linux
+      sudo: false
+      dist: precise
+      jdk: oraclejdk8

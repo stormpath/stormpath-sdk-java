@@ -771,7 +771,7 @@
             <properties>
                 <!-- Issue 84: JDK 8 requires strict HTML.  We'll disable this strictness until we can
                      clean up the HTML source in JavaDoc comments: -->
-                <additionalparam>-Xdoclint:none</additionalparam>
+                <additionalparam>-Xdoclint:none --allow-script-in-comments</additionalparam>
             </properties>
         </profile>
         <profile>
