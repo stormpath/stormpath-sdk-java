@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.stormpath.sdk</groupId>
         <artifactId>stormpath-sdk-root</artifactId>
-        <version>2.0.2-okta-SNAPSHOT</version>
+        <version>2.0.2-okta</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>stormpath-sdk-examples</artifactId>
     <groupId>com.stormpath.sdk</groupId>
-    <version>2.0.2-okta-SNAPSHOT</version>
+    <version>2.0.2-okta</version>
     <name>Stormpath Java SDK :: Examples</name>
     <packaging>pom</packaging>
 
