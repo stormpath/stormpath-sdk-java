@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 2.0.2-okta ##
+
+* Use POST when updating Accounts and Custom Data to allow for partial updates.
+
 ### 2.0.1-okta ##
 
 * Added revoke refresh token on logout
