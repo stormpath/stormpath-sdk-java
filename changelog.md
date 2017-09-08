@@ -2,7 +2,8 @@
 
 ### 2.0.2-okta ##
 
-* Use POST when updating Accounts and Custom Data to allow for partial updates.
+* Use POST when updating Accounts and Custom Data to allow for partial updates
+* Include default Okta properties in web.stormpath.properties for the Servlet integration
 
 ### 2.0.1-okta ##
 
