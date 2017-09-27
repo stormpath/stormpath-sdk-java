@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.stormpath.sdk.mail.MimeType.*;
 
@@ -41,6 +43,8 @@ public class CommonsEmailService implements EmailService {
     private static final String EXPIRE_WINDOW_HOURS = "expirationWindow";
 
     private final Logger log = LoggerFactory.getLogger(CommonsEmailService.class);
+
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     private final TemplateRenderer templateRenderer;
     private final EmailServiceConfig config;
@@ -64,78 +68,70 @@ public class CommonsEmailService implements EmailService {
     }
 
     @Override
-    public void sendEmail(EmailRequest request, String template) {
+    public void sendEmail(final EmailRequest request, final String template) {
 
-        try (InputStream inputStream = resourceFactory.createResource(template).getInputStream()) {
+        executorService.execute(new Runnable() {
 
-            Map<String, Object> context = new LinkedHashMap<>();
+            @Override
+            public void run() {
+                log.debug("Start email send to: {}", request.getToAddress());
+                try (InputStream inputStream = resourceFactory.createResource(template).getInputStream()) {
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            EmailTemplate emailTemplate = objectMapper.readValue(inputStream, EmailTemplate.class);
+                    Map<String, Object> context = new LinkedHashMap<>();
 
-            String url = emailTemplate.getDefaultModel().get("linkBaseUrl") + "?sptoken=" + request.getToken();
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                    EmailTemplate emailTemplate = objectMapper.readValue(inputStream, EmailTemplate.class);
 
-            context.put(APPLICATION_BASE_URL, url);
+                    String url = emailTemplate.getDefaultModel().get("linkBaseUrl") + "?sptoken=" + request.getToken();
 
-            context.put(FROM_NAME, emailTemplate.getFromName());
-            context.put(FROM_EMAIL_ADDRESS, emailTemplate.getFromName());
-            context.put(SUBJECT, emailTemplate.getSubject());
+                    context.put(APPLICATION_BASE_URL, url);
 
-            context.put(EXPIRE_WINDOW_HOURS, config.getTokenExpirationHours());
+                    context.put(FROM_NAME, emailTemplate.getFromName());
+                    context.put(FROM_EMAIL_ADDRESS, emailTemplate.getFromName());
+                    context.put(SUBJECT, emailTemplate.getSubject());
 
-            context.put(TO_EMAIL_ADDRESS, request.getToAddress());
-            context.put(TO_NAME, request.getToDisplayName());
+                    context.put(EXPIRE_WINDOW_HOURS, config.getTokenExpirationHours());
 
-            try {
-                Email email;
-                MimeType mimeType = MimeType.fromString(emailTemplate.getMimeType());
+                    context.put(TO_EMAIL_ADDRESS, request.getToAddress());
+                    context.put(TO_NAME, request.getToDisplayName());
 
-                if (PLAIN_TEXT == mimeType) {
+                    try {
+                        Email email;
+                        MimeType mimeType = MimeType.fromString(emailTemplate.getMimeType());
 
-                    SimpleEmail simpleEmail = new SimpleEmail();
-                    simpleEmail.setMsg(renderEmail(emailTemplate.getTextBody(), context).toString());
-                    email = simpleEmail;
-                } else if (HTML == mimeType) {
+                        if (PLAIN_TEXT == mimeType) {
 
-                    HtmlEmail htmlEmail = new HtmlEmail();
-                    htmlEmail.setHtmlMsg(renderEmail(emailTemplate.getHtmlBody(), context).toString());
-                    email = htmlEmail;
-                } else { // both
-                    HtmlEmail htmlEmail = new HtmlEmail();
-                    htmlEmail.setHtmlMsg(renderEmail(emailTemplate.getHtmlBody(), context).toString());
-                    htmlEmail.setTextMsg(renderEmail(emailTemplate.getTextBody(), context).toString());
-                    email = htmlEmail;
+                            SimpleEmail simpleEmail = new SimpleEmail();
+                            simpleEmail.setMsg(renderEmail(emailTemplate.getTextBody(), context).toString());
+                            email = simpleEmail;
+                        } else if (HTML == mimeType) {
+
+                            HtmlEmail htmlEmail = new HtmlEmail();
+                            htmlEmail.setHtmlMsg(renderEmail(emailTemplate.getHtmlBody(), context).toString());
+                            email = htmlEmail;
+                        } else { // both
+                            HtmlEmail htmlEmail = new HtmlEmail();
+                            htmlEmail.setHtmlMsg(renderEmail(emailTemplate.getHtmlBody(), context).toString());
+                            htmlEmail.setTextMsg(renderEmail(emailTemplate.getTextBody(), context).toString());
+                            email = htmlEmail;
+                        }
+
+                        email.setFrom(emailTemplate.getFromEmailAddress(), emailTemplate.getFromName());
+                        email.addTo(request.getToAddress(), request.getToDisplayName());
+                        email.setSubject(emailTemplate.getSubject());
+
+                        // now send it away
+                        sendEmail(email);
+                        log.debug("Finish email send to: {}", request.getToAddress());
+                    } catch (EmailException e) {
+                        log.error("Failed to send email: {}", e.getMessage(), e);
+                    }
+                } catch (IOException e) {
+                    log.warn("Failed to parse email template: {}", e.getMessage(), e);
                 }
-
-                email.setFrom(emailTemplate.getFromEmailAddress(), emailTemplate.getFromName());
-                email.addTo(request.getToAddress(), request.getToDisplayName());
-                email.setSubject(emailTemplate.getSubject());
-
-                // now send it away
-                sendEmail(email);
-            } catch (EmailException e) {
-
-                String message = "Failed to send email.";
-                log.warn(message, e);
-
-                DefaultError error = new DefaultError(null);
-                error.setMessage(message);
-                error.setDeveloperMessage(e.getMessage());
-
-                throw new ResourceException(error);
             }
-        } catch (IOException e) {
-            String message = "Failed to parse email template.";
-            log.warn(message, e);
-
-            DefaultError error = new DefaultError(null);
-            error.setStatus(500);
-            error.setMessage(message);
-            error.setDeveloperMessage(e.getMessage());
-
-            throw new ResourceException(error);
-        }
+        });
     }
 
     protected void sendEmail(Email email) throws EmailException {
