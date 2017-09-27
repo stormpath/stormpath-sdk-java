@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 2.0.3-okta ##
+
+* Updated to make all email sending operations async
+
 ### 2.0.2-okta ##
 
 * Use POST when updating Accounts and Custom Data to allow for partial updates
