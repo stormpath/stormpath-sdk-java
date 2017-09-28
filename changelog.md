@@ -1,5 +1,9 @@
 ## Change Log ##
 
+### 2.0.4-okta ##
+
+* fixed config issue breaking javadocs generation
+
 ### 2.0.3-okta ##
 
 * Updated to make all email sending operations async
