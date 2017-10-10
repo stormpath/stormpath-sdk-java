@@ -4,7 +4,7 @@
 Get Started With Okta
 =========================
 
-Okay, so you've been using Stormpath for a while and now you want to check out out Okta. This guide will walk you through
+Okay, so you've been using Stormpath for a while and now you want to check out Okta. This guide will walk you through
 setting up a new account, creating an API token, and everything else you'll need to get up and running on Okta.
 
 Create an Okta Developer Account
