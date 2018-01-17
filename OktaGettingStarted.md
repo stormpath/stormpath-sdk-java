@@ -37,16 +37,13 @@ Set Up your Okta 'Organization'
 
 ### Create an Application
 
-1. Navigate to your Admin console: i.e. https://dev-123456-admin.oktapreview.com/admin/dashboard
+1. Navigate to your Admin console: i.e. https://dev-123456-admin.oktapreview.com/dev/console
 2. On the top menu click 'Applications'
 3. Click 'Add Application' 
-4. Click 'Create New App'
-5. On the 'Create a New Application Integration' pop-up, select the following values then click 'Create':
-  - Platform - Native
-  - Sign-on Method - OpenID Connect
-6. On the 'Create OpenID Connect Integration' page, enter the following values and click 'Next'
-  - Application Name - 'My Test Application'
-7. Use `http://localhost:8080/client/callback` for the Redirect URI's, and click 'Finish'
+4. Click 'Native' and 'Next'
+5. On the next page, enter the following values and click 'Done'
+  - Application Name: `My Test App`
+  - Login redirect URIs: `http://localhost:8080/client/callback`
 
 Your application has been created, but you still have a few settings to change: 
 
@@ -54,17 +51,14 @@ Your application has been created, but you still have a few settings to change:
 2. Select the 'Refresh Token', and 'Resource Owner Password' checkboxes and click 'Save'
 3. Click the 'Edit' button on the 'Client Credentials' panel
 4. Select the 'Use Client Authentication' radio button, and click 'Save'
-5. Click on the 'Groups' tab
-6. Select the 'Assign' button in the 'Everyone' column, and click 'Done'
-7. Grab the ID portion of the URL of your browser's current page, for example: if your URL was: `https://dev-123456-admin.oktapreview.com/admin/app/oidc_client/instance/00icu81200icu812/#tab-groups` then `00icu81200icu812` would be your application's ID
+7. Copy the Client ID for your application
 
-**Important:** You will need to remember your application's ID.
+**Important:** You will need to remember your Client ID.
 
 ### Create an Access Token
 
-1. Navigate to your Admin console: i.e. https://dev-123456-admin.oktapreview.com/admin/dashboard
-2. On the top menu click on 'Security' -> 'API'
-3. Select the 'Tokens' tab
+1. Navigate to your Admin console: i.e. https://dev-123456-admin.oktapreview.com/dev/console
+2. On the top menu click on 'API' -> 'Tokens'
 4. Click 'Create Token'
 5. On the pop-up, give your new token a name, for example: 'My Test Token', and click 'Create Token'
 
@@ -96,7 +90,7 @@ The last step before running the example is to set your configuration variables.
 
 ``` bash
 $ export STORMPATH_CLIENT_BASEURL=[baseurl_from_above]
-$ export OKTA_APPLICATION_ID=[application_id_from_above]
+$ export OKTA_APPLICATION_ID=[client_id_from_above]
 $ export OKTA_API_TOKEN=[api_token_from_above]
 ```
 
